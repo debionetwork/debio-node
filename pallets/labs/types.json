@@ -1,0 +1,13 @@
+{
+  "Service": {
+    "id": "H256",
+    "lab_id": "AccountId",
+    "name": "Text"
+  },
+  "Lab": {
+    "address": "AccountId",
+    "name": "Text",
+    "services": "Vec<H256>"
+  }
+}
+
