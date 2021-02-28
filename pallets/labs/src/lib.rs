@@ -5,8 +5,9 @@
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 
 use frame_support::{
+    //debug,
     decl_module, decl_storage, decl_event, decl_error,
-    dispatch, traits::Get, traits::Randomness
+    dispatch, traits::Get, traits::Randomness, traits::Currency,
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
@@ -26,18 +27,17 @@ pub trait Trait: frame_system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
         type RandomnessSource: Randomness<H256>;
         type Hashing: Hash<Output = H256>;
+        type Currency: Currency<Self::AccountId>;
 }
 
-/*
-type Hash = sp_core::H256;
-type ServiceId = Hash;
-*/
+type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct Service<AccountId> {
     id: H256,
     lab_id: AccountId,
     name: Vec<u8>,
+    price: u128,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
@@ -71,8 +71,10 @@ decl_storage! {
 // Pallets use events to inform users when important changes are made.
 // https://substrate.dev/docs/en/knowledgebase/runtime/events
 decl_event!(
-	pub enum Event<T> where
-            AccountId = <T as frame_system::Trait>::AccountId {
+	pub enum Event<T>
+        where
+            AccountId = <T as frame_system::Trait>::AccountId
+        {
 		/// Event documentation should end with an array that provides descriptive names for event
                 /// parameters. [Lab, who]
                 LabRegistered(Lab<AccountId>, AccountId),
@@ -125,7 +127,9 @@ decl_module! {
                 }
 
                 #[weight = 10_000 + T::DbWeight::get().writes(1)]
-                pub fn add_service(origin, service_name: Vec<u8>) -> dispatch::DispatchResult {
+                pub fn add_service(origin, service_name: Vec<u8>, service_price: u128)
+                    -> dispatch::DispatchResult
+                {
                     let who = ensure_signed(origin)?;
                     // Check if lab exists
                     let lab_exists = <Labs<T>>::contains_key(&who);
@@ -140,7 +144,8 @@ decl_module! {
                     let service = Service {
                         id: service_id,
                         lab_id: who.clone(),
-                        name: service_name
+                        name: service_name,
+                        price: service_price,
                     };
                     // Insert service to storage map
                     <Services<T>>::insert(&service_id, &service);

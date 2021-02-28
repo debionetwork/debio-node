@@ -2,7 +2,8 @@
   "Service": {
     "id": "H256",
     "lab_id": "AccountId",
-    "name": "Text"
+    "name": "Text",
+    "price": "u128"
   },
   "Lab": {
     "address": "AccountId",

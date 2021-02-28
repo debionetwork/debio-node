@@ -266,6 +266,7 @@ impl pallet_labs::Trait for Runtime {
 	type Event = Event;
         type RandomnessSource = RandomnessCollectiveFlip;
         type Hashing = BlakeTwo256;
+        type Currency = Balances;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
