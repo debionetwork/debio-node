@@ -8,12 +8,13 @@ use frame_support::{
     //debug,
     decl_module, decl_storage, decl_event, decl_error,
     dispatch, traits::Get, traits::Randomness, traits::Currency,
+    traits::ExistenceRequirement
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
 use frame_support::sp_runtime::{RuntimeDebug, traits::Hash};
 use frame_support::sp_std::prelude::*;
-use sp_core::H256;
+// use sp_core::H256;
 
 #[cfg(test)]
 mod mock;
@@ -25,26 +26,26 @@ mod tests;
 pub trait Trait: frame_system::Trait {
 	/// Because this pallet emits events, it depends on the runtime's definition of an event.
 	type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
-        type RandomnessSource: Randomness<H256>;
-        type Hashing: Hash<Output = H256>;
+        type RandomnessSource: Randomness<Self::Hash>;
+        type Hashing: Hash<Output = Self::Hash>;
         type Currency: Currency<Self::AccountId>;
 }
 
 type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct Service<AccountId> {
-    id: H256,
+pub struct Service<AccountId, Hash, Balance> {
+    id: Hash,
     lab_id: AccountId,
     name: Vec<u8>,
-    price: u128,
+    price: Balance,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct Lab<AccountId> {
-    address: AccountId,
+pub struct Lab<AccountId, Hash> {
+    id: AccountId,
     name: Vec<u8>,
-    services: Vec<H256>,
+    services: Vec<Hash>,
 }
 
 // The pallet's runtime storage items.
@@ -58,11 +59,11 @@ decl_storage! {
 		// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
                 Labs get(fn lab_by_account_id):
                     map hasher(blake2_128_concat) T::AccountId
-                        => Option<Lab<T::AccountId>>;
+                        => Option<Lab<T::AccountId, T::Hash>>;
 
                 Services get(fn service_by_uuid):
-                    map hasher(blake2_128_concat) H256
-                        => Option<Service<T::AccountId>>;
+                    map hasher(blake2_128_concat) T::Hash
+                        => Option<Service<T::AccountId, T::Hash, BalanceOf<T>>>;
 
                 Nonce get(fn nonce): u32;
 	}
@@ -73,13 +74,15 @@ decl_storage! {
 decl_event!(
 	pub enum Event<T>
         where
-            AccountId = <T as frame_system::Trait>::AccountId
+            AccountId = <T as frame_system::Trait>::AccountId,
+            Hash = <T as frame_system::Trait>::Hash,
+            Balance = BalanceOf<T>,
         {
 		/// Event documentation should end with an array that provides descriptive names for event
                 /// parameters. [Lab, who]
-                LabRegistered(Lab<AccountId>, AccountId),
+                LabRegistered(Lab<AccountId, Hash>, AccountId),
                 /// parameters, [Service, who]
-                ServiceCreated(Service<AccountId>, AccountId),
+                ServiceCreated(Service<AccountId, Hash, Balance>, AccountId),
 	}
 );
 
@@ -90,6 +93,8 @@ decl_error! {
                 LabAlreadyRegistered,
                 /// Lab identified by the AccountId does not exist
                 LabDoesNotExist,
+                /// Service does not exist
+                ServiceDoesNotExist,
 	}
 }
 
@@ -113,9 +118,9 @@ decl_module! {
                         return Err(Error::<T>::LabAlreadyRegistered)?;
                     }
 
-                    let services: Vec<H256> = Vec::new();
+                    let services: Vec<<T as frame_system::Trait>::Hash> = Vec::new();
                     let lab = Lab {
-                        address: who.clone(),
+                        id: who.clone(),
                         name: lab_name,
                         services: services,
                     };
@@ -127,7 +132,7 @@ decl_module! {
                 }
 
                 #[weight = 10_000 + T::DbWeight::get().writes(1)]
-                pub fn add_service(origin, service_name: Vec<u8>, service_price: u128)
+                pub fn add_service(origin, service_name: Vec<u8>, service_price: BalanceOf<T>)
                     -> dispatch::DispatchResult
                 {
                     let who = ensure_signed(origin)?;
@@ -160,6 +165,40 @@ decl_module! {
                     });
 
                     Self::deposit_event(RawEvent::ServiceCreated(service, who.clone()));
+
+                    Ok(())
+                }
+
+
+                #[weight = 10_000 + T::DbWeight::get().writes(1)]
+                pub fn order_service(origin, service_id: <T as frame_system::Trait>::Hash)
+                    -> dispatch::DispatchResult
+                {
+                    let customer = ensure_signed(origin)?;
+
+                    let service_exists = <Services<T>>::contains_key(&service_id);
+                    if !service_exists {
+                        return Err(Error::<T>::ServiceDoesNotExist)?;
+                    }
+
+                    let service = <Services<T>>::get(&service_id);
+                    match service {
+                        None => (), // TODO: Error
+                        Some(_service) => {
+                            let lab = <Labs<T>>::get(&_service.lab_id);
+                            match lab {
+                                None => (), // TODO: Error
+                                Some(_lab) => {
+                                    <T as Trait>::Currency::transfer(
+                                        &customer,
+                                        &_lab.id,
+                                        _service.price,
+                                        ExistenceRequirement::KeepAlive
+                                    );
+                                }
+                            }
+                        }
+                    }
 
                     Ok(())
                 }
