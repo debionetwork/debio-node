@@ -8,13 +8,12 @@ use frame_support::{
     //debug,
     decl_module, decl_storage, decl_event, decl_error,
     dispatch, traits::Get, traits::Randomness, traits::Currency,
-    traits::ExistenceRequirement
+    traits::ExistenceRequirement, debug
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
-use frame_support::sp_runtime::{RuntimeDebug, traits::Hash};
+use frame_support::sp_runtime::{RuntimeDebug, traits::Hash, print};
 use frame_support::sp_std::prelude::*;
-// use sp_core::H256;
 
 #[cfg(test)]
 mod mock;
@@ -136,6 +135,8 @@ decl_module! {
                     -> dispatch::DispatchResult
                 {
                     let who = ensure_signed(origin)?;
+                    debug::info!("Request sent by: {:?}", who);
+
                     // Check if lab exists
                     let lab_exists = <Labs<T>>::contains_key(&who);
                     if !lab_exists {
@@ -143,8 +144,7 @@ decl_module! {
                     }
 
                     // service_id is a random hash
-                    let nonce = Self::encode_and_update_nonce();
-                    let service_id = <T as Trait>::Hashing::hash(&nonce);
+                    let service_id = Self::generate_hash(&who);
                     // create a service
                     let service = Service {
                         id: service_id,
@@ -153,7 +153,8 @@ decl_module! {
                         price: service_price,
                     };
                     // Insert service to storage map
-                    <Services<T>>::insert(&service_id, &service);
+                    // <Services<T>>::insert(&service_id, &service);
+                    Services::<T>::insert(&service_id, &service);
                     // Add service id to lab
                     <Labs<T>>::mutate(&who, | lab | {
                         match lab {
@@ -213,4 +214,15 @@ impl<T: Trait> Module<T> {
 		Nonce::put(nonce.wrapping_add(1));
 		nonce.encode()
 	}
+
+        fn generate_hash(account_id: &<T as frame_system::Trait>::AccountId)
+            -> <T as frame_system::Trait>::Hash
+        {
+            let account_info = frame_system::Module::<T>::account(account_id);
+            debug::info!("account_info: {:?}", account_info);
+            // TODO: generate hash using account_info and RandomnessSource
+            let nonce = Self::encode_and_update_nonce();
+            let hash = <T as Trait>::Hashing::hash(&nonce);
+            return hash;
+        }
 }
