@@ -2,8 +2,10 @@
 
 use frame_support::{
     decl_module, decl_storage, decl_event, decl_error,
-    dispatch, traits::Get, traits::Randomness, traits::Currency,
-    traits::ExistenceRequirement, debug
+    dispatch, debug,
+    traits::{
+        Get, Randomness, Currency, ExistenceRequirement,
+    }, 
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
@@ -28,6 +30,16 @@ pub struct Service<AccountId, Hash, Balance> {
     description: Vec<u8>, // TODO: limit the length
     long_description: Option<Vec<u8>>,
     image: Option<Vec<u8>>
+}
+
+impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
+    pub fn get_id(&self) -> &Hash {
+        &self.id
+    }
+
+    pub fn get_lab_id(&self) -> &AccountId {
+        &self.lab_id
+    }
 }
 
 decl_storage! {
@@ -145,15 +157,16 @@ decl_module! {
     }
 }
 
+
+// TODO: Maybe extract this fn as a separate module (this is used by pallet services also)
 impl<T: Trait> Module<T> {
-    fn generate_hash(account_id: &<T as frame_system::Trait>::AccountId)
+    fn generate_hash(account_id: &T::AccountId)
         -> <T as frame_system::Trait>::Hash
     {
         let account_info = frame_system::Module::<T>::account(account_id);
-        // TODO: generate hash using account_info and RandomnessSource
-        // let account_id_owned = account_id.to_owned().to_ss58check();
         debug::info!("account_info.data: {:?}", account_info.data);
-        let hash = <T as Trait>::Hashing::hash(&account_info.nonce.encode());
+        let hash = <T as Trait>::RandomnessSource::random(&account_info.nonce.encode());
+        // let hash = <T as Trait>::Hashing::hash(&account_info.nonce.encode());
         return hash;
     }
 }

@@ -27,6 +27,7 @@ serde = { features = ['derive'], optional = true, version = '1.0.119' }
 # local dependencies
 debio-labs = { path = '../pallets/labs', default-features = false }
 debio-services = { path = '../pallets/services', default-features = false }
+debio-orders = { path = '../pallets/orders', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '2.0.1' }
@@ -95,4 +96,5 @@ std = [
     'sp-version/std',
     'debio-labs/std',
     'debio-services/std',
+    'debio-orders/std',
 ]

@@ -274,6 +274,11 @@ impl debio_services::Trait for Runtime {
     type Currency = Balances;
 }
 
+impl debio_orders::Trait for Runtime {
+    type Event = Event;
+    type Hashing = BlakeTwo256;
+    type RandomnessSource = RandomnessCollectiveFlip;
+}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -293,6 +298,7 @@ construct_runtime!(
 		// Include the custom logic from the labs pallet in the runtime.
 		Labs: debio_labs::{Module, Call, Storage, Event<T>},
                 Services: debio_services::{Module, Call, Storage, Event<T>},
+                Orders: debio_orders::{Module, Call, Storage, Event<T>},
 	}
 );
 
