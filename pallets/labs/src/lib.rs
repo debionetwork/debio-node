@@ -12,7 +12,7 @@ use frame_support::{
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
-use frame_support::sp_runtime::{RuntimeDebug, traits::Hash, print};
+use frame_support::sp_runtime::{RuntimeDebug, traits::Hash};
 use frame_support::sp_std::prelude::*;
 
 #[cfg(test)]
@@ -45,6 +45,13 @@ pub struct Lab<AccountId, Hash> {
     id: AccountId,
     name: Vec<u8>,
     services: Vec<Hash>,
+    country: Vec<u8>,
+    city: Vec<u8>,
+    address: Vec<u8>,
+    latitude: Option<Vec<u8>>,
+    longitude: Option<Vec<u8>>,
+    profile_image: Option<Vec<u8>>,
+    is_verified: bool,
 }
 
 // The pallet's runtime storage items.
@@ -109,7 +116,18 @@ decl_module! {
 		fn deposit_event() = default;
 
                 #[weight = 10_000 + T::DbWeight::get().writes(1)]
-                pub fn register_lab(origin, lab_name: Vec<u8>) -> dispatch::DispatchResult {
+                pub fn register_lab(
+                    origin,
+                    lab_name: Vec<u8>,
+                    country: Vec<u8>,
+                    city: Vec<u8>,
+                    address: Vec<u8>,
+                    latitude: Option<Vec<u8>>,
+                    longitude: Option<Vec<u8>>,
+                    profile_image: Option<Vec<u8>>,
+                    is_verified: Option<bool>
+                ) -> dispatch::DispatchResult
+                {
                     let who = ensure_signed(origin)?;
 
                     let lab_exists = <Labs<T>>::contains_key(&who);
@@ -121,7 +139,14 @@ decl_module! {
                     let lab = Lab {
                         id: who.clone(),
                         name: lab_name,
+                        country: country,
+                        city: city,
+                        address: address,
+                        latitude: latitude,
+                        longitude: longitude,
+                        profile_image: profile_image,
                         services: services,
+                        is_verified: is_verified.unwrap_or(false)
                     };
                     <Labs<T>>::insert(&who, &lab);
 
