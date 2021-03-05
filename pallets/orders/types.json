@@ -1,0 +1,9 @@
+{
+  "Order": {
+    "id": "H256",
+    "service_id": "H256",
+    "created_at": "u64",
+    "customer_id": "AccountId",
+    "lab_id": "AccountId"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "Service": {
+    "id": "H256",
+    "lab_id": "AccountId",
+    "name": "Text",
+    "price": "u128",
+    "description": "Text",
+    "long_description": "Option<Text>",
+    "image": "Option<Text>"
+  }
+}
