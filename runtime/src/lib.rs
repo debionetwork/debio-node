@@ -39,7 +39,8 @@ pub use frame_support::{
 };
 
 /// Import the template pallet.
-pub use pallet_labs;
+pub use debio_labs;
+pub use debio_services;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -262,12 +263,17 @@ impl pallet_sudo::Trait for Runtime {
 }
 
 /// Configure the labs pallet in pallets/labs.
-impl pallet_labs::Trait for Runtime {
-	type Event = Event;
-        type RandomnessSource = RandomnessCollectiveFlip;
-        type Hashing = BlakeTwo256;
-        type Currency = Balances;
+impl debio_labs::Trait for Runtime {
+    type Event = Event;
 }
+
+impl debio_services::Trait for Runtime {
+    type Event = Event;
+    type RandomnessSource = RandomnessCollectiveFlip;
+    type Hashing = BlakeTwo256;
+    type Currency = Balances;
+}
+
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -285,7 +291,8 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the labs pallet in the runtime.
-		Labs: pallet_labs::{Module, Call, Storage, Event<T>},
+		Labs: debio_labs::{Module, Call, Storage, Event<T>},
+                Services: debio_services::{Module, Call, Storage, Event<T>},
 	}
 );
 

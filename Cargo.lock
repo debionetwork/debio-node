@@ -1149,6 +1149,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "993a608597367c6377b258c25d7120740f00ed23a2252b729b1932dd7866f908"
 
 [[package]]
+name = "debio-labs"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "debio-services"
+version = "0.1.0"
+dependencies = [
+ "debio-labs",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "derive_more"
 version = "0.99.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3536,6 +3561,8 @@ dependencies = [
 name = "node-template-runtime"
 version = "2.0.1"
 dependencies = [
+ "debio-labs",
+ "debio-services",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -3546,7 +3573,6 @@ dependencies = [
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
- "pallet-labs",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-timestamp",
@@ -3810,18 +3836,6 @@ dependencies = [
  "sp-session",
  "sp-staking",
  "sp-std",
-]
-
-[[package]]
-name = "pallet-labs"
-version = "2.0.1"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "sp-core",
- "sp-io",
- "sp-runtime",
 ]
 
 [[package]]
