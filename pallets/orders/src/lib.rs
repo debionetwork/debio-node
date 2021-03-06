@@ -161,7 +161,9 @@ decl_module! {
                 ExistenceRequirement::KeepAlive
             );
 
+            // FIXME: return order on escrow paid?
             Self::on_escrow_paid(&order.id);
+            let order = Orders::<T>::get(&order_id).unwrap();
 
             Self::deposit_event(RawEvent::OrderPaid(order.clone(), customer_id, order.lab_id));
             Ok(())
