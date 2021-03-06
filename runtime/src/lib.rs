@@ -39,8 +39,10 @@ pub use frame_support::{
 };
 
 /// Import the template pallet.
-pub use debio_labs;
-pub use debio_services;
+pub use labs;
+pub use services;
+pub use orders;
+pub use escrow;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -263,21 +265,27 @@ impl pallet_sudo::Trait for Runtime {
 }
 
 /// Configure the labs pallet in pallets/labs.
-impl debio_labs::Trait for Runtime {
+impl labs::Trait for Runtime {
     type Event = Event;
 }
 
-impl debio_services::Trait for Runtime {
+impl services::Trait for Runtime {
     type Event = Event;
     type RandomnessSource = RandomnessCollectiveFlip;
     type Hashing = BlakeTwo256;
     type Currency = Balances;
 }
 
-impl debio_orders::Trait for Runtime {
+impl orders::Trait for Runtime {
     type Event = Event;
     type Hashing = BlakeTwo256;
     type RandomnessSource = RandomnessCollectiveFlip;
+}
+
+impl escrow::Trait for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type Controller = Orders;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -296,9 +304,10 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the labs pallet in the runtime.
-		Labs: debio_labs::{Module, Call, Storage, Event<T>},
-                Services: debio_services::{Module, Call, Storage, Event<T>},
-                Orders: debio_orders::{Module, Call, Storage, Event<T>},
+		Labs: labs::{Module, Call, Storage, Event<T>},
+                Services: services::{Module, Call, Storage, Event<T>},
+                Orders: orders::{Module, Call, Storage, Event<T>},
+                Escrow: escrow::{Module, Call, Storage, Event<T>},
 	}
 );
 

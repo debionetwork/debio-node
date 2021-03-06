@@ -1149,45 +1149,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "993a608597367c6377b258c25d7120740f00ed23a2252b729b1932dd7866f908"
 
 [[package]]
-name = "debio-labs"
-version = "0.1.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "sp-core",
- "sp-io",
- "sp-runtime",
-]
-
-[[package]]
-name = "debio-orders"
-version = "0.1.0"
-dependencies = [
- "debio-services",
- "frame-support",
- "frame-system",
- "pallet-timestamp",
- "parity-scale-codec",
- "sp-core",
- "sp-io",
- "sp-runtime",
-]
-
-[[package]]
-name = "debio-services"
-version = "0.1.0"
-dependencies = [
- "debio-labs",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "sp-core",
- "sp-io",
- "sp-runtime",
-]
-
-[[package]]
 name = "derive_more"
 version = "0.99.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1350,6 +1311,30 @@ checksum = "14ca354e36190500e1e1fb267c647932382b54053c50b14970856c0b00a35067"
 dependencies = [
  "gcc",
  "libc",
+]
+
+[[package]]
+name = "escrow"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "escrow-controller",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "escrow-controller"
+version = "0.1.0"
+dependencies = [
+ "frame-system",
+ "sp-std",
 ]
 
 [[package]]
@@ -2654,6 +2639,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "labs"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3575,9 +3572,7 @@ dependencies = [
 name = "node-template-runtime"
 version = "2.0.1"
 dependencies = [
- "debio-labs",
- "debio-orders",
- "debio-services",
+ "escrow",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -3585,6 +3580,8 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
+ "labs",
+ "orders",
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
@@ -3595,6 +3592,7 @@ dependencies = [
  "pallet-transaction-payment-rpc-runtime-api",
  "parity-scale-codec",
  "serde",
+ "services",
  "sp-api",
  "sp-block-builder",
  "sp-consensus-aura",
@@ -3752,6 +3750,22 @@ name = "openssl-probe"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77af24da69f9d9341038eba93a073b1fdaaa1b788221b00a69bce9e762cb32de"
+
+[[package]]
+name = "orders"
+version = "0.1.0"
+dependencies = [
+ "escrow",
+ "escrow-controller",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
 
 [[package]]
 name = "owning_ref"
@@ -6093,6 +6107,19 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "services"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "labs",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
 ]
 
 [[package]]

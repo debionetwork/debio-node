@@ -1,5 +1,5 @@
 [package]
-name = 'debio-labs'
+name = 'labs'
 version = '0.1.0'
 repository = ''
 edition = '2018'

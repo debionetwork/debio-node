@@ -4,6 +4,8 @@
     "service_id": "H256",
     "created_at": "u64",
     "customer_id": "AccountId",
-    "lab_id": "AccountId"
+    "lab_id": "AccountId",
+    "escrow_id": "AccountId",
+    "status": "OrderStatus"
   }
 }

@@ -12,7 +12,7 @@ use frame_support::codec::{Encode, Decode};
 use frame_support::sp_runtime::{RuntimeDebug, traits::Hash};
 use frame_support::sp_std::prelude::*;
 
-pub trait Trait: frame_system::Trait + debio_labs::Trait {
+pub trait Trait: frame_system::Trait + labs::Trait {
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
     type RandomnessSource: Randomness<Self::Hash>;
     type Hashing: Hash<Output = Self::Hash>;
@@ -39,6 +39,10 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
 
     pub fn get_lab_id(&self) -> &AccountId {
         &self.lab_id
+    }
+
+    pub fn get_price(&self) -> &Balance {
+        &self.price
     }
 }
 
@@ -95,7 +99,7 @@ decl_module! {
             let who = ensure_signed(origin)?;
 
             // Check if lab exists
-            let lab_exists = debio_labs::Module::<T>::lab_by_account_id(&who);
+            let lab_exists = labs::Module::<T>::lab_by_account_id(&who);
             if lab_exists == None {
                 return Err(Error::<T>::LabDoesNotExist)?;
             }
@@ -112,7 +116,7 @@ decl_module! {
             };
 
             Services::<T>::insert(&service_id, &service);
-            debio_labs::Module::<T>::associate_service_to_lab(&who, service_id);
+            labs::Module::<T>::associate_service_to_lab(&who, service_id);
 
             Self::deposit_event(RawEvent::ServiceCreated(service, who.clone()));
 
@@ -137,7 +141,7 @@ decl_module! {
             match service {
                 None => (), // TODO: Error
                 Some(service) => {
-                    let lab = debio_labs::Module::<T>::lab_by_account_id(&service.lab_id);
+                    let lab = labs::Module::<T>::lab_by_account_id(&service.lab_id);
                     match lab {
                         None => (), // TODO: Error
                         Some(lab) => {
