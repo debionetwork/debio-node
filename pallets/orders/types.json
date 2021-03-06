@@ -1,4 +1,10 @@
 {
+  "OrderStatus": {
+    "_enum": [
+      "Unpaid",
+      "Paid"
+    ]
+  },
   "Order": {
     "id": "H256",
     "service_id": "H256",
