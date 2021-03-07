@@ -28,6 +28,7 @@ pallet-timestamp = { default-features = false, version = '2.0.1' }
 services = { path = '../services', default-features = false }
 escrow = { path = '../escrow', default-features = false }
 escrow-controller = { path = '../../traits/escrow-controller', default-features = false }
+chrono = { default-features = false, version = '0.4' }
 
 [dev-dependencies]
 sp-io = { default-features = false, version = '2.0.1' }
@@ -43,4 +44,5 @@ std = [
     'pallet-timestamp/std',
     'services/std',
     'escrow/std',
+    'chrono/std',
 ]

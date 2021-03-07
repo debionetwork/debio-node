@@ -27,6 +27,8 @@ pub trait Trait: frame_system::Trait + services::Trait + pallet_timestamp::Trait
 pub struct Escrow<AccountId, Hash, Balance, Moment> {
     account_id: AccountId,
     order_id: Hash,
+    buyer_id: AccountId,
+    seller_id: AccountId,
     amount_to_pay: Balance,
     amount_paid: Balance,
     expires_at: Moment,
@@ -35,7 +37,11 @@ pub struct Escrow<AccountId, Hash, Balance, Moment> {
 impl<AccountId, Hash, Balance, Moment> Escrow<AccountId, Hash, Balance, Moment> {
     pub fn get_account_id(&self) -> &AccountId {
         &self.account_id
-    } 
+    }
+
+    pub fn set_amount_paid(&mut self, amount: Balance) -> () {
+        self.amount_paid = amount;
+    }
 }
 
 type AccountIdOf<T> = <T as frame_system::Trait>::AccountId;
@@ -46,7 +52,7 @@ type EscrowOf<T> = Escrow<AccountIdOf<T>, HashOf<T>, BalanceOf<T>, MomentOf<T>>;
 
 decl_storage! {
     trait Store for Module<T: Trait> as EscrowStorage {
-        Escrows get(fn escrow_by_order_id):
+        pub Escrows get(fn escrow_by_order_id):
             map hasher(blake2_128_concat) T::Hash => Option<EscrowOf<T>>;
     }
 }
@@ -86,12 +92,15 @@ impl<T: Trait> Module<T> {
     
     pub fn create_escrow(
         order_id: &T::Hash,
-        order_created_at: &MomentOf<T>,
+        buyer_id: &T::AccountId,
+        seller_id: &T::AccountId,
         amount_to_pay: &BalanceOf<T>,
+        order_created_at: &MomentOf<T>,
     )
         -> T::AccountId
     {
         // Calculate escrow expiry
+        // FIXME: Move calculating escrow expires_at to Order pallet
         let order_created_at = order_created_at.clone();
         let order_created_at_ms = TryInto::<u64>::try_into(order_created_at).ok().unwrap();
         let seven_days_ms = u64::try_from(chrono::Duration::days(7).num_milliseconds()).ok().unwrap();
@@ -104,6 +113,8 @@ impl<T: Trait> Module<T> {
         let escrow = Escrow {
             account_id: escrow_account_id.clone(),
             order_id: order_id.clone(),
+            buyer_id: buyer_id.clone(),
+            seller_id: seller_id.clone(),
             amount_to_pay: amount_to_pay.clone(),
             amount_paid: Zero::zero(),
             expires_at: expires_at,
@@ -112,5 +123,48 @@ impl<T: Trait> Module<T> {
         Escrows::<T>::insert(order_id, &escrow);
 
         escrow_account_id
+    }
+
+    pub fn deposit(order_id: &T::Hash, depositor_account_id: &T::AccountId)
+        -> Option<EscrowOf<T>>
+    {
+        Escrows::<T>::mutate(order_id, | escrow | {
+            match escrow {
+                None => None,
+                Some(escrow) => {
+                    <T as services::Trait>::Currency::transfer(
+                        depositor_account_id,
+                        &escrow.account_id,
+                        escrow.amount_to_pay,
+                        ExistenceRequirement::KeepAlive
+                    );
+                    escrow.set_amount_paid(escrow.amount_to_pay);
+                    Some(escrow.clone())
+                }
+            }
+        })
+    }
+
+    pub fn release(order_id: &T::Hash) -> () {
+        let escrow = Escrows::<T>::get(order_id).unwrap(); // FIXME: handle escrow not found
+        // let escrow_account_info = frame_system::Module::<T>::account(&escrow.account_id);
+        <T as services::Trait>::Currency::transfer(
+            &escrow.account_id,
+            &escrow.seller_id,
+            escrow.amount_paid,
+            ExistenceRequirement::AllowDeath,
+        );
+        // TODO: remove escrow struct in storage
+    }
+
+    pub fn refund(order_id: &T::Hash) -> () {
+        let escrow = Escrows::<T>::get(order_id).unwrap(); // FIXME handle escrow not found
+        <T as services::Trait>::Currency::transfer(
+            &escrow.account_id,
+            &escrow.buyer_id,
+            escrow.amount_paid,
+            ExistenceRequirement::AllowDeath,
+        );
+        // TODO: remove escrow struct in storage
     }
 }

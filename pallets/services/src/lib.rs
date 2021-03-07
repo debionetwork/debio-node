@@ -87,14 +87,15 @@ decl_module! {
          * Add Service
          * */
         #[weight = 10_1000 + T::DbWeight::get().writes(1)]
-        pub fn add_service(
+        pub fn create_service(
             origin,
             name: Vec<u8>,
             price: BalanceOf<T>,
             description: Vec<u8>,
             long_description: Option<Vec<u8>>,
             image: Option<Vec<u8>>,
-        ) -> dispatch::DispatchResult
+        )
+            -> dispatch::DispatchResult
         {
             let who = ensure_signed(origin)?;
 
