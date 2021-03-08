@@ -2645,6 +2645,8 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "service-owner",
+ "services",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -6111,13 +6113,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "service-owner"
+version = "0.1.0"
+dependencies = [
+ "frame-system",
+ "sp-std",
+]
+
+[[package]]
 name = "services"
 version = "0.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
- "labs",
  "parity-scale-codec",
+ "service-owner",
  "sp-core",
  "sp-io",
  "sp-runtime",

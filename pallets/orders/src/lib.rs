@@ -2,9 +2,9 @@
 
 use frame_support::{
     decl_module, decl_storage, decl_event, decl_error,
-    dispatch, debug,
+    dispatch, //debug,
     traits::{
-        Get, Randomness, Currency, ExistenceRequirement,
+        Get, Randomness, // Currency, ExistenceRequirement,
     }, 
 };
 use frame_system::ensure_signed;
@@ -179,8 +179,8 @@ decl_module! {
             }
 
             // Pay to escrow
-            let escrow = escrow::Module::<T>::deposit(&order_id, &customer_id);
-            let escrow = escrow.unwrap();
+            let _escrow = escrow::Module::<T>::deposit(&order_id, &customer_id);
+            // let escrow = escrow.unwrap();
 
             // Set order status to paid
             let order = Self::update_order_status(&order_id, OrderStatus::Paid);
@@ -229,7 +229,7 @@ decl_module! {
 
         #[weight = 10_000 + T::DbWeight::get().writes(1)]
         pub fn refund_order(origin, order_id: T::Hash) -> dispatch::DispatchResult {
-            let user_id = ensure_signed(origin)?;
+            let _user_id = ensure_signed(origin)?;
             let order = Orders::<T>::get(&order_id);
             if order == None {
                 return Err(Error::<T>::OrderNotFound)?;

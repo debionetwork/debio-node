@@ -274,6 +274,7 @@ impl services::Trait for Runtime {
     type RandomnessSource = RandomnessCollectiveFlip;
     type Hashing = BlakeTwo256;
     type Currency = Balances;
+    type Owner = Labs;
 }
 
 impl orders::Trait for Runtime {

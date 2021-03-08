@@ -4,19 +4,21 @@ use frame_support::{
     decl_module, decl_storage, decl_event, decl_error,
     dispatch, debug,
     traits::{
-        Get, Randomness, Currency, ExistenceRequirement,
+        Get, Randomness, Currency, // ExistenceRequirement,
     }, 
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
 use frame_support::sp_runtime::{RuntimeDebug, traits::Hash};
 use frame_support::sp_std::prelude::*;
+use service_owner::ServiceOwner;
 
-pub trait Trait: frame_system::Trait + labs::Trait {
+pub trait Trait: frame_system::Trait {
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
     type RandomnessSource: Randomness<Self::Hash>;
     type Hashing: Hash<Output = Self::Hash>;
     type Currency: Currency<Self::AccountId>;
+    type Owner: ServiceOwner<Self>;
 }
 
 type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
@@ -64,15 +66,21 @@ decl_event!(
         /// Event documentation should end with an array that provides descriptive names for event
         /// parameters, [Service, who]
         ServiceCreated(Service<AccountId, Hash, Balance>, AccountId),
+        //// Service updated
+        /// parameters, [Service, who]
+        ServiceUpdated(Service<AccountId, Hash, Balance>, AccountId),
+        //// Service deleted
+        /// parameters, [Service, who]
+        ServiceDeleted(Service<AccountId, Hash, Balance>, AccountId),
     }
 );
 
 decl_error! {
     pub enum Error for Module<T: Trait> {
-        /// Lab identified by the AccountId does not exist
-        LabDoesNotExist,
+        /// User is not the owner of a service
+        NotServiceOwner,
         /// Ordering a service that does not exist
-        ServiceDoesNotExist
+        ServiceDoesNotExist,
     }
 }
 
@@ -99,10 +107,10 @@ decl_module! {
         {
             let who = ensure_signed(origin)?;
 
-            // Check if lab exists
-            let lab_exists = labs::Module::<T>::lab_by_account_id(&who);
-            if lab_exists == None {
-                return Err(Error::<T>::LabDoesNotExist)?;
+            // Check if user can create_service
+            let can_create_service = T::Owner::can_create_service(&who);
+            if !can_create_service {
+                return Err(Error::<T>::NotServiceOwner)?;
             }
 
             let service_id = Self::generate_hash(&who);
@@ -117,46 +125,80 @@ decl_module! {
             };
 
             Services::<T>::insert(&service_id, &service);
-            labs::Module::<T>::associate_service_to_lab(&who, service_id);
+            T::Owner::associate(&who, &service_id);
 
             Self::deposit_event(RawEvent::ServiceCreated(service, who.clone()));
 
             Ok(())
         }
 
-        /**
-         * Order Service
-         * */
-        #[weight = 10_000 + T::DbWeight::get().writes(1)]
-        pub fn order_service(origin, service_id: <T as frame_system::Trait>::Hash)
+        #[weight = 10_1000 + T::DbWeight::get().writes(1)]
+        pub fn update_service(
+            origin,
+            service_id: T::Hash,
+            name: Vec<u8>,
+            price: BalanceOf<T>,
+            description: Vec<u8>,
+            long_description: Option<Vec<u8>>,
+            image: Option<Vec<u8>>,
+        )
             -> dispatch::DispatchResult
         {
-            let customer = ensure_signed(origin)?;
+            let who = ensure_signed(origin)?;
+            // Check if user is a lab
+            let owner = T::Owner::is_owner(&who, &service_id);
+            if !owner {
+                return Err(Error::<T>::NotServiceOwner)?;
+            }
 
-            let service_exists = <Services<T>>::contains_key(&service_id);
+            let service = Services::<T>::mutate(service_id, | service | {
+                match service {
+                    None => None,
+                    Some(service) => {
+                        service.name = name;
+                        service.price = price;
+                        service.description = description;
+                        service.long_description = long_description;
+                        service.image = image;
+
+                        Some(service.clone())
+                    }
+                }
+            });
+            if service == None {
+                return Err(Error::<T>::ServiceDoesNotExist)?;
+            }
+
+            Self::deposit_event(RawEvent::ServiceUpdated(service.unwrap(), who.clone()));
+            Ok(())
+        }
+
+        #[weight = 10_1000 + T::DbWeight::get().writes(1)]
+        pub fn delete_service(
+            origin,
+            service_id: T::Hash
+        )
+            -> dispatch::DispatchResult
+        {
+            let who = ensure_signed(origin)?;
+            // Check if user is a lab
+            let is_owner = T::Owner::is_owner(&who, &service_id);
+            if !is_owner {
+                return Err(Error::<T>::NotServiceOwner)?;
+            }
+
+            let service_exists = Services::<T>::contains_key(&service_id);
             if !service_exists {
                 return Err(Error::<T>::ServiceDoesNotExist)?;
             }
 
-            let service = <Services<T>>::get(&service_id);
-            match service {
-                None => (), // TODO: Error
-                Some(service) => {
-                    let lab = labs::Module::<T>::lab_by_account_id(&service.lab_id);
-                    match lab {
-                        None => (), // TODO: Error
-                        Some(lab) => {
-                            <T as Trait>::Currency::transfer(
-                                &customer,
-                                lab.get_id(),
-                                service.price,
-                                ExistenceRequirement::KeepAlive
-                            );
-                        }
-                    }
-                }
-            }
+            // Remove service_id from associated lab owner
+            T::Owner::disassociate(&who, &service_id);
 
+            let service = Services::<T>::take(&service_id);
+            let service = service.unwrap();
+
+            Self::deposit_event(RawEvent::ServiceDeleted(service, who.clone()));
             Ok(())
         }
     }

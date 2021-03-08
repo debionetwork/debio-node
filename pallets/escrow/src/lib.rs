@@ -2,16 +2,20 @@
 
 use frame_support::{
     decl_module, decl_storage, decl_event, decl_error,
-    dispatch, debug,
+    // dispatch, debug,
     traits::{
-        Get, Currency, ExistenceRequirement, ReservableCurrency, 
+        //Get,
+        Currency, ExistenceRequirement, ReservableCurrency, 
     }, 
 };
-use frame_system::ensure_signed;
+// use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
 use frame_support::sp_runtime::{
     RuntimeDebug, ModuleId,
-    traits::{Hash, AccountIdConversion, Saturating, Zero},
+    traits::{
+       //Hash, Saturating,
+       AccountIdConversion, Zero
+    },
 };
 use frame_support::sp_std::prelude::*;
 use frame_support::sp_std::convert::{TryInto, TryFrom};
@@ -132,7 +136,8 @@ impl<T: Trait> Module<T> {
             match escrow {
                 None => None,
                 Some(escrow) => {
-                    <T as services::Trait>::Currency::transfer(
+                    // TODO: Handle transfer error
+                    let _result = <T as services::Trait>::Currency::transfer(
                         depositor_account_id,
                         &escrow.account_id,
                         escrow.amount_to_pay,
@@ -148,7 +153,9 @@ impl<T: Trait> Module<T> {
     pub fn release(order_id: &T::Hash) -> () {
         let escrow = Escrows::<T>::get(order_id).unwrap(); // FIXME: handle escrow not found
         // let escrow_account_info = frame_system::Module::<T>::account(&escrow.account_id);
-        <T as services::Trait>::Currency::transfer(
+        
+        // TODO: Handle transfer error
+        let _result = <T as services::Trait>::Currency::transfer(
             &escrow.account_id,
             &escrow.seller_id,
             escrow.amount_paid,
@@ -159,7 +166,9 @@ impl<T: Trait> Module<T> {
 
     pub fn refund(order_id: &T::Hash) -> () {
         let escrow = Escrows::<T>::get(order_id).unwrap(); // FIXME handle escrow not found
-        <T as services::Trait>::Currency::transfer(
+
+        // TODO: Handle transfer error
+        let _result = <T as services::Trait>::Currency::transfer(
             &escrow.account_id,
             &escrow.buyer_id,
             escrow.amount_paid,

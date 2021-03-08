@@ -13,6 +13,7 @@ use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
 use frame_support::sp_runtime::{RuntimeDebug};
 use frame_support::sp_std::prelude::*;
+use service_owner::ServiceOwner;
 
 #[cfg(test)]
 mod mock;
@@ -21,7 +22,7 @@ mod mock;
 mod tests;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
-pub trait Trait: frame_system::Trait {
+pub trait Trait: frame_system::Trait + services::Trait {
 	/// Because this pallet emits events, it depends on the runtime's definition of an event.
 	type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
 }
@@ -70,9 +71,15 @@ decl_event!(
             AccountId = <T as frame_system::Trait>::AccountId,
             Hash = <T as frame_system::Trait>::Hash,
         {
-		/// Event documentation should end with an array that provides descriptive names for event
+		/// User AccountId registered as lab
                 /// parameters. [Lab, who]
                 LabRegistered(Lab<AccountId, Hash>, AccountId),
+		/// Lab information updated
+                /// parameters. [Lab, who]
+                LabUpdated(Lab<AccountId, Hash>, AccountId),
+		/// Lab deleted
+                /// parameters. [Lab, who]
+                LabDeleted(Lab<AccountId, Hash>, AccountId),
 	}
 );
 
@@ -110,7 +117,8 @@ decl_module! {
                     longitude: Option<Vec<u8>>,
                     profile_image: Option<Vec<u8>>,
                     is_verified: Option<bool>
-                ) -> dispatch::DispatchResult
+                )
+                    -> dispatch::DispatchResult
                 {
                     let who = ensure_signed(origin)?;
 
@@ -143,23 +151,118 @@ decl_module! {
                     Ok(())
                 }
 
+                #[weight = 10_000 + T::DbWeight::get().writes(1)]
+                pub fn update_lab(
+                    origin,
+                    lab_name: Vec<u8>,
+                    country: Vec<u8>,
+                    city: Vec<u8>,
+                    address: Vec<u8>,
+                    latitude: Option<Vec<u8>>,
+                    longitude: Option<Vec<u8>>,
+                    profile_image: Option<Vec<u8>>,
+                )
+                    -> dispatch::DispatchResult
+                {
+                    let who = ensure_signed(origin)?;
+
+                    let lab = Labs::<T>::get(&who);
+                    if lab == None {
+                        return Err(Error::<T>::LabDoesNotExist)?;
+                    }
+
+                    let lab = Labs::<T>::mutate(&who, | lab | {
+                        match lab {
+                            None => None,
+                            Some(lab) => {
+                                lab.name = lab_name;
+                                lab.country = country;
+                                lab.city = city;
+                                lab.address = address;
+                                lab.latitude = latitude;
+                                lab.longitude = longitude;
+                                lab.profile_image = profile_image;
+
+                                Some(lab.clone())
+                            }
+                        }
+                    });
+
+                    Self::deposit_event(RawEvent::LabUpdated(lab.unwrap(), who.clone()));
+                    Ok(())
+                }
+
+                /* TODO: Delete Lab
+                #[weight = 10_1000 + T::DbWeight::get().writes(1)]
+                pub fn delete_lab(
+                    origin,
+                    lab_id: T::Hash
+                )
+                    -> dispatch::DispatchResult
+                {
+                    let who = ensure_signed(origin)?;
+                    // Check if user is a lab
+                    let lab = Self::lab_by_account_id(&who);
+                    if lab == None {
+                        return Err(Error::<T>::LabDoesNotExist)?;
+                    }
+
+                    /*
+                    let service_exists = Services::<T>::contains_key(&service_id);
+                    if !service_exists {
+                        return Err(Error::<T>::ServiceDoesNotExist)?;
+                    }
+
+                    let service = Services::<T>::take(&service_id);
+                    let service = service.unwrap();
+                    */
+
+                    /*
+                    Self::deposit_event(RawEvent::ServiceDeleted(service, who.clone()));
+                    */
+                    Ok(())
+                }
+                */
+
 	}
 }
 
-impl<T: Trait> Module<T> {
-    pub fn associate_service_to_lab(
-        lab_id: &<T as frame_system::Trait>::AccountId,
-        service_id: <T as frame_system::Trait>::Hash
-    ) -> ()
-    {
-        <Labs<T>>::mutate(lab_id, | lab | {
+impl<T: Trait> ServiceOwner<T> for Module<T> {
+    fn associate(owner_id: &T::AccountId, service_id: &T::Hash) -> () {
+        <Labs<T>>::mutate(owner_id, | lab | {
             match lab {
                 None => (), // If lab does not exist, do nothing
-                Some(_lab) => {
-                    _lab.services.push(service_id);
+                Some(lab) => {
+                    lab.services.push(*service_id);
                 }
             }
         });
+    }
+
+    fn disassociate(owner_id: &T::AccountId, service_id: &T::Hash) -> () {
+        Labs::<T>::mutate(owner_id, | lab | {
+            match lab {
+                None => (),
+                Some(lab) => {
+                    if let Some(pos) = lab.services.iter().position(|x| *x == *service_id) {
+                        lab.services.remove(pos);
+                    }
+                    ()
+                }
+            }
+        });
+    }
+
+    fn is_owner(owner_id: &T::AccountId, service_id: &T::Hash) -> bool {
+        let service = services::Module::<T>::service_by_id(service_id);
+        if service == None { return false; }
+
+        let service = service.unwrap();
+        return *service.get_lab_id() == *owner_id;
+    }
+
+    fn can_create_service(user_id: &T::AccountId) -> bool {
+        return Labs::<T>::contains_key(user_id);
     }
 
     // Reads the nonce from storage, increments the stored nonce, and returns
