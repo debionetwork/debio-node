@@ -16,12 +16,5 @@
     "escrow_id": "AccountId",
     "status": "OrderStatus"
   },
-  "OrderFulfillment": {
-    "order_id": "AccountId",
-    "service_id": "H256",
-    "customer_id": "AccountId",
-    "lab_id": "AccountId",
-    "created_at": "u64",
-    "attachment": "Text"
-  }
+  "OrderIds": "Vec<H256>"
 }

@@ -5,5 +5,6 @@
     "amount_to_pay": "u128",
     "amount_paid": "u128",
     "expires_at": "u64"
-  }
+  },
+  "EscrowOf": "Escrow"
 }

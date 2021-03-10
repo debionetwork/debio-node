@@ -9,14 +9,16 @@ use frame_support::{
 };
 use frame_system::ensure_signed;
 use frame_support::codec::{Encode, Decode};
-use frame_support::sp_runtime::{RuntimeDebug, traits::Hash};
+use frame_support::sp_runtime::{
+    RuntimeDebug, // traits::Hash
+};
 use frame_support::sp_std::prelude::*;
 use service_owner::ServiceOwner;
 
 pub trait Trait: frame_system::Trait {
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
     type RandomnessSource: Randomness<Self::Hash>;
-    type Hashing: Hash<Output = Self::Hash>;
+    // type Hashing: Hash<Output = Self::Hash>;
     type Currency: Currency<Self::AccountId>;
     type Owner: ServiceOwner<Self>;
 }
