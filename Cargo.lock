@@ -3606,6 +3606,7 @@ dependencies = [
  "sp-std",
  "sp-transaction-pool",
  "sp-version",
+ "specimen",
  "substrate-wasm-builder",
 ]
 
@@ -3768,6 +3769,7 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "specimen",
 ]
 
 [[package]]
@@ -6931,6 +6933,19 @@ dependencies = [
  "parity-scale-codec",
  "sp-std",
  "wasmi",
+]
+
+[[package]]
+name = "specimen"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
 ]
 
 [[package]]

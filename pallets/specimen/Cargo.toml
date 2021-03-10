@@ -1,5 +1,5 @@
 [package]
-name = "orders"
+name = "specimen"
 version = "0.1.0"
 authors = ["kevin <kevin.janada@gmail.com>"]
 edition = "2018"
@@ -25,11 +25,6 @@ frame-support = { default-features = false, version = '2.0.1' }
 frame-system = { default-features = false, version = '2.0.1' }
 sp-core = { default-features = false, version = '2.0.1' }
 pallet-timestamp = { default-features = false, version = '2.0.1' }
-services = { path = '../services', default-features = false }
-escrow = { path = '../escrow', default-features = false }
-escrow-controller = { path = '../../traits/escrow-controller', default-features = false }
-specimen = { path = '../specimen', default-features = false }
-chrono = { default-features = false, version = '0.4' }
 
 [dev-dependencies]
 sp-io = { default-features = false, version = '2.0.1' }
@@ -43,8 +38,4 @@ std = [
     'frame-system/std',
     'sp-core/std',
     'pallet-timestamp/std',
-    'services/std',
-    'escrow/std',
-    'specimen/std',
-    'chrono/std',
 ]

@@ -1,0 +1,15 @@
+{
+  "Specimen": {
+    "order_id": "H256",
+    "service_id": "H256",
+    "owner_id": "AccountId",
+    "lab_id": "AccountId",
+    "status": "SpecimenStatus",
+    "created_at": "u64",
+    "updated_at": "u64",
+    "result_file": "Option<Text>",
+    "result_report": "Option<Text>",
+    "comments": "Option<Text>"
+  },
+  "SpecimenOf": "Specimen"
+}

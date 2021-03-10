@@ -43,6 +43,7 @@ pub use labs;
 pub use services;
 pub use orders;
 pub use escrow;
+pub use specimen;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -272,14 +273,14 @@ impl labs::Trait for Runtime {
 impl services::Trait for Runtime {
     type Event = Event;
     type RandomnessSource = RandomnessCollectiveFlip;
-    type Hashing = BlakeTwo256;
+    // type Hashing = BlakeTwo256;
     type Currency = Balances;
     type Owner = Labs;
 }
 
 impl orders::Trait for Runtime {
     type Event = Event;
-    type Hashing = BlakeTwo256;
+    // type Hashing = BlakeTwo256;
     type RandomnessSource = RandomnessCollectiveFlip;
 }
 
@@ -287,6 +288,11 @@ impl escrow::Trait for Runtime {
     type Event = Event;
     type Currency = Balances;
     type Controller = Orders;
+}
+
+impl specimen::Trait for Runtime {
+    type Event = Event;
+    // type RandomnessSource = RandomnessCollectiveFlip;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -309,6 +315,7 @@ construct_runtime!(
                 Services: services::{Module, Call, Storage, Event<T>},
                 Orders: orders::{Module, Call, Storage, Event<T>},
                 Escrow: escrow::{Module, Call, Storage, Event<T>},
+                Specimen: specimen::{Module, Call, Storage, Event<T>},
 	}
 );
 
