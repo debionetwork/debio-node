@@ -43,9 +43,9 @@ use pallet_transaction_payment::CurrencyAdapter;
 pub use pallet_template;
 pub use labs;
 pub use services;
-//pub use orders;
-//pub use escrow;
-//pub use specimen;
+pub use orders;
+pub use escrow;
+pub use specimen;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -282,24 +282,22 @@ impl services::Config for Runtime {
     type Owner = Labs;
 }
 
-/*
-impl orders::Trait for Runtime {
+impl orders::Config for Runtime {
     type Event = Event;
     // type Hashing = BlakeTwo256;
     type RandomnessSource = RandomnessCollectiveFlip;
 }
 
-impl escrow::Trait for Runtime {
+
+impl escrow::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-    type Controller = Orders;
+    //type Controller = Orders;
 }
 
-impl specimen::Trait for Runtime {
+impl specimen::Config for Runtime {
     type Event = Event;
-    // type RandomnessSource = RandomnessCollectiveFlip;
 }
-*/
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -320,9 +318,9 @@ construct_runtime!(
 		TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
 		Labs: labs::{Module, Call, Storage, Event<T>},
                 Services: services::{Module, Call, Storage, Event<T>},
-               //Orders: orders::{Module, Call, Storage, Event<T>},
-               //Escrow: escrow::{Module, Call, Storage, Event<T>},
-               //Specimen: specimen::{Module, Call, Storage, Event<T>},
+                Orders: orders::{Module, Call, Storage, Event<T>},
+                Escrow: escrow::{Module, Call, Storage, Event<T>},
+                Specimen: specimen::{Module, Call, Storage, Event<T>},
 	}
 );
 

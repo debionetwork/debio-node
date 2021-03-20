@@ -24,9 +24,10 @@ version = '2.0.0'
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 pallet-timestamp = { default-features = false, version = '3.0.0' }
+sp-std = { default-features = false, version = '3.0.0' }
 services = { path = '../services', default-features = false }
 escrow = { path = '../escrow', default-features = false }
-escrow-controller = { path = '../../traits/escrow-controller', default-features = false }
+#escrow-controller = { path = '../../traits/escrow-controller', default-features = false }
 specimen = { path = '../specimen', default-features = false }
 chrono = { default-features = false, version = '0.4' }
 
@@ -42,6 +43,7 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
+    'sp-std/std',
     'sp-core/std',
     'pallet-timestamp/std',
     'services/std',

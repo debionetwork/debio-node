@@ -17,4 +17,5 @@
     "status": "OrderStatus"
   },
   "OrderIds": "Vec<H256>"
+  "OrderOf": "Order"
 }

@@ -37,6 +37,7 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
+    'sp-std/std',
     'service-owner/std',
     'services-trait/std',
 ]

@@ -1,95 +1,98 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{
-    decl_module, decl_storage, decl_event, decl_error,
-    // dispatch, debug,
-    traits::{
-        //Get,
-        Currency, ExistenceRequirement, ReservableCurrency, 
-    }, 
-};
-// use frame_system::ensure_signed;
-use frame_support::codec::{Encode, Decode};
-use frame_support::sp_runtime::{
-    RuntimeDebug, ModuleId,
-    traits::{
-       //Hash, Saturating,
-       AccountIdConversion, Zero
-    },
-};
-use frame_support::sp_std::prelude::*;
-use frame_support::sp_std::convert::{TryInto, TryFrom};
-use escrow_controller::EscrowController;
+/*
+ --------------------
+ Pallet Escrow ------
+ --------------------
+*/
 
-pub trait Trait: frame_system::Trait + services::Trait + pallet_timestamp::Trait {
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
-    type Currency: ReservableCurrency<Self::AccountId>;
-    type Controller: EscrowController<Self>;
-}
+pub use pallet::*;
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct Escrow<AccountId, Hash, Balance, Moment> {
-    account_id: AccountId,
-    order_id: Hash,
-    buyer_id: AccountId,
-    seller_id: AccountId,
-    amount_to_pay: Balance,
-    amount_paid: Balance,
-    expires_at: Moment,
-}
+#[frame_support::pallet]
+pub mod pallet {
+    use frame_support::{
+        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
+        traits::{ Currency, ExistenceRequirement, ReservableCurrency }, 
+    };
+    use frame_system::pallet_prelude::*;
+    use sp_std::prelude::*;
+    use frame_support::codec::{Encode, Decode};
 
-impl<AccountId, Hash, Balance, Moment> Escrow<AccountId, Hash, Balance, Moment> {
-    pub fn get_account_id(&self) -> &AccountId {
-        &self.account_id
+    #[pallet::config]
+    pub trait Config: frame_system::Config + pallet_timestamp::Config + services::Config {
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type Currency: ReservableCurrency<<Self as frame_system::Config>::AccountId>;
     }
 
-    pub fn set_amount_paid(&mut self, amount: Balance) -> () {
-        self.amount_paid = amount;
+    // Mandatory ------------------------------------
+    #[pallet::pallet]
+    #[pallet::generate_store(pub(super) trait Store)]
+    pub struct Pallet<T>(_);
+
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    // ----------------------------------------------
+    
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    pub struct Escrow<AccountId, Hash, Balance, Moment> {
+        pub account_id: AccountId,
+        pub order_id: Hash,
+        pub buyer_id: AccountId,
+        pub seller_id: AccountId,
+        pub amount_to_pay: Balance,
+        pub amount_paid: Balance,
+        pub expires_at: Moment,
     }
-}
 
-type AccountIdOf<T> = <T as frame_system::Trait>::AccountId;
-type HashOf<T> = <T as frame_system::Trait>::Hash;
-type BalanceOf<T> = <<T as services::Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
-type MomentOf<T> = <T as pallet_timestamp::Trait>::Moment;
-type EscrowOf<T> = Escrow<AccountIdOf<T>, HashOf<T>, BalanceOf<T>, MomentOf<T>>;
+    impl<AccountId, Hash, Balance, Moment> Escrow<AccountId, Hash, Balance, Moment> {
+        pub fn get_account_id(&self) -> &AccountId {
+            &self.account_id
+        }
 
-decl_storage! {
-    trait Store for Module<T: Trait> as EscrowStorage {
-        pub Escrows get(fn escrow_by_order_id):
-            map hasher(blake2_128_concat) T::Hash => Option<EscrowOf<T>>;
+        pub fn set_amount_paid(&mut self, amount: Balance) -> () {
+            self.amount_paid = amount;
+        }
     }
-}
 
-decl_event! {
-    pub enum Event<T> where
-        AccountId = AccountIdOf<T>,
-        Hash = HashOf<T>,
-        Balance = BalanceOf<T>,
-        Moment = MomentOf<T>,
-    {
+    // Types ---------------
+    pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+    pub type HashOf<T> = <T as frame_system::Config>::Hash;
+    pub type CurrencyOf<T> = <T as services::Config>::Currency;
+    pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
+    pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
+    pub type EscrowOf<T> = Escrow<AccountIdOf<T>, HashOf<T>, BalanceOf<T>, MomentOf<T>>;
+    // ---------------------
+
+    #[pallet::storage]
+    #[pallet::getter(fn escrow_by_order_id)]
+    pub type Escrows<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, EscrowOf<T>>;
+
+
+    #[pallet::event]
+    #[pallet::metadata(T::AccountId = "AccountId")]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
         /// Escrow Created
         /// Parameters [Escrow]
-        EscrowCreated(Escrow<AccountId, Hash, Balance, Moment>),
+        EscrowCreated(Escrow<AccountIdOf<T>, HashOf<T>, BalanceOf<T>, MomentOf<T>>),
+    }
+
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+
     }
 }
 
-
-decl_error! {
-    pub enum Error for Module<T: Trait> {
-
-    }
-}
-
-decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
-        type Error = Error<T>;
-        fn deposit_event() = default;
-    }
-}
+use frame_support::traits::{ Currency, ExistenceRequirement };
+use frame_support::sp_std::convert::{TryInto, TryFrom};
+use frame_support::sp_runtime::{
+    ModuleId,
+    traits::{ AccountIdConversion, Zero },
+};
 
 const PALLET_ID: ModuleId = ModuleId(*b"dbescrow"); // Has to be 8 characters
-impl<T: Trait> Module<T> {
+impl<T: Config> Pallet<T> {
+
     pub fn generate_escrow_account_id(order_id: &T::Hash) -> T::AccountId {
         PALLET_ID.into_sub_account(&order_id)
     }
@@ -137,7 +140,7 @@ impl<T: Trait> Module<T> {
                 None => None,
                 Some(escrow) => {
                     // TODO: Handle transfer error
-                    let _result = <T as services::Trait>::Currency::transfer(
+                    let _result = <T as services::Config>::Currency::transfer(
                         depositor_account_id,
                         &escrow.account_id,
                         escrow.amount_to_pay,
@@ -155,7 +158,7 @@ impl<T: Trait> Module<T> {
         // let escrow_account_info = frame_system::Module::<T>::account(&escrow.account_id);
         
         // TODO: Handle transfer error
-        let _result = <T as services::Trait>::Currency::transfer(
+        let _result = <T as services::Config>::Currency::transfer(
             &escrow.account_id,
             &escrow.seller_id,
             escrow.amount_paid,
@@ -168,7 +171,7 @@ impl<T: Trait> Module<T> {
         let escrow = Escrows::<T>::get(order_id).unwrap(); // FIXME handle escrow not found
 
         // TODO: Handle transfer error
-        let _result = <T as services::Trait>::Currency::transfer(
+        let _result = <T as services::Config>::Currency::transfer(
             &escrow.account_id,
             &escrow.buyer_id,
             escrow.amount_paid,

@@ -1309,6 +1309,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "escrow"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "event-listener"
 version = "2.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3529,6 +3546,7 @@ dependencies = [
 name = "node-template-runtime"
 version = "3.0.0"
 dependencies = [
+ "escrow",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -3537,6 +3555,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "hex-literal",
  "labs",
+ "orders",
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
@@ -3560,6 +3579,7 @@ dependencies = [
  "sp-std",
  "sp-transaction-pool",
  "sp-version",
+ "specimen",
  "substrate-wasm-builder",
 ]
 
@@ -3684,6 +3704,25 @@ name = "openssl-probe"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77af24da69f9d9341038eba93a073b1fdaaa1b788221b00a69bce9e762cb32de"
+
+[[package]]
+name = "orders"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "escrow",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "specimen",
+]
 
 [[package]]
 name = "owning_ref"
@@ -6952,6 +6991,21 @@ dependencies = [
  "parity-scale-codec",
  "sp-std",
  "wasmi",
+]
+
+[[package]]
+name = "specimen"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
