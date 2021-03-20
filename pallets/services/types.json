@@ -7,5 +7,8 @@
     "description": "Text",
     "long_description": "Option<Text>",
     "image": "Option<Text>"
-  }
+  },
+  "AccountIdOf": "AccountId",
+  "HashOf": "H256",
+  "ServiceOf": "Service"
 }

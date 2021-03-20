@@ -1,14 +1,12 @@
 [package]
-name = "escrow"
-version = "0.1.0"
-authors = ["kevin <kevin.janada@gmail.com>"]
-edition = "2018"
-description = ''
-homepage = ''
+authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
+description = 'FRAME pallet template for defining custom runtime logic.'
+edition = '2018'
+homepage = 'https://substrate.dev'
 license = 'Unlicense'
-repository = ''
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+name = 'pallet-template'
+repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
+version = '3.0.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -23,11 +21,6 @@ version = '2.0.0'
 [dependencies]
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
-pallet-timestamp = { default-features = false, version = '3.0.0' }
-sp-std = { default-features = false, version = '3.0.0' }
-services = { path = '../services', default-features = false }
-#escrow-controller = { path = '../../traits/escrow-controller', default-features = false }
-chrono = { default-features = false, version = '0.4' }
 
 [dev-dependencies]
 serde = { version = "1.0.119" }
@@ -41,8 +34,4 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
-    'sp-std/std',
-    'pallet-timestamp/std',
-    'services/std',
-    'chrono/std',
 ]

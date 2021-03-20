@@ -1,111 +1,92 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{
-    decl_module, decl_storage, decl_event, decl_error,
-    dispatch, debug,
-    traits::{
-        Get, Randomness, Currency, // ExistenceRequirement,
-    }, 
+pub use pallet::*;
+use services_trait::{
+    ServicesContainer, structs::Service
 };
-use frame_system::ensure_signed;
+use service_owner_trait::ServiceOwner;
+use frame_support::traits::{ Currency, Randomness };
 use frame_support::codec::{Encode, Decode};
-use frame_support::sp_runtime::{
-    RuntimeDebug, // traits::Hash
-};
-use frame_support::sp_std::prelude::*;
-use service_owner::ServiceOwner;
 
-pub trait Trait: frame_system::Trait {
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
-    type RandomnessSource: Randomness<Self::Hash>;
-    // type Hashing: Hash<Output = Self::Hash>;
-    type Currency: Currency<Self::AccountId>;
-    type Owner: ServiceOwner<Self>;
-}
 
-type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
+#[frame_support::pallet]
+pub mod pallet {
+    use frame_support::{
+        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
+    };
+    use frame_system::pallet_prelude::*;
+    use sp_std::prelude::*;
+    use service_owner_trait::ServiceOwner;
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct Service<AccountId, Hash, Balance> {
-    id: Hash,
-    lab_id: AccountId,
-    name: Vec<u8>,
-    price: Balance,
-    description: Vec<u8>, // TODO: limit the length
-    long_description: Option<Vec<u8>>,
-    image: Option<Vec<u8>>
-}
-
-impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
-    pub fn get_id(&self) -> &Hash {
-        &self.id
+    #[pallet::config]
+    pub trait Config: frame_system::Config {
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type Currency: crate::Currency<<Self as frame_system::Config>::AccountId>;
+        type RandomnessSource: crate::Randomness<Self::Hash>;
+        type Owner: crate::ServiceOwner<Self>;
     }
 
-    pub fn get_lab_id(&self) -> &AccountId {
-        &self.lab_id
-    }
+    // ----- This is template code, every pallet needs this ---
+    #[pallet::pallet]
+    #[pallet::generate_store(pub(super) trait Store)]
+    pub struct Pallet<T>(_);
 
-    pub fn get_price(&self) -> &Balance {
-        &self.price
-    }
-}
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    // --------------------------------------------------------
+    
 
-decl_storage! {
-    trait Store for Module<T: Trait> as ServicesStorage {
-        Services get(fn service_by_id):
-            map hasher(blake2_128_concat) T::Hash
-                => Option<Service<T::AccountId, T::Hash, BalanceOf<T>>>;
-    }
-}
+    // ----- Types -------
+    type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+    type HashOf<T> = <T as frame_system::Config>::Hash;
+    type CurrencyOf<T> = <T as self::Config>::Currency;
+    pub type BalanceOf<T> = <CurrencyOf<T> as crate::Currency<AccountIdOf<T>>>::Balance;
+    type ServiceOf<T> = crate::Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
 
-decl_event!(
-    pub enum Event<T>
-    where
-        AccountId = <T as frame_system::Trait>::AccountId,
-        Hash = <T as frame_system::Trait>::Hash,
-        Balance = BalanceOf<T>,
-    {
+    // ------- Storage -------------
+    #[pallet::storage]
+    #[pallet::getter(fn service_by_id)]
+    //                                _,  Hasher         ,  Key     ,  Value
+    pub type Services<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, ServiceOf<T>>;
+    // -----------------------------
+
+
+    #[pallet::event]
+    #[pallet::metadata(T::AccountId = "AccountId")]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event
         /// parameters, [Service, who]
-        ServiceCreated(Service<AccountId, Hash, Balance>, AccountId),
+        ServiceCreated(ServiceOf<T>, AccountIdOf<T>),
         //// Service updated
         /// parameters, [Service, who]
-        ServiceUpdated(Service<AccountId, Hash, Balance>, AccountId),
+        ServiceUpdated(ServiceOf<T>, AccountIdOf<T>),
         //// Service deleted
         /// parameters, [Service, who]
-        ServiceDeleted(Service<AccountId, Hash, Balance>, AccountId),
+        ServiceDeleted(ServiceOf<T>, AccountIdOf<T>),
     }
-);
 
-decl_error! {
-    pub enum Error for Module<T: Trait> {
+    // Errors inform users that something went wrong.
+    #[pallet::error]
+    pub enum Error<T> {
         /// User is not the owner of a service
         NotServiceOwner,
         /// Ordering a service that does not exist
         ServiceDoesNotExist,
     }
-}
-
-decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
-        // Errors must be initialized if they are used by the pallet.
-        type Error = Error<T>;
-        // Events must be initialized if they are used by the pallet.
-        fn deposit_event() = default;
-
-        /**
-         * Add Service
-         * */
-        #[weight = 10_1000 + T::DbWeight::get().writes(1)]
+    
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn create_service(
-            origin,
+            origin: OriginFor<T>,
             name: Vec<u8>,
             price: BalanceOf<T>,
             description: Vec<u8>,
             long_description: Option<Vec<u8>>,
             image: Option<Vec<u8>>,
         )
-            -> dispatch::DispatchResult
+            -> DispatchResultWithPostInfo
         {
             let who = ensure_signed(origin)?;
 
@@ -116,7 +97,7 @@ decl_module! {
             }
 
             let service_id = Self::generate_hash(&who);
-            let service = Service {
+            let service = crate::Service {
                 id: service_id,
                 lab_id: who.clone(),
                 name: name,
@@ -129,14 +110,14 @@ decl_module! {
             Services::<T>::insert(&service_id, &service);
             T::Owner::associate(&who, &service_id);
 
-            Self::deposit_event(RawEvent::ServiceCreated(service, who.clone()));
+            Self::deposit_event(Event::ServiceCreated(service, who.clone()));
 
-            Ok(())
+            Ok(().into())
         }
-
-        #[weight = 10_1000 + T::DbWeight::get().writes(1)]
+        
+        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
         pub fn update_service(
-            origin,
+            origin: OriginFor<T>,
             service_id: T::Hash,
             name: Vec<u8>,
             price: BalanceOf<T>,
@@ -144,7 +125,7 @@ decl_module! {
             long_description: Option<Vec<u8>>,
             image: Option<Vec<u8>>,
         )
-            -> dispatch::DispatchResult
+            -> DispatchResultWithPostInfo
         {
             let who = ensure_signed(origin)?;
             // Check if user is a lab
@@ -171,16 +152,16 @@ decl_module! {
                 return Err(Error::<T>::ServiceDoesNotExist)?;
             }
 
-            Self::deposit_event(RawEvent::ServiceUpdated(service.unwrap(), who.clone()));
-            Ok(())
+            Self::deposit_event(Event::ServiceUpdated(service.unwrap(), who.clone()));
+            Ok(().into())
         }
 
-        #[weight = 10_1000 + T::DbWeight::get().writes(1)]
+        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
         pub fn delete_service(
-            origin,
+            origin: OriginFor<T>,
             service_id: T::Hash
         )
-            -> dispatch::DispatchResult
+            -> DispatchResultWithPostInfo
         {
             let who = ensure_signed(origin)?;
             // Check if user is a lab
@@ -200,21 +181,31 @@ decl_module! {
             let service = Services::<T>::take(&service_id);
             let service = service.unwrap();
 
-            Self::deposit_event(RawEvent::ServiceDeleted(service, who.clone()));
-            Ok(())
+            Self::deposit_event(Event::ServiceDeleted(service, who.clone()));
+            Ok(().into())
         }
     }
 }
 
+impl<T: Config> ServicesContainer<T> for Pallet<T> {
+  type Balance = pallet::BalanceOf<T>;
+
+  fn service_by_id(id: &T::Hash) -> Option<Service<T::AccountId, T::Hash, Self::Balance>> {
+      match Services::<T>::get(id) {
+          None => None,
+          Some(service) => Some(service)
+      }
+  }
+}
 
 // TODO: Maybe extract this fn as a separate module (this is used by pallet services also)
-impl<T: Trait> Module<T> {
+impl<T: Config> Pallet<T> {
     fn generate_hash(account_id: &T::AccountId)
-        -> <T as frame_system::Trait>::Hash
+        -> <T as frame_system::Config>::Hash
     {
         let account_info = frame_system::Module::<T>::account(account_id);
-        debug::info!("account_info.data: {:?}", account_info.data);
-        let hash = <T as Trait>::RandomnessSource::random(&account_info.nonce.encode());
+        // debug::info!("account_info.data: {:?}", account_info.data);
+        let hash = <T as Config>::RandomnessSource::random(&account_info.nonce.encode());
         // let hash = <T as Trait>::Hashing::hash(&account_info.nonce.encode());
         return hash;
     }

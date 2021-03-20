@@ -1,113 +1,122 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{
-    decl_module, decl_storage, decl_event, decl_error,
-    dispatch, debug,
-    traits::{
-        Get, Randomness, // Currency, ExistenceRequirement,
-    }, 
-};
-use frame_system::ensure_signed;
+pub use pallet::*;
+use frame_support::traits::{ Randomness };
 use frame_support::codec::{Encode, Decode};
-use frame_support::sp_runtime::{
-    RuntimeDebug,
-    //traits::Hash
-};
-use frame_support::sp_std::prelude::*;
-use frame_support::sp_std::convert::{TryInto, TryFrom};
-use escrow_controller::EscrowController;
 
 
-pub trait Trait: frame_system::Trait
-    + services::Trait
-    + escrow::Trait
-    + specimen::Trait
-    + pallet_timestamp::Trait
-{
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
-    type RandomnessSource: Randomness<Self::Hash>;
-    // type Hashing: Hash<Output = Self::Hash>;
-}
+#[frame_support::pallet]
+pub mod pallet {
+    use frame_support::{
+        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
+        sp_std::convert::{TryInto, TryFrom},
+    };
+    use frame_system::pallet_prelude::*;
+    use sp_std::prelude::*;
 
-type MomentOf<T> = <T as pallet_timestamp::Trait>::Moment;
-
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
-pub enum OrderStatus {
-    Unpaid,
-    Paid,
-    Fulfilled,
-    Refunded,
-}
-impl Default for OrderStatus {
-    fn default() -> Self { OrderStatus::Unpaid }
-}
-
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct Order<Hash, AccountId, Moment> {
-    id: Hash,
-    service_id: Hash,
-    customer_id: AccountId,
-    lab_id: AccountId,
-    escrow_id: AccountId,
-    created_at: Moment,
-    updated_at: Moment,
-    status: OrderStatus,
-}
-impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
-    pub fn get_id(&self) -> &Hash {
-        &self.id
-    }
-
-    pub fn get_created_at(&self) -> &Moment {
-        &self.created_at
-    }
-
-    pub fn get_service_id(&self) -> &Hash {
-        &self.service_id
-    }
-}
-
-
-type OrderIds<T> = Vec<<T as frame_system::Trait>::Hash>;
-
-decl_storage! {
-    trait Store for Module<T: Trait> as OrdersStorage {
-        pub Orders get(fn order_by_id): map hasher(blake2_128_concat)
-                T::Hash => Option<Order<T::Hash, T::AccountId, T::Moment>>;
-
-        // List of order ids by customer
-        pub CustomerOrders get(fn orders_by_costumer_id): map hasher(blake2_128_concat)
-                T::AccountId => Option<OrderIds<T>>;
-
-        // List of order ids by lab
-        pub LabOrders get(fn orders_by_lab_id): map hasher(blake2_128_concat)
-                T::AccountId => Option<OrderIds<T>>;
-    }
-}
-
-decl_event!(
-    pub enum Event<T> where
-        AccountId = <T as frame_system::Trait>::AccountId,
-        Hash = <T as frame_system::Trait>::Hash,
-        Moment = <T as pallet_timestamp::Trait>::Moment,
+    #[pallet::config]
+    pub trait Config:
+        frame_system::Config
+        + pallet_timestamp::Config
+        + services::Config
+        + escrow::Config
+        + specimen::Config
     {
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RandomnessSource: crate::Randomness<Self::Hash>;
+    }
+
+
+    // ----- This is template code, every pallet needs this ---
+    #[pallet::pallet]
+    #[pallet::generate_store(pub(super) trait Store)]
+    pub struct Pallet<T>(_);
+
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    // --------------------------------------------------------
+
+    
+
+    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+    pub enum OrderStatus {
+        Unpaid,
+        Paid,
+        Fulfilled,
+        Refunded,
+    }
+    impl Default for OrderStatus {
+        fn default() -> Self { OrderStatus::Unpaid }
+    }
+
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    pub struct Order<Hash, AccountId, Moment> {
+        pub id: Hash,
+        pub service_id: Hash,
+        pub customer_id: AccountId,
+        pub lab_id: AccountId,
+        pub escrow_id: AccountId,
+        pub created_at: Moment,
+        pub updated_at: Moment,
+        pub status: OrderStatus,
+    }
+    impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
+        pub fn get_id(&self) -> &Hash {
+            &self.id
+        }
+
+        pub fn get_created_at(&self) -> &Moment {
+            &self.created_at
+        }
+
+        pub fn get_service_id(&self) -> &Hash {
+            &self.service_id
+        }
+    }
+
+    // ---- Types --------------------------------------------
+    type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+    type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
+    type HashOf<T> = <T as frame_system::Config>::Hash;
+    type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, MomentOf<T>>;
+    type OrderIdsOf<T> = Vec<HashOf<T>>;
+    // -------------------------------------------------------
+
+    // ------ Storage --------------------------
+    #[pallet::storage]
+    #[pallet::getter(fn order_by_id)]
+    pub type Orders<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, OrderOf<T>>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn orders_by_costumer_id)]
+    pub type CustomerOrders<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn orders_by_lab_id)]
+    pub type LabOrders<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
+    // -----------------------------------------
+
+
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
         /// Order created
         /// parameters, [Order]
-        OrderCreated(Order<Hash, AccountId, Moment>),
+        OrderCreated(OrderOf<T>),
         /// Order paid
-        /// parameters, [Order, customer, lab]
-        OrderPaid(Order<Hash, AccountId, Moment>),
+        /// parameters, [Order]
+        OrderPaid(OrderOf<T>),
         /// Order Fulfilled
-        /// parameters, [Order, customer, lab]
-        OrderFulfilled(Order<Hash, AccountId, Moment>),
+        /// parameters, [Order]
+        OrderFulfilled(OrderOf<T>),
         /// Order Refunded
-        /// parameters, [Order, customer, lab]
-        OrderRefunded(Order<Hash, AccountId, Moment>),
+        /// parameters, [Order]
+        OrderRefunded(OrderOf<T>),
     }
-);
+      
 
-decl_error! {
-    pub enum Error for Module<T: Trait> {
+    #[pallet::error]
+    pub enum Error<T> {
         /// Lab id does not exist
         LabDoesNotExist,
         /// Service id does not exist
@@ -123,27 +132,26 @@ decl_error! {
         /// Refund not allowed, Order is not expired yet
         OrderNotYetExpired,
     }
-}
 
-decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
-        type Error = Error<T>;
-        fn deposit_event() = default;
 
-        #[weight = 10_000 + T::DbWeight::get().writes(1)]
-        pub fn create_order(origin, service_id: T::Hash) -> dispatch::DispatchResult {
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn create_order(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResultWithPostInfo {
             let customer_id = ensure_signed(origin)?;
-            let service = services::Module::<T>::service_by_id(service_id);
+            let service = services::Pallet::<T>::service_by_id(service_id);
             match service {
                 None => Err(Error::<T>::ServiceDoesNotExist)?,
                 Some(service) => {
                     let order_id = Self::generate_hash(&customer_id);
                     let service_id = service.get_id();
                     let lab_id = service.get_lab_id();
-                    let created_at = pallet_timestamp::Module::<T>::get();
+                    let created_at = pallet_timestamp::Pallet::<T>::get();
+
 
                     // Create escrow
-                    let escrow_account_id = escrow::Module::<T>::create_escrow(
+                    let escrow_account_id = escrow::Pallet::<T>::create_escrow(
                         &order_id,
                         &customer_id, // buyer id
                         &lab_id, // seller id
@@ -152,7 +160,7 @@ decl_module! {
                     );
 
                     // Create specimen
-                    let _specimen = specimen::Module::<T>::create_specimen(
+                    let _specimen = specimen::Pallet::<T>::create_specimen(
                         &order_id,
                         &service_id,
                         &customer_id, // specimen owner id
@@ -185,7 +193,7 @@ decl_module! {
                         CustomerOrders::<T>::insert(&customer_id, orders);
                     }
                     let orders = CustomerOrders::<T>::get(&customer_id);
-                    debug::info!("** ---- CustomerOrders ---- **: {:?}", orders);
+                    //debug::info!("** ---- CustomerOrders ---- **: {:?}", orders);
 
 
                     // Store order id reference for Labs
@@ -200,18 +208,16 @@ decl_module! {
                         LabOrders::<T>::insert(&lab_id, orders);
                     }
                     let orders = LabOrders::<T>::get(&customer_id);
-                    debug::info!("** ---- LabOrders ---- **: {:?}", orders);
+                    //debug::info!("** ---- LabOrders ---- **: {:?}", orders);
 
-
-                    Self::deposit_event(RawEvent::OrderCreated(order));
-                    Ok(())
+                    Self::deposit_event(Event::OrderCreated(order));
+                    Ok(().into())
                 }
             }
         }
 
-
-        #[weight = 10_000 + T::DbWeight::get().writes(1)]
-        pub fn pay_order(origin, order_id: T::Hash) -> dispatch::DispatchResult {
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn pay_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let customer_id = ensure_signed(origin)?;
             let order = Orders::<T>::get(&order_id);
             
@@ -220,18 +226,18 @@ decl_module! {
             }
 
             // Pay to escrow
-            let _escrow = escrow::Module::<T>::deposit(&order_id, &customer_id);
+            let _escrow = escrow::Pallet::<T>::deposit(&order_id, &customer_id);
 
             // Set order status to paid
             let order = Self::update_order_status(&order_id, OrderStatus::Paid);
             let order = order.unwrap();
 
-            Self::deposit_event(RawEvent::OrderPaid(order.clone()));
-            Ok(())
+            Self::deposit_event(Event::OrderPaid(order.clone()));
+            Ok(().into())
         }
 
-        #[weight = 10_000 + T::DbWeight::get().writes(1)]
-        pub fn fulfill_order(origin, order_id: T::Hash) -> dispatch::DispatchResult {
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn fulfill_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let user_id = ensure_signed(origin)?;
             let order = Orders::<T>::get(&order_id);
             if order == None {
@@ -246,7 +252,7 @@ decl_module! {
             }
 
             // Specimen has to be processed before order is fulfilled
-            let is_specimen_processed = specimen::Module::<T>::is_status(
+            let is_specimen_processed = specimen::Pallet::<T>::is_status(
                 &order_id,
                 specimen::SpecimenStatus::Processed
             );
@@ -258,14 +264,14 @@ decl_module! {
             let order = order.unwrap();
 
             // Release funds to lab
-            escrow::Module::<T>::release(&order.id);
+            escrow::Pallet::<T>::release(&order.id);
 
-            Self::deposit_event(RawEvent::OrderFulfilled(order.clone()));
-            Ok(())
+            Self::deposit_event(Event::OrderFulfilled(order.clone()));
+            Ok(().into())
         }
 
-        #[weight = 10_000 + T::DbWeight::get().writes(1)]
-        pub fn refund_order(origin, order_id: T::Hash) -> dispatch::DispatchResult {
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn refund_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let _user_id = ensure_signed(origin)?;
             let order = Orders::<T>::get(&order_id);
             if order == None {
@@ -274,7 +280,7 @@ decl_module! {
             let order = order.unwrap();
 
             // Check if order expired ------------------
-            let now = pallet_timestamp::Module::<T>::get();
+            let now = pallet_timestamp::Pallet::<T>::get();
             let order_created_at = order.created_at.clone();
             // convert to u64
             let order_created_at_ms = TryInto::<u64>::try_into(order_created_at).ok().unwrap();
@@ -286,7 +292,7 @@ decl_module! {
 
 
             // Check if specimen rejected
-            let is_specimen_rejected = specimen::Module::<T>::is_status(
+            let is_specimen_rejected = specimen::Pallet::<T>::is_status(
                 &order_id,
                 specimen::SpecimenStatus::Rejected
             );
@@ -298,28 +304,27 @@ decl_module! {
             }
 
             // Refund back to customer
-            escrow::Module::<T>::refund(&order_id);
+            escrow::Pallet::<T>::refund(&order_id);
 
             let order = Self::update_order_status(&order_id, OrderStatus::Refunded);
             let order = order.unwrap();
 
-            Self::deposit_event(RawEvent::OrderRefunded(order.clone()));
-            Ok(())
+            Self::deposit_event(Event::OrderRefunded(order.clone()));
+            Ok(().into())
         }
     }
 }
 
-impl<T: Trait> Module<T> {
+impl<T: Config> Pallet<T> {
     // TODO: Maybe extract this fn as a separate module (this is used by pallet services also)
-    fn generate_hash(account_id: &T::AccountId) -> T::Hash
-    {
-        let account_info = frame_system::Module::<T>::account(account_id);
-        let hash = <T as Trait>::RandomnessSource::random(&account_info.nonce.encode());
-        // let hash = <T as Trait>::Hashing::hash(random_result);
+    fn generate_hash(account_id: &T::AccountId) -> T::Hash {
+        let account_info = frame_system::Pallet::<T>::account(account_id);
+        let hash = <T as Config>::RandomnessSource::random(&account_info.nonce.encode());
+        // let hash = <T as Config>::Hashing::hash(random_result);
         return hash;
     }
 
-    fn update_order_status(order_id: &T::Hash, status: OrderStatus)
+    fn update_order_status(order_id: &T::Hash, status: pallet::OrderStatus)
         -> Option<Order<T::Hash, T::AccountId, T::Moment>>
     {
         Orders::<T>::mutate(order_id, |order| {
@@ -327,7 +332,7 @@ impl<T: Trait> Module<T> {
                 None => None,
                 Some(order) => {
                     order.status = status;
-                    order.updated_at = pallet_timestamp::Module::<T>::get();
+                    order.updated_at = pallet_timestamp::Pallet::<T>::get();
                     Some(order.clone())
                 }
             }
@@ -335,7 +340,7 @@ impl<T: Trait> Module<T> {
     }
 }
 
-
+/*
 // TODO: Is it possible to trigger this from escrow pallet
 // when the escrow account is paid by straight transfer not
 // dispatchable calls??
@@ -352,3 +357,4 @@ impl<T: Trait> EscrowController<T> for Module<T> {
         })
     }
 }
+*/
