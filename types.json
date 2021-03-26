@@ -1,6 +1,14 @@
 {
   "Address": "MultiAddress",
   "LookupSource": "MultiAddress",
+  "Role": {
+    "_enum": [
+      "Customer",
+      "Lab",
+      "Hospital",
+      "Doctor"
+     ]
+   },
   "Lab": {
     "id": "AccountId",
     "name": "Text",

@@ -46,6 +46,7 @@ pub use services;
 pub use orders;
 pub use escrow;
 pub use specimen;
+pub use rbac;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -299,6 +300,10 @@ impl specimen::Config for Runtime {
     type Event = Event;
 }
 
+impl rbac::Config for Runtime {
+    type Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -321,6 +326,7 @@ construct_runtime!(
                 Orders: orders::{Module, Call, Storage, Event<T>},
                 Escrow: escrow::{Module, Call, Storage, Event<T>},
                 Specimen: specimen::{Module, Call, Storage, Event<T>},
+                RBAC: rbac::{Module, Call, Storage, Event<T>},
 	}
 );
 
@@ -342,7 +348,8 @@ pub type SignedExtra = (
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_transaction_payment::ChargeTransactionPayment<Runtime>
+	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
+        rbac::Authorize<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
