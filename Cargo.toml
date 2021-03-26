@@ -6,6 +6,11 @@ members = [
     'node',
     'pallets/template',
     'pallets/labs',
+    'pallets/services',
+    'pallets/orders',
+    'pallets/specimen',
+    'pallets/escrow',
+    'pallets/rbac',
     'runtime',
     'traits/service-owner',
 ]
