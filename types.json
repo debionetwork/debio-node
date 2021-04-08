@@ -9,19 +9,18 @@
       "Doctor"
      ]
    },
-  "Lab": {
-    "id": "AccountId",
+  "LabInfo": {
+    "account_id": "AccountId",
     "name": "Text",
-    "services": "Vec<H256>",
     "country": "Text",
     "city": "Text",
     "address": "Text",
     "latitude": "Option<Text>",
     "longitude": "Option<Text>",
     "profile_image": "Option<Text>",
-    "is_verified": "bool"
+    "services": "Vec<H256>"
   },
-  "LabOf": "Lab",
+  "LabInfoOf": "LabInfo",
   "CountryStr": "Text",
   "CityStr": "Text",
   "Service": {

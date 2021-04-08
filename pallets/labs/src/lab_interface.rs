@@ -2,14 +2,21 @@ use sp_std::prelude::*;
 
 /// Interface for Lab Pallet
 /// Defines the functionalities of Lab Pallet 
-pub trait LabInterface<T> {
+pub trait LabInterface<T: frame_system::Config> {
+    /// Error
     type Error;
-    type Lab;
+    /// LabInfo Struct
+    type LabInfo;
 
-    fn register_lab() -> Result<(), Self::Error>;
-    fn update_lab() -> Result<(), Self::Error>;
-    fn delete_lab() -> Result<(), Self::Error>;
+    /// Get lab by associated account_id
+    fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::LabInfo>;
+    /// Get the account_ids of labs in a location
+    fn labs_by_country_city(country: &Vec<u8>, city: &Vec<u8>) -> Option<Vec<T::AccountId>>;
 
-    fn labs_by_country_city() -> Option<Vec<Self::Lab>>;
-    fn lab_by_account_id() -> Option<Self::Lab>;
+    /// Store A lab with its information
+    fn create_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<(), Self::Error>;
+    /// Update a Lab information
+    fn update_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<(), Self::Error>;
+    /// Delete Lab
+    fn delete_lab(account_id: &T::AccountId) -> Result<(), Self::Error>;
 }
