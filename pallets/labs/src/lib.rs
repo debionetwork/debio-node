@@ -14,8 +14,8 @@ mod mock;
 #[cfg(test)]
 mod tests;
 
-pub mod lab_interface;
-pub use crate::lab_interface::LabInterface;
+pub mod interface;
+pub use crate::interface::LabInterface;
 use frame_support::pallet_prelude::*;
 
 // LabInfo Struct
@@ -87,7 +87,7 @@ pub mod pallet {
     };
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
-    use crate::lab_interface::LabInterface;
+    use crate::interface::LabInterface;
     use crate::LabInfo;
 
 
@@ -378,7 +378,7 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
         match service {
             None => false,
             Some(service) => {
-                return *service.get_lab_id() == *owner_id;
+                return *service.get_owner_id() == *owner_id;
             }
         }
     }

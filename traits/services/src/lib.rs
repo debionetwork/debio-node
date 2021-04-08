@@ -6,26 +6,31 @@ pub mod structs {
     use sp_std::prelude::*;
 
     #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    pub struct ServiceInfo<Balance> {
+        name: Vec<u8>,
+        price: Balance,
+        description: Vec<u8>, // TODO: limit the length
+        long_description: Option<Vec<u8>>,
+        image: Option<Vec<u8>>
+    }
+
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
     pub struct Service<AccountId, Hash, Balance> {
         pub id: Hash,
-        pub lab_id: AccountId,
-        pub name: Vec<u8>,
-        pub price: Balance,
-        pub description: Vec<u8>, // TODO: limit the length
-        pub long_description: Option<Vec<u8>>,
-        pub image: Option<Vec<u8>>
+        pub owner_id: AccountId,
+        pub info: ServiceInfo<Balance>,
     }
     impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
         pub fn get_id(&self) -> &Hash {
             &self.id
         }
 
-        pub fn get_lab_id(&self) -> &AccountId {
-            &self.lab_id
+        pub fn get_owner_id(&self) -> &AccountId {
+            &self.owner_id
         }
 
         pub fn get_price(&self) -> &Balance {
-            &self.price
+            &self.info.price
         }
     }
 }

@@ -38,5 +38,5 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'service-owner-trait/std',
-    'services-trait/std'
+    'services-trait/std',
 ]
