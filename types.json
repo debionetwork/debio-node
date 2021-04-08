@@ -21,6 +21,9 @@
     "profile_image": "Option<Text>",
     "is_verified": "bool"
   },
+  "LabOf": "Lab",
+  "CountryStr": "Text",
+  "CityStr": "Text",
   "Service": {
     "id": "H256",
     "lab_id": "AccountId",
