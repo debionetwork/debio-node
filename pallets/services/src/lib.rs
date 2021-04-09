@@ -311,7 +311,7 @@ impl<T: Config> Pallet<T> {
         match ServicesByCountryCity::<T>::get(country, city) {
             None => {
                 let mut services = Vec::new();
-                services.push(service_id);
+                services.push(service_id.clone());
                 ServicesByCountryCity::<T>::insert(country, city, services);
             },
             Some(mut services) => {

@@ -19,7 +19,7 @@ pub trait ServiceOwnerInfo<T: Config> {
 }
 
 pub trait ServiceOwner<T: Config> {
-    type Owner: ServiceOwnerInfo<T>;
+    type Owner: ServiceOwnerInfo<T> + sp_std::fmt::Debug;
 
     fn can_create_service(id: &T::AccountId) -> bool;
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner>;

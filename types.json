@@ -31,6 +31,7 @@
   },
   "ServiceOf": "Service",
   "ServiceInfoOf": "ServiceInfo",
+  "ServiceIdOf": "H256",
   "OrderStatus": {
     "_enum": [
       "Unpaid",
