@@ -1,40 +1,29 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-
-pub mod structs {
-    use frame_support::pallet_prelude::*;
-    use sp_std::prelude::*;
-
-    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-    pub struct Service<AccountId, Hash, Balance> {
-        pub id: Hash,
-        pub lab_id: AccountId,
-        pub name: Vec<u8>,
-        pub price: Balance,
-        pub description: Vec<u8>, // TODO: limit the length
-        pub long_description: Option<Vec<u8>>,
-        pub image: Option<Vec<u8>>
-    }
-    impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
-        pub fn get_id(&self) -> &Hash {
-            &self.id
-        }
-
-        pub fn get_lab_id(&self) -> &AccountId {
-            &self.lab_id
-        }
-
-        pub fn get_price(&self) -> &Balance {
-            &self.price
-        }
-    }
-}
-
-use structs::Service;
 use frame_system::Config;
+use sp_std::prelude::*;
 
-pub trait ServicesContainer<T: Config> {
+pub trait ServicesProvider<T: Config> {
+    type Error;
     type Balance;
+    type Service;
 
-    fn service_by_id(id: &T::Hash) -> Option<Service<T::AccountId, T::Hash, Self::Balance>>;
+    fn service_by_id(id: &T::Hash) -> Option<Self::Service>;
+    fn delete_service(owner_id: &T::AccountId, id: &T::Hash) -> Result<Self::Service, Self::Error>;
 }
+
+pub trait ServiceOwnerInfo<T: Config> {
+    fn get_id(&self) -> &T::AccountId;
+    fn get_country(&self) -> &Vec<u8>;
+    fn get_city(&self) -> &Vec<u8>;
+}
+
+pub trait ServiceOwner<T: Config> {
+    type Owner: ServiceOwnerInfo<T>;
+
+    fn can_create_service(id: &T::AccountId) -> bool;
+    fn get_owner(id: &T::AccountId) -> Option<Self::Owner>;
+    fn associate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
+    fn disassociate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
+}
+

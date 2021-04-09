@@ -12,5 +12,4 @@ members = [
     'pallets/escrow',
     'pallets/rbac',
     'runtime',
-    'traits/service-owner',
 ]

@@ -146,7 +146,7 @@ pub mod pallet {
                 Some(service) => {
                     let order_id = Self::generate_hash(&customer_id);
                     let service_id = service.get_id();
-                    let lab_id = service.get_lab_id();
+                    let lab_id = service.get_owner_id();
                     let created_at = pallet_timestamp::Pallet::<T>::get();
 
 

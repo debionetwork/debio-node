@@ -279,10 +279,10 @@ impl labs::Config for Runtime {
 impl services::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-    type RandomnessSource = RandomnessCollectiveFlip;
-    type Owner = Labs;
+    type ServiceOwner = Labs;
 }
 
+/*
 impl orders::Config for Runtime {
     type Event = Event;
     // type Hashing = BlakeTwo256;
@@ -299,6 +299,7 @@ impl escrow::Config for Runtime {
 impl specimen::Config for Runtime {
     type Event = Event;
 }
+*/
 
 /*
 impl rbac::Config for Runtime {
@@ -325,9 +326,11 @@ construct_runtime!(
 		TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
 		Labs: labs::{Module, Call, Storage, Event<T>},
                 Services: services::{Module, Call, Storage, Event<T>},
+                /*
                 Orders: orders::{Module, Call, Storage, Event<T>},
                 Escrow: escrow::{Module, Call, Storage, Event<T>},
                 Specimen: specimen::{Module, Call, Storage, Event<T>},
+                */
                 //RBAC: rbac::{Module, Call, Storage, Event<T>},
 	}
 );

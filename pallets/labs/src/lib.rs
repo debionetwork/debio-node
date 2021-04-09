@@ -4,23 +4,22 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
-use service_owner::ServiceOwner;
-use services_trait::ServicesContainer;
-use services_trait::structs::Service;
-use frame_support::traits::Currency;
 
 #[cfg(test)]
 mod mock;
 #[cfg(test)]
 mod tests;
 
-pub mod lab_interface;
-pub use crate::lab_interface::LabInterface;
+pub mod interface;
+pub use crate::interface::LabInterface;
 use frame_support::pallet_prelude::*;
+use traits_services::{ServiceOwnerInfo};
 
 // LabInfo Struct
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct LabInfo<AccountId, Hash: PartialEq + Eq> {
+pub struct LabInfo<AccountId, Hash>
+    where Hash: PartialEq + Eq
+{
     account_id: AccountId,
     name: Vec<u8>,
     country: Vec<u8>,
@@ -32,7 +31,9 @@ pub struct LabInfo<AccountId, Hash: PartialEq + Eq> {
     services: Vec<Hash>,
 }
 
-impl<AccountId, Hash: PartialEq + Eq> LabInfo<AccountId, Hash> {
+impl<AccountId, Hash> LabInfo<AccountId, Hash>
+    where Hash: PartialEq + Eq
+{
     pub fn new (
         account_id: AccountId,
         name: Vec<u8>,
@@ -57,16 +58,16 @@ impl<AccountId, Hash: PartialEq + Eq> LabInfo<AccountId, Hash> {
         }
     }
 
-    pub fn get_account_id(&self) -> &AccountId {
-        &self.account_id
-    }
-
-    pub fn get_country(&self) -> &Vec<u8> {
+    fn get_country(&self) -> &Vec<u8> {
         &self.country
     }
 
-    pub fn get_city(&self) -> &Vec<u8> {
+    fn get_city(&self) -> &Vec<u8> {
         &self.city
+    }
+
+    pub fn get_account_id(&self) -> &AccountId {
+        &self.account_id
     }
 
     pub fn add_service(&mut self, service_id: Hash) -> () {
@@ -80,6 +81,24 @@ impl<AccountId, Hash: PartialEq + Eq> LabInfo<AccountId, Hash> {
     }
 }
 
+impl<T, AccountId, Hash> ServiceOwnerInfo<T> for LabInfo<AccountId, Hash>
+    where
+        Hash: PartialEq + Eq,
+        T: frame_system::Config<AccountId = AccountId>
+{
+    fn get_id(&self) -> &AccountId {
+        &self.get_account_id()
+    }
+
+    fn get_country(&self) -> &Vec<u8> {
+        &self.get_country()
+    }
+
+    fn get_city(&self) -> &Vec<u8> {
+        &self.get_city()
+    }
+}
+
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::{
@@ -87,8 +106,10 @@ pub mod pallet {
     };
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
-    use crate::lab_interface::LabInterface;
+    use crate::interface::LabInterface;
     use crate::LabInfo;
+    pub use traits_services::{ServicesProvider, ServiceOwner};
+    use frame_support::traits::Currency;
 
 
     #[pallet::config]
@@ -96,8 +117,8 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
 	type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        type Currency: crate::Currency<Self::AccountId>;
-        type Services: crate::ServicesContainer<Self>;
+        type Currency: Currency<Self::AccountId>;
+        type Services: ServicesProvider<Self>;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -117,8 +138,8 @@ pub mod pallet {
     pub type CountryStr = Vec<u8>;
     pub type CityStr = Vec<u8>;
 
-    pub type BalanceOf<T> = <<T as self::Config>::Services as crate::ServicesContainer<T>>::Balance;
-    pub type ServiceOf<T> = crate::Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
+    pub type BalanceOf<T> = <<T as self::Config>::Services as ServicesProvider<T>>::Balance;
+    pub type ServiceOf<T> = <<T as self::Config>::Services as ServicesProvider<T>>::Service;
 
     // ----- Storage ------------------
     /// Get Lab by account id
@@ -170,6 +191,8 @@ pub mod pallet {
         LabAlreadyRegistered,
         /// Lab identified by the AccountId does not exist
         LabDoesNotExist,
+        /// Lab is not the owner of the service
+        LabIsNotOwner
     }
 
 
@@ -201,16 +224,8 @@ pub mod pallet {
             }
         }
 
-
-        /*
-        /* TODO: Delete Lab */
-        #[weight = 10_1000 + T::DbWeight::get().writes(1)]
-        pub fn delete_lab(
-            origin,
-            lab_id: T::Hash
-        )
-            -> dispatch::DispatchResult
-        {
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn deregister_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             // Check if user is a lab
             let lab = Self::lab_by_account_id(&who);
@@ -218,22 +233,14 @@ pub mod pallet {
                 return Err(Error::<T>::LabDoesNotExist)?;
             }
 
-            /*
-            let service_exists = Services::<T>::contains_key(&service_id);
-            if !service_exists {
-                return Err(Error::<T>::ServiceDoesNotExist)?;
+            match <Self as LabInterface<T>>::delete_lab(&who) {
+                Ok(()) => {
+                    Self::deposit_event(Event::LabDeleted(lab.unwrap(), who.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
             }
-
-            let service = Services::<T>::take(&service_id);
-            let service = service.unwrap();
-            */
-
-            /*
-            Self::deposit_event(RawEvent::ServiceDeleted(service, who.clone()));
-            */
-            Ok(())
         }
-        */
 
     }
 
@@ -278,13 +285,21 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         Ok(())
     }
 
-    // TODO:
     fn delete_lab(account_id: &T::AccountId) -> Result<(), Self::Error> {
         let lab = Labs::<T>::get(account_id);
         if lab == None {
             return Err(Error::<T>::LabDoesNotExist)?;
         }
         let lab = lab.unwrap();
+        // Delete lab's services
+        for service_id in &lab.services {
+            T::Services::delete_service(account_id, &service_id);
+        }
+        Self::remove_lab_id_from_country_city(&lab.country, &lab.city, &lab.account_id);
+        Self::sub_lab_count_by_country_city(lab.get_country(), lab.get_city());
+        Labs::<T>::remove(&lab.account_id);
+        Self::sub_lab_count();
+
         Ok(())
     }
 
@@ -348,8 +363,18 @@ impl<T: Config> Pallet<T> {
     }
 }
 
-
 impl<T: Config> ServiceOwner<T> for Pallet<T> {
+    type Owner = LabInfo<T::AccountId, T::Hash>;
+
+    fn can_create_service(user_id: &T::AccountId) -> bool {
+        return Labs::<T>::contains_key(user_id);
+    }
+
+    fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {
+        let lab = Labs::<T>::get(id);
+        lab
+    }
+
     fn associate(owner_id: &T::AccountId, service_id: &T::Hash) -> () {
         <Labs<T>>::mutate(owner_id, | lab | {
             match lab {
@@ -370,21 +395,6 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
                 }
             }
         });
-    }
-
-    fn is_owner(owner_id: &T::AccountId, service_id: &T::Hash) -> bool {
-        let service: Option<pallet::ServiceOf<T>> = T::Services::service_by_id(service_id);
-
-        match service {
-            None => false,
-            Some(service) => {
-                return *service.get_lab_id() == *owner_id;
-            }
-        }
-    }
-
-    fn can_create_service(user_id: &T::AccountId) -> bool {
-        return Labs::<T>::contains_key(user_id);
     }
 }
 
