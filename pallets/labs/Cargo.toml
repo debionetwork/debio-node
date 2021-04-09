@@ -22,8 +22,7 @@ version = '2.0.0'
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
-service-owner = { path = '../../traits/service-owner', default-features = false }
-services-trait = { path = '../../traits/services', default-features = false }
+traits-services = { path = '../../traits/services', default-features = false }
 
 [dev-dependencies]
 serde = { version = "1.0.119" }
@@ -38,6 +37,5 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'sp-std/std',
-    'service-owner/std',
-    'services-trait/std',
+    'traits-services/std',
 ]

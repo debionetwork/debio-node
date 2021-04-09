@@ -1,5 +1,5 @@
 [package]
-name = "services-trait"
+name = "traits-services"
 version = "0.1.0"
 authors = ["Kevin My Man <kevin.janada@gmail.com>"]
 edition = "2018"

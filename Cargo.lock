@@ -2658,12 +2658,11 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "serde",
- "service-owner",
- "services-trait",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-services",
 ]
 
 [[package]]
@@ -6149,14 +6148,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "service-owner"
-version = "0.1.0"
-dependencies = [
- "frame-system",
- "sp-std",
-]
-
-[[package]]
 name = "services"
 version = "0.1.0"
 dependencies = [
@@ -6164,22 +6155,11 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "serde",
- "service-owner",
- "services-trait",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
-]
-
-[[package]]
-name = "services-trait"
-version = "0.1.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "sp-std",
+ "traits-services",
 ]
 
 [[package]]
@@ -7739,6 +7719,16 @@ dependencies = [
  "tracing-core",
  "tracing-log",
  "tracing-serde",
+]
+
+[[package]]
+name = "traits-services"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-std",
 ]
 
 [[package]]

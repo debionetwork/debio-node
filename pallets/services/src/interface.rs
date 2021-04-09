@@ -6,9 +6,9 @@ pub trait ServiceInterface<T: frame_system::Config> {
     type Service;
     type ServiceInfo;
 
-    fn create_service(owner_id: &T::AccountId, service: &Self::ServiceInfo) -> Result<(), Self::Error>;
-    fn update_service(service_id: &Self::ServiceId, service: &Self::ServiceInfo) -> Result<(), Self::Error>;
-    fn delete_service(service_id: &Self::ServiceId) -> Result<(), Self::Error>;
+    fn create_service(owner_id: &T::AccountId, service: &Self::ServiceInfo) -> Result<Self::Service, Self::Error>;
+    fn update_service(owner_id: &T::AccountId, service_id: &Self::ServiceId, service: &Self::ServiceInfo) -> Result<Self::Service, Self::Error>;
+    fn delete_service(owner_id: &T::AccountId, service_id: &Self::ServiceId) -> Result<Self::Service, Self::Error>;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId;
 
