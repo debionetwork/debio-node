@@ -16,11 +16,9 @@ use frame_support::pallet_prelude::*;
 use traits_services::{ServiceOwnerInfo};
 
 // LabInfo Struct
+// Used as parameter of dispatchable calls
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct LabInfo<AccountId, Hash>
-    where Hash: PartialEq + Eq
-{
-    account_id: AccountId,
+pub struct LabInfo {
     name: Vec<u8>,
     country: Vec<u8>,
     city: Vec<u8>,
@@ -28,34 +26,53 @@ pub struct LabInfo<AccountId, Hash>
     latitude: Option<Vec<u8>>,
     longitude: Option<Vec<u8>>,
     profile_image: Option<Vec<u8>>,
-    services: Vec<Hash>,
 }
 
-impl<AccountId, Hash> LabInfo<AccountId, Hash>
+// Lab Struct
+// the fields (excluding account_id and services) come from LabInfo struct
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+pub struct Lab<AccountId, Hash>
+    where Hash: PartialEq + Eq
+{
+    account_id: AccountId,
+    services: Vec<Hash>,
+    name: Vec<u8>,
+    country: Vec<u8>,
+    city: Vec<u8>,
+    address: Vec<u8>,
+    latitude: Option<Vec<u8>>,
+    longitude: Option<Vec<u8>>,
+    profile_image: Option<Vec<u8>>,
+}
+
+impl<AccountId, Hash> Lab<AccountId, Hash>
     where Hash: PartialEq + Eq
 {
     pub fn new (
         account_id: AccountId,
-        name: Vec<u8>,
-        country: Vec<u8>,
-        city: Vec<u8>,
-        address: Vec<u8>,
-        latitude: Option<Vec<u8>>,
-        longitude: Option<Vec<u8>>,
-        profile_image: Option<Vec<u8>>,
-        services: Vec<Hash>,
+        info: LabInfo,
     ) -> Self {
         Self {
             account_id,
-            name,
-            country,
-            city,
-            address,
-            latitude,
-            longitude,
-            profile_image,
-            services
+            services: Vec::<Hash>::new(),
+            name: info.name,
+            country: info.country,
+            city: info.city,
+            address: info.address,
+            latitude: info.latitude,
+            longitude: info.longitude,
+            profile_image: info.profile_image,
         }
+    }
+
+    fn update_info(&mut self, info: LabInfo) -> () {
+        self.name = info.name;
+        self.country = info.country;
+        self.city = info.city;
+        self.address = info.address;
+        self.latitude = info.latitude;
+        self.longitude = info.longitude;
+        self.profile_image = info.profile_image;
     }
 
     fn get_country(&self) -> &Vec<u8> {
@@ -81,7 +98,7 @@ impl<AccountId, Hash> LabInfo<AccountId, Hash>
     }
 }
 
-impl<T, AccountId, Hash> ServiceOwnerInfo<T> for LabInfo<AccountId, Hash>
+impl<T, AccountId, Hash> ServiceOwnerInfo<T> for Lab<AccountId, Hash>
     where
         Hash: PartialEq + Eq,
         T: frame_system::Config<AccountId = AccountId>
@@ -107,6 +124,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
     use crate::interface::LabInterface;
+    use crate::Lab;
     use crate::LabInfo;
     pub use traits_services::{ServicesProvider, ServiceOwner};
     use frame_support::traits::Currency;
@@ -134,19 +152,20 @@ pub mod pallet {
     // ---- Types ----------------------
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
-    pub type LabInfoOf<T> = LabInfo<AccountIdOf<T>, HashOf<T>>;
+    pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>>;
     pub type CountryStr = Vec<u8>;
     pub type CityStr = Vec<u8>;
-
+    /*
     pub type BalanceOf<T> = <<T as self::Config>::Services as ServicesProvider<T>>::Balance;
     pub type ServiceOf<T> = <<T as self::Config>::Services as ServicesProvider<T>>::Service;
+    */
 
     // ----- Storage ------------------
     /// Get Lab by account id
     /// AccountId => Lab
     #[pallet::storage]
     #[pallet::getter(fn lab_by_account_id)]
-    pub type Labs<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, LabInfoOf<T>>;
+    pub type Labs<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, LabOf<T>>;
 
     /// Get LabId by Country, City
     /// (CountryStr, CityStr) => Vec<AccountId>
@@ -170,18 +189,18 @@ pub mod pallet {
 
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId", LabInfoOf<T> = "LabInfo")]
+    #[pallet::metadata(T::AccountId = "AccountId", LabOf<T> = "Lab")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// User AccountId registered as lab
         /// parameters. [Lab, who]
-        LabRegistered(LabInfoOf<T>, AccountIdOf<T>),
+        LabRegistered(LabOf<T>, AccountIdOf<T>),
         /// Lab information updated
         /// parameters. [Lab, who]
-        LabUpdated(LabInfoOf<T>, AccountIdOf<T>),
+        LabUpdated(LabOf<T>, AccountIdOf<T>),
         /// Lab deleted
         /// parameters. [Lab, who]
-        LabDeleted(LabInfoOf<T>, AccountIdOf<T>),
+        LabDeleted(LabOf<T>, AccountIdOf<T>),
     }
 
     // Errors inform users that something went wrong.
@@ -199,12 +218,12 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfoOf<T>) -> DispatchResultWithPostInfo {
+        pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match Self::create_lab(&who, &lab_info) {
-                Ok(()) => {
-                    Self::deposit_event(Event::LabRegistered(lab_info, who.clone()));
+                Ok(lab) => {
+                    Self::deposit_event(Event::LabRegistered(lab, who.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)? 
@@ -212,12 +231,12 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn update_lab(origin: OriginFor<T>, lab_info: LabInfoOf<T>) -> DispatchResultWithPostInfo {
+        pub fn update_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as LabInterface<T>>::update_lab(&who, &lab_info) {
-                Ok(()) => {
-                    Self::deposit_event(Event::LabUpdated(lab_info, who.clone()));
+                Ok(lab) => {
+                    Self::deposit_event(Event::LabUpdated(lab, who.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -234,8 +253,8 @@ pub mod pallet {
             }
 
             match <Self as LabInterface<T>>::delete_lab(&who) {
-                Ok(()) => {
-                    Self::deposit_event(Event::LabDeleted(lab.unwrap(), who.clone()));
+                Ok(lab) => {
+                    Self::deposit_event(Event::LabDeleted(lab, who.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -248,44 +267,48 @@ pub mod pallet {
 
 impl<T: Config> LabInterface<T> for Pallet<T> {
     type Error = Error<T>;
-    type LabInfo = LabInfoOf<T>;
+    type LabInfo = LabInfo;
+    type Lab = LabOf<T>;
 
-    fn create_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<(), Self::Error> {
+    fn create_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<Self::Lab, Self::Error> {
         if Labs::<T>::contains_key(account_id) {
             return Err(Error::<T>::LabAlreadyRegistered)?;
         }
+        let lab = Lab::new(account_id.clone(), lab_info.clone());
         // Insert to Storage
-        Labs::<T>::insert(account_id, lab_info);
-        Self::insert_lab_id_to_country_city(lab_info.get_country(), lab_info.get_city(), lab_info.get_account_id());
+        Labs::<T>::insert(account_id, &lab);
+        Self::insert_lab_id_to_country_city(lab.get_country(), lab.get_city(), lab.get_account_id());
 
         // Increment Count
         Self::add_lab_count();
-        Self::add_lab_count_by_country_city(lab_info.get_country(), lab_info.get_city());
+        Self::add_lab_count_by_country_city(lab.get_country(), lab.get_city());
 
-        Ok(())
+        Ok(lab)
     }
 
-    fn update_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<(), Self::Error> {
+    fn update_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<Self::Lab, Self::Error> {
         let lab = Labs::<T>::get(account_id);
         if lab == None {
             return Err(Error::<T>::LabDoesNotExist)?;
         }
-        let lab = lab.unwrap();
+        let mut lab = lab.unwrap();
 
         // If location is updated, remove the lab from the old location
-        if lab.get_country() != lab_info.get_country() && lab.get_city() != lab_info.get_city() {
+        if lab.get_country() != &lab_info.country && lab.get_city() != &lab_info.city {
             Self::remove_lab_id_from_country_city(lab.get_country(), lab.get_city(), lab.get_account_id());
             Self::sub_lab_count_by_country_city(lab.get_country(), lab.get_city());
         }
 
-        Labs::<T>::insert(account_id, lab_info);
-        Self::insert_lab_id_to_country_city(lab_info.get_country(), lab_info.get_city(), lab_info.get_account_id());
-        Self::add_lab_count_by_country_city(lab_info.get_country(), lab_info.get_city());
+        lab.update_info(lab_info.clone());
 
-        Ok(())
+        Labs::<T>::insert(account_id, &lab);
+        Self::insert_lab_id_to_country_city(lab.get_country(), lab.get_city(), lab.get_account_id());
+        Self::add_lab_count_by_country_city(lab.get_country(), lab.get_city());
+
+        Ok(lab)
     }
 
-    fn delete_lab(account_id: &T::AccountId) -> Result<(), Self::Error> {
+    fn delete_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error> {
         let lab = Labs::<T>::get(account_id);
         if lab == None {
             return Err(Error::<T>::LabDoesNotExist)?;
@@ -300,7 +323,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         Labs::<T>::remove(&lab.account_id);
         Self::sub_lab_count();
 
-        Ok(())
+        Ok(lab)
     }
 
     // TODO:
@@ -364,7 +387,7 @@ impl<T: Config> Pallet<T> {
 }
 
 impl<T: Config> ServiceOwner<T> for Pallet<T> {
-    type Owner = LabInfo<T::AccountId, T::Hash>;
+    type Owner = Lab<T::AccountId, T::Hash>;
 
     fn can_create_service(user_id: &T::AccountId) -> bool {
         return Labs::<T>::contains_key(user_id);
