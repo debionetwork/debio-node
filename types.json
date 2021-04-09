@@ -1,14 +1,10 @@
 {
   "Address": "MultiAddress",
   "LookupSource": "MultiAddress",
-  "Role": {
-    "_enum": [
-      "Customer",
-      "Lab",
-      "Hospital",
-      "Doctor"
-     ]
-   },
+  "AccountIdOf": "AccountId",
+  "HashOf": "H256",
+  "CountryStr": "Text",
+  "CityStr": "Text",
   "LabInfo": {
     "account_id": "AccountId",
     "name": "Text",
@@ -21,18 +17,20 @@
     "services": "Vec<H256>"
   },
   "LabInfoOf": "LabInfo",
-  "CountryStr": "Text",
-  "CityStr": "Text",
-  "Service": {
-    "id": "H256",
-    "lab_id": "AccountId",
+  "ServiceInfo": {
     "name": "Text",
     "price": "u128",
     "description": "Text",
     "long_description": "Option<Text>",
     "image": "Option<Text>"
   },
+  "Service": {
+    "id": "H256",
+    "owner_id": "AccountId",
+    "info": "ServiceInfo"
+  },
   "ServiceOf": "Service",
+  "ServiceInfoOf": "ServiceInfo",
   "OrderStatus": {
     "_enum": [
       "Unpaid",
@@ -51,8 +49,6 @@
     "updated_at": "u64",
     "status": "OrderStatus"
   },
-  "AccountIdOf": "AccountId",
-  "HashOf": "H256",
   "MomentOf": "u64",
   "OrderOf": "Order",
   "OrderIdsOf": "Vec<H256>",
@@ -84,5 +80,13 @@
     "result_report": "Option<Text>",
     "comments": "Option<Text>"
   },
-  "SpecimenOf": "Specimen"
+  "SpecimenOf": "Specimen",
+  "Role": {
+    "_enum": [
+      "Customer",
+      "Lab",
+      "Hospital",
+      "Doctor"
+    ]
+  }
 }
