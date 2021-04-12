@@ -19,6 +19,7 @@ use sp_std::prelude::*;
 pub struct ServiceInfo<Balance> {
     name: Vec<u8>,
     price: Balance,
+    category: Vec<u8>,
     description: Vec<u8>, // TODO: limit the length
     long_description: Option<Vec<u8>>,
     image: Option<Vec<u8>>
