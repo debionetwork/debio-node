@@ -8,7 +8,7 @@ pub trait LabInterface<T: frame_system::Config> {
     type Lab;
 
     /// Get lab by associated account_id
-    fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::LabInfo>;
+    fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab>;
     /// Get the account_ids of labs in a location
     fn labs_by_country_city(country: &Vec<u8>, city: &Vec<u8>) -> Option<Vec<T::AccountId>>;
 

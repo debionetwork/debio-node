@@ -3733,7 +3733,6 @@ name = "orders"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "escrow",
  "frame-support",
  "frame-system",
  "pallet-timestamp",
@@ -3744,7 +3743,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "specimen",
+ "traits-services",
 ]
 
 [[package]]

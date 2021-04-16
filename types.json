@@ -50,17 +50,19 @@
       "Refunded"
     ]
   },
+  "Moment": "u64",
+  "MomentOf": "Moment",
   "Order": {
     "id": "H256",
     "service_id": "H256",
     "customer_id": "AccountId",
-    "lab_id": "AccountId",
-    "escrow_id": "AccountId",
-    "created_at": "u64",
-    "updated_at": "u64",
-    "status": "OrderStatus"
+    "seller_id": "AccountId",
+    "specimen_id": "Option<H256>",
+    "specimen_tracking_id": "Option<Text>",
+    "status": "OrderStatus",
+    "created_at": "Moment",
+    "updated_at": "Moment"
   },
-  "MomentOf": "u64",
   "OrderOf": "Order",
   "OrderIdsOf": "Vec<H256>",
   "Escrow": {

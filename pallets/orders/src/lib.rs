@@ -1,29 +1,86 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
-use frame_support::traits::{ Randomness };
 use frame_support::codec::{Encode, Decode};
+use frame_support::pallet_prelude::*;
+use sp_std::prelude::*;
+use traits_services::{ServicesProvider};
 
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+pub enum OrderStatus {
+    Unpaid,
+    Paid,
+    Fulfilled,
+    Refunded,
+}
+impl Default for OrderStatus {
+    fn default() -> Self { OrderStatus::Unpaid }
+}
+
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+pub struct Order<Hash, AccountId, Moment> {
+    pub id: Hash,
+    pub service_id: Hash,
+    pub customer_id: AccountId,
+    pub seller_id: AccountId,
+    pub specimen_id: Option<Hash>, // TODO: get from Specimen pallet
+    pub specimen_tracking_id: Option<Vec<u8>>, // TODO: get from Specimen pallet
+    pub status: OrderStatus,
+    pub created_at: Moment,
+    pub updated_at: Moment,
+}
+impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
+    pub fn new(
+        id: Hash,
+        service_id: Hash,
+        customer_id: AccountId,
+        seller_id: AccountId,
+        //specimen_id: Hash, // TODO:
+        //specimen_tracking_id: Hash, // TODO:
+        created_at: Moment,
+        updated_at: Moment,
+    )
+        -> Self
+    {
+        Self {
+            id,
+            service_id,
+            customer_id,
+            seller_id,
+            specimen_id: None, // TODO:
+            specimen_tracking_id: None, // TODO: 
+            status: OrderStatus::default(),
+            created_at,
+            updated_at,
+        }
+    }
+
+    pub fn get_id(&self) -> &Hash {
+        &self.id
+    }
+
+    pub fn get_created_at(&self) -> &Moment {
+        &self.created_at
+    }
+
+    pub fn get_service_id(&self) -> &Hash {
+        &self.service_id
+    }
+}
 
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::{
         dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
-        sp_std::convert::{TryInto, TryFrom},
     };
     use frame_system::pallet_prelude::*;
     use sp_std::prelude::*;
+    use crate::*;
 
     #[pallet::config]
-    pub trait Config:
-        frame_system::Config
-        + pallet_timestamp::Config
-        + services::Config
-        + escrow::Config
-        + specimen::Config
-    {
+    pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        type RandomnessSource: crate::Randomness<Self::Hash>;
+        type Services: ServicesProvider<Self>;
     }
 
 
@@ -36,49 +93,11 @@ pub mod pallet {
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
     // --------------------------------------------------------
 
-    
-
-    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
-    pub enum OrderStatus {
-        Unpaid,
-        Paid,
-        Fulfilled,
-        Refunded,
-    }
-    impl Default for OrderStatus {
-        fn default() -> Self { OrderStatus::Unpaid }
-    }
-
-    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-    pub struct Order<Hash, AccountId, Moment> {
-        pub id: Hash,
-        pub service_id: Hash,
-        pub customer_id: AccountId,
-        pub lab_id: AccountId,
-        pub escrow_id: AccountId,
-        pub created_at: Moment,
-        pub updated_at: Moment,
-        pub status: OrderStatus,
-    }
-    impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
-        pub fn get_id(&self) -> &Hash {
-            &self.id
-        }
-
-        pub fn get_created_at(&self) -> &Moment {
-            &self.created_at
-        }
-
-        pub fn get_service_id(&self) -> &Hash {
-            &self.service_id
-        }
-    }
-
     // ---- Types --------------------------------------------
     type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
-    type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
+    pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
     type HashOf<T> = <T as frame_system::Config>::Hash;
-    type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, MomentOf<T>>;
+    pub type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, MomentOf<T>>;
     type OrderIdsOf<T> = Vec<HashOf<T>>;
     // -------------------------------------------------------
 
@@ -89,13 +108,40 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn orders_by_costumer_id)]
-    pub type CustomerOrders<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
+    pub type OrdersByCustomer<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
 
     #[pallet::storage]
     #[pallet::getter(fn orders_by_lab_id)]
-    pub type LabOrders<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
+    pub type OrdersBySeller<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn admin_key)]
+    pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
     // -----------------------------------------
 
+
+    // ----- Genesis Configs ------------------
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub escrow_key: T::AccountId,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self {
+                escrow_key: Default::default(),
+            }
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            EscrowKey::<T>::put(&self.escrow_key);
+        }
+    }
+    // ----------------------------------------
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -117,20 +163,18 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
-        /// Lab id does not exist
-        LabDoesNotExist,
         /// Service id does not exist
         ServiceDoesNotExist,
         /// Order does not exist
         OrderNotFound,
-        /// Escrow not found
-        EscrowNotFound,
-        /// Unauthorized to fulfill order - user is not the lab who owns the service
+        /// Unauthorized to fulfill order - user is not the seller who owns the service
         UnauthorizedOrderFulfillment,
         /// Can not fulfill order before Specimen is processed
         SpecimenNotProcessed,
         /// Refund not allowed, Order is not expired yet
         OrderNotYetExpired,
+        /// Unauthorized Account
+        Unauthorized
     }
 
 
@@ -139,192 +183,165 @@ pub mod pallet {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn create_order(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResultWithPostInfo {
-            let customer_id = ensure_signed(origin)?;
-            let service = services::Pallet::<T>::service_by_id(service_id);
-            match service {
-                None => Err(Error::<T>::ServiceDoesNotExist)?,
-                Some(service) => {
-                    let order_id = Self::generate_hash(&customer_id);
-                    let service_id = service.get_id();
-                    let lab_id = service.get_owner_id();
-                    let created_at = pallet_timestamp::Pallet::<T>::get();
+            let who = ensure_signed(origin)?;
 
-
-                    // Create escrow
-                    let escrow_account_id = escrow::Pallet::<T>::create_escrow(
-                        &order_id,
-                        &customer_id, // buyer id
-                        &lab_id, // seller id
-                        service.get_price(), // amount to pay
-                        &created_at,
-                    );
-
-                    // Create specimen
-                    let _specimen = specimen::Pallet::<T>::create_specimen(
-                        &order_id,
-                        &service_id,
-                        &customer_id, // specimen owner id
-                        &lab_id,
-                        &created_at,
-                    );
-
-                    // Create order
-                    let order = Order {
-                        id: order_id,
-                        customer_id: customer_id.clone(),
-                        service_id: *service_id,
-                        lab_id: lab_id.clone(),
-                        escrow_id: escrow_account_id.clone(),
-                        created_at: created_at,
-                        updated_at: created_at,
-                        status: OrderStatus::Unpaid,
-                    };
-                    Orders::<T>::insert(&order_id, &order);
-
-                    // Store order id reference for Customers
-                    let orders = CustomerOrders::<T>::get(&customer_id);
-                    if orders == None {
-                        let mut orders = Vec::<T::Hash>::new();
-                        orders.push(order_id);
-                        CustomerOrders::<T>::insert(&customer_id, orders);
-                    } else {
-                        let mut orders = orders.unwrap();
-                        orders.push(order_id);
-                        CustomerOrders::<T>::insert(&customer_id, orders);
-                    }
-                    let orders = CustomerOrders::<T>::get(&customer_id);
-                    //debug::info!("** ---- CustomerOrders ---- **: {:?}", orders);
-
-
-                    // Store order id reference for Labs
-                    let orders = LabOrders::<T>::get(&lab_id);
-                    if orders == None {
-                        let mut orders = Vec::<T::Hash>::new();
-                        orders.push(order_id);
-                        LabOrders::<T>::insert(&lab_id, orders);
-                    } else {
-                        let mut orders = orders.unwrap();
-                        orders.push(order_id);
-                        LabOrders::<T>::insert(&lab_id, orders);
-                    }
-                    let orders = LabOrders::<T>::get(&customer_id);
-                    //debug::info!("** ---- LabOrders ---- **: {:?}", orders);
-
-                    Self::deposit_event(Event::OrderCreated(order));
+            match <Self as OrderInterface<T>>::create_order(&who, &service_id) {
+                Ok(order) => {
+                    Self::deposit_event(Event::<T>::OrderCreated(order.clone()));
                     Ok(().into())
-                }
+                },
+                Err(error) => Err(error)?
             }
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn pay_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
-            let customer_id = ensure_signed(origin)?;
-            let order = Orders::<T>::get(&order_id);
-            
-            if order == None {
-                return Err(Error::<T>::OrderNotFound)?;
+        pub fn set_order_paid(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as OrderInterface<T>>::set_order_paid(&who, &order_id) {
+                Ok(order) => {
+                    Self::deposit_event(Event::<T>::OrderPaid(order.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
             }
-
-            // Pay to escrow
-            let _escrow = escrow::Pallet::<T>::deposit(&order_id, &customer_id);
-
-            // Set order status to paid
-            let order = Self::update_order_status(&order_id, OrderStatus::Paid);
-            let order = order.unwrap();
-
-            Self::deposit_event(Event::OrderPaid(order.clone()));
-            Ok(().into())
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn fulfill_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
-            let user_id = ensure_signed(origin)?;
-            let order = Orders::<T>::get(&order_id);
-            if order == None {
-                return Err(Error::<T>::OrderNotFound)?;
+            let who = ensure_signed(origin)?;
+
+            match <Self as OrderInterface<T>>::fulfill_order(&who, &order_id) {
+                Ok(order) => {
+                    Self::deposit_event(Event::<T>::OrderFulfilled(order.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
             }
-            let order = order.unwrap();
-
-            // Only the lab who owns the service in the order can fulfill
-            let is_lab = user_id == order.lab_id;
-            if !is_lab {
-                return Err(Error::<T>::UnauthorizedOrderFulfillment)?;
-            }
-
-            // Specimen has to be processed before order is fulfilled
-            let is_specimen_processed = specimen::Pallet::<T>::is_status(
-                &order_id,
-                specimen::SpecimenStatus::Processed
-            );
-            if !is_specimen_processed {
-                return Err(Error::<T>::SpecimenNotProcessed)?;
-            }
-
-            let order = Self::update_order_status(&order.id, OrderStatus::Fulfilled);
-            let order = order.unwrap();
-
-            // Release funds to lab
-            escrow::Pallet::<T>::release(&order.id);
-
-            Self::deposit_event(Event::OrderFulfilled(order.clone()));
-            Ok(().into())
         }
-
+        
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn refund_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
-            let _user_id = ensure_signed(origin)?;
-            let order = Orders::<T>::get(&order_id);
-            if order == None {
-                return Err(Error::<T>::OrderNotFound)?;
+            let who = ensure_signed(origin)?;
+
+            match <Self as OrderInterface<T>>::fulfill_order(&who, &order_id) {
+                Ok(order) => {
+                    Self::deposit_event(Event::<T>::OrderRefunded(order.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
             }
-            let order = order.unwrap();
-
-            // Check if order expired ------------------
-            let now = pallet_timestamp::Pallet::<T>::get();
-            let order_created_at = order.created_at.clone();
-            // convert to u64
-            let order_created_at_ms = TryInto::<u64>::try_into(order_created_at).ok().unwrap();
-            // Add 7 days
-            let seven_days_ms = u64::try_from(chrono::Duration::days(7).num_milliseconds()).ok().unwrap();
-            let expires_at_ms = order_created_at_ms + seven_days_ms;
-            // convert back to Moment
-            let expires_at = TryInto::<MomentOf<T>>::try_into(expires_at_ms).ok().unwrap();
-
-
-            // Check if specimen rejected
-            let is_specimen_rejected = specimen::Pallet::<T>::is_status(
-                &order_id,
-                specimen::SpecimenStatus::Rejected
-            );
-
-            // Can refund if order expired or specimen rejected
-            let can_refund = now > expires_at || is_specimen_rejected;
-            if !can_refund {
-                return Err(Error::<T>::OrderNotYetExpired)?;
-            }
-
-            // Refund back to customer
-            escrow::Pallet::<T>::refund(&order_id);
-
-            let order = Self::update_order_status(&order_id, OrderStatus::Refunded);
-            let order = order.unwrap();
-
-            Self::deposit_event(Event::OrderRefunded(order.clone()));
-            Ok(().into())
         }
     }
 }
 
-impl<T: Config> Pallet<T> {
-    // TODO: Maybe extract this fn as a separate module (this is used by pallet services also)
-    fn generate_hash(account_id: &T::AccountId) -> T::Hash {
-        let account_info = frame_system::Pallet::<T>::account(account_id);
-        let hash = <T as Config>::RandomnessSource::random(&account_info.nonce.encode());
-        // let hash = <T as Config>::Hashing::hash(random_result);
-        return hash;
+pub mod interface;
+use interface::OrderInterface;
+use traits_services::ServiceInfo;
+
+impl<T: Config> OrderInterface<T> for Pallet<T> {
+    type Order = OrderOf<T>;
+    type Error = Error<T>;
+
+    fn create_order(customer_id: &T::AccountId, service_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+        let service = T::Services::service_by_id(service_id);
+        if service.is_none() {
+            return Err(Error::<T>::ServiceDoesNotExist);
+        }
+        let service = service.unwrap();
+        let order_id = Self::generate_order_id(customer_id, service_id);
+        let seller_id = service.get_owner_id();
+        let now = pallet_timestamp::Pallet::<T>::get();
+
+        // TODO: Create Specimen
+        // - Create Specimen
+        // - Generate Specimen Tracking Number (human readable)
+
+        let order = Order::new(
+            order_id.clone(),
+            service_id.clone(),
+            customer_id.clone(),
+            seller_id.clone(),
+            now,
+            now
+        );
+        Self::insert_order_to_storage(&order);
+
+        Ok(order)
     }
 
-    fn update_order_status(order_id: &T::Hash, status: pallet::OrderStatus)
+    fn set_order_paid(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+        if escrow_account_id.clone() != EscrowKey::<T>::get() {
+            return Err(Error::<T>::Unauthorized);
+        }
+
+        let order = Self::update_order_status(order_id, OrderStatus::Paid);
+        if order.is_none() {
+            return Err(Error::<T>::OrderNotFound);
+        }
+
+        Ok(order.unwrap())
+    }
+
+    fn fulfill_order(seller_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+        let order = Orders::<T>::get(order_id);
+        if order.is_none() {
+            return Err(Error::<T>::OrderNotFound);
+        }
+        let order = order.unwrap();
+
+        // Only the seller can fulfill the order
+        if order.seller_id != seller_id.clone() {
+            return Err(Error::<T>::UnauthorizedOrderFulfillment);
+        }
+
+        // TODO: Check if Specimen is processed
+        //
+
+        let order = Self::update_order_status(order_id, OrderStatus::Fulfilled);
+
+        Ok(order.unwrap())
+    }
+
+    fn refund_order(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+        if escrow_account_id.clone() != EscrowKey::<T>::get() {
+            return Err(Error::<T>::Unauthorized);
+        }
+
+        let order = Orders::<T>::get(order_id);
+        if order.is_none() {
+            return Err(Error::<T>::OrderNotFound);
+        }
+
+        let order_can_be_refunded = Self::order_can_be_refunded(order.unwrap());
+        if !order_can_be_refunded {
+            return Err(Error::<T>::OrderNotYetExpired);
+        }
+
+        let order = Self::update_order_status(order_id, OrderStatus::Refunded);
+        Ok(order.unwrap())
+    }
+}
+
+use frame_support::sp_runtime::traits::Hash;
+use frame_support::sp_std::convert::{TryInto, TryFrom};
+
+impl<T: Config> Pallet<T> {
+    pub fn generate_order_id(customer_id: &T::AccountId, service_id: &T::Hash) -> T::Hash {
+        let mut customer_id_bytes = customer_id.encode();
+        let mut service_id_bytes = service_id.encode();
+        let account_info = frame_system::Pallet::<T>::account(customer_id);
+        let mut nonce_bytes = account_info.nonce.encode();
+
+        customer_id_bytes.append(&mut service_id_bytes);
+        customer_id_bytes.append(&mut nonce_bytes);
+
+        let seed = &customer_id_bytes;
+        T::Hashing::hash(seed)
+    }
+
+
+    pub fn update_order_status(order_id: &T::Hash, status: OrderStatus)
         -> Option<Order<T::Hash, T::AccountId, T::Moment>>
     {
         Orders::<T>::mutate(order_id, |order| {
@@ -338,23 +355,78 @@ impl<T: Config> Pallet<T> {
             }
         })
     }
-}
 
-/*
-// TODO: Is it possible to trigger this from escrow pallet
-// when the escrow account is paid by straight transfer not
-// dispatchable calls??
-impl<T: Trait> EscrowController<T> for Module<T> {
-    fn on_escrow_paid(controller_id: &T::Hash) -> () {
-        let order_id = controller_id;
-        Orders::<T>::mutate(order_id, |order| {
-            match order {
-                None => (),
-                Some(order) => {
-                    order.status = OrderStatus::Paid;
-                }
+
+    pub fn insert_order_to_storage(order: &OrderOf<T>) -> () {
+        Orders::<T>::insert(order.id, order);
+        Self::insert_order_id_into_orders_by_seller(order);
+        Self::insert_order_id_into_orders_by_customer(order);
+    }
+
+
+    pub fn insert_order_id_into_orders_by_seller(order: &OrderOf<T>) -> () {
+        match OrdersBySeller::<T>::get(&order.seller_id) {
+            None => {
+                let mut orders = Vec::new();
+                orders.push(order.id.clone());
+                OrdersBySeller::<T>::insert(&order.seller_id, orders);
+            },
+            Some(mut orders) => {
+                orders.push(order.id.clone());
+                OrdersBySeller::<T>::insert(&order.seller_id, orders);
             }
-        })
+        }
+    }
+
+
+    pub fn insert_order_id_into_orders_by_customer(order: &OrderOf<T>) -> () {
+        match OrdersByCustomer::<T>::get(&order.customer_id) {
+            None => {
+                let mut orders = Vec::new();
+                orders.push(order.id.clone());
+                OrdersByCustomer::<T>::insert(&order.customer_id, orders);
+            },
+            Some(mut orders) => {
+                orders.push(order.id.clone());
+                OrdersByCustomer::<T>::insert(&order.customer_id, orders);
+            }
+        }
+    }
+
+
+    pub fn order_can_be_refunded(order: OrderOf<T>) -> bool {
+        // Check if order expired ------------------
+        let now = pallet_timestamp::Pallet::<T>::get();
+        let order_created_at = order.created_at.clone();
+        // convert to u64
+        let order_created_at_ms = TryInto::<u64>::try_into(order_created_at).ok().unwrap();
+        // Add 7 days
+        let seven_days_ms = u64::try_from(chrono::Duration::days(7).num_milliseconds()).ok().unwrap();
+        let expires_at_ms = order_created_at_ms + seven_days_ms;
+        // convert back to Moment
+        let expires_at = TryInto::<MomentOf<T>>::try_into(expires_at_ms).ok().unwrap();
+
+        /*
+        // TODO:
+        // Check if specimen rejected
+        let is_specimen_rejected = specimen::Pallet::<T>::is_status(
+            &order_id,
+            specimen::SpecimenStatus::Rejected
+        );
+
+        // Can refund if order expired or specimen rejected
+        let can_refund = now > expires_at || is_specimen_rejected;
+        if !can_refund {
+            return Err(Error::<T>::OrderNotYetExpired)?;
+        }
+        */
+
+        let can_refund = now > expires_at;
+        if !can_refund {
+            return false;
+        }
+            
+        true
     }
 }
-*/
+

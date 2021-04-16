@@ -4,8 +4,9 @@ pub use pallet::*;
 use traits_services::{
     ServicesProvider,
     ServiceOwner,
+    ServiceInfo as ServiceInfoT
 };
-use frame_support::traits::{ Currency, Randomness };
+use frame_support::traits::{ Currency };
 use frame_support::codec::{Encode, Decode};
 use frame_support::pallet_prelude::*;
 
@@ -50,6 +51,17 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
 
     pub fn get_price(&self) -> &Balance {
         &self.info.price
+    }
+}
+
+impl<T, AccountId, Hash, Balance> ServiceInfoT<T> for Service<AccountId, Hash, Balance>
+    where T: frame_system::Config<AccountId = AccountId, Hash = Hash>
+{
+    fn get_id(&self) -> &Hash {
+        self.get_id()
+    }
+    fn get_owner_id(&self) -> &AccountId {
+        self.get_owner_id()
     }
 }
 

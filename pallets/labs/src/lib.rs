@@ -316,7 +316,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         let lab = lab.unwrap();
         // Delete lab's services
         for service_id in &lab.services {
-            T::Services::delete_service(account_id, &service_id);
+            let _result = T::Services::delete_service(account_id, &service_id);
         }
         Self::remove_lab_id_from_country_city(&lab.country, &lab.city, &lab.account_id);
         Self::sub_lab_count_by_country_city(lab.get_country(), lab.get_city());
@@ -326,14 +326,12 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         Ok(lab)
     }
 
-    // TODO:
     fn labs_by_country_city(country: &Vec<u8>, city: &Vec<u8>) -> Option<Vec<T::AccountId>> {
-        None
+        Self::labs_by_country_city(country, city)
     }
 
-    // TODO:
-    fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::LabInfo> {
-        None
+    fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab> {
+        Self::lab_by_account_id(account_id)
     }
 }
 
