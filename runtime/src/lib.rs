@@ -44,9 +44,10 @@ pub use pallet_template;
 pub use labs;
 pub use services;
 pub use orders;
-pub use escrow;
-pub use specimen;
-pub use rbac;
+pub use genetic_testing;
+//pub use escrow;
+//pub use specimen;
+// pub use rbac;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -283,6 +284,10 @@ impl orders::Config for Runtime {
     type Services = Services;
 }
 
+impl genetic_testing::Config for Runtime {
+    type Event = Event;
+    type RandomnessSource = RandomnessCollectiveFlip;
+}
 /*
 impl specimen::Config for Runtime {
     type Event = Event;
@@ -323,6 +328,7 @@ construct_runtime!(
 		Labs: labs::{Module, Call, Storage, Event<T>},
                 Services: services::{Module, Call, Storage, Event<T>},
                 Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
+                GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
                 /*
                 Escrow: escrow::{Module, Call, Storage, Event<T>},
                 Specimen: specimen::{Module, Call, Storage, Event<T>},

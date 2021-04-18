@@ -23,8 +23,7 @@ pub struct Order<Hash, AccountId, Moment> {
     pub service_id: Hash,
     pub customer_id: AccountId,
     pub seller_id: AccountId,
-    pub specimen_id: Option<Hash>, // TODO: get from Specimen pallet
-    pub specimen_tracking_id: Option<Vec<u8>>, // TODO: get from Specimen pallet
+    pub dna_sample_tracking_id: Option<Vec<u8>>, // TODO: get from Specimen pallet
     pub status: OrderStatus,
     pub created_at: Moment,
     pub updated_at: Moment,
@@ -35,8 +34,6 @@ impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
         service_id: Hash,
         customer_id: AccountId,
         seller_id: AccountId,
-        //specimen_id: Hash, // TODO:
-        //specimen_tracking_id: Hash, // TODO:
         created_at: Moment,
         updated_at: Moment,
     )
@@ -47,8 +44,7 @@ impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
             service_id,
             customer_id,
             seller_id,
-            specimen_id: None, // TODO:
-            specimen_tracking_id: None, // TODO: 
+            dna_sample_tracking_id: None, 
             status: OrderStatus::default(),
             created_at,
             updated_at,
@@ -253,10 +249,6 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let seller_id = service.get_owner_id();
         let now = pallet_timestamp::Pallet::<T>::get();
 
-        // TODO: Create Specimen
-        // - Create Specimen
-        // - Generate Specimen Tracking Number (human readable)
-
         let order = Order::new(
             order_id.clone(),
             service_id.clone(),
@@ -295,8 +287,10 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             return Err(Error::<T>::UnauthorizedOrderFulfillment);
         }
 
-        // TODO: Check if Specimen is processed
-        //
+        // An order can only be fulfilled if the DnaSample is processed
+        // TODO: Check if DnaSample is processed
+        // - if GeneticTesting::get_sample(order.dna_sample_tracking_id).success() == false:
+        //      return Err(Error::<T>::DnaSampleNotSuccessfullyProcessed)
 
         let order = Self::update_order_status(order_id, OrderStatus::Fulfilled);
 
