@@ -4,7 +4,6 @@
 
 <div align="Center">
 <h1> Debio Substrate Node</h1>
-<hr />
 <h2> Decentralized Sovereign Biomed </h2>
 The Anonymous-First Platform for Medical and Bioinformatics Data.  
 <br>
