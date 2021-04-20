@@ -28,9 +28,7 @@ pallet-timestamp = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
 services = { path = '../services', default-features = false }
 traits-services = { path = '../../traits/services', default-features = false }
-#escrow = { path = '../escrow', default-features = false }
-#escrow-controller = { path = '../../traits/escrow-controller', default-features = false }
-#specimen = { path = '../specimen', default-features = false }
+traits-genetic-testing = { path = '../../traits/genetic-testing', default-features = false }
 chrono = { default-features = false, version = '0.4' }
 
 [dev-dependencies]
@@ -49,7 +47,7 @@ std = [
     'sp-core/std',
     'pallet-timestamp/std',
     'services/std',
-    #'specimen/std',
     'chrono/std',
     'traits-services/std',
+    'traits-genetic-testing/std',
 ]

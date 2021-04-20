@@ -36,13 +36,7 @@ pub struct Lab<AccountId, Hash>
 {
     account_id: AccountId,
     services: Vec<Hash>,
-    name: Vec<u8>,
-    country: Vec<u8>,
-    city: Vec<u8>,
-    address: Vec<u8>,
-    latitude: Option<Vec<u8>>,
-    longitude: Option<Vec<u8>>,
-    profile_image: Option<Vec<u8>>,
+    info: LabInfo,
 }
 
 impl<AccountId, Hash> Lab<AccountId, Hash>
@@ -55,32 +49,20 @@ impl<AccountId, Hash> Lab<AccountId, Hash>
         Self {
             account_id,
             services: Vec::<Hash>::new(),
-            name: info.name,
-            country: info.country,
-            city: info.city,
-            address: info.address,
-            latitude: info.latitude,
-            longitude: info.longitude,
-            profile_image: info.profile_image,
+            info,
         }
     }
 
     fn update_info(&mut self, info: LabInfo) -> () {
-        self.name = info.name;
-        self.country = info.country;
-        self.city = info.city;
-        self.address = info.address;
-        self.latitude = info.latitude;
-        self.longitude = info.longitude;
-        self.profile_image = info.profile_image;
+        self.info = info;
     }
 
     fn get_country(&self) -> &Vec<u8> {
-        &self.country
+        &self.info.country
     }
 
     fn get_city(&self) -> &Vec<u8> {
-        &self.city
+        &self.info.city
     }
 
     pub fn get_account_id(&self) -> &AccountId {
@@ -318,7 +300,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         for service_id in &lab.services {
             let _result = T::Services::delete_service(account_id, &service_id);
         }
-        Self::remove_lab_id_from_country_city(&lab.country, &lab.city, &lab.account_id);
+        Self::remove_lab_id_from_country_city(lab.get_country(), lab.get_city(), &lab.account_id);
         Self::sub_lab_count_by_country_city(lab.get_country(), lab.get_city());
         Labs::<T>::remove(&lab.account_id);
         Self::sub_lab_count();

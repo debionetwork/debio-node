@@ -282,6 +282,7 @@ impl services::Config for Runtime {
 impl orders::Config for Runtime {
     type Event = Event;
     type Services = Services;
+    type GeneticTesting = GeneticTesting;
 }
 
 impl genetic_testing::Config for Runtime {
@@ -326,14 +327,14 @@ construct_runtime!(
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template pallet in the runtime.
 		Labs: labs::{Module, Call, Storage, Event<T>},
-                Services: services::{Module, Call, Storage, Event<T>},
-                Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
-                GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
-                /*
-                Escrow: escrow::{Module, Call, Storage, Event<T>},
-                Specimen: specimen::{Module, Call, Storage, Event<T>},
-                */
-                //RBAC: rbac::{Module, Call, Storage, Event<T>},
+		Services: services::{Module, Call, Storage, Event<T>},
+		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
+		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
+		/*
+		Escrow: escrow::{Module, Call, Storage, Event<T>},
+		Specimen: specimen::{Module, Call, Storage, Event<T>},
+		*/
+		//RBAC: rbac::{Module, Call, Storage, Event<T>},
 	}
 );
 

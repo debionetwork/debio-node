@@ -1,10 +1,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub mod interface;
+use interface::OrderInterface;
+
 pub use pallet::*;
 use frame_support::codec::{Encode, Decode};
 use frame_support::pallet_prelude::*;
 use sp_std::prelude::*;
-use traits_services::{ServicesProvider};
+use traits_services::{ServicesProvider, ServiceInfo};
+use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
+
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
 pub enum OrderStatus {
@@ -23,7 +28,7 @@ pub struct Order<Hash, AccountId, Moment> {
     pub service_id: Hash,
     pub customer_id: AccountId,
     pub seller_id: AccountId,
-    pub dna_sample_tracking_id: Option<Vec<u8>>, // TODO: get from Specimen pallet
+    pub dna_sample_tracking_id: Vec<u8>,
     pub status: OrderStatus,
     pub created_at: Moment,
     pub updated_at: Moment,
@@ -34,6 +39,7 @@ impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
         service_id: Hash,
         customer_id: AccountId,
         seller_id: AccountId,
+        dna_sample_tracking_id: Vec<u8>,
         created_at: Moment,
         updated_at: Moment,
     )
@@ -44,7 +50,7 @@ impl<Hash, AccountId, Moment> Order<Hash, AccountId, Moment> {
             service_id,
             customer_id,
             seller_id,
-            dna_sample_tracking_id: None, 
+            dna_sample_tracking_id, 
             status: OrderStatus::default(),
             created_at,
             updated_at,
@@ -77,6 +83,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Services: ServicesProvider<Self>;
+         type GeneticTesting: GeneticTestingProvider<Self>;
     }
 
 
@@ -170,7 +177,9 @@ pub mod pallet {
         /// Refund not allowed, Order is not expired yet
         OrderNotYetExpired,
         /// Unauthorized Account
-        Unauthorized
+        Unauthorized,
+        /// Error on creating DNA sample
+        DnaSampleInitalizationError,
     }
 
 
@@ -231,10 +240,6 @@ pub mod pallet {
     }
 }
 
-pub mod interface;
-use interface::OrderInterface;
-use traits_services::ServiceInfo;
-
 impl<T: Config> OrderInterface<T> for Pallet<T> {
     type Order = OrderOf<T>;
     type Error = Error<T>;
@@ -249,11 +254,19 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let seller_id = service.get_owner_id();
         let now = pallet_timestamp::Pallet::<T>::get();
 
+        // Initialize DnaSample
+        let dna_sample = T::GeneticTesting::create_dna_sample(seller_id, customer_id);
+        if dna_sample.is_err() {
+            return Err(Error::<T>::DnaSampleInitalizationError);
+        }
+        let dna_sample = dna_sample.ok().unwrap();
+
         let order = Order::new(
             order_id.clone(),
             service_id.clone(),
             customer_id.clone(),
             seller_id.clone(),
+            dna_sample.get_tracking_id().clone(),
             now,
             now
         );

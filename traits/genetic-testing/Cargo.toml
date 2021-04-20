@@ -1,11 +1,10 @@
 [package]
-name = "traits-services"
+name = "traits-genetic-testing"
 version = "0.1.0"
 authors = ["Kevin <kevin.janada@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-# alias "parity-scale-code" to "codec"
 [dependencies.codec]
 default-features = false
 features = ['derive']
@@ -24,3 +23,4 @@ std = [
   'frame-system/std',
   'frame-support/std',
 ]
+

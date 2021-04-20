@@ -5,18 +5,6 @@
   "HashOf": "H256",
   "CountryStr": "Text",
   "CityStr": "Text",
-  "Lab": {
-    "account_id": "AccountId",
-    "services": "Vec<H256>",
-    "name": "Text",
-    "country": "Text",
-    "city": "Text",
-    "address": "Text",
-    "latitude": "Option<Text>",
-    "longitude": "Option<Text>",
-    "profile_image": "Option<Text>"
-  },
-  "LabOf": "Lab",
   "LabInfo": {
     "name": "Text",
     "country": "Text",
@@ -26,6 +14,12 @@
     "longitude": "Option<Text>",
     "profile_image": "Option<Text>"
   },
+  "Lab": {
+    "account_id": "AccountId",
+    "services": "Vec<H256>",
+    "info": "LabInfo"
+  },
+  "LabOf": "Lab",
   "ServiceInfo": {
     "name": "Text",
     "price": "u128",

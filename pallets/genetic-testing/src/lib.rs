@@ -1,9 +1,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(test)]
-mod mock;
-#[cfg(test)]
-mod tests;
+// #[cfg(test)]
+// mod mock;
+// #[cfg(test)]
+// mod tests;
 
 pub use pallet::*;
 
@@ -17,6 +17,7 @@ pub use frame_support::dispatch::DispatchResultWithPostInfo;
 pub use frame_support::traits::Randomness;
 pub use sp_std::prelude::*;
 pub use sp_std::fmt::Debug;
+pub use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -172,6 +173,11 @@ impl<AccountId> DnaSample<AccountId> {
             owner_id,
             status: DnaSampleStatus::default(),
         }
+    }
+}
+impl<AccountId> DnaSampleTracking for DnaSample<AccountId> {
+    fn get_tracking_id(&self) -> &Vec<u8> {
+        &self.tracking_id
     }
 }
 
@@ -360,6 +366,14 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
 } 
 
+impl<T: Config> GeneticTestingProvider<T> for Pallet<T> {
+    type DnaSample = DnaSampleOf<T>;
+    type Error = Error<T>;
+
+    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId) -> Result<Self::DnaSample, Self::Error> {
+        <Self as GeneticTestingInterface<T>>::create_dna_sample(lab_id, owner_id)
+    }
+}
 
 impl<T: Config> Pallet<T> {
     pub fn generate_random_seed(creator_id: &T::AccountId, owner_id: &T::AccountId) -> Vec<u8> {
