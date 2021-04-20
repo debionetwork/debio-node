@@ -14,7 +14,6 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        // type RandomnessSource: Randomness<Self::Hash>;
     }
 
     // ----- This is template code, every pallet needs this ---
