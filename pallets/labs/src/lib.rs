@@ -20,6 +20,7 @@ use traits_services::{ServiceOwnerInfo};
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct LabInfo {
     name: Vec<u8>,
+    email: Vec<u8>,
     country: Vec<u8>,
     city: Vec<u8>,
     address: Vec<u8>,
@@ -137,10 +138,6 @@ pub mod pallet {
     pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>>;
     pub type CountryStr = Vec<u8>;
     pub type CityStr = Vec<u8>;
-    /*
-    pub type BalanceOf<T> = <<T as self::Config>::Services as ServicesProvider<T>>::Balance;
-    pub type ServiceOf<T> = <<T as self::Config>::Services as ServicesProvider<T>>::Service;
-    */
 
     // ----- Storage ------------------
     /// Get Lab by account id
