@@ -7,6 +7,7 @@
   "CityStr": "Text",
   "LabInfo": {
     "name": "Text",
+    "email": "Text",
     "country": "Text",
     "city": "Text",
     "address": "Text",
@@ -64,35 +65,28 @@
       "Received",
       "Rejected",
       "Processing",
-      "Processed"
+      "Processed",
+      "Success",
+      "Failed"
     ]
   },
   "DnaSample": {
     "tracking_id": "Text",
     "lab_id": "AccountId",
-     "owner_id": "AccountId",
+    "owner_id": "AccountId",
     "status": "DnaSampleStatus"
   },
   "DnaSampleOf": "DnaSample",
-  "DnaTestResultStatus": {
-    "_enum": [
-     "Success",
-     "Failed"
-    ]
-  },
   "DnaTestResult": {
-    "dna_sample_tracking_id": "Text",
-    "lab_id": "AccountId",
+    "tracking_id": "Text",
+    "lab_id": "Option<AccountId>",
     "owner_id": "AccountId",
-    "status": "DnaTestResultStatus",
     "comments": "Option<Text>",
     "result_link": "Option<Text>",
-    "report_link": "Option<Text>",
-    "genetic_token_id": "Option<Hash>"
+    "report_link": "Option<Text>"
   },
   "DnaTestResultOf": "DnaTestResult",
   "DnaTestResultSubmission": {
-    "status": "DnaTestResultStatus",
     "comments": "Option<Text>",
     "result_link": "Option<Text>",
     "report_link": "Option<Text>"

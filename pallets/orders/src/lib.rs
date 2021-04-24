@@ -83,7 +83,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Services: ServicesProvider<Self>;
-         type GeneticTesting: GeneticTestingProvider<Self>;
+        type GeneticTesting: GeneticTestingProvider<Self>;
     }
 
 
@@ -173,7 +173,7 @@ pub mod pallet {
         /// Unauthorized to fulfill order - user is not the seller who owns the service
         UnauthorizedOrderFulfillment,
         /// Can not fulfill order before Specimen is processed
-        SpecimenNotProcessed,
+        DnaSampleNotSuccessfullyProcessed,
         /// Refund not allowed, Order is not expired yet
         OrderNotYetExpired,
         /// Unauthorized Account
@@ -300,10 +300,10 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             return Err(Error::<T>::UnauthorizedOrderFulfillment);
         }
 
-        // An order can only be fulfilled if the DnaSample is processed
-        // TODO: Check if DnaSample is processed
-        // - if GeneticTesting::get_sample(order.dna_sample_tracking_id).success() == false:
-        //      return Err(Error::<T>::DnaSampleNotSuccessfullyProcessed)
+        let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id);
+        if dna_sample.unwrap().process_success() == false {
+            return Err(Error::<T>::DnaSampleNotSuccessfullyProcessed);
+        }
 
         let order = Self::update_order_status(order_id, OrderStatus::Fulfilled);
 
@@ -413,26 +413,13 @@ impl<T: Config> Pallet<T> {
         // convert back to Moment
         let expires_at = TryInto::<MomentOf<T>>::try_into(expires_at_ms).ok().unwrap();
 
-        /*
-        // TODO:
-        // Check if specimen rejected
-        let is_specimen_rejected = specimen::Pallet::<T>::is_status(
-            &order_id,
-            specimen::SpecimenStatus::Rejected
-        );
-
         // Can refund if order expired or specimen rejected
-        let can_refund = now > expires_at || is_specimen_rejected;
-        if !can_refund {
-            return Err(Error::<T>::OrderNotYetExpired)?;
-        }
-        */
-
-        let can_refund = now > expires_at;
+        let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
+        let can_refund = now > expires_at || dna_sample.is_rejected();
         if !can_refund {
             return false;
         }
-            
+
         true
     }
 }
