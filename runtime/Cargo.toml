@@ -30,9 +30,6 @@ labs = { path = '../pallets/labs', default-features = false }
 services = { path = '../pallets/services', default-features = false }
 orders = { path = '../pallets/orders', default-features = false }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
-#escrow = { path = '../pallets/escrow', default-features = false }
-#specimen = { path = '../pallets/specimen', default-features = false }
-#rbac = { path = '../pallets/rbac', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
@@ -104,6 +101,4 @@ std = [
     'services/std',
     'orders/std',
     'genetic-testing/std',
-    #'escrow/std',
-    #'specimen/std',
 ]

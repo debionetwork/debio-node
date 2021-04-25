@@ -3,7 +3,7 @@
 </div>
 
 <div align="Center">
-<h1> Debio Substrate Node</h1>
+<h1> DeBio Node</h1>
 <h2> Decentralized Sovereign Biomed </h2>
 The Anonymous-First Platform for Medical and Bioinformatics Data.  
 <br>
@@ -18,48 +18,19 @@ Built on Substrate.
 
 ---
 
+DeBio is a decentralized anonymous-first platform for medical and bioinformatics data. It uses blockchain technology as the immutable transaction ledger to support its processes.  
 
-This project is still a work in progress
+DeBio blockchain nodes are built using Substrate, Parity's blockchain framework that allows for quick development of blockchains customizable by its pallets system.
+
+- [Explanation about DeBio's pallets and functionalities](./docs/pallets.md)
 
 ## Getting Started
 
-Follow these steps to get started with the Node Template :hammer_and_wrench:
+Follow these steps to get started with the Node
 
 ### Rust Setup
 
 First, complete the [basic Rust setup instructions](./doc/rust-setup.md).
-
-### Run
-
-Use Rust's native `cargo` command to build and launch the template node:
-
-```sh
-cargo run --release -- --dev --tmp
-```
-
-### Build
-
-The `cargo run` command will perform an initial build. Use the following command to build the node
-without launching it:
-
-```sh
-cargo build --release
-```
-
-### Embedded Docs
-
-Once the project has been built, the following command can be used to explore all parameters and
-subcommands:
-
-```sh
-./target/release/debio-node -h
-```
-
-## Run
-
-The provided `cargo run` command will launch a temporary node and its state will be discarded after
-you terminate the process. After the project has been built, there are other ways to launch the
-node.
 
 ### Single-Node Development Chain
 
@@ -106,12 +77,3 @@ by appending your own. A few useful ones are as follow.
 # Check whether the code is compilable
 ./scripts/docker_run.sh cargo check
 ```
-
-### Multi-Node Local Testnet
-
-TODO
-
-### Pallets
-
-TODO
-
