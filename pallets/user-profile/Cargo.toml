@@ -1,0 +1,38 @@
+[package]
+name = "user-profile"
+version = "0.1.0"
+authors = ["Kevin <kevin.janada@gmail.com>"]
+edition = "2018"
+
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+# alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
+[dependencies]
+frame-support = { default-features = false, version = '3.0.0' }
+frame-system = { default-features = false, version = '3.0.0' }
+sp-std = { default-features = false, version = '3.0.0' }
+serde = { version = "1.0.119" }
+rustc-hex = { version = "2.1.0", default-features = false }
+
+[dev-dependencies]
+sp-core = { default-features = false, version = '3.0.0' }
+sp-io = { default-features = false, version = '3.0.0' }
+sp-runtime = { default-features = false, version = '3.0.0' }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+    'frame-support/std',
+    'frame-system/std',
+    'sp-std/std',
+    'serde/std',
+    'rustc-hex/std',
+]

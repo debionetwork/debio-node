@@ -34,11 +34,11 @@ pub fn delete_service(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResu
 ```
 
 ## Orders Pallet
-This pallet handles the business logic of orders. An `Order` is associated with a `Service` and a `DnaSample`.
+This pallet handles the business logic of orders. An `Order` is associated with a `Service` and a `DnaSample`.  
 An `Order` is fulfilled if the associated `DnaSample` is successfully processed.  
 An `Order` payment can be refunded if the physical `DnaSample` is rejected upon receipt, it has not been processed for 7 days, or if the sample processing has failed.
 
-Currently DeBio uses external blockchain networks for payment. We use an escrow bridge that listens for payments to a smart contract deployed on the external network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
+Currently DeBio uses the ethereum network for payments in USDT. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
 
 This pallet exposes the following extrinsics:
 ### Create Order
@@ -66,21 +66,29 @@ Users can also submit `DnaTestResult` that are processed off chain.
 The following extrinsic calls are exposed:
 ### Receive DNA Sample
 ```rust
-pub fn receive_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+pub fn receive_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo
 ```
 ### Reject DNA Sample
 ```rust
-pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo
 ```
 ### Process DNA Sample 
 ```rust
-pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo
 ```
 ### Submit Test Result
 ```rust
-pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, is_success: bool, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo {
+pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, is_success: bool, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo
 ```
 ### Submit Independent Test Result
 ```rust
-pub fn submit_independent_test_result(origin: OriginFor<T>, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo {
+pub fn submit_independent_test_result(origin: OriginFor<T>, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo
+```
+
+## User Profile Pallet
+Currently this pallet only stores a user's USDT address that is used to make payments
+
+### Set USDT Address
+```rust
+pub fn set_usdt_address(origin: OriginFor<T>, usdt_address: EthereumAddress) -> DispatchResultWithPostInfo
 ```

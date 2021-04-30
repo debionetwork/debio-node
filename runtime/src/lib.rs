@@ -40,14 +40,11 @@ pub use frame_support::{
 use pallet_transaction_payment::CurrencyAdapter;
 
 /// Import the template pallet.
-pub use pallet_template;
 pub use labs;
 pub use services;
 pub use orders;
 pub use genetic_testing;
-//pub use escrow;
-//pub use specimen;
-// pub use rbac;
+pub use user_profile;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -289,26 +286,10 @@ impl genetic_testing::Config for Runtime {
     type Event = Event;
     type RandomnessSource = RandomnessCollectiveFlip;
 }
-/*
-impl specimen::Config for Runtime {
+
+impl user_profile::Config for Runtime {
     type Event = Event;
 }
-*/
-
-/*
-impl escrow::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    //type Controller = Orders;
-}
-
-*/
-
-/*
-impl rbac::Config for Runtime {
-    type Event = Event;
-}
-*/
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -330,11 +311,7 @@ construct_runtime!(
 		Services: services::{Module, Call, Storage, Event<T>},
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
-		/*
-		Escrow: escrow::{Module, Call, Storage, Event<T>},
-		Specimen: specimen::{Module, Call, Storage, Event<T>},
-		*/
-		//RBAC: rbac::{Module, Call, Storage, Event<T>},
+                UserProfile: user_profile::{Module, Call, Storage, Event<T>},
 	}
 );
 

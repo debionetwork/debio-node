@@ -2,6 +2,7 @@
   "Address": "MultiAddress",
   "LookupSource": "MultiAddress",
   "AccountIdOf": "AccountId",
+  "EthereumAddress": "[u8; 20]",
   "HashOf": "H256",
   "CountryStr": "Text",
   "CityStr": "Text",
