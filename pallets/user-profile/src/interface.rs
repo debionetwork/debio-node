@@ -1,4 +1,4 @@
-use sp_std::prelude::*;
+//use sp_std::prelude::*;
 
 pub trait UserProfileInterface<T: frame_system::Config> {
     type UsdtAddress;

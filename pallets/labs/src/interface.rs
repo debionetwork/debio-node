@@ -10,7 +10,7 @@ pub trait LabInterface<T: frame_system::Config> {
     /// Get lab by associated account_id
     fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab>;
     /// Get the account_ids of labs in a location
-    fn labs_by_country_city(country: &Vec<u8>, city: &Vec<u8>) -> Option<Vec<T::AccountId>>;
+    fn labs_by_country_region_city(country_region_code: &Vec<u8>, city_code: &Vec<u8>) -> Option<Vec<T::AccountId>>;
 
     /// Store A lab with its information
     fn create_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<Self::Lab, Self::Error>;

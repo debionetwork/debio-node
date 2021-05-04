@@ -101,19 +101,11 @@ pub mod pallet {
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
 
-    pub type CountryStr = Vec<u8>;
-    pub type CityStr = Vec<u8>;
-
     // ------- Storage -------------
     #[pallet::storage]
     #[pallet::getter(fn service_by_id)]
     pub type Services<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, ServiceOf<T>>;
     //                                _,  Hasher         ,  Key     ,  Value
-
-    /// Get services by country, city
-    #[pallet::storage]
-    #[pallet::getter(fn services_by_country_city)]
-    pub type ServicesByCountryCity<T> = StorageDoubleMap<_, Blake2_128Concat, CountryStr, Blake2_128Concat, CityStr, Vec<ServiceIdOf<T>>>;
 
     #[pallet::storage]
     #[pallet::getter(fn services_count)]
@@ -122,10 +114,6 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn services_count_by_owner)]
     pub type ServicesCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
-
-    #[pallet::storage]
-    #[pallet::getter(fn services_count_by_country_city)]
-    pub type ServicesCountByCountryCity<T> = StorageDoubleMap<_, Blake2_128Concat, CountryStr, Blake2_128Concat, CityStr, u64>;
     // -----------------------------
 
 
@@ -233,15 +221,9 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
         let service = Service::new(service_id.clone(), owner_id.clone(), service_info.clone());
         // Store to Services storage
         Services::<T>::insert(&service_id, &service);
-        // Store to ServicesByCountryCity storage
-        //  - Get service owner country, city
-        let owner = T::ServiceOwner::get_owner(owner_id).unwrap();
-        Self::insert_service_id_to_country_city(owner.get_country(), owner.get_city(), &service.id);
 
         // Increment Services Count
         Self::add_services_count();
-        // Increment ServicesCountByCountryCity
-        Self::add_services_count_by_country_city(owner.get_country(), owner.get_city());
         // Increment ServicesCountByOwner
         Self::add_services_count_by_owner(&service.owner_id);
         
@@ -290,27 +272,18 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
         let owner = T::ServiceOwner::get_owner(owner_id).unwrap();
         // disassociate service reference from the owner
         T::ServiceOwner::disassociate(owner.get_id(), &service.id);
-        // remove service reference from country, city
-        Self::remove_service_id_from_country_city(owner.get_country(), owner.get_city(), &service.id);
         // Decrement counts
         Self::sub_services_count();
-        Self::sub_services_count_by_country_city(owner.get_country(), owner.get_city());
         Self::sub_services_count_by_owner(owner.get_id());
 
         Ok(service)
     }
-
-
 
     fn service_by_id(service_id: &Self::ServiceId) -> Option<Self::Service> {
         match Services::<T>::get(service_id) {
             None => None,
             Some(service) => Some(service)
         }
-    }
-
-    fn services_by_country_city(country: Vec<u8>, city: Vec<u8>) -> Option<Vec<Self::ServiceId>> {
-        Self::services_by_country_city(country, city)
     }
 
     fn services_count_by_owner(owner_id: &T::AccountId) -> u64 {
@@ -320,54 +293,22 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
 
 /// Pallet Methods
 impl<T: Config> Pallet<T> {
-    pub fn insert_service_id_to_country_city(country: &Vec<u8>, city: &Vec<u8>, service_id: &T::Hash) -> () {
-        match ServicesByCountryCity::<T>::get(country, city) {
-            None => {
-                let mut services = Vec::new();
-                services.push(service_id.clone());
-                ServicesByCountryCity::<T>::insert(country, city, services);
-            },
-            Some(mut services) => {
-                services.push(service_id.clone());
-                ServicesByCountryCity::<T>::insert(country, city, services);
-            }
-        }
-    }
-
-    pub fn remove_service_id_from_country_city(country: &Vec<u8>, city: &Vec<u8>, service_id: &T::Hash) -> () {
-        // Get the service_id list
-        let mut services_by_country_city = ServicesByCountryCity::<T>::get(country, city).unwrap_or(Vec::new());
-        // Remove id from the list
-        services_by_country_city.retain(|s_id| s_id != service_id);
-        //  Put back the list to storage
-        ServicesByCountryCity::<T>::insert(country, city, services_by_country_city);
-    }
-
     // Services Count Addition and Substraction Helpers
     // Add services count
     pub fn add_services_count() {
         let services_count = <ServicesCount<T>>::get().unwrap_or(0);
         <ServicesCount<T>>::put(services_count.wrapping_add(1));
     }
-    // Add services count by country city
-    pub fn add_services_count_by_country_city(country: &Vec<u8>, city: &Vec<u8>) {
-        let services_count = <ServicesCountByCountryCity<T>>::get(country.clone(), city.clone()).unwrap_or(0);
-        <ServicesCountByCountryCity<T>>::insert(country.clone(), city.clone(), services_count.wrapping_add(1));
-    }
     // Add services count by owner
     pub fn add_services_count_by_owner(owner_id: &T::AccountId) {
         let services_count = ServicesCountByOwner::<T>::get(owner_id).unwrap_or(0);
         ServicesCountByOwner::<T>::insert(owner_id, services_count.wrapping_add(1))
     }
+
     // Subtract services count
     pub fn sub_services_count() {
         let services_count = <ServicesCount<T>>::get().unwrap_or(1);
         ServicesCount::<T>::put(services_count - 1);
-    }
-    // Subtract services count by country city
-    pub fn sub_services_count_by_country_city(country: &Vec<u8>, city: &Vec<u8>) {
-        let services_count = ServicesCountByCountryCity::<T>::get(country.clone(), city.clone()).unwrap_or(1);
-        ServicesCountByCountryCity::<T>::insert(country.clone(), city.clone(), services_count - 1);
     }
     // Subtract services count by owner
     pub fn sub_services_count_by_owner(owner_id: &T::AccountId) {
