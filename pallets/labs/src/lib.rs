@@ -22,6 +22,7 @@ pub struct LabInfo {
     name: Vec<u8>,
     email: Vec<u8>,
     country: Vec<u8>,
+    region: Vec<u8>,
     city: Vec<u8>,
     address: Vec<u8>,
     latitude: Option<Vec<u8>>,
@@ -62,8 +63,17 @@ impl<AccountId, Hash> Lab<AccountId, Hash>
         &self.info.country
     }
 
+    fn get_region(&self) -> &Vec<u8> {
+        &self.info.region
+    }
+
     fn get_city(&self) -> &Vec<u8> {
         &self.info.city
+    }
+
+    // Returns CountryCode-RegionCode -> XX-YYY
+    fn get_country_region(&self) -> Vec<u8> {
+        helpers::build_country_region_code(&self.get_country(), &self.get_region())
     }
 
     pub fn get_account_id(&self) -> &AccountId {
@@ -89,13 +99,26 @@ impl<T, AccountId, Hash> ServiceOwnerInfo<T> for Lab<AccountId, Hash>
     fn get_id(&self) -> &AccountId {
         &self.get_account_id()
     }
+}
 
-    fn get_country(&self) -> &Vec<u8> {
-        &self.get_country()
-    }
 
-    fn get_city(&self) -> &Vec<u8> {
-        &self.get_city()
+pub mod helpers {
+    use crate::*;
+
+    /// Concatenate CountryCode with RegionCode with a '-'
+    pub fn build_country_region_code(country_code: &Vec<u8>, region_code: &Vec<u8>) -> Vec<u8> {
+        // container
+        let mut country_region_code = Vec::new();
+        let mut country_code = country_code.clone();
+        // dash character as u8
+        let mut dash = ['-'].iter().map(|c| *c as u8).collect::<Vec<u8>>();
+        let mut region_code = region_code.clone();
+        
+        country_region_code.append(&mut country_code);
+        country_region_code.append(&mut dash);
+        country_region_code.append(&mut region_code);
+
+        country_region_code
     }
 }
 
@@ -136,8 +159,8 @@ pub mod pallet {
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
     pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>>;
-    pub type CountryStr = Vec<u8>;
-    pub type CityStr = Vec<u8>;
+    pub type CountryRegionCode = Vec<u8>; // country_code-region_code -> XX-YYYY
+    pub type CityCode = Vec<u8>; // city_code -> ZZZZ
 
     // ----- Storage ------------------
     /// Get Lab by account id
@@ -146,11 +169,14 @@ pub mod pallet {
     #[pallet::getter(fn lab_by_account_id)]
     pub type Labs<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, LabOf<T>>;
 
-    /// Get LabId by Country, City
-    /// (CountryStr, CityStr) => Vec<AccountId>
+    
+    /// Get LabId by Country-Region, City
+    /// (CountryRegionCode, CityCode) => Vec<AccountId>
     #[pallet::storage]
-    #[pallet::getter(fn labs_by_country_city)]
-    pub type LabsByCountryCity<T> = StorageDoubleMap<_, Blake2_128Concat, CountryStr, Blake2_128Concat, CityStr, Vec<AccountIdOf<T>>>;
+    #[pallet::getter(fn labs_by_country_region_city)]
+    pub type LabsByCountryRegionCity<T> =
+        StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, Vec<AccountIdOf<T>>>;
+
 
     /// Get total lab count
     /// u32
@@ -159,11 +185,12 @@ pub mod pallet {
     pub type LabCount<T> = StorageValue<_, u64>;
 
 
-    /// Get total lab count by Country, City
-    /// (CountryStr, CityStr) => u32
+    /// Get total lab count by Country-Region, City
+    /// (CountryRegionCode, CityCode) => u32
     #[pallet::storage]
-    #[pallet::getter(fn lab_count_by_country_city)]
-    pub type LabCountByCountryCity<T> = StorageDoubleMap<_, Blake2_128Concat, CountryStr, Blake2_128Concat, CityStr, u64>;
+    #[pallet::getter(fn lab_count_by_country_region_city)]
+    pub type LabCountByCountryRegionCity<T>
+        = StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, u64>;
     // -----------------------------------
 
 
@@ -256,11 +283,11 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         let lab = Lab::new(account_id.clone(), lab_info.clone());
         // Insert to Storage
         Labs::<T>::insert(account_id, &lab);
-        Self::insert_lab_id_to_country_city(lab.get_country(), lab.get_city(), lab.get_account_id());
+        Self::insert_lab_id_to_location(&lab);
 
         // Increment Count
         Self::add_lab_count();
-        Self::add_lab_count_by_country_city(lab.get_country(), lab.get_city());
+        Self::add_lab_count_by_location(&lab);
 
         Ok(lab)
     }
@@ -273,16 +300,20 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         let mut lab = lab.unwrap();
 
         // If location is updated, remove the lab from the old location
-        if lab.get_country() != &lab_info.country && lab.get_city() != &lab_info.city {
-            Self::remove_lab_id_from_country_city(lab.get_country(), lab.get_city(), lab.get_account_id());
-            Self::sub_lab_count_by_country_city(lab.get_country(), lab.get_city());
+        // Also update service locations
+        if lab.get_country() != &lab_info.country
+            || lab.get_region() != &lab_info.region
+            || lab.get_city() != &lab_info.city
+        {
+            Self::remove_lab_id_from_location(&lab);
+            Self::sub_lab_count_by_location(&lab);
         }
 
         lab.update_info(lab_info.clone());
 
         Labs::<T>::insert(account_id, &lab);
-        Self::insert_lab_id_to_country_city(lab.get_country(), lab.get_city(), lab.get_account_id());
-        Self::add_lab_count_by_country_city(lab.get_country(), lab.get_city());
+        Self::insert_lab_id_to_location(&lab);
+        Self::add_lab_count_by_location(&lab);
 
         Ok(lab)
     }
@@ -297,16 +328,16 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         for service_id in &lab.services {
             let _result = T::Services::delete_service(account_id, &service_id);
         }
-        Self::remove_lab_id_from_country_city(lab.get_country(), lab.get_city(), &lab.account_id);
-        Self::sub_lab_count_by_country_city(lab.get_country(), lab.get_city());
+        Self::remove_lab_id_from_location(&lab);
+        Self::sub_lab_count_by_location(&lab);
         Labs::<T>::remove(&lab.account_id);
         Self::sub_lab_count();
 
         Ok(lab)
     }
 
-    fn labs_by_country_city(country: &Vec<u8>, city: &Vec<u8>) -> Option<Vec<T::AccountId>> {
-        Self::labs_by_country_city(country, city)
+    fn labs_by_country_region_city(country_region_code: &Vec<u8>, city_code: &Vec<u8>) -> Option<Vec<T::AccountId>> {
+        Self::labs_by_country_region_city(country_region_code, city_code)
     }
 
     fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab> {
@@ -315,27 +346,36 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 }
 
 impl<T: Config> Pallet<T> {
-    pub fn insert_lab_id_to_country_city(country: &Vec<u8>, city: &Vec<u8>, lab_account_id: &T::AccountId) -> () {
-        match LabsByCountryCity::<T>::get(country, city) {
+    pub fn insert_lab_id_to_location(lab: &LabOf<T>) -> () {
+
+        let country_region_code = lab.get_country_region();
+        let city_code = lab.get_city();
+        let lab_account_id = lab.get_account_id();
+
+        match LabsByCountryRegionCity::<T>::get(&country_region_code, city_code) {
             None => {
                 let mut labs = Vec::new();
-                labs.push(lab_account_id);
-                LabsByCountryCity::<T>::insert(country, city, labs);
+                labs.push(lab_account_id.clone());
+                LabsByCountryRegionCity::<T>::insert(&country_region_code, city_code, labs);
             },
             Some(mut labs) => {
                 labs.push(lab_account_id.clone());
-                LabsByCountryCity::<T>::insert(country, city, labs);
+                LabsByCountryRegionCity::<T>::insert(&country_region_code, city_code, labs);
             }
         }
     }
 
-    pub fn remove_lab_id_from_country_city(country: &Vec<u8>, city: &Vec<u8>, lab_account_id: &T::AccountId) -> () {
+    pub fn remove_lab_id_from_location(lab: &LabOf<T>) -> () {
+        let country_region_code = lab.get_country_region();
+        let city_code = lab.get_city();
+        let lab_account_id = lab.get_account_id();
+
         // Get the lab_account_id list
-        let mut labs_by_country_city = LabsByCountryCity::<T>::get(country, city).unwrap_or(Vec::new());
+        let mut labs_by_location = LabsByCountryRegionCity::<T>::get(&country_region_code, city_code).unwrap_or(Vec::new());
         // Remove id from the list
-        labs_by_country_city.retain(|l_id| l_id != lab_account_id);
+        labs_by_location.retain(|l_id| l_id != lab_account_id);
         //  Put back the list to storage
-        LabsByCountryCity::<T>::insert(country, city, labs_by_country_city);
+        LabsByCountryRegionCity::<T>::insert(&country_region_code, city_code, labs_by_location);
     }
 
     // Add lab count
@@ -344,10 +384,13 @@ impl<T: Config> Pallet<T> {
         <LabCount<T>>::put(lab_count.wrapping_add(1));
     }
 
-    // Add lab count by country city
-    pub fn add_lab_count_by_country_city(country: &Vec<u8>, city: &Vec<u8>) {
-        let lab_count = <LabCountByCountryCity<T>>::get(country.clone(), city.clone()).unwrap_or(0);
-        <LabCountByCountryCity<T>>::insert(country.clone(), city.clone(), lab_count.wrapping_add(1));
+    // Add lab count by location
+    pub fn add_lab_count_by_location(lab: &LabOf<T>) {
+        let country_region_code = lab.get_country_region();
+        let city_code = lab.get_city();
+
+        let lab_count = <LabCountByCountryRegionCity<T>>::get(country_region_code.clone(), city_code.clone()).unwrap_or(0);
+        <LabCountByCountryRegionCity<T>>::insert(country_region_code.clone(), city_code.clone(), lab_count.wrapping_add(1));
     }
 
     // Subtract lab count
@@ -356,10 +399,13 @@ impl<T: Config> Pallet<T> {
         LabCount::<T>::put(lab_count - 1);
     }
 
-    // Subtract lab count by country city
-    pub fn sub_lab_count_by_country_city(country: &Vec<u8>, city: &Vec<u8>) {
-        let lab_count = LabCountByCountryCity::<T>::get(country.clone(), city.clone()).unwrap_or(1);
-        LabCountByCountryCity::<T>::insert(country.clone(), city.clone(), lab_count - 1);
+    // Subtract lab count by location
+    pub fn sub_lab_count_by_location(lab: &LabOf<T>) {
+        let country_region_code = lab.get_country_region();
+        let city_code = lab.get_city();
+
+        let lab_count = LabCountByCountryRegionCity::<T>::get(country_region_code.clone(), city_code.clone()).unwrap_or(1);
+        LabCountByCountryRegionCity::<T>::insert(country_region_code.clone(), city_code.clone(), lab_count - 1);
     }
 }
 
@@ -397,4 +443,5 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
         });
     }
 }
+
 
