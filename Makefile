@@ -12,8 +12,8 @@ test:
 
 .PHONY: run
 run:
-	#cargo run --release -- --dev --tmp
-	cargo run -- --dev --tmp
+	cargo run --release -- --dev --tmp
+	#cargo run -- --dev --tmp
 
 .PHONY: build
 build:
