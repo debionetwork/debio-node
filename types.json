@@ -3,6 +3,7 @@
   "LookupSource": "MultiAddress",
   "AccountIdOf": "AccountId",
   "EthereumAddress": "[u8; 20]",
+  "EthereumAddressOf": "EthereumAddress",
   "HashOf": "H256",
   "CountryRegionCode": "Text",
   "CityCode": "Text",
@@ -44,7 +45,8 @@
       "Unpaid",
       "Paid",
       "Fulfilled",
-      "Refunded"
+      "Refunded",
+      "Cancelled"
     ]
   },
   "Moment": "u64",
@@ -54,6 +56,8 @@
     "service_id": "H256",
     "customer_id": "AccountId",
     "seller_id": "AccountId",
+    "customer_eth_address": "EthereumAddress",
+    "seller_eth_address": "EthereumAddress",
     "dna_sample_tracking_id": "Text",
     "status": "OrderStatus",
     "created_at": "u64",
@@ -72,6 +76,7 @@
       "Failed"
     ]
   },
+  "DnaSampleTrackingId": "Text",
   "DnaSample": {
     "tracking_id": "Text",
     "lab_id": "AccountId",

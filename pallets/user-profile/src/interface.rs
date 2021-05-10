@@ -1,8 +1,9 @@
 //use sp_std::prelude::*;
 
-pub trait UserProfileInterface<T: frame_system::Config> {
-    type UsdtAddress;
+pub trait UserProfileInterface<T: frame_system::Config, EthAddress> {
 
-    fn get_usdt_address_by_account_id(account_id: &T::AccountId) -> Option<Self::UsdtAddress>;
-    fn set_usdt_address_by_account_id(account_id: &T::AccountId, usdt_address: &Self::UsdtAddress) -> (); 
+    fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthAddress>;
+    fn set_eth_address_by_account_id(account_id: &T::AccountId, usdt_address: &EthAddress) -> (); 
+
+    fn get_account_id_by_eth_address(eth_address: &EthAddress) -> Option<T::AccountId>;
 }

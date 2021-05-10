@@ -2763,6 +2763,7 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-services",
+ "traits-user-profile",
 ]
 
 [[package]]
@@ -3872,6 +3873,7 @@ dependencies = [
  "sp-std",
  "traits-genetic-testing",
  "traits-services",
+ "traits-user-profile",
 ]
 
 [[package]]
@@ -7815,6 +7817,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "traits-user-profile"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-std",
+]
+
+[[package]]
 name = "trie-db"
 version = "0.22.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8004,6 +8016,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-user-profile",
 ]
 
 [[package]]

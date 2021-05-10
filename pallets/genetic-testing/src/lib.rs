@@ -298,6 +298,16 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
     }
 
+    fn delete_dna_sample(tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+        let dna_sample = DnaSamples::<T>::take(tracking_id);
+        if dna_sample.is_none() {
+            return Err(Error::<T>::DnaSampleNotFound);
+        }
+        let dna_sample = dna_sample.unwrap();
+
+        Ok(dna_sample)
+    }
+
     fn receive_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
@@ -462,6 +472,10 @@ impl<T: Config> GeneticTestingProvider<T> for Pallet<T> {
     }
     fn dna_sample_by_tracking_id(tracking_id: &Vec<u8>) -> Option<Self::DnaSample> {
         <Self as GeneticTestingInterface<T>>::dna_sample_by_tracking_id(tracking_id)
+    }
+
+    fn delete_dna_sample(tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+        <Self as GeneticTestingInterface<T>>::delete_dna_sample(tracking_id)
     }
 }
 

@@ -14,6 +14,7 @@ pub mod interface;
 pub use crate::interface::LabInterface;
 use frame_support::pallet_prelude::*;
 use traits_services::{ServiceOwnerInfo};
+use traits_user_profile::{UserProfileProvider};
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
@@ -129,11 +130,13 @@ pub mod pallet {
     };
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
+    use crate::*;
     use crate::interface::LabInterface;
     use crate::Lab;
     use crate::LabInfo;
     pub use traits_services::{ServicesProvider, ServiceOwner};
     use frame_support::traits::Currency;
+    use codec::{EncodeLike};
 
 
     #[pallet::config]
@@ -143,6 +146,8 @@ pub mod pallet {
 	type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Currency: Currency<Self::AccountId>;
         type Services: ServicesProvider<Self>;
+        type EthereumAddress: Clone + Copy + PartialEq + Eq + Encode + EncodeLike + Decode + Default + sp_std::fmt::Debug;
+        type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -412,8 +417,10 @@ impl<T: Config> Pallet<T> {
 impl<T: Config> ServiceOwner<T> for Pallet<T> {
     type Owner = Lab<T::AccountId, T::Hash>;
 
+    /// User can create service if he/she is a lab and has set ethereum address
     fn can_create_service(user_id: &T::AccountId) -> bool {
-        return Labs::<T>::contains_key(user_id);
+        let eth_address = T::UserProfile::get_eth_address_by_account_id(user_id);
+        return Labs::<T>::contains_key(user_id) && eth_address.is_some();
     }
 
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {

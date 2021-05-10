@@ -29,6 +29,7 @@ sp-std = { default-features = false, version = '3.0.0' }
 services = { path = '../services', default-features = false }
 traits-services = { path = '../../traits/services', default-features = false }
 traits-genetic-testing = { path = '../../traits/genetic-testing', default-features = false }
+traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 chrono = { default-features = false, version = '0.4' }
 
 [dev-dependencies]
@@ -50,4 +51,5 @@ std = [
     'chrono/std',
     'traits-services/std',
     'traits-genetic-testing/std',
+    'traits-user-profile/std',
 ]

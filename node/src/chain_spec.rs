@@ -185,8 +185,8 @@ fn testnet_genesis(
 			// Assign network admin rights.
 			key: root_key,
 		}),
-                orders: Some(OrdersConfig {
-                    escrow_key: orders_escrow_key,
-                })
+		orders: Some(OrdersConfig {
+			escrow_key: orders_escrow_key,
+		})
 	}
 }
