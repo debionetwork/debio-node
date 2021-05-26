@@ -301,6 +301,10 @@ impl user_profile::Config for Runtime {
 	type EthereumAddress = EthereumAddress;
 }
 
+impl electrical_medical_record::Config for Runtime {
+    type Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -322,6 +326,7 @@ construct_runtime!(
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Module, Call, Storage, Event<T>},
+		ElectricalMedicalRecord: electrical_medical_record::{Module, Call, Storage, Event<T>},
 	}
 );
 

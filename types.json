@@ -114,5 +114,15 @@
       "Hospital",
       "Doctor"
     ]
-  }
+  },
+  "ElectricalMedicalRecordInfo": {
+    "description": "Text",
+    "record_link": "Text"
+  },
+  "ElectricalMedicalRecord": {
+    "owner_id": "AccountId",
+    "info": "ElectricalMedicalRecordInfo"
+  },
+  "ElectricalMedicalRecordOf": "ElectricalMedicalRecord",
+  "ElectricalMedicalRecordInfoOf": "ElectricalMedicalRecordInfo"
 }

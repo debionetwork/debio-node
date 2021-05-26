@@ -30,6 +30,7 @@ services = { path = '../pallets/services', default-features = false }
 orders = { path = '../pallets/orders', default-features = false }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
 user-profile = { path = '../pallets/user-profile', default-features = false }
+electrical-medical-record = { path = '../pallets/electrical-medical-record', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
@@ -101,4 +102,5 @@ std = [
     'orders/std',
     'genetic-testing/std',
     'user-profile/std',
+    'electrical-medical-record/std',
 ]
