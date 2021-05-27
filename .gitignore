@@ -13,3 +13,6 @@
 .local
 
 *.swp
+
+# Local testnet nodes storage
+storage

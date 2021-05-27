@@ -294,6 +294,7 @@ impl orders::Config for Runtime {
 impl genetic_testing::Config for Runtime {
     type Event = Event;
     type RandomnessSource = RandomnessCollectiveFlip;
+    type Orders = Orders;
 }
 
 impl user_profile::Config for Runtime {

@@ -82,7 +82,8 @@
     "tracking_id": "Text",
     "lab_id": "AccountId",
     "owner_id": "AccountId",
-    "status": "DnaSampleStatus"
+    "status": "DnaSampleStatus",
+    "order_id": "H256"
   },
   "DnaSampleOf": "DnaSample",
   "DnaTestResult": {

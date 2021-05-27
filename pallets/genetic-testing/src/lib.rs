@@ -18,6 +18,7 @@ pub use frame_support::traits::Randomness;
 pub use sp_std::prelude::*;
 pub use sp_std::fmt::Debug;
 pub use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
+pub use traits_order::{OrderEventEmitter};
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -27,6 +28,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type RandomnessSource: Randomness<Self::Hash>;
+        type Orders: OrderEventEmitter<Self>;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -42,13 +44,13 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// parameters [DnaSample]
-        DnaSampleCreated(DnaSample<T::AccountId>),
+        DnaSampleCreated(DnaSample<T::AccountId, T::Hash>),
         /// Received
-        DnaSampleReceived(DnaSample<T::AccountId>),
+        DnaSampleReceived(DnaSample<T::AccountId, T::Hash>),
         /// Rejected
-        DnaSampleRejected(DnaSample<T::AccountId>),
+        DnaSampleRejected(DnaSample<T::AccountId, T::Hash>),
         /// Processing
-        DnaSampleProcessing(DnaSample<T::AccountId>),
+        DnaSampleProcessing(DnaSample<T::AccountId, T::Hash>),
         /// Dna Sample Processed
         DnaSampleProcessed(DnaTestResultOf<T>),
         /// Dna Test Result Submitted
@@ -66,7 +68,7 @@ pub mod pallet {
 
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
-    pub type DnaSampleOf<T> = DnaSample<AccountIdOf<T>>;
+    pub type DnaSampleOf<T> = DnaSample<AccountIdOf<T>, HashOf<T>>;
     pub type DnaTestResultOf<T> = DnaTestResult<AccountIdOf<T>>;
     pub type DnaSampleTrackingId = Vec<u8>;
 
@@ -199,23 +201,25 @@ impl Default for DnaSampleStatus {
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct DnaSample<AccountId> {
+pub struct DnaSample<AccountId, Hash> {
     tracking_id: Vec<u8>,
     lab_id: AccountId,
     owner_id: AccountId,
     status: DnaSampleStatus,
+    order_id: Hash,
 }
-impl<AccountId> DnaSample<AccountId> {
-    pub fn new(tracking_id: Vec<u8>, lab_id: AccountId, owner_id: AccountId) -> Self {
+impl<AccountId, Hash> DnaSample<AccountId, Hash> {
+    pub fn new(tracking_id: Vec<u8>, lab_id: AccountId, owner_id: AccountId, order_id: Hash) -> Self {
         Self {
             tracking_id,
             lab_id,
             owner_id,
             status: DnaSampleStatus::default(),
+            order_id,
         }
     }
 }
-impl<AccountId> DnaSampleTracking for DnaSample<AccountId> {
+impl<AccountId, Hash> DnaSampleTracking for DnaSample<AccountId, Hash> {
     fn get_tracking_id(&self) -> &Vec<u8> {
         &self.tracking_id
     }
@@ -274,7 +278,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     type DnaTestResultSubmission = DnaTestResultSubmission;
     type Error = Error<T>;
 
-    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId) -> Result<Self::DnaSample, Self::Error> {
+    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
         let seed = Self::generate_random_seed(lab_id, owner_id);
 
         let mut tries = 10;
@@ -282,7 +286,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
             let tracking_id = tracking_id_generator::generate(seed.clone());
 
             if !DnaSamples::<T>::contains_key(&tracking_id) {
-                let dna_sample = DnaSample::new(tracking_id.clone(), lab_id.clone(), owner_id.clone());
+                let dna_sample = DnaSample::new(tracking_id.clone(), lab_id.clone(), owner_id.clone(), order_id.clone());
                 DnaSamples::<T>::insert(&dna_sample.tracking_id, &dna_sample);
                 Self::add_dna_sample_by_owner(&dna_sample);
                 Self::add_dna_sample_by_lab(&dna_sample);
@@ -338,6 +342,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
         dna_sample.status = DnaSampleStatus::Rejected;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
+        T::Orders::emit_event_order_failed(&dna_sample.order_id);
 
         Ok(dna_sample)
     }
@@ -467,8 +472,8 @@ impl<T: Config> GeneticTestingProvider<T> for Pallet<T> {
     type DnaSample = DnaSampleOf<T>;
     type Error = Error<T>;
 
-    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId) -> Result<Self::DnaSample, Self::Error> {
-        <Self as GeneticTestingInterface<T>>::create_dna_sample(lab_id, owner_id)
+    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
+        <Self as GeneticTestingInterface<T>>::create_dna_sample(lab_id, owner_id, order_id)
     }
     fn dna_sample_by_tracking_id(tracking_id: &Vec<u8>) -> Option<Self::DnaSample> {
         <Self as GeneticTestingInterface<T>>::dna_sample_by_tracking_id(tracking_id)
