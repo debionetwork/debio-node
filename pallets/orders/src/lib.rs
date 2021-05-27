@@ -10,6 +10,7 @@ use sp_std::prelude::*;
 use traits_services::{ServicesProvider, ServiceInfo};
 use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
 use traits_user_profile::{UserProfileProvider};
+use traits_order::{OrderEventEmitter};
 
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
@@ -109,7 +110,7 @@ pub mod pallet {
     // ---- Types --------------------------------------------
     type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
-    type HashOf<T> = <T as frame_system::Config>::Hash;
+    pub type HashOf<T> = <T as frame_system::Config>::Hash;
     type EthereumAddressOf<T> = <T as Config>::EthereumAddress;
     pub type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, MomentOf<T>, EthereumAddressOf<T>>;
     type OrderIdsOf<T> = Vec<HashOf<T>>;
@@ -179,6 +180,12 @@ pub mod pallet {
         /// Order Cancelled
         /// parameters, [Order]
         OrderCancelled(OrderOf<T>),
+        /// Order Not Found
+        /// parameters, []
+        OrderNotFound,
+        /// Order Failed
+        /// parameters, [Order]
+        OrderFailed(OrderOf<T>),
     }
       
 
@@ -292,7 +299,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let now = pallet_timestamp::Pallet::<T>::get();
 
         // Initialize DnaSample
-        let dna_sample = T::GeneticTesting::create_dna_sample(seller_id, customer_id);
+        let dna_sample = T::GeneticTesting::create_dna_sample(seller_id, customer_id, &order_id);
         if dna_sample.is_err() {
             return Err(Error::<T>::DnaSampleInitalizationError);
         }
@@ -502,3 +509,11 @@ impl<T: Config> Pallet<T> {
     }
 }
 
+impl<T: Config> OrderEventEmitter<T> for Pallet<T> {
+    fn emit_event_order_failed(order_id: &HashOf<T>) -> () {
+        match Self::order_by_id(order_id) {
+            None => Self::deposit_event(Event::OrderNotFound),
+            Some(order) => Self::deposit_event(Event::OrderFailed(order))
+        }
+    }
+}
