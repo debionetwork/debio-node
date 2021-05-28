@@ -302,7 +302,7 @@ impl user_profile::Config for Runtime {
 	type EthereumAddress = EthereumAddress;
 }
 
-impl electrical_medical_record::Config for Runtime {
+impl electronic_medical_record::Config for Runtime {
     type Event = Event;
 }
 
@@ -327,7 +327,7 @@ construct_runtime!(
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Module, Call, Storage, Event<T>},
-		ElectricalMedicalRecord: electrical_medical_record::{Module, Call, Storage, Event<T>},
+		ElectronicMedicalRecord: electronic_medical_record::{Module, Call, Storage, Event<T>},
 	}
 );
 

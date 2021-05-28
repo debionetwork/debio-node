@@ -116,14 +116,15 @@
       "Doctor"
     ]
   },
-  "ElectricalMedicalRecordInfo": {
+  "ElectronicMedicalRecordInfo": {
+    "title": "Text",
     "description": "Text",
     "record_link": "Text"
   },
-  "ElectricalMedicalRecord": {
+  "ElectronicMedicalRecord": {
     "owner_id": "AccountId",
-    "info": "ElectricalMedicalRecordInfo"
+    "info": "ElectronicMedicalRecordInfo"
   },
-  "ElectricalMedicalRecordOf": "ElectricalMedicalRecord",
-  "ElectricalMedicalRecordInfoOf": "ElectricalMedicalRecordInfo"
+  "ElectronicMedicalRecordOf": "ElectronicMedicalRecord",
+  "ElectronicMedicalRecordInfoOf": "ElectronicMedicalRecordInfo"
 }

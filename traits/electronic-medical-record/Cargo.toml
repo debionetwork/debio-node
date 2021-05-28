@@ -1,5 +1,5 @@
 [package]
-name = "traits-electrical-medical-record"
+name = "traits-electronic-medical-record"
 version = "0.1.0"
 authors = ["Agustinus Theodorus <agustinustheoo@gmail.com>"]
 edition = "2018"
