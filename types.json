@@ -45,7 +45,7 @@
     "_enum": [
       "Unpaid",
       "Paid",
-      "Fulfilled",
+      "Success",
       "Refunded",
       "Cancelled"
     ]
