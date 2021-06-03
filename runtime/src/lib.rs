@@ -47,6 +47,7 @@ pub use services;
 pub use orders;
 pub use genetic_testing;
 pub use user_profile;
+pub use electronic_medical_record;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -304,6 +305,7 @@ impl user_profile::Config for Runtime {
 
 impl electronic_medical_record::Config for Runtime {
     type Event = Event;
+	type ElectronicMedicalRecordInfoOwner = ElectronicMedicalRecordInfoOwner;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -327,8 +329,8 @@ construct_runtime!(
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Module, Call, Storage, Event<T>},
-		ElectronicMedicalRecord: electronic_medical_record::{Module, Call, Storage, Event<T>},
-	}
+		ElectronicMedicalRecordInfoOwner: electronic_medical_record::{Module, Call, Storage, Event<T>},
+	}	
 );
 
 /// The address format for describing accounts.

@@ -2,7 +2,8 @@
 
 pub use pallet::*;
 use traits_electronic_medical_record::{
-    ElectronicMedicalRecordsProvider,
+    ElectronicMedicalRecordInfosProvider,
+    ElectronicMedicalRecordInfoOwner,
     ElectronicMedicalRecordInfo as ElectronicMedicalRecordInfoT
 };
 use frame_support::codec::{Encode, Decode};
@@ -15,23 +16,38 @@ use sp_std::prelude::*;
 /// ElectronicMedicalRecordInfo struct
 /// Information that is mutable by user
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct ElectronicMedicalRecordInfo {
-    title: Vec<u8>,
-    description: Vec<u8>, // TODO: limit the length
-    record_link: Vec<u8>
+pub struct ElectronicMedicalRecordInfo<AccountId, Hash>
+    where Hash: PartialEq + Eq 
+{
+    pub id: Hash,
+    pub owner_id: AccountId,
+    pub title: Vec<u8>,
+    pub description: Vec<u8>, // TODO: limit the length
+    pub record_link: Vec<u8>
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct ElectronicMedicalRecord<AccountId> {
-    pub owner_id: AccountId,
-    pub info: ElectronicMedicalRecordInfo,
-}
-impl<AccountId> ElectronicMedicalRecord<AccountId> {
-    pub fn new(owner_id: AccountId, info: ElectronicMedicalRecordInfo) -> Self {
+impl<AccountId, Hash> ElectronicMedicalRecordInfo<AccountId, Hash> 
+    where Hash: PartialEq + Eq 
+{
+        
+    pub fn new (
+        id: Hash,
+        owner_id: AccountId,
+        title: Vec<u8>,
+        description: Vec<u8>,
+        record_link: Vec<u8>
+    ) -> Self {
         Self {
+            id,
             owner_id,
-            info
+            title,
+            description,
+            record_link
         }
+    }
+
+    pub fn get_id(&self) -> &Hash {
+        &self.id
     }
 
     pub fn get_owner_id(&self) -> &AccountId {
@@ -39,9 +55,51 @@ impl<AccountId> ElectronicMedicalRecord<AccountId> {
     }
 }
 
-impl<T, AccountId> ElectronicMedicalRecordInfoT<T> for ElectronicMedicalRecord<AccountId>
-    where T: frame_system::Config<AccountId = AccountId>
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+pub struct ElectronicMedicalRecord<AccountId, Hash> 
+    where Hash: PartialEq + Eq 
 {
+    pub owner_id: AccountId,
+    pub info: Vec<Hash>,
+}
+
+impl<AccountId, Hash> ElectronicMedicalRecord<AccountId, Hash> 
+    where Hash: PartialEq + Eq 
+    {
+        
+    pub fn new (
+        owner_id: AccountId
+    ) -> Self {
+        Self {
+            owner_id,
+            info: Vec::<Hash>::new(),
+        }
+    }
+
+    pub fn get_owner_id(&self) -> &AccountId {
+        &self.owner_id
+    }
+
+    pub fn add_info(&mut self, emr_info_id: Hash) -> () {
+        &self.info.push(emr_info_id);
+    }
+
+    pub fn remove_info(&mut self, emr_info_id: Hash) -> () {
+        if let Some(pos) = &self.info.iter().position(|x| *x == emr_info_id) {
+            &self.info.remove(*pos);
+        }
+    }
+}
+
+impl<T, AccountId, Hash> ElectronicMedicalRecordInfoT<T> for ElectronicMedicalRecordInfo<AccountId, Hash>
+    where 
+        Hash: PartialEq + Eq,
+        T: frame_system::Config<AccountId = AccountId, Hash = Hash>
+{
+    fn get_id(&self) -> &Hash {
+        self.get_id()
+    }
+
     fn get_owner_id(&self) -> &AccountId {
         self.get_owner_id()
     }
@@ -54,12 +112,13 @@ pub mod pallet {
     };
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
-    use crate::{ElectronicMedicalRecord, ElectronicMedicalRecordInfo};
+    use crate::{ElectronicMedicalRecord, ElectronicMedicalRecordInfoOwner, ElectronicMedicalRecordInfo};
     use crate::interface::ElectronicMedicalRecordInterface;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type ElectronicMedicalRecordInfoOwner: ElectronicMedicalRecordInfoOwner<Self>;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -75,13 +134,26 @@ pub mod pallet {
     // ----- Types -------
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
-    pub type ElectronicMedicalRecordOf<T> = ElectronicMedicalRecord<AccountIdOf<T>>;
-    pub type ElectronicMedicalRecordInfoOf = ElectronicMedicalRecordInfo;
+    pub type ElectronicMedicalRecordOf<T> = ElectronicMedicalRecord<AccountIdOf<T>, HashOf<T>>;
+    pub type ElectronicMedicalRecordInfoOf<T> = ElectronicMedicalRecordInfo<AccountIdOf<T>, HashOf<T>>;
+    pub type ElectronicMedicalRecordInfoIdOf<T> = HashOf<T>;
 
     // ------- Storage -------------
     #[pallet::storage]
     #[pallet::getter(fn electronic_medical_record_by_owner_id)]
     pub type ElectronicMedicalRecordByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, ElectronicMedicalRecordOf<T>>;
+    
+    #[pallet::storage]
+    #[pallet::getter(fn electronic_medical_record_info_by_id)]
+    pub type ElectronicMedicalRecordInfoById<T> = StorageMap<_, Blake2_128Concat, ElectronicMedicalRecordInfoIdOf<T>, ElectronicMedicalRecordInfoOf<T>>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn electronic_medical_record_info_count)]
+    pub type ElectronicMedicalRecordInfoCount<T> = StorageValue<_, u64>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn electronic_medical_record_info_count_by_owner)]
+    pub type ElectronicMedicalRecordInfoCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
     //                                _,  Hasher         ,  Key     ,  Value
     // -----------------------------
 
@@ -92,10 +164,16 @@ pub mod pallet {
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event
         /// parameters, [ElectronicMedicalRecord, who]
-        ElectronicMedicalRecordUploaded(ElectronicMedicalRecordOf<T>, AccountIdOf<T>),
+        ElectronicMedicalRecordAdded(ElectronicMedicalRecordOf<T>, AccountIdOf<T>),
         //// ElectronicMedicalRecord deleted
         /// parameters, [ElectronicMedicalRecord, who]
         ElectronicMedicalRecordRemoved(ElectronicMedicalRecordOf<T>, AccountIdOf<T>),
+        /// Event documentation should end with an array that provides descriptive names for event
+        /// parameters, [ElectronicMedicalRecordInfo, who]
+        ElectronicMedicalRecordInfoAdded(ElectronicMedicalRecordInfoOf<T>, AccountIdOf<T>),
+        //// ElectronicMedicalRecordInfo deleted
+        /// parameters, [ElectronicMedicalRecordInfo, who]
+        ElectronicMedicalRecordInfoRemoved(ElectronicMedicalRecordInfoOf<T>, AccountIdOf<T>),
     }
 
     // Errors inform users that something went wrong.
@@ -113,12 +191,12 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn upload_electronic_medical_record(origin: OriginFor<T>, electronic_medical_record_info: ElectronicMedicalRecordInfoOf) -> DispatchResultWithPostInfo {
+        pub fn add_electronic_medical_record(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as ElectronicMedicalRecordInterface<T>>::upload_electronic_medical_record(&who, &electronic_medical_record_info) {
+            match <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record(&who) {
                 Ok(electronic_medical_record) => {
-                    Self::deposit_event(Event::ElectronicMedicalRecordUploaded(electronic_medical_record, who.clone()));
+                    Self::deposit_event(Event::ElectronicMedicalRecordAdded(electronic_medical_record, who.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -136,25 +214,64 @@ pub mod pallet {
                 Err(error) => Err(error)?
             }
         }
+        
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn add_electronic_medical_record_info(origin: OriginFor<T>, electronic_medical_record_info: ElectronicMedicalRecordInfoOf<T>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let mut title = electronic_medical_record_info.title.clone();
+            let mut description = electronic_medical_record_info.description.clone();
+            let mut record_link = electronic_medical_record_info.record_link.clone();
+
+            match <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record_info(&who, &mut title, &mut description, &mut record_link) {
+                Ok(electronic_medical_record_info) => {
+                    Self::deposit_event(Event::ElectronicMedicalRecordInfoAdded(electronic_medical_record_info, who.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
+        }
+
+        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        pub fn remove_electronic_medical_record_info(origin: OriginFor<T>, electronic_medical_record_info: ElectronicMedicalRecordInfoOf<T>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record_info(&who, &electronic_medical_record_info.get_id()) {
+                Ok(electronic_medical_record_info) => {
+                    Self::deposit_event(Event::ElectronicMedicalRecordInfoRemoved(electronic_medical_record_info, who.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
+        }
     }
 }
+
+use frame_support::sp_runtime::traits::Hash;
+use traits_electronic_medical_record::{ElectronicMedicalRecordInfoOwnerInfo};
 
 /// ElectronicMedicalRecord Interface Implementation
 impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     type Error = Error<T>;
+    type ElectronicMedicalRecordInfoId = T::Hash;
     type ElectronicMedicalRecord = ElectronicMedicalRecordOf<T>;
-    type ElectronicMedicalRecordInfo = ElectronicMedicalRecordInfoOf;
+    type ElectronicMedicalRecordInfo = ElectronicMedicalRecordInfoOf<T>;
 
-    /// Upload ElectronicMedicalRecord
-    fn upload_electronic_medical_record(owner_id: &T::AccountId, electronic_medical_record_info: &Self::ElectronicMedicalRecordInfo) -> Result<Self::ElectronicMedicalRecord, Self::Error> { 
-        let electronic_medical_record = ElectronicMedicalRecord::new(owner_id.clone(), electronic_medical_record_info.clone());
+    fn generate_electronic_medical_record_info_id(owner_id: &T::AccountId, electronic_medical_record_info_count: u64) -> Self::ElectronicMedicalRecordInfoId {
+        let mut account_id_bytes = owner_id.encode();
+        let mut electronic_medical_record_info_count_bytes = electronic_medical_record_info_count.encode();
+        account_id_bytes.append(&mut electronic_medical_record_info_count_bytes);
+
+        let seed = &account_id_bytes;
+        return T::Hashing::hash(seed);
+    }
+
+    fn add_electronic_medical_record(owner_id: &T::AccountId) -> Result<Self::ElectronicMedicalRecord, Self::Error> { 
+        let electronic_medical_record = ElectronicMedicalRecord::new(owner_id.clone());
         // Store to ElectronicMedicalRecordById storage
         ElectronicMedicalRecordByOwner::<T>::insert(owner_id, &electronic_medical_record);
         
         Ok(electronic_medical_record) 
     }
 
-    /// Remove ElectronicMedicalRecord
     fn remove_electronic_medical_record(owner_id: &T::AccountId) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
         let electronic_medical_record = ElectronicMedicalRecordByOwner::<T>::get(owner_id);
         if electronic_medical_record == None {
@@ -173,19 +290,105 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             Some(electronic_medical_record) => Some(electronic_medical_record)
         }
     }
-}
 
-/// ElectronicMedicalRecordsProvider Trait Implementation
-impl<T: Config> ElectronicMedicalRecordsProvider<T> for Pallet<T> {
-    type Error = Error<T>;
-    type ElectronicMedicalRecord = ElectronicMedicalRecordOf<T>;
+    fn add_electronic_medical_record_info(owner_id: &T::AccountId, title: &mut Vec<u8>, description: &mut Vec<u8>, record_link: &mut Vec<u8>) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error> { 
+        // Check if user can create_electronic_medical_record_info
+        let can_create_electronic_medical_record_info = T::ElectronicMedicalRecordInfoOwner::can_create_electronic_medical_record_info(owner_id);
+        if !can_create_electronic_medical_record_info {
+            return Err(Error::<T>::NotAllowedToCreate)?;
+        }
 
-    fn electronic_medical_record_by_owner_id(owner_id: &T::AccountId) -> Option<ElectronicMedicalRecordOf<T>> {
-        <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_by_owner_id(owner_id)
+        let owner_electronic_medical_record_info_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_info_count_by_owner(owner_id);
+        let electronic_medical_record_info_id = Self::generate_electronic_medical_record_info_id(owner_id, owner_electronic_medical_record_info_count);
+        
+        let electronic_medical_record_info = ElectronicMedicalRecordInfo::new(electronic_medical_record_info_id.clone(), owner_id.clone(), title.clone(), description.clone(), record_link.clone());
+        // Store to ElectronicMedicalRecordInfos storage
+        ElectronicMedicalRecordInfoById::<T>::insert(&electronic_medical_record_info_id, &electronic_medical_record_info);
+
+        // Increment ElectronicMedicalRecordInfos Count
+        Self::add_electronic_medical_record_info_count();
+        // Increment ElectronicMedicalRecordInfoCountByOwner
+        Self::add_electronic_medical_record_info_count_by_owner(&electronic_medical_record_info.owner_id);
+        
+        // Associate created electronic_medical_record_info to the owner
+        T::ElectronicMedicalRecordInfoOwner::associate(owner_id, &electronic_medical_record_info_id);
+
+        Ok(electronic_medical_record_info) 
     }
 
-    fn remove_electronic_medical_record(owner_id: &T::AccountId) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
-        <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(owner_id)
+    fn remove_electronic_medical_record_info(owner_id: &T::AccountId, electronic_medical_record_info_id: &Self::ElectronicMedicalRecordInfoId) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error> {
+        let electronic_medical_record_info = ElectronicMedicalRecordInfoById::<T>::get(electronic_medical_record_info_id);
+        if electronic_medical_record_info == None {
+            return Err(Error::<T>::ElectronicMedicalRecordDoesNotExist)?;
+        }
+        let electronic_medical_record_info = electronic_medical_record_info.unwrap();
+
+        if electronic_medical_record_info.owner_id != owner_id.clone() {
+            return Err(Error::<T>::NotElectronicMedicalRecordOwner)?;
+        }
+        // Remove electronic_medical_record_info from storage
+        let electronic_medical_record_info = ElectronicMedicalRecordInfoById::<T>::take(electronic_medical_record_info_id).unwrap();
+
+        let owner = T::ElectronicMedicalRecordInfoOwner::get_owner(owner_id).unwrap();
+        // disassociate electronic_medical_record_info reference from the owner
+        T::ElectronicMedicalRecordInfoOwner::disassociate(owner.get_id(), &electronic_medical_record_info.id);
+        // Decrement counts
+        Self::sub_electronic_medical_record_info_count();
+        Self::sub_electronic_medical_record_info_count_by_owner(owner.get_id());
+
+        Ok(electronic_medical_record_info)
+    }
+
+    fn electronic_medical_record_info_count_by_owner(owner_id: &T::AccountId) -> u64 { 
+        let electronic_medical_record_info_count = ElectronicMedicalRecordInfoCountByOwner::<T>::get(owner_id).unwrap_or(1);
+        return electronic_medical_record_info_count;
+    }
+
+    fn electronic_medical_record_info_by_id(electronic_medical_record_info_id: &Self::ElectronicMedicalRecordInfoId) -> Option<Self::ElectronicMedicalRecordInfo> {
+        match ElectronicMedicalRecordInfoById::<T>::get(electronic_medical_record_info_id) {
+            None => None,
+            Some(electronic_medical_record_info) => Some(electronic_medical_record_info)
+        }
+    }
+}
+
+/// Pallet Methods
+impl<T: Config> Pallet<T> {
+    // ElectronicMedicalRecordInfo Count Addition and Substraction Helpers
+    // Add electronic_medical_record_info count
+    pub fn add_electronic_medical_record_info_count() {
+        let electronic_medical_record_info_count = <ElectronicMedicalRecordInfoCount<T>>::get().unwrap_or(0);
+        <ElectronicMedicalRecordInfoCount<T>>::put(electronic_medical_record_info_count.wrapping_add(1));
+    }
+    // Add electronic_medical_record_info count by owner
+    pub fn add_electronic_medical_record_info_count_by_owner(owner_id: &T::AccountId) {
+        let electronic_medical_record_info_count = ElectronicMedicalRecordInfoCountByOwner::<T>::get(owner_id).unwrap_or(0);
+        ElectronicMedicalRecordInfoCountByOwner::<T>::insert(owner_id, electronic_medical_record_info_count.wrapping_add(1))
+    }
+
+    // Subtract electronic_medical_record_info count
+    pub fn sub_electronic_medical_record_info_count() {
+        let electronic_medical_record_info_count = <ElectronicMedicalRecordInfoCount<T>>::get().unwrap_or(1);
+        ElectronicMedicalRecordInfoCount::<T>::put(electronic_medical_record_info_count - 1);
+    }
+    // Subtract electronic_medical_record_info count by owner
+    pub fn sub_electronic_medical_record_info_count_by_owner(owner_id: &T::AccountId) {
+        let electronic_medical_record_info_count = ElectronicMedicalRecordInfoCountByOwner::<T>::get(owner_id).unwrap_or(1);
+        ElectronicMedicalRecordInfoCountByOwner::<T>::insert(owner_id, electronic_medical_record_info_count - 1);
+    }
+}
+
+/// ElectronicMedicalRecordInfosProvider Trait Implementation
+impl<T: Config> ElectronicMedicalRecordInfosProvider<T> for Pallet<T> {
+    type Error = Error<T>;
+    type ElectronicMedicalRecordInfo = ElectronicMedicalRecordInfoOf<T>;
+
+    fn electronic_medical_record_info_by_id(electronic_medical_record_info_id: &T::Hash) -> Option<ElectronicMedicalRecordInfoOf<T>> {
+        <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_info_by_id(electronic_medical_record_info_id)
+    }
+
+    fn remove_electronic_medical_record_info(owner_id: &T::AccountId, electronic_medical_record_info_id: &T::Hash) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error> {
+        <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record_info(owner_id, electronic_medical_record_info_id)
     }
 }
 
