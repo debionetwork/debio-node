@@ -6,6 +6,7 @@
   "EthereumAddress": "[u8; 20]",
   "EthereumAddressOf": "EthereumAddress",
   "HashOf": "H256",
+  "Moment": "u64",
   "CountryRegionCode": "Text",
   "CityCode": "Text",
   "LabInfo": {
@@ -50,7 +51,6 @@
       "Cancelled"
     ]
   },
-  "Moment": "u64",
   "MomentOf": "Moment",
   "Order": {
     "id": "H256",
@@ -72,7 +72,6 @@
       "Received",
       "Rejected",
       "Processing",
-      "Processed",
       "Success",
       "Failed"
     ]
@@ -83,7 +82,9 @@
     "lab_id": "AccountId",
     "owner_id": "AccountId",
     "status": "DnaSampleStatus",
-    "order_id": "H256"
+    "order_id": "H256",
+    "created_at": "Moment",
+    "updated_at": "Moment"
   },
   "DnaSampleOf": "DnaSample",
   "DnaTestResult": {
@@ -92,7 +93,10 @@
     "owner_id": "AccountId",
     "comments": "Option<Text>",
     "result_link": "Option<Text>",
-    "report_link": "Option<Text>"
+    "report_link": "Option<Text>",
+    "order_id": "Option<H256>",
+    "created_at": "Moment",
+    "updated_at": "Moment"
   },
   "DnaTestResultOf": "DnaTestResult",
   "DnaTestResultSubmission": {
