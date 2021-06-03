@@ -305,7 +305,7 @@ impl user_profile::Config for Runtime {
 
 impl electronic_medical_record::Config for Runtime {
     type Event = Event;
-	type ElectronicMedicalRecordInfoOwner = ElectronicMedicalRecordInfoOwner;
+	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -329,7 +329,7 @@ construct_runtime!(
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Module, Call, Storage, Event<T>},
-		ElectronicMedicalRecordInfoOwner: electronic_medical_record::{Module, Call, Storage, Event<T>},
+		ElectronicMedicalRecord: electronic_medical_record::{Module, Call, Storage, Event<T>},
 	}	
 );
 

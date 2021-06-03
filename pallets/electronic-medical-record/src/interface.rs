@@ -1,5 +1,7 @@
 //use sp_std::prelude::*;
 
+use sp_std::vec::Vec;
+
 pub trait ElectronicMedicalRecordInterface<T: frame_system::Config> {
     type Error;
     type ElectronicMedicalRecord;

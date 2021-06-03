@@ -121,14 +121,17 @@
     ]
   },
   "ElectronicMedicalRecordInfo": {
+    "id": "H256",
+    "owner_id": "AccountId",
     "title": "Text",
     "description": "Text",
     "record_link": "Text"
   },
   "ElectronicMedicalRecord": {
     "owner_id": "AccountId",
-    "info": "ElectronicMedicalRecordInfo"
+    "info": "Vec<H256>"
   },
   "ElectronicMedicalRecordOf": "ElectronicMedicalRecord",
-  "ElectronicMedicalRecordInfoOf": "ElectronicMedicalRecordInfo"
+  "ElectronicMedicalRecordInfoOf": "ElectronicMedicalRecordInfo",
+  "ElectronicMedicalRecordInfoIdOf": "H256"
 }

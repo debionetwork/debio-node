@@ -17,13 +17,12 @@ pub trait ElectronicMedicalRecordInfosProvider<T: Config> {
 }
 
 pub trait ElectronicMedicalRecordInfoOwnerInfo<T: Config> {
-    fn get_id(&self) -> &T::AccountId;
+    fn get_owner_id(&self) -> &T::AccountId;
 }
 
 pub trait ElectronicMedicalRecordInfoOwner<T: Config> {
     type Owner: ElectronicMedicalRecordInfoOwnerInfo<T> + sp_std::fmt::Debug;
 
-    fn can_create_electronic_medical_record_info(id: &T::AccountId) -> bool;
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner>;
     fn associate(owner_id: &T::AccountId, electronic_medical_record_info_id: &T::Hash) -> ();
     fn disassociate(owner_id: &T::AccountId, electronic_medical_record_info_id: &T::Hash) -> ();
