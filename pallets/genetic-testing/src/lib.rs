@@ -580,11 +580,11 @@ impl<T: Config> Pallet<T> {
             None => {
                 let mut tracking_ids = Vec::<Vec<u8>>::new();
                 tracking_ids.push(dna_test_result.tracking_id.clone());
-                DnaTestResultsByLab::<T>::insert(&dna_test_result.owner_id, tracking_ids);
+                DnaTestResultsByLab::<T>::insert(&dna_test_result.lab_id, tracking_ids);
             },
             Some(mut tracking_ids) => {
                 tracking_ids.push(dna_test_result.tracking_id.clone());
-                DnaTestResultsByLab::<T>::insert(&dna_test_result.owner_id, tracking_ids);
+                DnaTestResultsByLab::<T>::insert(&dna_test_result.lab_id, tracking_ids);
             }
         }
     }
