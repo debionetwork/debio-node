@@ -149,5 +149,69 @@
   },
   "ElectronicMedicalRecordOf": "ElectronicMedicalRecord",
   "ElectronicMedicalRecordInfoOf": "ElectronicMedicalRecordInfo",
-  "ElectronicMedicalRecordInfoIdOf": "H256"
+  "ElectronicMedicalRecordInfoIdOf": "H256",
+  "DoctorInfo": {
+    "name": "Text",
+    "email": "Text",
+    "country": "Text",
+    "region": "Text",
+    "city": "Text",
+    "address": "Text",
+    "latitude": "Option<Text>",
+    "longitude": "Option<Text>",
+    "profile_image": "Option<Text>"
+  },
+  "Doctor": {
+    "account_id": "AccountId",
+    "certifications": "Vec<H256>",
+    "info": "DoctorInfo"
+  },
+  "DoctorOf": "Doctor",
+  "DoctorCertificationInfo": {
+    "title": "Text",
+    "issuer": "Text",
+    "month": "Text",
+    "year": "Text",
+    "description": "Text"
+  },
+  "DoctorCertification": {
+    "id": "H256",
+    "owner_id": "AccountId",
+    "info": "DoctorCertificationInfo"
+  },
+  "DoctorCertificationOf": "DoctorCertification",
+  "DoctorCertificationInfoOf": "DoctorCertificationInfo",
+  "DoctorCertificationIdOf": "H256",
+  "HospitalInfo": {
+    "name": "Text",
+    "email": "Text",
+    "country": "Text",
+    "region": "Text",
+    "city": "Text",
+    "address": "Text",
+    "latitude": "Option<Text>",
+    "longitude": "Option<Text>",
+    "profile_image": "Option<Text>"
+  },
+  "Hospital": {
+    "account_id": "AccountId",
+    "certifications": "Vec<H256>",
+    "info": "HospitalInfo"
+  },
+  "HospitalOf": "Hospital",
+  "HospitalCertificationInfo": {
+    "title": "Text",
+    "issuer": "Text",
+    "month": "Text",
+    "year": "Text",
+    "description": "Text"
+  },
+  "HospitalCertification": {
+    "id": "H256",
+    "owner_id": "AccountId",
+    "info": "HospitalCertificationInfo"
+  },
+  "HospitalCertificationOf": "HospitalCertification",
+  "HospitalCertificationInfoOf": "HospitalCertificationInfo",
+  "HospitalCertificationIdOf": "H256"
 }
