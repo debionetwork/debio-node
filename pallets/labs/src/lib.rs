@@ -358,6 +358,10 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
         for service_id in &lab.services {
             let _result = T::Services::delete_service(account_id, &service_id);
         }
+        // Delete lab's certifications
+        for certification_id in &lab.certifications {
+            let _result = T::Certifications::delete_certification(account_id, &certification_id);
+        }
         Self::remove_lab_id_from_location(&lab);
         Self::sub_lab_count_by_location(&lab);
         Labs::<T>::remove(&lab.account_id);
