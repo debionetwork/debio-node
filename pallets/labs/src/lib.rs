@@ -14,6 +14,7 @@ pub mod interface;
 pub use crate::interface::LabInterface;
 use frame_support::pallet_prelude::*;
 use traits_services::{ServiceOwnerInfo};
+use traits_certifications::{CertificationOwnerInfo};
 use traits_user_profile::{UserProfileProvider};
 
 // LabInfo Struct
@@ -39,6 +40,7 @@ pub struct Lab<AccountId, Hash>
 {
     account_id: AccountId,
     services: Vec<Hash>,
+    certifications: Vec<Hash>,
     info: LabInfo,
 }
 
@@ -52,6 +54,7 @@ impl<AccountId, Hash> Lab<AccountId, Hash>
         Self {
             account_id,
             services: Vec::<Hash>::new(),
+            certifications: Vec::<Hash>::new(),
             info,
         }
     }
@@ -90,6 +93,16 @@ impl<AccountId, Hash> Lab<AccountId, Hash>
             &self.services.remove(*pos);
         }
     }
+
+    pub fn add_certification(&mut self, certification_id: Hash) -> () {
+        &self.certifications.push(certification_id);
+    }
+
+    pub fn remove_certification(&mut self, certification_id: Hash) -> () {
+        if let Some(pos) = &self.certifications.iter().position(|x| *x == certification_id) {
+            &self.certifications.remove(*pos);
+        }
+    }
 }
 
 impl<T, AccountId, Hash> ServiceOwnerInfo<T> for Lab<AccountId, Hash>
@@ -98,6 +111,16 @@ impl<T, AccountId, Hash> ServiceOwnerInfo<T> for Lab<AccountId, Hash>
         T: frame_system::Config<AccountId = AccountId>
 {
     fn get_id(&self) -> &AccountId {
+        &self.get_account_id()
+    }
+}
+
+impl<T, AccountId, Hash> CertificationOwnerInfo<T> for Lab<AccountId, Hash>
+    where
+        Hash: PartialEq + Eq,
+        T: frame_system::Config<AccountId = AccountId>
+{
+    fn get_owner_id(&self) -> &AccountId {
         &self.get_account_id()
     }
 }
@@ -135,6 +158,7 @@ pub mod pallet {
     use crate::Lab;
     use crate::LabInfo;
     pub use traits_services::{ServicesProvider, ServiceOwner};
+    pub use traits_certifications::{CertificationsProvider, CertificationOwner};
     use frame_support::traits::Currency;
     use codec::{EncodeLike};
 
@@ -146,6 +170,7 @@ pub mod pallet {
 	type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Currency: Currency<Self::AccountId>;
         type Services: ServicesProvider<Self>;
+        type Certifications: CertificationsProvider<Self>;
         type EthereumAddress: Clone + Copy + PartialEq + Eq + Encode + EncodeLike + Decode + Default + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
     }
@@ -451,4 +476,39 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
     }
 }
 
+impl<T: Config> CertificationOwner<T> for Pallet<T> {
+    type Owner = Lab<T::AccountId, T::Hash>;
 
+    /// User can create certification if he/she is a lab and has set ethereum address
+    fn can_create_certification(user_id: &T::AccountId) -> bool {
+        let eth_address = T::UserProfile::get_eth_address_by_account_id(user_id);
+        return Labs::<T>::contains_key(user_id) && eth_address.is_some();
+    }
+
+    fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {
+        let lab = Labs::<T>::get(id);
+        lab
+    }
+
+    fn associate(owner_id: &T::AccountId, certification_id: &T::Hash) -> () {
+        <Labs<T>>::mutate(owner_id, | lab | {
+            match lab {
+                None => (), // If lab does not exist, do nothing
+                Some(lab) => {
+                    lab.add_certification(*certification_id);
+                }
+            }
+        });
+    }
+
+    fn disassociate(owner_id: &T::AccountId, certification_id: &T::Hash) -> () {
+        Labs::<T>::mutate(owner_id, | lab | {
+            match lab {
+                None => (),
+                Some(lab) => {
+                    lab.remove_certification(*certification_id);
+                }
+            }
+        });
+    }
+}

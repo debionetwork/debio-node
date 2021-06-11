@@ -23,6 +23,7 @@
   "Lab": {
     "account_id": "AccountId",
     "services": "Vec<H256>",
+    "certifications": "Vec<H256>",
     "info": "LabInfo"
   },
   "LabOf": "Lab",
@@ -42,6 +43,21 @@
   "ServiceOf": "Service",
   "ServiceInfoOf": "ServiceInfo",
   "ServiceIdOf": "H256",
+  "CertificationInfo": {
+    "title": "Text",
+    "issuer": "Text",
+    "month": "Text",
+    "year": "Text",
+    "description": "Text"
+  },
+  "Certification": {
+    "id": "H256",
+    "owner_id": "AccountId",
+    "info": "CertificationInfo"
+  },
+  "CertificationOf": "Certification",
+  "CertificationInfoOf": "CertificationInfo",
+  "CertificationIdOf": "H256",
   "OrderStatus": {
     "_enum": [
       "Unpaid",

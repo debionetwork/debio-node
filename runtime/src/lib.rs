@@ -274,6 +274,7 @@ impl labs::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
     type Services = Services;
+	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 }
@@ -308,6 +309,11 @@ impl electronic_medical_record::Config for Runtime {
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 }
 
+impl certifications::Config for Runtime {
+    type Event = Event;
+	type CertificationOwner = Labs;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -330,6 +336,7 @@ construct_runtime!(
 		GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Module, Call, Storage, Event<T>},
 		ElectronicMedicalRecord: electronic_medical_record::{Module, Call, Storage, Event<T>},
+		Certifications: certifications::{Module, Call, Storage, Event<T>},
 	}	
 );
 
