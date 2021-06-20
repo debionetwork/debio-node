@@ -10,6 +10,7 @@
   "CountryRegionCode": "Text",
   "CityCode": "Text",
   "LabInfo": {
+    "box_public_key": "H256",
     "name": "Text",
     "email": "Text",
     "country": "Text",
@@ -56,6 +57,7 @@
     "id": "H256",
     "service_id": "H256",
     "customer_id": "AccountId",
+    "customer_box_public_key": "H256",
     "seller_id": "AccountId",
     "customer_eth_address": "EthereumAddress",
     "seller_eth_address": "EthereumAddress",

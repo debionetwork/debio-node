@@ -19,7 +19,10 @@ use traits_user_profile::{UserProfileProvider};
 // LabInfo Struct
 // Used as parameter of dispatchable calls
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct LabInfo {
+pub struct LabInfo<Hash>
+    where Hash: PartialEq + Eq
+{
+    box_public_key: Hash,
     name: Vec<u8>,
     email: Vec<u8>,
     country: Vec<u8>,
@@ -39,7 +42,7 @@ pub struct Lab<AccountId, Hash>
 {
     account_id: AccountId,
     services: Vec<Hash>,
-    info: LabInfo,
+    info: LabInfo<Hash>,
 }
 
 impl<AccountId, Hash> Lab<AccountId, Hash>
@@ -47,7 +50,7 @@ impl<AccountId, Hash> Lab<AccountId, Hash>
 {
     pub fn new (
         account_id: AccountId,
-        info: LabInfo,
+        info: LabInfo<Hash>,
     ) -> Self {
         Self {
             account_id,
@@ -56,7 +59,7 @@ impl<AccountId, Hash> Lab<AccountId, Hash>
         }
     }
 
-    fn update_info(&mut self, info: LabInfo) -> () {
+    fn update_info(&mut self, info: LabInfo<Hash>) -> () {
         self.info = info;
     }
 
@@ -229,7 +232,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo {
+        pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfo<HashOf<T>>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match Self::create_lab(&who, &lab_info) {
@@ -242,7 +245,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn update_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo {
+        pub fn update_lab(origin: OriginFor<T>, lab_info: LabInfo<HashOf<T>>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as LabInterface<T>>::update_lab(&who, &lab_info) {
@@ -278,7 +281,7 @@ pub mod pallet {
 
 impl<T: Config> LabInterface<T> for Pallet<T> {
     type Error = Error<T>;
-    type LabInfo = LabInfo;
+    type LabInfo = LabInfo<HashOf<T>>;
     type Lab = LabOf<T>;
 
     fn create_lab(account_id: &T::AccountId, lab_info: &Self::LabInfo) -> Result<Self::Lab, Self::Error> {
