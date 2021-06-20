@@ -713,6 +713,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "certifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-certifications",
+]
+
+[[package]]
 name = "cexpr"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1306,6 +1321,37 @@ checksum = "c4d33be9473d06f75f58220f71f7a9317aca647dc061dbd3c361b0bef505fbea"
 dependencies = [
  "byteorder",
  "quick-error 1.2.3",
+]
+
+[[package]]
+name = "doctor-certifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-doctor-certifications",
+]
+
+[[package]]
+name = "doctors"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-doctor-certifications",
+ "traits-user-profile",
 ]
 
 [[package]]
@@ -2263,6 +2309,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "hospital-certifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-hospital-certifications",
+]
+
+[[package]]
+name = "hospitals"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-hospital-certifications",
+ "traits-user-profile",
+]
+
+[[package]]
 name = "http"
 version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2778,6 +2855,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-certifications",
  "traits-services",
  "traits-user-profile",
 ]
@@ -3688,6 +3766,9 @@ dependencies = [
 name = "node-template-runtime"
 version = "3.0.0"
 dependencies = [
+ "certifications",
+ "doctor-certifications",
+ "doctors",
  "electronic-medical-record",
  "frame-benchmarking",
  "frame-executive",
@@ -3697,6 +3778,8 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "genetic-testing",
  "hex-literal 0.3.1",
+ "hospital-certifications",
+ "hospitals",
  "labs",
  "orders",
  "pallet-aura",
@@ -7815,6 +7898,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "traits-certifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-doctor-certifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-std",
+]
+
+[[package]]
 name = "traits-electronic-medical-record"
 version = "0.1.0"
 dependencies = [
@@ -7826,6 +7929,16 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-testing"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-hospital-certifications"
 version = "0.1.0"
 dependencies = [
  "frame-support",

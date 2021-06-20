@@ -31,6 +31,11 @@ orders = { path = '../pallets/orders', default-features = false }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
 user-profile = { path = '../pallets/user-profile', default-features = false }
 electronic-medical-record = { path = '../pallets/electronic-medical-record', default-features = false }
+certifications = { path = '../pallets/certifications', default-features = false }
+hospitals = { path = '../pallets/hospitals', default-features = false }
+hospital-certifications = { path = '../pallets/hospital-certifications', default-features = false }
+doctors = { path = '../pallets/doctors', default-features = false }
+doctor-certifications = { path = '../pallets/doctor-certifications', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
@@ -103,4 +108,9 @@ std = [
     'genetic-testing/std',
     'user-profile/std',
     'electronic-medical-record/std',
+    'certifications/std',
+    'hospitals/std',
+    'hospital-certifications/std',
+    'doctors/std',
+    'doctor-certifications/std',
 ]

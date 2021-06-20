@@ -1,13 +1,13 @@
 [package]
-name = 'labs'
-version = '0.1.0'
-repository = ''
-edition = '2018'
-authors = ['kevin <kevin.janada@gmail.com>']
+name = "hospital-certifications"
+version = "0.1.0"
+authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
+edition = "2018"
 description = ''
 homepage = ''
 license = 'Unlicense'
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
@@ -22,9 +22,7 @@ version = '2.0.0'
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
-traits-services = { path = '../../traits/services', default-features = false }
-traits-certifications = { path = '../../traits/certifications', default-features = false }
-traits-user-profile = { path = '../../traits/user-profile', default-features = false }
+traits-hospital-certifications = { path = '../../traits/hospital-certifications', default-features = false }
 
 [dev-dependencies]
 serde = { version = "1.0.119" }
@@ -38,8 +36,5 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
-    'sp-std/std',
-    'traits-services/std',
-    'traits-certifications/std',
-    'traits-user-profile/std',
+    'traits-hospital-certifications/std',
 ]

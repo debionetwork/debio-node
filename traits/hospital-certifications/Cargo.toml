@@ -1,0 +1,26 @@
+[package]
+name = "traits-hospital-certifications"
+version = "0.1.0"
+authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
+[dependencies]
+sp-std = { default-features = false, version = '3.0.0' }
+frame-system = { default-features = false, version = '3.0.0' }
+frame-support = { default-features = false, version = '3.0.0' }
+
+[features]
+default = ['std']
+std = [
+  'sp-std/std',
+  'frame-system/std',
+  'frame-support/std',
+]
