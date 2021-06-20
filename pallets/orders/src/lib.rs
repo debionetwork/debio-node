@@ -30,6 +30,7 @@ pub struct Order<Hash, AccountId, Moment, EthAddress> {
     pub id: Hash,
     pub service_id: Hash,
     pub customer_id: AccountId,
+    pub customer_box_public_key: Hash,
     pub seller_id: AccountId,
     pub customer_eth_address: EthAddress,
     pub seller_eth_address: EthAddress,
@@ -43,6 +44,7 @@ impl<Hash, AccountId, Moment, EthAddress> Order<Hash, AccountId, Moment, EthAddr
         id: Hash,
         service_id: Hash,
         customer_id: AccountId,
+        customer_box_public_key: Hash,
         seller_id: AccountId,
         customer_eth_address: EthAddress,
         seller_eth_address: EthAddress,
@@ -56,6 +58,7 @@ impl<Hash, AccountId, Moment, EthAddress> Order<Hash, AccountId, Moment, EthAddr
             id,
             service_id,
             customer_id,
+            customer_box_public_key,
             seller_id,
             customer_eth_address,
             seller_eth_address,
@@ -218,10 +221,10 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn create_order(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn create_order(origin: OriginFor<T>, service_id: T::Hash, customer_box_public_key: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as OrderInterface<T>>::create_order(&who, &service_id) {
+            match <Self as OrderInterface<T>>::create_order(&who, &service_id, &customer_box_public_key) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderCreated(order.clone()));
                     Ok(().into())
@@ -288,7 +291,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
     type Order = OrderOf<T>;
     type Error = Error<T>;
 
-    fn create_order(customer_id: &T::AccountId, service_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn create_order(customer_id: &T::AccountId, service_id: &T::Hash, customer_box_public_key: &T::Hash) -> Result<Self::Order, Self::Error> {
         let service = T::Services::service_by_id(service_id);
         if service.is_none() {
             return Err(Error::<T>::ServiceDoesNotExist);
@@ -321,6 +324,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             order_id.clone(),
             service_id.clone(),
             customer_id.clone(),
+            customer_box_public_key.clone(),
             seller_id.clone(),
             customer_eth_address as T::EthereumAddress,
             seller_eth_address as T::EthereumAddress,
