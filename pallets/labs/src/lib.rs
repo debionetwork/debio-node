@@ -172,7 +172,7 @@ pub mod pallet {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
 	type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Currency: Currency<Self::AccountId>;
-        type Services: ServicesProvider<Self>;
+        type Services: ServicesProvider<Self, BalanceOf<Self>>;
         type Certifications: CertificationsProvider<Self>;
         type EthereumAddress: Clone + Copy + PartialEq + Eq + Encode + EncodeLike + Decode + Default + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
@@ -194,6 +194,8 @@ pub mod pallet {
     pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>>;
     pub type CountryRegionCode = Vec<u8>; // country_code-region_code -> XX-YYYY
     pub type CityCode = Vec<u8>; // city_code -> ZZZZ
+    pub type CurrencyOf<T> = <T as self::Config>::Currency;
+    pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 
     // ----- Storage ------------------
     /// Get Lab by account id

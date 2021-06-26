@@ -24,7 +24,7 @@ traits-genetic-testing = { path = '../../traits/genetic-testing', default-featur
 traits-order = { path = '../../traits/order', default-features = false }
 
 [dev-dependencies]
-serde = { version = "1.0.119" }
+serde = { default-features = false, version = "1.0.119" }
 sp-core = { default-features = false, version = '3.0.0' }
 sp-io = { default-features = false, version = '3.0.0' }
 sp-runtime = { default-features = false, version = '3.0.0' }
@@ -35,6 +35,7 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
+    'pallet-timestamp/std',
     'sp-std/std',
     'traits-genetic-testing/std',
     'traits-order/std',

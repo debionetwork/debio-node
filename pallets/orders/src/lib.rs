@@ -4,12 +4,12 @@ pub mod interface;
 use interface::OrderInterface;
 
 pub use pallet::*;
+use frame_support::traits::{ Currency };
 use frame_support::codec::{Encode, Decode};
 use frame_support::pallet_prelude::*;
 use sp_std::prelude::*;
 use traits_services::{ServicesProvider, ServiceInfo};
 use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
-use traits_user_profile::{UserProfileProvider};
 use traits_order::{OrderEventEmitter};
 
 
@@ -26,29 +26,27 @@ impl Default for OrderStatus {
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct Order<Hash, AccountId, Moment, EthAddress> {
+pub struct Order<Hash, AccountId, Balance, Moment> {
     pub id: Hash,
     pub service_id: Hash,
     pub customer_id: AccountId,
     pub customer_box_public_key: Hash,
     pub seller_id: AccountId,
-    pub customer_eth_address: EthAddress,
-    pub seller_eth_address: EthAddress,
     pub dna_sample_tracking_id: Vec<u8>,
+    pub price: Balance,
     pub status: OrderStatus,
     pub created_at: Moment,
     pub updated_at: Moment,
 }
-impl<Hash, AccountId, Moment, EthAddress> Order<Hash, AccountId, Moment, EthAddress> {
+impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
     pub fn new(
         id: Hash,
         service_id: Hash,
         customer_id: AccountId,
         customer_box_public_key: Hash,
         seller_id: AccountId,
-        customer_eth_address: EthAddress,
-        seller_eth_address: EthAddress,
         dna_sample_tracking_id: Vec<u8>,
+        price: Balance,
         created_at: Moment,
         updated_at: Moment,
     )
@@ -60,9 +58,8 @@ impl<Hash, AccountId, Moment, EthAddress> Order<Hash, AccountId, Moment, EthAddr
             customer_id,
             customer_box_public_key,
             seller_id,
-            customer_eth_address,
-            seller_eth_address,
             dna_sample_tracking_id, 
+            price,
             status: OrderStatus::default(),
             created_at,
             updated_at,
@@ -94,10 +91,9 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        type Services: ServicesProvider<Self>;
+        type Services: ServicesProvider<Self, BalanceOf<Self>>;
         type GeneticTesting: GeneticTestingProvider<Self>;
-        type EthereumAddress: Clone + Copy + PartialEq + Eq + Encode + Decode + Default + sp_std::fmt::Debug;
-        type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
+        type Currency: Currency<<Self as frame_system::Config>::AccountId>;
     }
 
 
@@ -114,8 +110,9 @@ pub mod pallet {
     type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
-    type EthereumAddressOf<T> = <T as Config>::EthereumAddress;
-    pub type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, MomentOf<T>, EthereumAddressOf<T>>;
+    pub type CurrencyOf<T> = <T as self::Config>::Currency;
+    pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
+    pub type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, BalanceOf<T>, MomentOf<T>>;
     type OrderIdsOf<T> = Vec<HashOf<T>>;
     // -------------------------------------------------------
 
@@ -299,6 +296,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let service = service.unwrap();
         let order_id = Self::generate_order_id(customer_id, service_id);
         let seller_id = service.get_owner_id();
+        let price = service.get_price();
         let now = pallet_timestamp::Pallet::<T>::get();
 
         // Initialize DnaSample
@@ -308,27 +306,14 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         }
         let dna_sample = dna_sample.ok().unwrap();
 
-        let customer_eth_address = T::UserProfile::get_eth_address_by_account_id(customer_id);
-        if customer_eth_address.is_none() {
-            return Err(Error::<T>::CustomerEthAddressNotFound);
-        }
-        let customer_eth_address = customer_eth_address.unwrap();
-
-        let seller_eth_address = T::UserProfile::get_eth_address_by_account_id(seller_id);
-        if seller_eth_address.is_none() {
-            return Err(Error::<T>::SellerEthAddressNotFound);
-        }
-        let seller_eth_address = seller_eth_address.unwrap();
-
         let order = Order::new(
             order_id.clone(),
             service_id.clone(),
             customer_id.clone(),
             customer_box_public_key.clone(),
             seller_id.clone(),
-            customer_eth_address as T::EthereumAddress,
-            seller_eth_address as T::EthereumAddress,
             dna_sample.get_tracking_id().clone(),
+            price.clone(),
             now,
             now
         );
@@ -429,7 +414,7 @@ impl<T: Config> Pallet<T> {
     }
 
     pub fn update_order_status(order_id: &T::Hash, status: OrderStatus)
-        -> Option<Order<T::Hash, T::AccountId, T::Moment, T::EthereumAddress>>
+        -> Option<Order<T::Hash, T::AccountId, BalanceOf<T>, T::Moment>>
     {
         Orders::<T>::mutate(order_id, |order| {
             match order {

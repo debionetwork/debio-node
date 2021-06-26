@@ -274,29 +274,33 @@ impl pallet_sudo::Config for Runtime {
 	type Call = Call;
 }
 
+// ------------------------------
+// Debio Pallets
+// ------------------------------
+
 impl labs::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
     type Services = Services;
-	type Certifications = Certifications;
-	type EthereumAddress = EthereumAddress;
-	type UserProfile = UserProfile;
+    type Certifications = Certifications;
+    type EthereumAddress = EthereumAddress;
+    type UserProfile = UserProfile;
 }
 
 impl hospitals::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-	type HospitalCertifications = HospitalCertifications;
-	type EthereumAddress = EthereumAddress;
-	type UserProfile = UserProfile;
+    type HospitalCertifications = HospitalCertifications;
+    type EthereumAddress = EthereumAddress;
+    type UserProfile = UserProfile;
 }
 
 impl doctors::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-	type DoctorCertifications = DoctorCertifications;
-	type EthereumAddress = EthereumAddress;
-	type UserProfile = UserProfile;
+    type DoctorCertifications = DoctorCertifications;
+    type EthereumAddress = EthereumAddress;
+    type UserProfile = UserProfile;
 }
 
 impl services::Config for Runtime {
@@ -309,8 +313,7 @@ impl orders::Config for Runtime {
     type Event = Event;
     type Services = Services;
     type GeneticTesting = GeneticTesting;
-	type EthereumAddress = EthereumAddress;
-	type UserProfile = UserProfile;
+    type Currency = Balances;
 }
 
 impl genetic_testing::Config for Runtime {
@@ -321,27 +324,27 @@ impl genetic_testing::Config for Runtime {
 
 impl user_profile::Config for Runtime {
     type Event = Event;
-	type EthereumAddress = EthereumAddress;
+    type EthereumAddress = EthereumAddress;
 }
 
 impl electronic_medical_record::Config for Runtime {
     type Event = Event;
-	type ElectronicMedicalRecord = ElectronicMedicalRecord;
+    type ElectronicMedicalRecord = ElectronicMedicalRecord;
 }
 
 impl certifications::Config for Runtime {
     type Event = Event;
-	type CertificationOwner = Labs;
+    type CertificationOwner = Labs;
 }
 
 impl doctor_certifications::Config for Runtime {
     type Event = Event;
-	type DoctorCertificationOwner = Doctors;
+    type DoctorCertificationOwner = Doctors;
 }
 
 impl hospital_certifications::Config for Runtime {
     type Event = Event;
-	type HospitalCertificationOwner = Hospitals;
+    type HospitalCertificationOwner = Hospitals;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

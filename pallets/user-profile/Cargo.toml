@@ -18,7 +18,7 @@ version = '2.0.0'
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
-serde = { version = "1.0.123" }
+serde = { default-features = false, version = "1.0.119", features = ["derive"] }
 rustc-hex = { version = "2.1.0", default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 
@@ -34,6 +34,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'sp-std/std',
+    'sp-io/std',
     'serde/std',
     'rustc-hex/std',
     'traits-user-profile/std',

@@ -26,7 +26,7 @@ traits-user-profile = { path = '../../traits/user-profile', default-features = f
 traits-hospital-certifications = { path = '../../traits/hospital-certifications', default-features = false }
 
 [dev-dependencies]
-serde = { version = "1.0.119" }
+serde = { default-features = false, version = "1.0.119" }
 sp-core = { default-features = false, version = '3.0.0' }
 sp-io = { default-features = false, version = '3.0.0' }
 sp-runtime = { default-features = false, version = '3.0.0' }
@@ -38,6 +38,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'sp-std/std',
+    'sp-io/std',
     'traits-user-profile/std',
     'traits-hospital-certifications/std',
 ]

@@ -3,15 +3,15 @@
 use frame_system::Config;
 //use sp_std::prelude::*;
 
-pub trait ServiceInfo<T: Config> {
+pub trait ServiceInfo<T: Config, Balance> {
     fn get_id(&self) -> &T::Hash;
     fn get_owner_id(&self) -> &T::AccountId;
+    fn get_price(&self) -> &Balance;
 }
 
-pub trait ServicesProvider<T: Config> {
+pub trait ServicesProvider<T: Config, Balance> {
     type Error;
-    type Balance;
-    type Service: ServiceInfo<T> + sp_std::fmt::Debug;
+    type Service: ServiceInfo<T, Balance> + sp_std::fmt::Debug;
 
     fn delete_service(owner_id: &T::AccountId, id: &T::Hash) -> Result<Self::Service, Self::Error>;
     fn service_by_id(id: &T::Hash) -> Option<Self::Service>;

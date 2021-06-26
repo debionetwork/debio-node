@@ -75,9 +75,8 @@
     "customer_id": "AccountId",
     "customer_box_public_key": "H256",
     "seller_id": "AccountId",
-    "customer_eth_address": "EthereumAddress",
-    "seller_eth_address": "EthereumAddress",
     "dna_sample_tracking_id": "Text",
+    "price": "u128",
     "status": "OrderStatus",
     "created_at": "u64",
     "updated_at": "u64"

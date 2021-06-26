@@ -54,14 +54,17 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
     }
 }
 
-impl<T, AccountId, Hash, Balance> ServiceInfoT<T> for Service<AccountId, Hash, Balance>
-    where T: frame_system::Config<AccountId = AccountId, Hash = Hash>
+impl<T, AccountId, Hash, Balance> ServiceInfoT<T, Balance> for Service<AccountId, Hash, Balance>
+    where T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
 {
     fn get_id(&self) -> &Hash {
         self.get_id()
     }
     fn get_owner_id(&self) -> &AccountId {
         self.get_owner_id()
+    }
+    fn get_price(&self) -> &Balance {
+        self.get_price()
     }
 }
 
@@ -318,9 +321,10 @@ impl<T: Config> Pallet<T> {
 }
 
 /// ServicesProvider Trait Implementation
-impl<T: Config> ServicesProvider<T> for Pallet<T> {
+impl<T: Config, Balance> ServicesProvider<T, Balance> for Pallet<T> 
+    where ServiceOf<T>: traits_services::ServiceInfo<T, Balance>
+{
     type Error = Error<T>;
-    type Balance = pallet::BalanceOf<T>;
     type Service = ServiceOf<T>;
 
     fn service_by_id(id: &T::Hash) -> Option<ServiceOf<T>> {
