@@ -13,48 +13,6 @@ pub mod interface;
 pub use interface::ElectronicMedicalRecordInterface;
 use sp_std::prelude::*;
 
-/// ElectronicMedicalRecordInfo struct
-/// Information that is mutable by user
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
-pub struct ElectronicMedicalRecordInfo<AccountId, Hash>
-    where Hash: PartialEq + Eq 
-{
-    pub id: Hash,
-    pub owner_id: AccountId,
-    pub title: Vec<u8>,
-    pub description: Vec<u8>, // TODO: limit the length
-    pub record_link: Vec<u8>
-}
-
-impl<AccountId, Hash> ElectronicMedicalRecordInfo<AccountId, Hash> 
-    where Hash: PartialEq + Eq 
-{
-        
-    pub fn new (
-        id: Hash,
-        owner_id: AccountId,
-        title: Vec<u8>,
-        description: Vec<u8>,
-        record_link: Vec<u8>
-    ) -> Self {
-        Self {
-            id,
-            owner_id,
-            title,
-            description,
-            record_link
-        }
-    }
-
-    pub fn get_id(&self) -> &Hash {
-        &self.id
-    }
-
-    pub fn get_owner_id(&self) -> &AccountId {
-        &self.owner_id
-    }
-}
-
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct ElectronicMedicalRecord<AccountId, Hash> 
     where Hash: PartialEq + Eq 
@@ -65,7 +23,7 @@ pub struct ElectronicMedicalRecord<AccountId, Hash>
 
 impl<AccountId, Hash> ElectronicMedicalRecord<AccountId, Hash> 
     where Hash: PartialEq + Eq 
-    {
+{
         
     pub fn new (
         owner_id: AccountId
@@ -91,13 +49,65 @@ impl<AccountId, Hash> ElectronicMedicalRecord<AccountId, Hash>
     }
 }
 
-impl<T, AccountId, Hash> ElectronicMedicalRecordInfoT<T> for ElectronicMedicalRecordInfo<AccountId, Hash>
+/// ElectronicMedicalRecordInfo struct
+/// Information that is mutable by user
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+pub struct ElectronicMedicalRecordInfo<AccountId, Hash, Moment>
+    where Hash: PartialEq + Eq 
+{
+    pub id: Hash,
+    pub owner_id: AccountId,
+    pub title: Vec<u8>,
+    pub description: Vec<u8>, // TODO: limit the length
+    pub record_link: Vec<u8>,
+    pub uploaded_at: Moment,
+}
+
+impl<AccountId, Hash, Moment> ElectronicMedicalRecordInfo<AccountId, Hash, Moment> 
+    where Hash: PartialEq + Eq 
+{
+    pub fn new (
+        id: Hash,
+        owner_id: AccountId,
+        title: Vec<u8>,
+        description: Vec<u8>,
+        record_link: Vec<u8>,
+        uploaded_at: Moment
+    ) -> Self {
+        Self {
+            id,
+            owner_id,
+            title,
+            description,
+            record_link,
+            uploaded_at,
+        }
+    }
+
+    pub fn get_id(&self) -> &Hash {
+        &self.id
+    }
+
+    pub fn get_uploaded_at(&self) -> &Moment {
+        &self.uploaded_at
+    }
+
+    pub fn get_owner_id(&self) -> &AccountId {
+        &self.owner_id
+    }
+}
+
+impl<T, AccountId, Hash, Moment> ElectronicMedicalRecordInfoT<T> for ElectronicMedicalRecordInfo<AccountId, Hash, Moment>
     where 
         Hash: PartialEq + Eq,
-        T: frame_system::Config<AccountId = AccountId, Hash = Hash>
+        T: frame_system::Config<AccountId = AccountId, Hash = Hash> + pallet_timestamp::Config<Moment = Moment>
 {
     fn get_id(&self) -> &Hash {
         self.get_id()
+    }
+
+    fn get_uploaded_at(&self) -> &Moment {
+        self.get_uploaded_at()
     }
 
     fn get_owner_id(&self) -> &AccountId {
@@ -116,7 +126,7 @@ pub mod pallet {
     use crate::interface::ElectronicMedicalRecordInterface;
 
     #[pallet::config]
-    pub trait Config: frame_system::Config {
+    pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type ElectronicMedicalRecord: ElectronicMedicalRecordInfoOwner<Self>;
     }
@@ -134,8 +144,9 @@ pub mod pallet {
     // ----- Types -------
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
+    pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
     pub type ElectronicMedicalRecordOf<T> = ElectronicMedicalRecord<AccountIdOf<T>, HashOf<T>>;
-    pub type ElectronicMedicalRecordInfoOf<T> = ElectronicMedicalRecordInfo<AccountIdOf<T>, HashOf<T>>;
+    pub type ElectronicMedicalRecordInfoOf<T> = ElectronicMedicalRecordInfo<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
     pub type ElectronicMedicalRecordInfoIdOf<T> = HashOf<T>;
 
     // ------- Storage -------------
@@ -289,10 +300,18 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     }
 
     fn add_electronic_medical_record_info(owner_id: &T::AccountId, title: &mut Vec<u8>, description: &mut Vec<u8>, record_link: &mut Vec<u8>) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error> { 
-         let owner_electronic_medical_record_info_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_info_count_by_owner(owner_id);
+        let owner_electronic_medical_record_info_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_info_count_by_owner(owner_id);
         let electronic_medical_record_info_id = Self::generate_electronic_medical_record_info_id(owner_id, owner_electronic_medical_record_info_count);
+        let now = pallet_timestamp::Pallet::<T>::get();
         
-        let electronic_medical_record_info = ElectronicMedicalRecordInfo::new(electronic_medical_record_info_id.clone(), owner_id.clone(), title.clone(), description.clone(), record_link.clone());
+        let electronic_medical_record_info = ElectronicMedicalRecordInfo::new(
+            electronic_medical_record_info_id.clone(),
+            owner_id.clone(),
+            title.clone(),
+            description.clone(),
+            record_link.clone(),
+            now
+        );
         // Store to ElectronicMedicalRecordInfos storage
         ElectronicMedicalRecordInfoById::<T>::insert(&electronic_medical_record_info_id, &electronic_medical_record_info);
 
@@ -372,6 +391,7 @@ impl<T: Config> Pallet<T> {
 /// ElectronicMedicalRecordInfosProvider Trait Implementation
 impl<T: Config> ElectronicMedicalRecordInfosProvider<T> for Pallet<T> {
     type Error = Error<T>;
+    type Moment = MomentOf<T>;
     type ElectronicMedicalRecordInfo = ElectronicMedicalRecordInfoOf<T>;
 
     fn electronic_medical_record_info_by_id(electronic_medical_record_info_id: &T::Hash) -> Option<ElectronicMedicalRecordInfoOf<T>> {
