@@ -100,6 +100,8 @@
     "owner_id": "AccountId",
     "status": "DnaSampleStatus",
     "order_id": "H256",
+    "rejected_title": "Option<Text>",
+    "rejected_description": "Option<Text>",
     "created_at": "Moment",
     "updated_at": "Moment"
   },
