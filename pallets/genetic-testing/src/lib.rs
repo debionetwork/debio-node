@@ -132,10 +132,10 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+        pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, rejected_title: Vec<u8>, rejected_description: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::reject_dna_sample(&who, &tracking_id) {
+            match <Self as GeneticTestingInterface<T>>::reject_dna_sample(&who, &tracking_id, &rejected_title, &rejected_description) {
                 Ok(dna_sample) => {
                     Self::deposit_event(Event::<T>::DnaSampleRejected(dna_sample.clone()));
                     Ok(().into())
@@ -208,11 +208,19 @@ pub struct DnaSample<AccountId, Hash, Moment> {
     owner_id: AccountId,
     status: DnaSampleStatus,
     order_id: Hash,
+    rejected_title: Option<Vec<u8>>,
+    rejected_description: Option<Vec<u8>>,
     created_at: Moment,
     updated_at: Moment,
 }
 impl<AccountId, Hash, Moment: Copy> DnaSample<AccountId, Hash, Moment> {
-    pub fn new(tracking_id: Vec<u8>, lab_id: AccountId, owner_id: AccountId, order_id: Hash, created_at: Moment) -> Self {
+    pub fn new(
+        tracking_id: Vec<u8>, 
+        lab_id: AccountId, 
+        owner_id: AccountId, 
+        order_id: Hash, 
+        created_at: Moment
+    ) -> Self {
         Self {
             tracking_id,
             lab_id,
@@ -221,6 +229,8 @@ impl<AccountId, Hash, Moment: Copy> DnaSample<AccountId, Hash, Moment> {
             order_id,
             created_at: created_at,
             updated_at: created_at,
+            rejected_title: None,
+            rejected_description: None,
         }
     }
 }
@@ -352,7 +362,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         Ok(dna_sample)
     }
 
-    fn reject_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    fn reject_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>, rejected_title: &Vec<u8>, rejected_description: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
             return Err(Error::<T>::DnaSampleNotFound);
@@ -364,6 +374,8 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
+        dna_sample.rejected_title = Some(rejected_title.clone());
+        dna_sample.rejected_description = Some(rejected_description.clone());
         dna_sample.status = DnaSampleStatus::Rejected;
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
