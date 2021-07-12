@@ -1,12 +1,31 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_system::Config;
-//use sp_std::prelude::*;
+use sp_std::prelude::*;
+
+pub mod types {
+    use frame_support::codec::{Encode, Decode};
+    use frame_support::pallet_prelude::*;
+    use sp_std::prelude::*;
+
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    pub struct Price<Balance> {
+        pub key: Vec<u8>,
+        pub value: Balance,
+    }
+
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    pub struct PriceByCurrency<Balance> {
+        pub currency: Vec<u8>,
+        pub prices: Vec<Price<Balance>>,
+        pub additional_prices: Vec<Price<Balance>>,
+    }
+}
 
 pub trait ServiceInfo<T: Config, Balance> {
     fn get_id(&self) -> &T::Hash;
     fn get_owner_id(&self) -> &T::AccountId;
-    fn get_price(&self) -> &Balance;
+    fn get_prices_by_currency(&self) -> &Vec<types::PriceByCurrency<Balance>>;
 }
 
 pub trait ServicesProvider<T: Config, Balance> {
