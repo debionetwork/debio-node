@@ -8,7 +8,11 @@ use frame_support::traits::{ Currency };
 use frame_support::codec::{Encode, Decode};
 use frame_support::pallet_prelude::*;
 use sp_std::prelude::*;
-use traits_services::{ServicesProvider, ServiceInfo};
+use traits_services::{
+    ServicesProvider,
+    ServiceInfo,
+    types::{ Price }
+};
 use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
 use traits_order::{OrderEventEmitter};
 
@@ -33,7 +37,9 @@ pub struct Order<Hash, AccountId, Balance, Moment> {
     pub customer_box_public_key: Hash,
     pub seller_id: AccountId,
     pub dna_sample_tracking_id: Vec<u8>,
-    pub price: Balance,
+    pub currency: Vec<u8>,
+    pub prices: Vec<Price<Balance>>,
+    pub additional_prices: Vec<Price<Balance>>,
     pub status: OrderStatus,
     pub created_at: Moment,
     pub updated_at: Moment,
@@ -46,7 +52,9 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
         customer_box_public_key: Hash,
         seller_id: AccountId,
         dna_sample_tracking_id: Vec<u8>,
-        price: Balance,
+        currency: Vec<u8>,
+        prices: Vec<Price<Balance>>,
+        additional_prices: Vec<Price<Balance>>,
         created_at: Moment,
         updated_at: Moment,
     )
@@ -59,7 +67,9 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
             customer_box_public_key,
             seller_id,
             dna_sample_tracking_id, 
-            price,
+            currency,
+            prices,
+            additional_prices,
             status: OrderStatus::default(),
             created_at,
             updated_at,
@@ -211,6 +221,8 @@ pub mod pallet {
         CustomerEthAddressNotFound,
         /// Seller eth address not found
         SellerEthAddressNotFound,
+        /// Service Price Index not found
+        PriceIndexNotFound,
     }
 
 
@@ -218,10 +230,10 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn create_order(origin: OriginFor<T>, service_id: T::Hash, customer_box_public_key: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn create_order(origin: OriginFor<T>, service_id: T::Hash, price_index: u32, customer_box_public_key: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as OrderInterface<T>>::create_order(&who, &service_id, &customer_box_public_key) {
+            match <Self as OrderInterface<T>>::create_order(&who, &service_id, price_index, &customer_box_public_key) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderCreated(order.clone()));
                     Ok(().into())
@@ -288,7 +300,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
     type Order = OrderOf<T>;
     type Error = Error<T>;
 
-    fn create_order(customer_id: &T::AccountId, service_id: &T::Hash, customer_box_public_key: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn create_order(customer_id: &T::AccountId, service_id: &T::Hash, price_index: u32, customer_box_public_key: &T::Hash) -> Result<Self::Order, Self::Error> {
         let service = T::Services::service_by_id(service_id);
         if service.is_none() {
             return Err(Error::<T>::ServiceDoesNotExist);
@@ -296,7 +308,18 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let service = service.unwrap();
         let order_id = Self::generate_order_id(customer_id, service_id);
         let seller_id = service.get_owner_id();
-        let price = service.get_price();
+        let prices_by_currency = service.get_prices_by_currency();
+
+        if prices_by_currency.len() == 0 || prices_by_currency.len() - 1 < price_index.try_into().unwrap() {
+            return Err(Error::<T>::PriceIndexNotFound);
+        }
+
+        let price_by_currency = &prices_by_currency[price_index as usize];
+
+        let currency = &price_by_currency.currency;
+        let prices = &price_by_currency.prices;
+        let additional_prices = &price_by_currency.additional_prices;
+
         let now = pallet_timestamp::Pallet::<T>::get();
 
         // Initialize DnaSample
@@ -313,7 +336,9 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             customer_box_public_key.clone(),
             seller_id.clone(),
             dna_sample.get_tracking_id().clone(),
-            price.clone(),
+            currency.clone(),
+            prices.clone(),
+            additional_prices.clone(),
             now,
             now
         );

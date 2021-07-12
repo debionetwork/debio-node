@@ -28,9 +28,18 @@
     "info": "LabInfo"
   },
   "LabOf": "Lab",
+  "Price": {
+    "key": "Text",
+    "value": "u128"
+  },
+  "PriceByCurrency": {
+    "currency": "Text",
+    "prices": "Vec<Price>",
+    "additional_prices": "Vec<Price>"
+  },
   "ServiceInfo": {
     "name": "Text",
-    "price": "u128",
+    "prices_by_currency": "Vec<PriceByCurrency>",
     "category": "Text",
     "description": "Text",
     "long_description": "Option<Text>",
@@ -76,7 +85,9 @@
     "customer_box_public_key": "H256",
     "seller_id": "AccountId",
     "dna_sample_tracking_id": "Text",
-    "price": "u128",
+    "currency": "Text",
+    "prices": "Vec<Price>",
+    "additional_prices": "Vec<Price>",
     "status": "OrderStatus",
     "created_at": "u64",
     "updated_at": "u64"
