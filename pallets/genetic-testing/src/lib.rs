@@ -44,13 +44,19 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// parameters [DnaSample]
-        DnaSampleCreated(DnaSampleOf<T>),
-        /// Received
-        DnaSampleReceived(DnaSampleOf<T>),
+        DnaSampleRegistered(DnaSampleOf<T>),
+        /// Received -> Arrived
+        DnaSampleArrived(DnaSampleOf<T>),
         /// Rejected
         DnaSampleRejected(DnaSampleOf<T>),
-        /// Processing
-        DnaSampleProcessing(DnaSampleOf<T>),
+        /// Prepared
+        DnaSamplePrepared(DnaSampleOf<T>),
+        /// Extracted
+        DnaSampleExtracted(DnaSampleOf<T>),
+        /// Genotyped
+        DnaSampleGenotyped(DnaSampleOf<T>),
+        /// Reviewed
+        DnaSampleReviewed(DnaSampleOf<T>),
         /// Dna Sample Processed
         DnaSampleProcessed(DnaTestResultOf<T>),
         /// Dna Test Result Submitted
@@ -105,12 +111,12 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         /*
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn create_dna_sample(origin: OriginFor<T>, dna_owner_id: T::AccountId) -> DispatchResultWithPostInfo {
+        pub fn register_dna_sample(origin: OriginFor<T>, dna_owner_id: T::AccountId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::create_dna_sample(&who, &dna_owner_id) {
+            match <Self as GeneticTestingInterface<T>>::register_dna_sample(&who, &dna_owner_id) {
                 Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleCreated(dna_sample));
+                    Self::deposit_event(Event::<T>::DnaSampleRegistered(dna_sample));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -124,7 +130,7 @@ pub mod pallet {
 
             match <Self as GeneticTestingInterface<T>>::receive_dna_sample(&who, &tracking_id) {
                 Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleReceived(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleArrived(dna_sample.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -144,6 +150,9 @@ pub mod pallet {
             }
         }
 
+        // ----------------------- Update --------------------------
+
+        /*
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -155,7 +164,62 @@ pub mod pallet {
                 },
                 Err(error) => Err(error)?
             }
+        } 
+        */
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn prepare_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as GeneticTestingInterface<T>>::prepare_dna_sample(&who, &tracking_id) {
+                Ok(dna_sample) => {
+                    Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
         }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn extract_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as GeneticTestingInterface<T>>::extract_dna_sample(&who, &tracking_id) {
+                Ok(dna_sample) => {
+                    Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn genotyping_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as GeneticTestingInterface<T>>::genotyping_dna_sample(&who, &tracking_id) {
+                Ok(dna_sample) => {
+                    Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn review_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as GeneticTestingInterface<T>>::review_dna_sample(&who, &tracking_id) {
+                Ok(dna_sample) => {
+                    Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
+        }
+
+        // ----------------------------------------------------------
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, is_success: bool, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo {
@@ -189,9 +253,14 @@ pub mod pallet {
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
 pub enum DnaSampleStatus {
     Sending,
-    Received,
+    Registered,
+    Arrived,
     Rejected,
-    Processing,
+    // Processing,
+    Prepared,
+    Extracted,
+    Genotyped,
+    Reviewed,
     Success,
     Failed,
 }
@@ -291,7 +360,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     type DnaTestResultSubmission = DnaTestResultSubmission;
     type Error = Error<T>;
 
-    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
+    fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
         let seed = Self::generate_random_seed(lab_id, owner_id);
 
         let mut tries = 10;
@@ -344,7 +413,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        dna_sample.status = DnaSampleStatus::Received;
+        dna_sample.status = DnaSampleStatus::Arrived;
         dna_sample.updated_at = now;
 
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
@@ -372,7 +441,9 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         Ok(dna_sample)
     }
 
-    fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    // ------------------------ Update ---------------------
+
+    fn prepare_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
             return Err(Error::<T>::DnaSampleNotFound);
@@ -384,12 +455,71 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        dna_sample.status = DnaSampleStatus::Processing;
+        dna_sample.status = DnaSampleStatus::Prepared;
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
         Ok(dna_sample)
     }
+
+    fn extract_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+        let dna_sample = DnaSamples::<T>::get(tracking_id);
+        if dna_sample.is_none() {
+            return Err(Error::<T>::DnaSampleNotFound);
+        }
+        let mut dna_sample = dna_sample.unwrap();
+
+        if dna_sample.lab_id != *lab_id {
+            return Err(Error::<T>::Unauthorized)
+        }
+
+        let now = pallet_timestamp::Pallet::<T>::get();
+        dna_sample.status = DnaSampleStatus::Extracted;
+        dna_sample.updated_at = now;
+        DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+        Ok(dna_sample)
+    }
+
+    fn genotyping_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+        let dna_sample = DnaSamples::<T>::get(tracking_id);
+        if dna_sample.is_none() {
+            return Err(Error::<T>::DnaSampleNotFound);
+        }
+        let mut dna_sample = dna_sample.unwrap();
+
+        if dna_sample.lab_id != *lab_id {
+            return Err(Error::<T>::Unauthorized)
+        }
+
+        let now = pallet_timestamp::Pallet::<T>::get();
+        dna_sample.status = DnaSampleStatus::Genotyped;
+        dna_sample.updated_at = now;
+        DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+        Ok(dna_sample)
+    }
+
+    fn review_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+        let dna_sample = DnaSamples::<T>::get(tracking_id);
+        if dna_sample.is_none() {
+            return Err(Error::<T>::DnaSampleNotFound);
+        }
+        let mut dna_sample = dna_sample.unwrap();
+
+        if dna_sample.lab_id != *lab_id {
+            return Err(Error::<T>::Unauthorized)
+        }
+
+        let now = pallet_timestamp::Pallet::<T>::get();
+        dna_sample.status = DnaSampleStatus::Reviewed;
+        dna_sample.updated_at = now;
+        DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+        Ok(dna_sample)
+    }
+
+    // ---------------------------------------------------------------
 
     fn submit_test_result(
         lab_id: &T::AccountId,
@@ -506,8 +636,8 @@ impl<T: Config> GeneticTestingProvider<T> for Pallet<T> {
     type DnaSample = DnaSampleOf<T>;
     type Error = Error<T>;
 
-    fn create_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
-        <Self as GeneticTestingInterface<T>>::create_dna_sample(lab_id, owner_id, order_id)
+    fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
+        <Self as GeneticTestingInterface<T>>::register_dna_sample(lab_id, owner_id, order_id)
     }
     fn dna_sample_by_tracking_id(tracking_id: &Vec<u8>) -> Option<Self::DnaSample> {
         <Self as GeneticTestingInterface<T>>::dna_sample_by_tracking_id(tracking_id)

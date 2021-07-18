@@ -300,7 +300,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let now = pallet_timestamp::Pallet::<T>::get();
 
         // Initialize DnaSample
-        let dna_sample = T::GeneticTesting::create_dna_sample(seller_id, customer_id, &order_id);
+        let dna_sample = T::GeneticTesting::register_dna_sample(seller_id, customer_id, &order_id);
         if dna_sample.is_err() {
             return Err(Error::<T>::DnaSampleInitalizationError);
         }
