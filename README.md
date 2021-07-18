@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://static.wixstatic.com/media/a1e4f4_3a53307330534938887d022a8978f5dd~mv2.png/v1/fill/w_100,h_100,al_c,q_85,usm_0.66_1.00_0.01/LogoGRAPH_Degenics_DNA_Testing_P.webp">
+<img src="https://avatars.githubusercontent.com/u/76637246?s=200&v=4">
 </div>
 
 <div align="Center">

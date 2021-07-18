@@ -4,7 +4,8 @@ pub use pallet::*;
 use traits_services::{
     ServicesProvider,
     ServiceOwner,
-    ServiceInfo as ServiceInfoT
+    ServiceInfo as ServiceInfoT,
+    types::{ PriceByCurrency },
 };
 use frame_support::traits::{ Currency };
 use frame_support::codec::{Encode, Decode};
@@ -13,13 +14,14 @@ use frame_support::pallet_prelude::*;
 pub mod interface;
 pub use interface::ServiceInterface;
 use sp_std::prelude::*;
+// use sp_std::collections::btree_map::BTreeMap;
 
 /// ServiceInfo struct
 /// Information that is mutable by user
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct ServiceInfo<Balance> {
     name: Vec<u8>,
-    price: Balance,
+    prices_by_currency: Vec<PriceByCurrency<Balance>>,
     category: Vec<u8>,
     description: Vec<u8>, // TODO: limit the length
     long_description: Option<Vec<u8>>,
@@ -49,8 +51,8 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
         &self.owner_id
     }
 
-    pub fn get_price(&self) -> &Balance {
-        &self.info.price
+    pub fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>> {
+        &self.info.prices_by_currency
     }
 }
 
@@ -63,8 +65,8 @@ impl<T, AccountId, Hash, Balance> ServiceInfoT<T, Balance> for Service<AccountId
     fn get_owner_id(&self) -> &AccountId {
         self.get_owner_id()
     }
-    fn get_price(&self) -> &Balance {
-        self.get_price()
+    fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>> {
+        self.get_prices_by_currency()
     }
 }
 

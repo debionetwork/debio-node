@@ -239,9 +239,9 @@ pub mod pallet {
         /// Lab information updated
         /// parameters. [Lab, who]
         LabUpdated(LabOf<T>, AccountIdOf<T>),
-        /// Lab deleted
+        /// Lab deregistered
         /// parameters. [Lab, who]
-        LabDeleted(LabOf<T>, AccountIdOf<T>),
+        LabDeregistered(LabOf<T>, AccountIdOf<T>),
     }
 
     // Errors inform users that something went wrong.
@@ -295,7 +295,7 @@ pub mod pallet {
 
             match <Self as LabInterface<T>>::delete_lab(&who) {
                 Ok(lab) => {
-                    Self::deposit_event(Event::LabDeleted(lab, who.clone()));
+                    Self::deposit_event(Event::LabDeregistered(lab, who.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
