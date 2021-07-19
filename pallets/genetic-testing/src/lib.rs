@@ -57,6 +57,8 @@ pub mod pallet {
         DnaSampleGenotyped(DnaSampleOf<T>),
         /// Reviewed
         DnaSampleReviewed(DnaSampleOf<T>),
+        /// Computed
+        DnaSampleComputed(DnaSampleOf<T>),
         /// Dna Sample Processed
         DnaSampleProcessed(DnaTestResultOf<T>),
         /// Dna Test Result Submitted
@@ -152,72 +154,74 @@ pub mod pallet {
 
         // ----------------------- Update --------------------------
 
-        /*
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as GeneticTestingInterface<T>>::process_dna_sample(&who, &tracking_id) {
                 Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleProcessing(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleComputed(dna_sample.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
             }
         } 
-        */
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn prepare_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+        // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        // pub fn prepare_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+        //     let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::prepare_dna_sample(&who, &tracking_id) {
-                Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone()));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
+        //     match <Self as GeneticTestingInterface<T>>::prepare_dna_sample(&who, &tracking_id) {
+        //         Ok(dna_sample) => {
+        //             Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone()));
+        //             Ok(().into())
+        //         },
+        //         Err(error) => Err(error)?
+        //     }
+        // }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn extract_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+        // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        // pub fn extract_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+        //     let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::extract_dna_sample(&who, &tracking_id) {
-                Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone()));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
+        //     match <Self as GeneticTestingInterface<T>>::extract_dna_sample(&who, &tracking_id) {
+        //         Ok(dna_sample) => {
+        //             Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone()));
+        //             Ok(().into())
+        //         },
+        //         Err(error) => Err(error)?
+        //     }
+        // }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn genotyping_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+        // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        // pub fn genotyping_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+        //     let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::genotyping_dna_sample(&who, &tracking_id) {
-                Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone()));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
+        //     match <Self as GeneticTestingInterface<T>>::genotyping_dna_sample(&who, &tracking_id) {
+        //         Ok(dna_sample) => {
+        //             Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone()));
+        //             Ok(().into())
+        //         },
+        //         Err(error) => Err(error)?
+        //     }
+        // }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn review_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+        // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        // pub fn review_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
+        //     let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::review_dna_sample(&who, &tracking_id) {
-                Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone()));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
+        //     match <Self as GeneticTestingInterface<T>>::review_dna_sample(&who, &tracking_id) {
+        //         Ok(dna_sample) => {
+        //             Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone()));
+        //             Ok(().into())
+        //         },
+        //         Err(error) => Err(error)?
+        //     }
+        // }
 
         // ----------------------------------------------------------
 
@@ -261,6 +265,7 @@ pub enum DnaSampleStatus {
     Extracted,
     Genotyped,
     Reviewed,
+    Computed,
     Success,
     Failed,
 }
@@ -443,7 +448,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
     // ------------------------ Update ---------------------
 
-    fn prepare_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
             return Err(Error::<T>::DnaSampleNotFound);
@@ -456,68 +461,91 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
         let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.status = DnaSampleStatus::Prepared;
-        dna_sample.updated_at = now;
-        DnaSamples::<T>::insert(tracking_id, &dna_sample);
-
-        Ok(dna_sample)
-    }
-
-    fn extract_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
-        let dna_sample = DnaSamples::<T>::get(tracking_id);
-        if dna_sample.is_none() {
-            return Err(Error::<T>::DnaSampleNotFound);
-        }
-        let mut dna_sample = dna_sample.unwrap();
-
-        if dna_sample.lab_id != *lab_id {
-            return Err(Error::<T>::Unauthorized)
-        }
-
-        let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.status = DnaSampleStatus::Extracted;
-        dna_sample.updated_at = now;
-        DnaSamples::<T>::insert(tracking_id, &dna_sample);
-
-        Ok(dna_sample)
-    }
-
-    fn genotyping_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
-        let dna_sample = DnaSamples::<T>::get(tracking_id);
-        if dna_sample.is_none() {
-            return Err(Error::<T>::DnaSampleNotFound);
-        }
-        let mut dna_sample = dna_sample.unwrap();
-
-        if dna_sample.lab_id != *lab_id {
-            return Err(Error::<T>::Unauthorized)
-        }
-
-        let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.status = DnaSampleStatus::Genotyped;
-        dna_sample.updated_at = now;
-        DnaSamples::<T>::insert(tracking_id, &dna_sample);
-
-        Ok(dna_sample)
-    }
-
-    fn review_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
-        let dna_sample = DnaSamples::<T>::get(tracking_id);
-        if dna_sample.is_none() {
-            return Err(Error::<T>::DnaSampleNotFound);
-        }
-        let mut dna_sample = dna_sample.unwrap();
-
-        if dna_sample.lab_id != *lab_id {
-            return Err(Error::<T>::Unauthorized)
-        }
-
-        let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.status = DnaSampleStatus::Reviewed;
+        dna_sample.status = DnaSampleStatus::Computed;
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
         Ok(dna_sample)
     }
+
+    // fn prepare_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    //     let dna_sample = DnaSamples::<T>::get(tracking_id);
+    //     if dna_sample.is_none() {
+    //         return Err(Error::<T>::DnaSampleNotFound);
+    //     }
+    //     let mut dna_sample = dna_sample.unwrap();
+
+    //     if dna_sample.lab_id != *lab_id {
+    //         return Err(Error::<T>::Unauthorized)
+    //     }
+
+    //     let now = pallet_timestamp::Pallet::<T>::get();
+    //     dna_sample.status = DnaSampleStatus::Prepared;
+    //     dna_sample.updated_at = now;
+    //     DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+    //     Ok(dna_sample)
+    // }
+
+    // fn extract_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    //     let dna_sample = DnaSamples::<T>::get(tracking_id);
+    //     if dna_sample.is_none() {
+    //         return Err(Error::<T>::DnaSampleNotFound);
+    //     }
+    //     let mut dna_sample = dna_sample.unwrap();
+
+    //     if dna_sample.lab_id != *lab_id {
+    //         return Err(Error::<T>::Unauthorized)
+    //     }
+
+    //     let now = pallet_timestamp::Pallet::<T>::get();
+    //     dna_sample.status = DnaSampleStatus::Extracted;
+    //     dna_sample.updated_at = now;
+    //     DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+    //     Ok(dna_sample)
+    // }
+
+    // fn genotyping_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    //     let dna_sample = DnaSamples::<T>::get(tracking_id);
+    //     if dna_sample.is_none() {
+    //         return Err(Error::<T>::DnaSampleNotFound);
+    //     }
+    //     let mut dna_sample = dna_sample.unwrap();
+
+    //     if dna_sample.lab_id != *lab_id {
+    //         return Err(Error::<T>::Unauthorized)
+    //     }
+
+    //     let now = pallet_timestamp::Pallet::<T>::get();
+    //     dna_sample.status = DnaSampleStatus::Genotyped;
+    //     dna_sample.updated_at = now;
+    //     DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+    //     Ok(dna_sample)
+    // }
+
+    // fn review_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
+    //     let dna_sample = DnaSamples::<T>::get(tracking_id);
+    //     if dna_sample.is_none() {
+    //         return Err(Error::<T>::DnaSampleNotFound);
+    //     }
+    //     let mut dna_sample = dna_sample.unwrap();
+
+    //     if dna_sample.lab_id != *lab_id {
+    //         return Err(Error::<T>::Unauthorized)
+    //     }
+
+    //     let now = pallet_timestamp::Pallet::<T>::get();
+    //     dna_sample.status = DnaSampleStatus::Reviewed;
+    //     dna_sample.updated_at = now;
+    //     DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+    //     Ok(dna_sample)
+    // }
 
     // ---------------------------------------------------------------
 
