@@ -69,13 +69,7 @@
   "CertificationInfoOf": "CertificationInfo",
   "CertificationIdOf": "H256",
   "OrderStatus": {
-    "_enum": [
-      "Unpaid",
-      "Paid",
-      "Success",
-      "Refunded",
-      "Cancelled"
-    ]
+    "_enum": ["Unpaid", "Paid", "Success", "Refunded", "Cancelled"]
   },
   "MomentOf": "Moment",
   "Order": {
@@ -95,14 +89,20 @@
   "OrderOf": "Order",
   "OrderIdsOf": "Vec<H256>",
   "DnaSampleStatus": {
-    "_enum": [
-      "Sending",
-      "Received",
-      "Rejected",
-      "Processing",
-      "Success",
-      "Failed"
-    ]
+    "_enum": {
+      "Sending": "Vec<Sending>",
+      "Registered": "Vec<Registered>",
+      "Rejected": "Vec<Rejected>",
+      "Arrived": "Vec<Arrived>",
+      "Processing": "Vec<Processing>",
+      "Success": "Vec<Success>",
+      "Failed": "Vec<Failed>",
+      "Prepared": "Vec<Prepared>",
+      "Extracted": "Vec<Extracted>",
+      "Genotyped": "Vec<Genotyped>",
+      "Reviewed": "Vec<Reviewed>",
+      "Computed": "Vec<Computed>"
+    }
   },
   "DnaSampleTrackingId": "Text",
   "DnaSample": {
@@ -143,12 +143,7 @@
   },
   "EscrowOf": "Escrow",
   "Role": {
-    "_enum": [
-      "Customer",
-      "Lab",
-      "Hospital",
-      "Doctor"
-    ]
+    "_enum": ["Customer", "Lab", "Hospital", "Doctor"]
   },
   "ElectronicMedicalRecordInfo": {
     "id": "H256",
