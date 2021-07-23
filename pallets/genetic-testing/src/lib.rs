@@ -160,6 +160,9 @@ pub mod pallet {
 
             match <Self as GeneticTestingInterface<T>>::process_dna_sample(&who, &tracking_id, status) {
                 Ok(dna_sample) => {
+                    Self::deposit_event(Event::<T>::DnaSampleRegistered(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleArrived(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleRejected(dna_sample.clone()));
                     Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone()));
                     Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone()));
                     Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone()));
@@ -409,7 +412,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
     // ------------------------ Update ---------------------
 
-    fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>, _status: Self::DnaSampleStatus) -> Result<Self::DnaSample, Self::Error> {
+    fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>, status: Self::DnaSampleStatus) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
             return Err(Error::<T>::DnaSampleNotFound);
@@ -421,11 +424,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        dna_sample.status = DnaSampleStatus::Prepared;
-        dna_sample.status = DnaSampleStatus::Extracted;
-        dna_sample.status = DnaSampleStatus::Genotyped;
-        dna_sample.status = DnaSampleStatus::Reviewed;
-        dna_sample.status = DnaSampleStatus::Computed;
+        dna_sample.status = status.clone();
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
