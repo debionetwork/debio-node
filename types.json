@@ -74,7 +74,8 @@
       "Paid",
       "Success",
       "Refunded",
-      "Cancelled"
+      "Cancelled",
+      "Failed"
     ]
   },
   "MomentOf": "Moment",
@@ -97,9 +98,14 @@
   "DnaSampleStatus": {
     "_enum": [
       "Sending",
-      "Received",
+      "Registered",
+      "Arrived",
       "Rejected",
-      "Processing",
+      "Prepared",
+      "Extracted",
+      "Genotyped",
+      "Reviewed",
+      "Computed",
       "Success",
       "Failed"
     ]
