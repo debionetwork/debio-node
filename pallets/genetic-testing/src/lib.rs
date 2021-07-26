@@ -49,6 +49,8 @@ pub mod pallet {
         DnaSampleArrived(DnaSampleOf<T>),
         /// Rejected
         DnaSampleRejected(DnaSampleOf<T>),
+        /// Processing
+        DnaSampleProcessing(DnaSampleOf<T>),
         /// Prepared
         DnaSamplePrepared(DnaSampleOf<T>),
         /// Extracted
@@ -152,29 +154,20 @@ pub mod pallet {
             }
         }
 
-        // ----------------------- Update --------------------------
-
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, status: DnaSampleStatus) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as GeneticTestingInterface<T>>::process_dna_sample(&who, &tracking_id, status) {
                 Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleRegistered(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSampleArrived(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSampleRejected(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone()));
-                    Self::deposit_event(Event::<T>::DnaSampleComputed(dna_sample.clone()));
+                    
+                    Self::deposit_event(Event::<T>::DnaSampleProcessing(dna_sample.clone()));
+
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
             }
         } 
-
-        // ----------------------------------------------------------
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, is_success: bool, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo {
@@ -410,8 +403,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         Ok(dna_sample)
     }
 
-    // ------------------------ Update ---------------------
-
     fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>, status: Self::DnaSampleStatus) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
@@ -430,8 +421,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
         Ok(dna_sample)
     }
-
-    // ---------------------------------------------------------------
 
     fn submit_test_result(
         lab_id: &T::AccountId,

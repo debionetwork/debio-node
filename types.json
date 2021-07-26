@@ -89,20 +89,20 @@
   "OrderOf": "Order",
   "OrderIdsOf": "Vec<H256>",
   "DnaSampleStatus": {
-    "_enum": {
-      "Sending": "Vec<Sending>",
-      "Registered": "Vec<Registered>",
-      "Rejected": "Vec<Rejected>",
-      "Arrived": "Vec<Arrived>",
-      "Processing": "Vec<Processing>",
-      "Success": "Vec<Success>",
-      "Failed": "Vec<Failed>",
-      "Prepared": "Vec<Prepared>",
-      "Extracted": "Vec<Extracted>",
-      "Genotyped": "Vec<Genotyped>",
-      "Reviewed": "Vec<Reviewed>",
-      "Computed": "Vec<Computed>"
-    }
+    "_enum": [
+      "Sending",
+      "Registered",
+      "Rejected",
+      "Arrived",
+      "Processing",
+      "Success",
+      "Failed",
+      "Prepared",
+      "Extracted",
+      "Genotyped",
+      "Reviewed",
+      "Computed"
+    ]
   },
   "DnaSampleTrackingId": "Text",
   "DnaSample": {
