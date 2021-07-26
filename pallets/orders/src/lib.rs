@@ -14,7 +14,7 @@ use traits_services::{
     types::{ Price }
 };
 use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
-use traits_order::{OrderEventEmitter};
+use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
@@ -24,6 +24,7 @@ pub enum OrderStatus {
     Success,
     Refunded,
     Cancelled,
+    Failed,
 }
 impl Default for OrderStatus {
     fn default() -> Self { OrderStatus::Unpaid }
@@ -528,6 +529,17 @@ impl<T: Config> OrderEventEmitter<T> for Pallet<T> {
         match Self::order_by_id(order_id) {
             None => Self::deposit_event(Event::OrderNotFound),
             Some(order) => Self::deposit_event(Event::OrderFailed(order))
+        }
+    }
+}
+
+impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
+    fn update_status_failed(order_id: &HashOf<T>) -> () {
+        match Self::order_by_id(order_id) {
+            None => Self::deposit_event(Event::OrderNotFound),
+            Some(order) => {
+                Self::update_order_status(&order.id, OrderStatus::Failed);
+            },
         }
     }
 }
