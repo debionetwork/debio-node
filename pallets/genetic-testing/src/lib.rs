@@ -18,7 +18,7 @@ pub use frame_support::traits::Randomness;
 pub use sp_std::prelude::*;
 pub use sp_std::fmt::Debug;
 pub use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
-pub use traits_order::{OrderEventEmitter};
+pub use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -28,7 +28,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type RandomnessSource: Randomness<Self::Hash>;
-        type Orders: OrderEventEmitter<Self>;
+        type Orders: OrderEventEmitter<Self> + OrderStatusUpdater<Self>;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -454,6 +454,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
         T::Orders::emit_event_order_failed(&dna_sample.order_id);
+        T::Orders::update_status_failed(&dna_sample.order_id);
 
         Ok(dna_sample)
     }
