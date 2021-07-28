@@ -16,7 +16,6 @@ pub trait GeneticTestingInterface<T: frame_system::Config> {
     fn submit_test_result(
         lab_id: &T::AccountId,
         tracking_id: &Vec<u8>,
-        is_success: bool,
         submission: &Self::DnaTestResultSubmission
     ) -> Result<Self::DnaTestResult, Self::Error>;
 
