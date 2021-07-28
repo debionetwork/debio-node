@@ -29,25 +29,42 @@
   },
   "LabOf": "Lab",
   "Price": {
-    "key": "Text",
+    "component": "Text",
     "value": "u128"
   },
+  "CurrencyType": {
+    "_enum": [
+      "Dai",
+      "Ethereum"
+    ]
+  },
   "PriceByCurrency": {
-    "currency": "Text",
-    "prices": "Vec<Price>",
+    "currency": "CurrencyType",
+    "total_price": "u128",
+    "price_components": "Vec<Price>",
     "additional_prices": "Vec<Price>"
   },
   "ServiceInfo": {
     "name": "Text",
     "prices_by_currency": "Vec<PriceByCurrency>",
-    "qc_prices_by_currency": "Vec<PriceByCurrency>",
-    "expected_duration": "Vec<i8>",
+    "expected_duration": "ExpectedDuration",
     "category": "Text",
     "description": "Text",
     "test_result_sample": "Text",
     "long_description": "Option<Text>",
     "image": "Option<Text>",
     "dna_collection_process": "Option<Text>"
+  },
+  "DurationType": {
+    "_enum": [
+      "WorkingDays",
+      "Hours",
+      "Days"
+    ]
+  },
+  "ExpectedDuration": {
+    "duration": "i8",
+    "duration_type": "DurationType"
   },
   "Service": {
     "id": "H256",
@@ -82,7 +99,6 @@
       "Cancelled",
       "Failed"
     ]
-
   },
   "MomentOf": "Moment",
   "Order": {

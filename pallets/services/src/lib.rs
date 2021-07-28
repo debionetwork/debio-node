@@ -5,7 +5,7 @@ use traits_services::{
     ServicesProvider,
     ServiceOwner,
     ServiceInfo as ServiceInfoT,
-    types::{ PriceByCurrency },
+    types::{ PriceByCurrency, ExpectedDuration },
 };
 use frame_support::traits::{ Currency };
 use frame_support::codec::{Encode, Decode};
@@ -22,10 +22,13 @@ use sp_std::prelude::*;
 pub struct ServiceInfo<Balance> {
     name: Vec<u8>,
     prices_by_currency: Vec<PriceByCurrency<Balance>>,
+    expected_duration: ExpectedDuration,
     category: Vec<u8>,
     description: Vec<u8>, // TODO: limit the length
+    test_result_sample: Vec<u8>,
     long_description: Option<Vec<u8>>,
-    image: Option<Vec<u8>>
+    image: Option<Vec<u8>>,
+    dna_collection_process: Option<Vec<u8>>,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
@@ -222,8 +225,21 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
 
         let owner_service_count = <Self as ServiceInterface<T>>::services_count_by_owner(owner_id);
         let service_id = Self::generate_service_id(owner_id, owner_service_count);
+
+        // Calculate total price
+        let mut service_info_mut = service_info.clone();
+        for (idx, price_by_currency) in service_info.prices_by_currency.iter().enumerate() {
+            service_info_mut.prices_by_currency[idx].total_price -= price_by_currency.total_price;
+            for price_component in price_by_currency.price_components.iter() {
+                service_info_mut.prices_by_currency[idx].total_price += price_component.value;
+            }
+    
+            for additional_price in price_by_currency.additional_prices.iter() {
+                service_info_mut.prices_by_currency[idx].total_price += additional_price.value;
+            }
+        }
         
-        let service = Service::new(service_id.clone(), owner_id.clone(), service_info.clone());
+        let service = Service::new(service_id.clone(), owner_id.clone(), service_info_mut);
         // Store to Services storage
         Services::<T>::insert(&service_id, &service);
 
@@ -250,7 +266,20 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             return Err(Error::<T>::NotServiceOwner)?;
         }
 
-        service.info = service_info.clone();
+        // Calculate total price
+        let mut service_info_mut = service_info.clone();
+        for (idx, price_by_currency) in service_info.prices_by_currency.iter().enumerate() {
+            service_info_mut.prices_by_currency[idx].total_price -= price_by_currency.total_price;
+            for price_component in price_by_currency.price_components.iter() {
+                service_info_mut.prices_by_currency[idx].total_price += price_component.value;
+            }
+    
+            for additional_price in price_by_currency.additional_prices.iter() {
+                service_info_mut.prices_by_currency[idx].total_price += additional_price.value;
+            }
+        }
+
+        service.info = service_info_mut;
         Services::<T>::insert(service_id, &service);
 
         Ok(service)
