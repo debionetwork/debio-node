@@ -183,10 +183,10 @@ pub mod pallet {
         } 
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, is_success: bool, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo {
+        pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::submit_test_result(&who, &tracking_id, is_success, &submission) {
+            match <Self as GeneticTestingInterface<T>>::submit_test_result(&who, &tracking_id, &submission) {
                 Ok(dna_test_result) => {
                     Self::deposit_event(Event::<T>::DnaSampleProcessed(dna_test_result.clone()));
                     Ok(().into())
@@ -437,7 +437,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     fn submit_test_result(
         lab_id: &T::AccountId,
         tracking_id: &Vec<u8>,
-        is_success: bool,
         submission: &Self::DnaTestResultSubmission
     )
         -> Result<Self::DnaTestResult, Self::Error>
@@ -452,11 +451,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
             return Err(Error::<T>::Unauthorized)
         }
 
-        // Update DnaSample status
-        match is_success {
-            true => dna_sample.status = DnaSampleStatus::Success,
-            false => dna_sample.status = DnaSampleStatus::Failed,
-        }
         let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
