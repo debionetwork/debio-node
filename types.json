@@ -40,10 +40,14 @@
   "ServiceInfo": {
     "name": "Text",
     "prices_by_currency": "Vec<PriceByCurrency>",
+    "qc_prices_by_currency": "Vec<PriceByCurrency>",
+    "expected_duration": "Vec<i8>",
     "category": "Text",
     "description": "Text",
+    "test_result_sample": "Text",
     "long_description": "Option<Text>",
-    "image": "Option<Text>"
+    "image": "Option<Text>",
+    "dna_collection_process": "Option<Text>"
   },
   "Service": {
     "id": "H256",
@@ -58,7 +62,8 @@
     "issuer": "Text",
     "month": "Text",
     "year": "Text",
-    "description": "Text"
+    "description": "Text",
+    "supporting_document": "Option<Text>"
   },
   "Certification": {
     "id": "H256",

@@ -22,6 +22,7 @@ pub struct CertificationInfo {
     month: Vec<u8>,
     year: Vec<u8>,
     description: Vec<u8>,
+    supporting_document: Option<Vec<u8>>,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
