@@ -49,8 +49,10 @@ pub mod pallet {
         DnaSampleArrived(DnaSampleOf<T>),
         /// Rejected
         DnaSampleRejected(DnaSampleOf<T>),
-        /// Processing
-        DnaSampleProcessing(DnaSampleOf<T>),
+        /// Success
+        DnaSampleSuccess(DnaSampleOf<T>),
+        /// Failed
+        DnaSampleFailed(DnaSampleOf<T>),
         /// Prepared
         DnaSamplePrepared(DnaSampleOf<T>),
         /// Extracted
@@ -158,10 +160,21 @@ pub mod pallet {
         pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, status: DnaSampleStatus) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::process_dna_sample(&who, &tracking_id, status) {
+            match <Self as GeneticTestingInterface<T>>::process_dna_sample(&who, &tracking_id, status.clone()) {
                 Ok(dna_sample) => {
-                    
-                    Self::deposit_event(Event::<T>::DnaSampleProcessing(dna_sample.clone()));
+
+                    match status {
+                        DnaSampleStatus::Registered => (),
+                        DnaSampleStatus::Arrived => (),
+                        DnaSampleStatus::Rejected => (),
+                        DnaSampleStatus::Success => (),
+                        DnaSampleStatus::Failed => (),
+                        DnaSampleStatus::Prepared => Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone())),
+                        DnaSampleStatus::Extracted => Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone())),
+                        DnaSampleStatus::Genotyped => Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone())),
+                        DnaSampleStatus::Reviewed => Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone())),
+                        DnaSampleStatus::Computed => Self::deposit_event(Event::<T>::DnaSampleComputed(dna_sample.clone())),
+                    }
 
                     Ok(().into())
                 },
@@ -200,11 +213,9 @@ pub mod pallet {
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
 pub enum DnaSampleStatus {
-    Sending,
     Registered,
     Arrived,
     Rejected,
-    Processing,
     Success,
     Failed,
     Prepared,
@@ -215,7 +226,7 @@ pub enum DnaSampleStatus {
 }
 impl Default for DnaSampleStatus {
     fn default() -> Self {
-        Self::Sending
+        Self::Registered
     }
 }
 
