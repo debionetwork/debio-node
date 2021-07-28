@@ -42,6 +42,7 @@ use sp_core::{RuntimeDebug};
 
 /// Import the template pallet.
 pub use labs;
+pub use gbio;
 pub use services;
 pub use certifications;
 pub use hospitals;
@@ -286,6 +287,10 @@ impl labs::Config for Runtime {
     type UserProfile = UserProfile;
 }
 
+impl gbio::Config for Runtime {
+    type Event = Event;
+}
+
 impl hospitals::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
@@ -362,6 +367,7 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template pallet in the runtime.
+		Gbio: gbio::{Module, Call, Storage, Config<T>, Event<T>},
 		Labs: labs::{Module, Call, Storage, Event<T>},
 		Services: services::{Module, Call, Storage, Event<T>},
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},

@@ -36,6 +36,7 @@ hospitals = { path = '../pallets/hospitals', default-features = false }
 hospital-certifications = { path = '../pallets/hospital-certifications', default-features = false }
 doctors = { path = '../pallets/doctors', default-features = false }
 doctor-certifications = { path = '../pallets/doctor-certifications', default-features = false }
+gbio = { path = '../pallets/gbio', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
@@ -113,4 +114,5 @@ std = [
     'hospital-certifications/std',
     'doctors/std',
     'doctor-certifications/std',
+    'gbio/std',
 ]
