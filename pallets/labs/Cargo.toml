@@ -22,6 +22,7 @@ version = '2.0.0'
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
+sp-io = { default-features = false, version = '3.0.0' }
 traits-services = { path = '../../traits/services', default-features = false }
 traits-certifications = { path = '../../traits/certifications', default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
@@ -29,7 +30,6 @@ traits-user-profile = { path = '../../traits/user-profile', default-features = f
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
 sp-core = { default-features = false, version = '3.0.0' }
-sp-io = { default-features = false, version = '3.0.0' }
 sp-runtime = { default-features = false, version = '3.0.0' }
 
 [features]

@@ -77,6 +77,7 @@
       "Cancelled",
       "Failed"
     ]
+
   },
   "MomentOf": "Moment",
   "Order": {
@@ -97,17 +98,14 @@
   "OrderIdsOf": "Vec<H256>",
   "DnaSampleStatus": {
     "_enum": [
-      "Sending",
       "Registered",
-      "Arrived",
-      "Rejected",
+      "Success",
+      "Failed",
       "Prepared",
       "Extracted",
       "Genotyped",
       "Reviewed",
-      "Computed",
-      "Success",
-      "Failed"
+      "Computed"
     ]
   },
   "DnaSampleTrackingId": "Text",
@@ -149,12 +147,7 @@
   },
   "EscrowOf": "Escrow",
   "Role": {
-    "_enum": [
-      "Customer",
-      "Lab",
-      "Hospital",
-      "Doctor"
-    ]
+    "_enum": ["Customer", "Lab", "Hospital", "Doctor"]
   },
   "ElectronicMedicalRecordInfo": {
     "id": "H256",

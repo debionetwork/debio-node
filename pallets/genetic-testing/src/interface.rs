@@ -2,6 +2,7 @@ use sp_std::prelude::*;
 
 pub trait GeneticTestingInterface<T: frame_system::Config> {
     type DnaSample;
+    type DnaSampleStatus; // ----- Update -----
     type DnaTestResult;
     type DnaTestResultSubmission;
     type Error;
@@ -9,17 +10,7 @@ pub trait GeneticTestingInterface<T: frame_system::Config> {
     fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::DnaSample, Self::Error>;
     fn receive_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
     fn reject_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>, rejected_title: &Vec<u8>, rejected_description: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
-
-    // ------------ Update -----------------------
-    fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
-
-    // fn prepare_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
-    // fn extract_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
-    // fn genotyping_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
-    // fn review_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
-
-    // -------------------------------------------
-  
+    fn process_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>, status: Self::DnaSampleStatus) -> Result<Self::DnaSample, Self::Error>;
     fn delete_dna_sample(tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
 
     fn submit_test_result(
