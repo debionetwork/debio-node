@@ -69,7 +69,15 @@
   "CertificationInfoOf": "CertificationInfo",
   "CertificationIdOf": "H256",
   "OrderStatus": {
-    "_enum": ["Unpaid", "Paid", "Success", "Refunded", "Cancelled"]
+    "_enum": [
+      "Unpaid",
+      "Paid",
+      "Success",
+      "Refunded",
+      "Cancelled",
+      "Failed"
+    ]
+
   },
   "MomentOf": "Moment",
   "Order": {
@@ -90,11 +98,7 @@
   "OrderIdsOf": "Vec<H256>",
   "DnaSampleStatus": {
     "_enum": [
-      "Sending",
       "Registered",
-      "Rejected",
-      "Arrived",
-      "Processing",
       "Success",
       "Failed",
       "Prepared",
