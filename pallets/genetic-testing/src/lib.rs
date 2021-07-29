@@ -76,6 +76,7 @@ pub mod pallet {
         Unauthorized,
         TrackingIdCollision,
         ResultLinkRequired,
+        ReportLinkRequired,
     }
 
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
@@ -481,6 +482,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
         if submission.result_link == None {
             return Err(Error::<T>::ResultLinkRequired);
+        }
+
+        if submission.report_link == None {
+            return Err(Error::<T>::ReportLinkRequired);
         }
 
         let mut tries = 10;
