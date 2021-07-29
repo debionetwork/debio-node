@@ -479,8 +479,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         -> Result<Self::DnaTestResult, Self::Error>
     {
         let seed = Self::generate_random_seed(owner_id, owner_id);
-        // let result_link = &submission.result_link;
-        // let report_link = &submission.report_link;
 
         if submission.result_link == None {
             return Err(Error::<T>::ResultLinkRequired);
