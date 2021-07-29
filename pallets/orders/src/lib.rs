@@ -11,7 +11,7 @@ use sp_std::prelude::*;
 use traits_services::{
     ServicesProvider,
     ServiceInfo,
-    types::{ Price }
+    types::{ Price, CurrencyType }
 };
 use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
@@ -38,7 +38,7 @@ pub struct Order<Hash, AccountId, Balance, Moment> {
     pub customer_box_public_key: Hash,
     pub seller_id: AccountId,
     pub dna_sample_tracking_id: Vec<u8>,
-    pub currency: Vec<u8>,
+    pub currency: CurrencyType,
     pub prices: Vec<Price<Balance>>,
     pub additional_prices: Vec<Price<Balance>>,
     pub status: OrderStatus,
@@ -53,7 +53,7 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
         customer_box_public_key: Hash,
         seller_id: AccountId,
         dna_sample_tracking_id: Vec<u8>,
-        currency: Vec<u8>,
+        currency: CurrencyType,
         prices: Vec<Price<Balance>>,
         additional_prices: Vec<Price<Balance>>,
         created_at: Moment,
@@ -318,7 +318,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let price_by_currency = &prices_by_currency[price_index as usize];
 
         let currency = &price_by_currency.currency;
-        let prices = &price_by_currency.prices;
+        let prices = &price_by_currency.price_components;
         let additional_prices = &price_by_currency.additional_prices;
 
         let now = pallet_timestamp::Pallet::<T>::get();

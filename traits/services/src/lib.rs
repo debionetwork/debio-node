@@ -8,17 +8,43 @@ pub mod types {
     use frame_support::pallet_prelude::*;
     use sp_std::prelude::*;
 
+    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+    pub enum CurrencyType {
+        Dai,
+        Ethereum,
+    }
+    impl Default for CurrencyType {
+        fn default() -> Self { CurrencyType::Dai }
+    }
+
     #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
     pub struct Price<Balance> {
-        pub key: Vec<u8>,
+        pub component: Vec<u8>,
         pub value: Balance,
     }
 
     #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
     pub struct PriceByCurrency<Balance> {
-        pub currency: Vec<u8>,
-        pub prices: Vec<Price<Balance>>,
+        pub currency: CurrencyType,
+        pub total_price: Balance,
+        pub price_components: Vec<Price<Balance>>,
         pub additional_prices: Vec<Price<Balance>>,
+    }
+
+    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+    pub enum DurationType {
+        WorkingDays,
+        Hours,
+        Days,
+    }
+    impl Default for DurationType {
+        fn default() -> Self { DurationType::WorkingDays }
+    }
+    
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    pub struct ExpectedDuration {
+        pub duration: i8,
+        pub duration_type: DurationType,
     }
 }
 
