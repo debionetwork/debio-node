@@ -38,7 +38,7 @@ This pallet handles the business logic of orders. An `Order` is associated with 
 An `Order` is fulfilled if the associated `DnaSample` is successfully processed.  
 An `Order` payment can be refunded if the physical `DnaSample` is rejected upon receipt, it has not been processed for 7 days, or if the sample processing has failed.
 
-Currently DeBio uses the ethereum network for payments in USDT. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
+Currently DeBio uses the ethereum network for payments in DAI. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
 
 Before a user can create an order, he/she is required to set an eth address in the User Profile Pallet
 
@@ -90,7 +90,7 @@ pub fn submit_independent_test_result(origin: OriginFor<T>, submission: DnaTestR
 ## User Profile Pallet
 Currently this pallet only stores a user's Ethereum address that is used to make and receive payments
 
-### Set USDT Address
+### Set DAI Address
 ```rust
 pub fn set_eth_address(origin: OriginFor<T>, eth_address: EthereumAddress) -> DispatchResultWithPostInfo
 ```

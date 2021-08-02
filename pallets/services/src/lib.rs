@@ -108,6 +108,7 @@ pub mod pallet {
     pub type ServiceOf<T> = Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
+    pub type DaiHash<T> = HashOf<T>;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -138,6 +139,9 @@ pub mod pallet {
         //// Service deleted
         /// parameters, [Service, who]
         ServiceDeleted(ServiceOf<T>, AccountIdOf<T>),
+        /// Request service staking
+        /// parameters, [Service, who, staking]
+        ServiceStacked(ServiceOf<T>, AccountIdOf<T>),
     }
 
     // Errors inform users that something went wrong.
@@ -149,6 +153,8 @@ pub mod pallet {
         NotServiceOwner,
         /// Ordering a service that does not exist
         ServiceDoesNotExist,
+        /// Service Staking is required
+        ServiceStakingIsRequired,
     }
     
     #[pallet::call]
@@ -190,6 +196,19 @@ pub mod pallet {
                 Err(error) => Err(error)?
             }
         }
+
+        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        pub fn request_service_staking(origin: OriginFor<T>, service_id: HashOf<T>, dai_hash: DaiHash<T>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as ServiceInterface<T>>::request_service_staking(&who, &service_id, &dai_hash) {
+                Ok(service) => {
+                    Self::deposit_event(Event::ServiceStacked(service, who.clone()));
+                    Ok(().into())
+                },
+                Err(error) => Err(error)?
+            }
+        }
     }
 }
 
@@ -202,6 +221,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     type ServiceId = T::Hash;
     type Service = ServiceOf<T>;
     type ServiceInfo = ServiceInfoOf<T>;
+    type DaiHash = HashOf<T>;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId {
         let mut account_id_bytes = owner_id.encode();
@@ -323,6 +343,29 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     fn services_count_by_owner(owner_id: &T::AccountId) -> u64 {
         Self::services_count_by_owner(owner_id).unwrap_or(0)
     }
+
+    /// Request Service Staking 
+    fn request_service_staking(owner_id: &T::AccountId, service_id: &Self::ServiceId, dai_hash: &Self::DaiHash) -> Result<Self::Service, Self::Error> {
+        let service = Services::<T>::get(service_id);
+        if service == None {
+            return Err(Error::<T>::ServiceDoesNotExist)?;
+        }
+        let service = service.unwrap();
+
+        if service.owner_id != owner_id.clone() {
+            return Err(Error::<T>::NotServiceOwner)?;
+        }
+
+        let dai_hash = dai_hash.clone();
+        if dai_hash != dai_hash {
+            return Err(Error::<T>::ServiceStakingIsRequired)?;
+        }
+
+        Services::<T>::insert(service_id, &service);
+
+        Ok(service)
+    }
+
 }
 
 /// Pallet Methods
