@@ -119,14 +119,17 @@
   "OrderIdsOf": "Vec<H256>",
   "DnaSampleStatus": {
     "_enum": [
+      "Sending",
       "Registered",
-      "Success",
-      "Failed",
+      "Arrived",
+      "Rejected",
       "Prepared",
       "Extracted",
       "Genotyped",
       "Reviewed",
-      "Computed"
+      "Computed",
+      "Success",
+      "Failed"
     ]
   },
   "DnaSampleTrackingId": "Text",
