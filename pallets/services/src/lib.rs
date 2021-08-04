@@ -108,7 +108,7 @@ pub mod pallet {
     pub type ServiceOf<T> = Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
-    pub type DaiHash<T> = HashOf<T>;
+    pub type TxHash<T> = HashOf<T>;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -198,10 +198,10 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
-        pub fn request_service_staking(origin: OriginFor<T>, service_id: HashOf<T>, dai_hash: DaiHash<T>) -> DispatchResultWithPostInfo {
+        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, tx_hash: TxHash<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as ServiceInterface<T>>::request_service_staking(&who, &service_id, &dai_hash) {
+            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.clone(), &tx_hash) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceStacked(service, who.clone()));
                     Ok(().into())
@@ -221,7 +221,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     type ServiceId = T::Hash;
     type Service = ServiceOf<T>;
     type ServiceInfo = ServiceInfoOf<T>;
-    type DaiHash = HashOf<T>;
+    type TxHash = HashOf<T>;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId {
         let mut account_id_bytes = owner_id.encode();
@@ -345,8 +345,8 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     }
 
     /// Request Service Staking 
-    fn request_service_staking(owner_id: &T::AccountId, service_id: &Self::ServiceId, dai_hash: &Self::DaiHash) -> Result<Self::Service, Self::Error> {
-        let service = Services::<T>::get(service_id);
+    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, tx_hash: &TxHash<T>) -> Result<Self::Service, Self::Error> {
+        let service = Services::<T>::get(tx_hash);
         if service == None {
             return Err(Error::<T>::ServiceDoesNotExist)?;
         }
@@ -356,12 +356,10 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             return Err(Error::<T>::NotServiceOwner)?;
         }
 
-        let dai_hash = dai_hash.clone();
-        if dai_hash != dai_hash {
+        let tx_hash = tx_hash.clone();
+        if tx_hash != tx_hash {
             return Err(Error::<T>::ServiceStakingIsRequired)?;
         }
-
-        Services::<T>::insert(service_id, &service);
 
         Ok(service)
     }

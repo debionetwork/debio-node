@@ -75,8 +75,8 @@ pub trait ServiceOwner<T: Config> {
     fn disassociate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
 }
 
-pub trait DaiHash<T: Config> {
-    type DaiHash;
+pub trait TxHash<T: Config> {
+    type TxHash;
 
-    fn dai_hash(&self) -> &Self::DaiHash;
+    fn tx_hash(&self) -> &Self::TxHash;
 }
