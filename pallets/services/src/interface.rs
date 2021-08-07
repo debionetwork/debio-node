@@ -1,4 +1,4 @@
-//use sp_std::prelude::*;
+// use sp_std::prelude::*;
 
 pub trait ServiceInterface<T: frame_system::Config> {
     type Error;

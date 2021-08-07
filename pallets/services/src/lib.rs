@@ -108,7 +108,7 @@ pub mod pallet {
     pub type ServiceOf<T> = Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
-    pub type TxHash<T> = HashOf<T>;
+    pub type TxHash<T> = <T as frame_system::Config>::Hash;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -141,7 +141,7 @@ pub mod pallet {
         ServiceDeleted(ServiceOf<T>, AccountIdOf<T>),
         /// Request service staking
         /// parameters, [Service, who, staking]
-        ServiceStacked(ServiceOf<T>, AccountIdOf<T>),
+        ServiceStaked(ServiceOf<T>, AccountIdOf<T>),
     }
 
     // Errors inform users that something went wrong.
@@ -198,12 +198,12 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
-        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, tx_hash: TxHash<T>) -> DispatchResultWithPostInfo {
+        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, tx_hash: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.clone(), &tx_hash) {
+            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.as_ref(), &tx_hash) {
                 Ok(service) => {
-                    Self::deposit_event(Event::ServiceStacked(service, who.clone()));
+                    Self::deposit_event(Event::ServiceStaked(service, who.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -221,7 +221,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     type ServiceId = T::Hash;
     type Service = ServiceOf<T>;
     type ServiceInfo = ServiceInfoOf<T>;
-    type TxHash = HashOf<T>;
+    type TxHash = T::Hash;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId {
         let mut account_id_bytes = owner_id.encode();
@@ -345,7 +345,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     }
 
     /// Request Service Staking 
-    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, tx_hash: &TxHash<T>) -> Result<Self::Service, Self::Error> {
+    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, tx_hash: &Self::TxHash) -> Result<Self::Service, Self::Error> {
         let service = Services::<T>::get(tx_hash);
         if service == None {
             return Err(Error::<T>::ServiceDoesNotExist)?;
