@@ -21,7 +21,7 @@ use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 pub enum OrderStatus {
     Unpaid,
     Paid,
-    Success,
+    Fulfilled,
     Refunded,
     Cancelled,
     Failed,
@@ -182,9 +182,9 @@ pub mod pallet {
         /// Order paid
         /// parameters, [Order]
         OrderPaid(OrderOf<T>),
-        /// Order Success
+        /// Order Fulfilled
         /// parameters, [Order]
-        OrderSuccess(OrderOf<T>),
+        OrderFulfilled(OrderOf<T>),
         /// Order Refunded
         /// parameters, [Order]
         OrderRefunded(OrderOf<T>),
@@ -275,7 +275,7 @@ pub mod pallet {
 
             match <Self as OrderInterface<T>>::fulfill_order(&who, &order_id) {
                 Ok(order) => {
-                    Self::deposit_event(Event::<T>::OrderSuccess(order.clone()));
+                    Self::deposit_event(Event::<T>::OrderFulfilled(order.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -397,7 +397,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             return Err(Error::<T>::DnaSampleNotSuccessfullyProcessed);
         }
 
-        let order = Self::update_order_status(order_id, OrderStatus::Success);
+        let order = Self::update_order_status(order_id, OrderStatus::Fulfilled);
 
         Ok(order.unwrap())
     }
