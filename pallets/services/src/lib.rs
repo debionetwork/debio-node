@@ -198,10 +198,10 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
-        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: T::Hash, country: Vec<u8>, city: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.as_ref(), service_category, amount_staked, &tx_hash) {
+            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.as_ref(), service_category, amount_staked, &tx_hash, country, city) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceStaked(service, who.clone()));
                     Ok(().into())
@@ -345,7 +345,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     }
 
     /// Request Service Staking 
-    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: &Self::TxHash) -> Result<Self::Service, Self::Error> {
+    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: &Self::TxHash, country: Vec<u8>, city: Vec<u8>) -> Result<Self::Service, Self::Error> {
         let service = Services::<T>::get(tx_hash);
         if service == None {
             return Err(Error::<T>::ServiceDoesNotExist)?;
@@ -363,7 +363,6 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
 
         Ok(service)
     }
-
 }
 
 /// Pallet Methods
