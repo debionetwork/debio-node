@@ -2,7 +2,7 @@ use sp_std::prelude::*;
 
 pub trait GeneticTestingInterface<T: frame_system::Config> {
     type DnaSample;
-    type DnaSampleStatus; // ----- Update -----
+    type DnaSampleStatus;
     type DnaTestResult;
     type DnaTestResultSubmission;
     type Error;

@@ -17,11 +17,3 @@ pub trait GeneticTestingProvider<T: frame_system::Config> {
     fn dna_sample_by_tracking_id(tracking_id: &Vec<u8>) -> Option<Self::DnaSample>;
     fn delete_dna_sample(tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
 }
-
-pub trait DnaSampleStatus {
-    fn prepared(&self) -> &Vec<u8>;
-    fn extracted(&self) -> &Vec<u8>;
-    fn genotyped(&self) -> &Vec<u8>;
-    fn reviewed(&self) -> &Vec<u8>;
-    fn computed(&self) -> &Vec<u8>;
-}
