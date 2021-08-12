@@ -108,7 +108,7 @@
     "customer_box_public_key": "H256",
     "seller_id": "AccountId",
     "dna_sample_tracking_id": "Text",
-    "currency": "Text",
+    "currency": "CurrencyType",
     "prices": "Vec<Price>",
     "additional_prices": "Vec<Price>",
     "status": "OrderStatus",
@@ -170,7 +170,12 @@
   },
   "EscrowOf": "Escrow",
   "Role": {
-    "_enum": ["Customer", "Lab", "Hospital", "Doctor"]
+    "_enum": [
+      "Customer",
+      "Lab",
+      "Hospital",
+      "Doctor"
+    ]
   },
   "ElectronicMedicalRecordInfo": {
     "id": "H256",
