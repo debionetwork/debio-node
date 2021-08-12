@@ -21,7 +21,7 @@ use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 pub enum OrderStatus {
     Unpaid,
     Paid,
-    Success,
+    Fulfilled,
     Refunded,
     Cancelled,
     Failed,
@@ -182,9 +182,9 @@ pub mod pallet {
         /// Order paid
         /// parameters, [Order]
         OrderPaid(OrderOf<T>),
-        /// Order Success
+        /// Order Fulfilled
         /// parameters, [Order]
-        OrderSuccess(OrderOf<T>),
+        OrderFulfilled(OrderOf<T>),
         /// Order Refunded
         /// parameters, [Order]
         OrderRefunded(OrderOf<T>),
@@ -275,7 +275,7 @@ pub mod pallet {
 
             match <Self as OrderInterface<T>>::fulfill_order(&who, &order_id) {
                 Ok(order) => {
-                    Self::deposit_event(Event::<T>::OrderSuccess(order.clone()));
+                    Self::deposit_event(Event::<T>::OrderFulfilled(order.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -283,10 +283,10 @@ pub mod pallet {
         }
         
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn refund_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn set_order_refunded(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as OrderInterface<T>>::fulfill_order(&who, &order_id) {
+            match <Self as OrderInterface<T>>::set_order_refunded(&who, &order_id) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderRefunded(order.clone()));
                     Ok(().into())
@@ -397,12 +397,12 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             return Err(Error::<T>::DnaSampleNotSuccessfullyProcessed);
         }
 
-        let order = Self::update_order_status(order_id, OrderStatus::Success);
+        let order = Self::update_order_status(order_id, OrderStatus::Fulfilled);
 
         Ok(order.unwrap())
     }
 
-    fn refund_order(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn set_order_refunded(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
         if escrow_account_id.clone() != EscrowKey::<T>::get() {
             return Err(Error::<T>::Unauthorized);
         }
@@ -423,7 +423,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 }
 
 use frame_support::sp_runtime::traits::Hash;
-use frame_support::sp_std::convert::{TryInto, TryFrom};
+use frame_support::sp_std::convert::{TryInto};
 
 impl<T: Config> Pallet<T> {
     pub fn generate_order_id(customer_id: &T::AccountId, service_id: &T::Hash) -> T::Hash {
@@ -502,24 +502,10 @@ impl<T: Config> Pallet<T> {
     }
 
     pub fn order_can_be_refunded(order: OrderOf<T>) -> bool {
-        // Check if order expired ------------------
-        let now = pallet_timestamp::Pallet::<T>::get();
-        let order_created_at = order.created_at.clone();
-        // convert to u64
-        let order_created_at_ms = TryInto::<u64>::try_into(order_created_at).ok().unwrap();
-        // Add 7 days
-        let seven_days_ms = u64::try_from(chrono::Duration::days(7).num_milliseconds()).ok().unwrap();
-        let expires_at_ms = order_created_at_ms + seven_days_ms;
-        // convert back to Moment
-        let expires_at = TryInto::<MomentOf<T>>::try_into(expires_at_ms).ok().unwrap();
-
-        // Can refund if order expired or specimen rejected
         let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
-        let can_refund = now > expires_at || dna_sample.is_rejected();
-        if !can_refund {
+        if !dna_sample.is_rejected() {
             return false;
         }
-
         true
     }
 }

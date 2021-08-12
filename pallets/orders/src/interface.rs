@@ -10,7 +10,7 @@ pub trait OrderInterface<T: frame_system::Config> {
     // set_order_paid Should only be called by Escrow API Server with the correct account_id
     fn set_order_paid(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error>;
     fn fulfill_order(seller_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error>;
-    fn refund_order(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error>;
+    fn set_order_refunded(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error>;
 
     /*
     fn order_by_id(order_id: &T::Hash) -> Option<Self::Order>;
