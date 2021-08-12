@@ -53,18 +53,16 @@ pub mod pallet {
         DnaSampleSuccess(DnaSampleOf<T>),
         /// Failed
         DnaSampleFailed(DnaSampleOf<T>),
-        /// Prepared
-        DnaSamplePrepared(DnaSampleOf<T>),
-        /// Extracted
-        DnaSampleExtracted(DnaSampleOf<T>),
-        /// Genotyped
-        DnaSampleGenotyped(DnaSampleOf<T>),
+        /// QualityControlled
+        DnaSampleQualityControlled(DnaSampleOf<T>),
+        /// GenotypedSequenced
+        DnaSampleGenotypedSequenced(DnaSampleOf<T>),
         /// Reviewed
         DnaSampleReviewed(DnaSampleOf<T>),
         /// Computed
         DnaSampleComputed(DnaSampleOf<T>),
-        /// Dna Sample Processed
-        DnaSampleProcessed(DnaTestResultOf<T>),
+        /// ResultReady
+        DnaSampleResultReady(DnaSampleOf<T>),
         /// Dna Test Result Submitted
         DnaTestResultSubmitted(DnaTestResultOf<T>),
     }
@@ -165,16 +163,12 @@ pub mod pallet {
                 Ok(dna_sample) => {
 
                     match status {
-                        DnaSampleStatus::Registered => (),
-                        DnaSampleStatus::Arrived => (),
-                        DnaSampleStatus::Rejected => (),
-                        DnaSampleStatus::Success => (),
-                        DnaSampleStatus::Failed => (),
-                        DnaSampleStatus::Prepared => Self::deposit_event(Event::<T>::DnaSamplePrepared(dna_sample.clone())),
-                        DnaSampleStatus::Extracted => Self::deposit_event(Event::<T>::DnaSampleExtracted(dna_sample.clone())),
-                        DnaSampleStatus::Genotyped => Self::deposit_event(Event::<T>::DnaSampleGenotyped(dna_sample.clone())),
+                        DnaSampleStatus::QualityControlled => Self::deposit_event(Event::<T>::DnaSampleQualityControlled(dna_sample.clone())),
+                        DnaSampleStatus::GenotypedSequenced => Self::deposit_event(Event::<T>::DnaSampleGenotypedSequenced(dna_sample.clone())),
                         DnaSampleStatus::Reviewed => Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone())),
                         DnaSampleStatus::Computed => Self::deposit_event(Event::<T>::DnaSampleComputed(dna_sample.clone())),
+                        DnaSampleStatus::ResultReady => Self::deposit_event(Event::<T>::DnaSampleResultReady(dna_sample.clone())),
+                        _ => (),
                     }
 
                     Ok(().into())
@@ -189,7 +183,7 @@ pub mod pallet {
 
             match <Self as GeneticTestingInterface<T>>::submit_test_result(&who, &tracking_id, &submission) {
                 Ok(dna_test_result) => {
-                    Self::deposit_event(Event::<T>::DnaSampleProcessed(dna_test_result.clone()));
+                    Self::deposit_event(Event::<T>::DnaTestResultSubmitted(dna_test_result.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -219,11 +213,11 @@ pub enum DnaSampleStatus {
     Rejected,
     Success,
     Failed,
-    Prepared,
-    Extracted,
-    Genotyped,
+    QualityControlled,
+    GenotypedSequenced,
     Reviewed,
-    Computed
+    Computed,
+    ResultReady,
 }
 impl Default for DnaSampleStatus {
     fn default() -> Self {
