@@ -94,7 +94,7 @@
     "_enum": [
       "Unpaid",
       "Paid",
-      "FulFilled",
+      "Fulfilled",
       "Refunded",
       "Cancelled",
       "Failed"
