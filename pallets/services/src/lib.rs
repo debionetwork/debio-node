@@ -131,6 +131,7 @@ pub mod pallet {
     pub type ServiceOf<T> = Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
+    pub type ServiceRequest<T> = AccountIdOf<T>;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -145,6 +146,10 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn services_count_by_owner)]
     pub type ServicesCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn services_request_data)]
+    pub type ServiceRequestData<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, ServiceRequest<T>>;
     // -----------------------------
 
 
@@ -375,10 +380,43 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             return Err(Error::<T>::NotServiceOwner)?;
         }
 
+        let lab_id = lab_id.clone();
+        if lab_id == None {
+            ()
+        }
+
+        let service_category = service_category.clone();
+        if service_category != service_category {
+            ()
+        }
+
+        let amount_staked = amount_staked.clone();
+        if amount_staked != amount_staked {
+            return Err(Error::<T>::ServiceStakingIsRequired)?;
+        }
+
+        let tx_hash = tx_hash.clone();
+        if tx_hash != tx_hash {
+            ()
+        }
+
         let request_hash = request_hash.clone();
         if request_hash != request_hash {
             return Err(Error::<T>::ServiceStakingIsRequired)?;
         }
+
+        let country = country.clone();
+        if country != country {
+            ()
+        }
+
+        let city = city.clone();
+        if city != city {
+            ()
+        }
+
+        // Store to ServicesRequestData storage
+        ServiceRequestData::<T>::insert(request_hash, owner_id);
 
         Ok(service)
     }

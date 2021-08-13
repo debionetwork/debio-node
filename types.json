@@ -74,6 +74,15 @@
   "ServiceOf": "Service",
   "ServiceInfoOf": "ServiceInfo",
   "ServiceIdOf": "H256",
+  "ServiceRequest": {
+    "owner_id": "AccountId",
+    "lab_id": "Option<AccountId>",
+    "service_category": "Vec<Text>",
+    "amount_staked": "u128",
+    "tx_hash": "H256",
+    "request_hash": "H256",
+    "status": "ServcieRequestStatus"
+  },
   "CertificationInfo": {
     "title": "Text",
     "issuer": "Text",
