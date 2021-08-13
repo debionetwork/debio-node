@@ -1,15 +1,19 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+
 pub use pallet::*;
 use traits_services::{
     ServicesProvider,
     ServiceOwner,
+    ServiceOwnerInfo,
     ServiceInfo as ServiceInfoT,
     types::{ PriceByCurrency, ExpectedDuration },
 };
 use frame_support::traits::{ Currency };
 use frame_support::codec::{Encode, Decode};
 use frame_support::pallet_prelude::*;
+use frame_support::sp_runtime::traits::Hash;
+
 
 pub mod interface;
 pub use interface::ServiceInterface;
@@ -73,6 +77,25 @@ impl<T, AccountId, Hash, Balance> ServiceInfoT<T, Balance> for Service<AccountId
     }
 }
 
+pub enum ServiceRequestStatus {
+    Open,
+    InProgress,
+    Fulfilled,
+}
+impl Default for ServiceRequestStatus {
+     fn default() -> Self { ServiceRequestStatus::Open }   
+}
+
+pub struct ServiceRequest<AccountId, HashOf> {
+    owner_id: AccountId,
+    lab_id: Option<AccountId>, 
+    service_category: Vec<u8>,
+    amount_staked: u128,
+    tx_hash: HashOf,
+    request_hash: HashOf,
+    status: ServiceRequestStatus
+}
+
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::{
@@ -108,7 +131,6 @@ pub mod pallet {
     pub type ServiceOf<T> = Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
-    pub type TxHash<T> = <T as frame_system::Config>::Hash;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -198,10 +220,10 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
-        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: T::Hash, country: Vec<u8>, city: Vec<u8>) -> DispatchResultWithPostInfo {
+        pub fn request_service_staking(origin: OriginFor<T>, lab_id: Option<T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: T::Hash, request_hash: T::Hash, country: Vec<u8>, city: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.as_ref(), service_category, amount_staked, &tx_hash, country, city) {
+            match <Self as ServiceInterface<T>>::request_service_staking(&who, lab_id.as_ref(), service_category, amount_staked, &tx_hash, &request_hash, country, city) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceStaked(service, who.clone()));
                     Ok(().into())
@@ -212,16 +234,13 @@ pub mod pallet {
     }
 }
 
-use frame_support::sp_runtime::traits::Hash;
-use traits_services::{ServiceOwnerInfo};
-
 /// Service Interface Implementation
 impl<T: Config> ServiceInterface<T> for Pallet<T> {
     type Error = Error<T>;
     type ServiceId = T::Hash;
     type Service = ServiceOf<T>;
     type ServiceInfo = ServiceInfoOf<T>;
-    type TxHash = T::Hash;
+    type Hash = T::Hash;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId {
         let mut account_id_bytes = owner_id.encode();
@@ -345,8 +364,8 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     }
 
     /// Request Service Staking 
-    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: &Self::TxHash, country: Vec<u8>, city: Vec<u8>) -> Result<Self::Service, Self::Error> {
-        let service = Services::<T>::get(tx_hash);
+    fn request_service_staking(owner_id: &T::AccountId, lab_id: Option<&T::AccountId>, service_category: Vec<u8>, amount_staked: u128, tx_hash: &T::Hash, request_hash: &T::Hash, country: Vec<u8>, city: Vec<u8>) -> Result<Self::Service, Self::Error> {
+        let service = Services::<T>::get(request_hash);
         if service == None {
             return Err(Error::<T>::ServiceDoesNotExist)?;
         }
@@ -356,8 +375,8 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             return Err(Error::<T>::NotServiceOwner)?;
         }
 
-        let tx_hash = tx_hash.clone();
-        if tx_hash != tx_hash {
+        let request_hash = request_hash.clone();
+        if request_hash != request_hash {
             return Err(Error::<T>::ServiceStakingIsRequired)?;
         }
 
