@@ -214,7 +214,8 @@
     "issuer": "Text",
     "month": "Text",
     "year": "Text",
-    "description": "Text"
+    "description": "Text",
+    "supporting_document": "Option<Text>"
   },
   "DoctorCertification": {
     "id": "H256",
@@ -246,7 +247,8 @@
     "issuer": "Text",
     "month": "Text",
     "year": "Text",
-    "description": "Text"
+    "description": "Text",
+    "supporting_document": "Option<Text>"
   },
   "HospitalCertification": {
     "id": "H256",
