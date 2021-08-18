@@ -10,7 +10,7 @@ pub mod interface;
 pub use crate::interface::UserProfileInterface;
 // use frame_support::pallet_prelude::*;
 use traits_user_profile::{UserProfileProvider};
-use codec::{EncodeLike};
+pub use codec::{EncodeLike};
 
 /// An Ethereum address (i.e. 20 bytes, used to represent an Ethereum account).
 ///
@@ -27,7 +27,6 @@ pub mod pallet {
     pub use sp_std::prelude::*;
     use crate::*;
 
-
     #[pallet::config]
     /// Configure the pallet by specifying the parameters and types on which it depends.
     pub trait Config: frame_system::Config {
@@ -39,7 +38,7 @@ pub mod pallet {
     // ----- This is template code, every pallet needs this ---
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
-    pub struct Pallet<T>(_);
+    pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
@@ -87,6 +86,18 @@ pub mod pallet {
                 ::set_eth_address_by_account_id(&who, &eth_address);
 
             Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who));
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(0)]
+        pub fn sudo_set_eth_address(origin: OriginFor<T>, account_id: AccountIdOf<T>, eth_address: EthereumAddressOf<T>) -> DispatchResultWithPostInfo {
+            ensure_root(origin)?;
+
+            <Self as UserProfileInterface<T, EthereumAddressOf<T>>>
+                ::set_eth_address_by_account_id(&account_id, &eth_address);
+
+            Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id));
 
             Ok(().into())
         }
