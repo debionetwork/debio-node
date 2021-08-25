@@ -213,7 +213,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn submit_data_staking_details(origin: OriginFor<T>, data_staker: T::AccountId, data_hash: DataHash<T>) -> DispatchResultWithPostInfo {
+        pub fn submit_data_staking_details(origin: OriginFor<T>, data_hash: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as GeneticTestingInterface<T>>::submit_data_staking_details(&who, &data_hash) {
@@ -348,7 +348,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     type DnaTestResultSubmission = DnaTestResultSubmission;
     type Error = Error<T>;
     type StakedData = HashOf<T>;
-    type DataHash = HashOf<T>;
 
     fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
         let seed = Self::generate_random_seed(lab_id, owner_id);
@@ -565,7 +564,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     // Submit data staking details
     fn submit_data_staking_details(
         data_staker: &T::AccountId, 
-        data_hash: &Self::DataHash
+        data_hash: &T::Hash
     ) 
         -> Result<Self::StakedData, Self::Error>
     {
