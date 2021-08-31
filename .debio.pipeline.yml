@@ -47,7 +47,7 @@ steps:
       - name: toolkit
         path: /data/drone_data
     commands:
-      - /data/drone_data/debio_toolkit -vault  -secret=debio_development/data/debio_substrate
+      - echo '/data/drone_data/debio_toolkit -vault  -secret=debio_development/data/debio_substrate'
       - /data/drone_data/gcmd/build_substrate_dev
     when:
       branch:
@@ -60,7 +60,7 @@ steps:
       - name: toolkit
         path: /data/drone_data
     commands:
-      - /data/drone_data/debio_toolkit -vault  -secret=debio_staging/data/debio_substrate
+      - echo '/data/drone_data/debio_toolkit -vault  -secret=debio_staging/data/debio_substrate'
       - /data/drone_data/gcmd/build_substrate_stg
     when:
       branch:
@@ -73,7 +73,7 @@ steps:
       - name: toolkit
         path: /data/drone_data
     commands:
-      - /data/drone_data/debio_toolkit -vault  -secret=debio_production/data/debio_substrate
+      - echo '/data/drone_data/debio_toolkit -vault  -secret=debio_production/data/debio_substrate'
       - /data/drone_data/gcmd/build_substrate_prod
     when:
       branch:
