@@ -66,7 +66,7 @@ pub mod pallet {
         /// Dna Test Result Submitted
         DnaTestResultSubmitted(DnaTestResultOf<T>),
         /// Submit Data Staking Details
-        DataStaked(HashOf<T>)
+        DataStaked(AccountIdOf<T>, HashOf<T>),
     }
 
     #[pallet::error]
@@ -218,7 +218,7 @@ pub mod pallet {
 
             match <Self as GeneticTestingInterface<T>>::submit_data_staking_details(&who, &data_hash) {
                 Ok(data_staker) => {
-                    Self::deposit_event(Event::<T>::DataStaked(data_staker.clone()));
+                    Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash.clone()));
                     Ok(().into())
                 },
                 Err(error) => Err(error)?
@@ -569,15 +569,9 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         -> Result<Self::StakedData, Self::Error>
     {
         let data_staker = data_staker.clone();
-        if data_staker != data_staker.clone() { 
-            return Err(Error::<T>::DataStakerNotFound);
-        }
-
+        
         let data_hash = data_hash.clone();
-        if data_hash != data_hash.clone() { 
-            return Err(Error::<T>::DataHashNotFound);
-        }
-
+        
         StakedDataByAccountId::<T>::insert(data_staker, data_hash);
 
         Ok(data_hash)
