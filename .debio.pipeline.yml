@@ -107,10 +107,9 @@ steps:
       key_path: /data/drone_data/.ssh/id_rsa
       port: 22
       script:
-        - echo 'simulate reload on development .....'
-        - echo 'docker stop debio_substrate_service || true && docker rm debio_substrate_service || true'
-        - echo 'docker rmi hub.debio.network/debio_substrate_dev:latest && docker pull hub.debio.network/debio_substrate_dev:latest'
-        - echo 'docker run -d --name=debio_substrate_service -v /etc/localtime:/etc/localtime:ro -p 0.0.0.0:9944:9944 --restart=always hub.debio.network/debio_substrate_dev:latest --unsafe-ws-external'
+        - docker stop debio_substrate_service || true && docker rm debio_substrate_service || true
+        - docker rmi hub.debio.network/debio_substrate_dev:latest && docker pull hub.debio.network/debio_substrate_dev:latest
+        - docker run -d --name=debio_substrate_service -v /etc/localtime:/etc/localtime:ro -p 0.0.0.0:9944:9944 --restart=always hub.debio.network/debio_substrate_dev:latest --unsafe-ws-external
     when:
       branch:
         - development
