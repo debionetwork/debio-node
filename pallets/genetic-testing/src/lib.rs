@@ -47,20 +47,10 @@ pub mod pallet {
         DnaSampleRegistered(DnaSampleOf<T>),
         /// Received -> Arrived
         DnaSampleArrived(DnaSampleOf<T>),
-        /// Rejected
+        /// QC Rejected
         DnaSampleRejected(DnaSampleOf<T>),
-        /// Success
-        DnaSampleSuccess(DnaSampleOf<T>),
-        /// Failed
-        DnaSampleFailed(DnaSampleOf<T>),
-        /// QualityControlled
+        /// QC Success
         DnaSampleQualityControlled(DnaSampleOf<T>),
-        /// GenotypedSequenced
-        DnaSampleGenotypedSequenced(DnaSampleOf<T>),
-        /// Reviewed
-        DnaSampleReviewed(DnaSampleOf<T>),
-        /// Computed
-        DnaSampleComputed(DnaSampleOf<T>),
         /// ResultReady
         DnaSampleResultReady(DnaSampleOf<T>),
         /// Dna Test Result Submitted
@@ -173,9 +163,6 @@ pub mod pallet {
 
                     match status {
                         DnaSampleStatus::QualityControlled => Self::deposit_event(Event::<T>::DnaSampleQualityControlled(dna_sample.clone())),
-                        DnaSampleStatus::GenotypedSequenced => Self::deposit_event(Event::<T>::DnaSampleGenotypedSequenced(dna_sample.clone())),
-                        DnaSampleStatus::Reviewed => Self::deposit_event(Event::<T>::DnaSampleReviewed(dna_sample.clone())),
-                        DnaSampleStatus::Computed => Self::deposit_event(Event::<T>::DnaSampleComputed(dna_sample.clone())),
                         DnaSampleStatus::ResultReady => Self::deposit_event(Event::<T>::DnaSampleResultReady(dna_sample.clone())),
                         _ => (),
                     }
@@ -217,7 +204,7 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
 
             match <Self as GeneticTestingInterface<T>>::submit_data_staking_details(&who, &data_hash) {
-                Ok(data_staker) => {
+                Ok(_data_staker) => {
                     Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash.clone()));
                     Ok(().into())
                 },
@@ -233,12 +220,7 @@ pub enum DnaSampleStatus {
     Registered,
     Arrived,
     Rejected,
-    Success,
-    Failed,
     QualityControlled,
-    GenotypedSequenced,
-    Reviewed,
-    Computed,
     ResultReady,
 }
 impl Default for DnaSampleStatus {
@@ -285,10 +267,7 @@ impl<AccountId, Hash, Moment> DnaSampleTracking for DnaSample<AccountId, Hash, M
         &self.tracking_id
     }
     fn process_success(&self) -> bool {
-        self.status == DnaSampleStatus::Success
-    }
-    fn process_failed(&self) -> bool {
-        self.status == DnaSampleStatus::Failed
+        self.status == DnaSampleStatus::ResultReady
     }
     fn is_rejected(&self) -> bool {
         self.status == DnaSampleStatus::Rejected
@@ -471,7 +450,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
         let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.updated_at = now;
-        dna_sample.status = DnaSampleStatus::Success;
+        dna_sample.status = DnaSampleStatus::ResultReady;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
         // Create DnaTestResult
