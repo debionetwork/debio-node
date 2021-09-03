@@ -5,7 +5,6 @@ use sp_std::prelude::*;
 pub trait DnaSampleTracking {
     fn get_tracking_id(&self) -> &Vec<u8>;
     fn process_success(&self) -> bool;
-    fn process_failed(&self) -> bool;
     fn is_rejected(&self) -> bool;
 }
 

@@ -122,12 +122,7 @@
       "Registered",
       "Arrived",
       "Rejected",
-      "Success",
-      "Failed",
       "QualityControlled",
-      "GenotypedSequenced",
-      "Reviewed",
-      "Computed",
       "ResultReady"
     ]
   },
