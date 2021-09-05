@@ -7,6 +7,8 @@ pub trait GeneticTestingInterface<T: frame_system::Config> {
     type DnaTestResultSubmission;
     type Error;
     type StakedData;
+    type DataSubmission;
+
 
     fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::DnaSample, Self::Error>;
     fn receive_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
@@ -36,5 +38,5 @@ pub trait GeneticTestingInterface<T: frame_system::Config> {
     // Return dna sample tracking ids
     fn dna_test_results_by_lab_id(lab_id: &T::AccountId) -> Option<Vec<Vec<u8>>>;
     // Submit data staking details
-    fn submit_data_staking_details(data_staker: &T::AccountId, data_hash: &T::Hash) -> Result<Self::StakedData, Self::Error>;
+    fn submit_data_staking_details(data_staker: &T::AccountId, data_hash: &T::Hash, data_submission: &Self::DataSubmission) -> Result<Self::StakedData, Self::Error>;
 }

@@ -108,6 +108,10 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn staked_data_by_account_id)]
     pub type StakedDataByAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, HashOf<T>>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn data_storage)]
+    pub type DataStorage<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, DataSubmission>;
     // --------------------------
 
 
@@ -200,10 +204,10 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn submit_data_staking_details(origin: OriginFor<T>, data_hash: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn submit_data_staking_details(origin: OriginFor<T>, data_hash: T::Hash, submitted_data: DataSubmission) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::submit_data_staking_details(&who, &data_hash) {
+            match <Self as GeneticTestingInterface<T>>::submit_data_staking_details(&who, &data_hash, &submitted_data) {
                 Ok(_data_staker) => {
                     Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash.clone()));
                     Ok(().into())
@@ -319,6 +323,10 @@ pub struct DnaTestResultSubmission {
     report_link: Option<Vec<u8>>,
 }
 
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+pub struct DataSubmission {
+    submitted_data: Option<Vec<u8>>,
+}
 
 impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     type DnaSample = DnaSampleOf<T>;
@@ -327,6 +335,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     type DnaTestResultSubmission = DnaTestResultSubmission;
     type Error = Error<T>;
     type StakedData = HashOf<T>;
+    type DataSubmission = DataSubmission;
 
     fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &HashOf<T>) -> Result<Self::DnaSample, Self::Error> {
         let seed = Self::generate_random_seed(lab_id, owner_id);
@@ -543,15 +552,18 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     // Submit data staking details
     fn submit_data_staking_details(
         data_staker: &T::AccountId, 
-        data_hash: &T::Hash
+        data_hash: &T::Hash,
+        data_submission: &Self::DataSubmission
     ) 
         -> Result<Self::StakedData, Self::Error>
     {
-        let data_staker = data_staker.clone();
-        
         let data_hash = data_hash.clone();
+
+        let data_submission = data_submission.clone();
         
-        StakedDataByAccountId::<T>::insert(data_staker, data_hash);
+        StakedDataByAccountId::<T>::insert(&data_staker, data_hash);
+
+        DataStorage::<T>::insert(&data_staker, data_submission);
 
         Ok(data_hash)
     }
