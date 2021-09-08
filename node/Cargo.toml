@@ -24,7 +24,7 @@ structopt = '0.3.8'
 hex-literal = "0.2.1"
 
 # local dependencies
-node-template-runtime = { path = '../runtime', version = '3.0.0' }
+debio-runtime = { path = '../runtime', version = '3.0.0' }
 
 # Substrate dependencies
 frame-benchmarking = '3.0.0'
@@ -56,4 +56,4 @@ substrate-frame-rpc-system = '3.0.0'
 
 [features]
 default = []
-runtime-benchmarks = ['node-template-runtime/runtime-benchmarks']
+runtime-benchmarks = ['debio-runtime/runtime-benchmarks']
