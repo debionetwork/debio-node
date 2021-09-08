@@ -258,7 +258,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfo<HashOf<T>>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -271,7 +271,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn update_lab(origin: OriginFor<T>, lab_info: LabInfo<HashOf<T>>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -284,7 +284,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn deregister_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             // Check if user is a lab
