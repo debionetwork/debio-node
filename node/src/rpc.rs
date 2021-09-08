@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use node_template_runtime::{opaque::Block, AccountId, Balance, Index};
+use debio_runtime::{opaque::Block, AccountId, Balance, Index};
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::{Error as BlockChainError, HeaderMetadata, HeaderBackend};
 use sp_block_builder::BlockBuilder;
@@ -52,7 +52,7 @@ pub fn create_full<C, P>(
 	);
 
 	io.extend_with(
-		TransactionPaymentApi::to_delegate(TransactionPayment::new(client.clone()))
+		TransactionPaymentApi::to_delegate(TransactionPayment::new(client))
 	);
 
 	// Extend this RPC with a custom API by using the following syntax.

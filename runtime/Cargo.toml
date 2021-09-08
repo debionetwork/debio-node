@@ -1,10 +1,10 @@
 [package]
-authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
+authors = ['Debio Devloper <https://github.com/debionetwork>']
 edition = '2018'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
-name = 'node-template-runtime'
-repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
+name = 'debio-runtime'
+repository = 'https://github.com/debionetwork'
 version = '3.0.0'
 
 [package.metadata.docs.rs]
