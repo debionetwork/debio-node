@@ -223,7 +223,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn register_doctor(origin: OriginFor<T>, doctor_info: DoctorInfo) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -236,7 +236,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn update_doctor(origin: OriginFor<T>, doctor_info: DoctorInfo) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -249,7 +249,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn deregister_doctor(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             // Check if user is a doctor
