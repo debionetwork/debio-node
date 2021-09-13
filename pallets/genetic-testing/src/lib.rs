@@ -450,7 +450,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
         let now = pallet_timestamp::Pallet::<T>::get();
         dna_sample.updated_at = now;
-        dna_sample.status = DnaSampleStatus::ResultReady;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
         // Create DnaTestResult
