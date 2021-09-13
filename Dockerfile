@@ -3,20 +3,28 @@ FROM phusion/baseimage:0.11 as builder
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG PROFILE=release
+
 WORKDIR /debio
 
 COPY . /debio
 
-RUN apt-get update && \
-	apt-get dist-upgrade -y -o Dpkg::Options::="--force-confold" && \
-	apt-get install -y cmake pkg-config libssl-dev git clang
+# Update default packages
+RUN apt-get -qq update
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-	export PATH="$PATH:$HOME/.cargo/bin" && \
-	rustup toolchain install nightly && \
-	rustup target add wasm32-unknown-unknown --toolchain nightly && \
-	rustup default stable && \
-	cargo build "--$PROFILE"
+# Get Ubuntu packages
+RUN apt-get install -y -q \
+    build-essential \
+    curl \
+		cmake \
+		protobuf-compiler
+
+# Get Rust; NOTE: using sh for better compatibility with other base images
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# Add .cargo/bin to PATH
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN make build
 
 # ===== SECOND STAGE ======
 
