@@ -24,6 +24,10 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 # Add .cargo/bin to PATH
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+RUN make init
+
+RUN cargo update -p parity-db
+
 RUN make build
 
 # ===== SECOND STAGE ======
