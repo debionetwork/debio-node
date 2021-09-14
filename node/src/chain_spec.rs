@@ -1,6 +1,6 @@
 use sp_core::{Pair, Public, sr25519};
 use debio_runtime::{
-	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig,
+	currency::DBIO, AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig,
 	SudoConfig, SystemConfig, WASM_BINARY, Signature, OrdersConfig,
 };
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -40,12 +40,20 @@ pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
 	)
 }
 
+/// Helper function to generate properties.
+pub fn get_properties(symbol: &str, decimals: u32, ss58format: u32) -> Properties {
+	let mut properties = Properties::new();
+    properties.insert("tokenSymbol".into(), symbol.into());
+    properties.insert("tokenDecimals".into(), decimals.into());
+	properties.insert("ss58format".into(), ss58format.into());
+
+	properties
+}
+
 pub fn development_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm binary not available".to_string())?;
-
-        let mut properties = Properties::new();
-        properties.insert("tokenSymbol".into(), "DBIO".into());
-        properties.insert("tokenDecimals".into(), 15.into());
+	let properties = get_properties("DBIO", 18, 42);
+        
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -95,10 +103,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 
 pub fn local_testnet_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm binary not available".to_string())?;
-
-        let mut properties = Properties::new();
-        properties.insert("tokenSymbol".into(), "DBIO".into());
-        properties.insert("tokenDecimals".into(), 15.into());
+	let properties = get_properties("DBIO", 18, 42);
 
 	Ok(ChainSpec::from_genesis(
 		// Name
