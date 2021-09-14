@@ -14,7 +14,6 @@ use frame_support::pallet_prelude::*;
 pub mod interface;
 pub use interface::ServiceInterface;
 use sp_std::prelude::*;
-// use sp_std::collections::btree_map::BTreeMap;
 
 /// ServiceInfo struct
 /// Information that is mutable by user
@@ -28,7 +27,6 @@ pub struct ServiceInfo<Balance> {
     test_result_sample: Vec<u8>,
     long_description: Option<Vec<u8>>,
     image: Option<Vec<u8>>,
-    dna_collection_process: Option<Vec<u8>>,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
