@@ -78,7 +78,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn set_eth_address(origin: OriginFor<T>, eth_address: EthereumAddressOf<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 

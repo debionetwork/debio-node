@@ -230,7 +230,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn create_order(origin: OriginFor<T>, service_id: T::Hash, price_index: u32, customer_box_public_key: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -243,7 +243,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn cancel_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -256,7 +256,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn set_order_paid(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -269,7 +269,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn fulfill_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -282,7 +282,7 @@ pub mod pallet {
             }
         }
         
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn set_order_refunded(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 

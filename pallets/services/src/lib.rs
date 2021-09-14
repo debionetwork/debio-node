@@ -154,7 +154,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn create_service(origin: OriginFor<T>, service_info: ServiceInfoOf<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -167,7 +167,7 @@ pub mod pallet {
             }
         }
         
-        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn update_service(origin: OriginFor<T>, service_id: HashOf<T>, service_info: ServiceInfoOf<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as ServiceInterface<T>>::update_service(&who, &service_id, &service_info) {
@@ -179,7 +179,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn delete_service(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as ServiceInterface<T>>::delete_service(&who, &service_id) {

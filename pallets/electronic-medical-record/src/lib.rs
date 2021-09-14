@@ -201,7 +201,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn add_electronic_medical_record(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -214,7 +214,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn remove_electronic_medical_record(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(&who) {
@@ -226,7 +226,7 @@ pub mod pallet {
             }
         }
         
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn add_electronic_medical_record_info(origin: OriginFor<T>, mut title: Vec<u8>, mut description: Vec<u8>, mut record_link: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -239,7 +239,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn remove_electronic_medical_record_info(origin: OriginFor<T>, electronic_medical_record_info_id: HashOf<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record_info(&who, &electronic_medical_record_info_id) {

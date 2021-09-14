@@ -40,7 +40,7 @@ use pallet_transaction_payment::CurrencyAdapter;
 use codec::{Encode, Decode};
 use sp_core::{RuntimeDebug};
 
-/// Import the template pallet.
+/// Import the debio pallets.
 pub use labs;
 pub use services;
 pub use certifications;
@@ -107,8 +107,8 @@ pub mod opaque {
 }
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-	spec_name: create_runtime_str!("node-template"),
-	impl_name: create_runtime_str!("node-template"),
+	spec_name: create_runtime_str!("debio"),
+	impl_name: create_runtime_str!("debio"),
 	authoring_version: 1,
 	spec_version: 100,
 	impl_version: 1,
@@ -361,7 +361,7 @@ construct_runtime!(
 		Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
-		// Include the custom logic from the template pallet in the runtime.
+		// Include the custom logic from the debio pallets in the runtime.
 		Labs: labs::{Module, Call, Storage, Event<T>},
 		Services: services::{Module, Call, Storage, Event<T>},
 		Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},

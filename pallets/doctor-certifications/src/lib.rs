@@ -138,7 +138,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn create_certification(origin: OriginFor<T>, certification_info: DoctorCertificationInfoOf) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -151,7 +151,7 @@ pub mod pallet {
             }
         }
         
-        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn update_certification(origin: OriginFor<T>, certification_id: HashOf<T>, certification_info: DoctorCertificationInfoOf) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as DoctorCertificationInterface<T>>::update_certification(&who, &certification_id, &certification_info) {
@@ -163,7 +163,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(10_1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as DoctorCertificationInterface<T>>::delete_certification(&who, &certification_id) {
