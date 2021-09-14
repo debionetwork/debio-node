@@ -1,6 +1,6 @@
 use sp_core::{Pair, Public, sr25519};
 use debio_runtime::{
-	currency::DBIO, AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig,
+	currency::DBIO, AccountId, Balance, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig,
 	SudoConfig, SystemConfig, WASM_BINARY, Signature, OrdersConfig,
 };
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -170,6 +170,8 @@ fn testnet_genesis(
 	endowed_accounts: Vec<AccountId>,
 	_enable_println: bool,
 ) -> GenesisConfig {
+	const ENDOWMENT: Balance = 14_285_714 * DBIO;
+
 	GenesisConfig {
 		frame_system: Some(SystemConfig {
 			// Add Wasm runtime to storage.
@@ -178,7 +180,7 @@ fn testnet_genesis(
 		}),
 		pallet_balances: Some(BalancesConfig {
 			// Configure endowed accounts with initial balance of 1 << 60.
-			balances: endowed_accounts.iter().cloned().map(|k|(k, 1 << 60)).collect(),
+			balances: endowed_accounts.iter().cloned().map(|k|(k, ENDOWMENT)).collect(),
 		}),
 		pallet_aura: Some(AuraConfig {
 			authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
