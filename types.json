@@ -52,8 +52,7 @@
     "description": "Text",
     "test_result_sample": "Text",
     "long_description": "Option<Text>",
-    "image": "Option<Text>",
-    "dna_collection_process": "Option<Text>"
+    "image": "Option<Text>"
   },
   "DurationType": {
     "_enum": [
@@ -123,6 +122,7 @@
       "Arrived",
       "Rejected",
       "QualityControlled",
+      "WetWork",
       "ResultReady"
     ]
   },

@@ -488,10 +488,9 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
 impl<T: Config> CertificationOwner<T> for Pallet<T> {
     type Owner = Lab<T::AccountId, T::Hash>;
 
-    /// User can create certification if he/she is a lab and has set ethereum address
+    /// User can create certification if he/she is a lab
     fn can_create_certification(user_id: &T::AccountId) -> bool {
-        let eth_address = T::UserProfile::get_eth_address_by_account_id(user_id);
-        return Labs::<T>::contains_key(user_id) && eth_address.is_some();
+        return Labs::<T>::contains_key(user_id);
     }
 
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {

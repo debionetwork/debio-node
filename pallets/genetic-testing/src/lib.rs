@@ -67,6 +67,7 @@ pub mod pallet {
         TrackingIdCollision,
         ResultLinkRequired,
         ReportLinkRequired,
+        DnaTestResultNotYetSubmitted,
         DataStakerNotFound,
         DataHashNotFound,
     }
@@ -113,34 +114,6 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /*
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn register_dna_sample(origin: OriginFor<T>, dna_owner_id: T::AccountId) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-
-            match <Self as GeneticTestingInterface<T>>::register_dna_sample(&who, &dna_owner_id) {
-                Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleRegistered(dna_sample));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
-        */
-
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn receive_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-
-            match <Self as GeneticTestingInterface<T>>::receive_dna_sample(&who, &tracking_id) {
-                Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleArrived(dna_sample.clone()));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
-
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, rejected_title: Vec<u8>, rejected_description: Vec<u8>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -221,6 +194,7 @@ pub enum DnaSampleStatus {
     Arrived,
     Rejected,
     QualityControlled,
+    WetWork,
     ResultReady,
 }
 impl Default for DnaSampleStatus {
@@ -356,7 +330,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
                 return Err(Error::<T>::TrackingIdCollision);
             }
         }
-
     }
 
     fn delete_dna_sample(tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
@@ -365,26 +338,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
             return Err(Error::<T>::DnaSampleNotFound);
         }
         let dna_sample = dna_sample.unwrap();
-
-        Ok(dna_sample)
-    }
-
-    fn receive_dna_sample(lab_id: &T::AccountId, tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error> {
-        let dna_sample = DnaSamples::<T>::get(tracking_id);
-        if dna_sample.is_none() {
-            return Err(Error::<T>::DnaSampleNotFound);
-        }
-        let mut dna_sample = dna_sample.unwrap();
-
-        if dna_sample.lab_id != *lab_id {
-            return Err(Error::<T>::Unauthorized)
-        }
-
-        let now = pallet_timestamp::Pallet::<T>::get();
-        dna_sample.status = DnaSampleStatus::Arrived;
-        dna_sample.updated_at = now;
-
-        DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
         Ok(dna_sample)
     }
@@ -420,7 +373,14 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         let mut dna_sample = dna_sample.unwrap();
 
         if dna_sample.lab_id != *lab_id {
-            return Err(Error::<T>::Unauthorized)
+            return Err(Error::<T>::Unauthorized);
+        }
+
+        if status == DnaSampleStatus::ResultReady {
+            let result = Self::dna_test_result_by_tracking_id(tracking_id);
+            if result.is_none() {
+                return Err(Error::<T>::DnaTestResultNotYetSubmitted);
+            }
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();

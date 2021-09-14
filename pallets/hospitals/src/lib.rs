@@ -412,10 +412,9 @@ impl<T: Config> Pallet<T> {
 impl<T: Config> HospitalCertificationOwner<T> for Pallet<T> {
     type Owner = Hospital<T::AccountId, T::Hash>;
 
-    /// User can create certification if he/she is a hospital and has set ethereum address
+    /// User can create certification if he/she is a hospital
     fn can_create_certification(user_id: &T::AccountId) -> bool {
-        let eth_address = T::UserProfile::get_eth_address_by_account_id(user_id);
-        return Hospitals::<T>::contains_key(user_id) && eth_address.is_some();
+        return Hospitals::<T>::contains_key(user_id);
     }
 
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {
