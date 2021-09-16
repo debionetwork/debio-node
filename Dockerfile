@@ -50,4 +50,4 @@ RUN /usr/local/bin/debio-node --version
 
 EXPOSE 30333 9933 9944
 
-ENTRYPOINT ["/usr/local/bin/debio-node"]
+ENTRYPOINT ["/usr/local/bin/debio-node","--rpc-cors=all"]
