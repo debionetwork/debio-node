@@ -109,7 +109,7 @@ steps:
       script:
         - docker stop debio_substrate_service || true && docker rm debio_substrate_service || true
         - docker rmi hub.debio.network/debio_substrate_dev:latest && docker pull hub.debio.network/debio_substrate_dev:latest
-        - docker run -d --name=debio_substrate_service -v /etc/localtime:/etc/localtime:ro -p 0.0.0.0:9944:9944 --restart=always hub.debio.network/debio_substrate_dev:latest --unsafe-ws-external
+        - docker run -d --network=host --name=debio_substrate_service -v /etc/localtime:/etc/localtime:ro --restart=always hub.debio.network/debio_substrate_dev:latest --unsafe-ws-external
     when:
       branch:
         - development
