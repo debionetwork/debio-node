@@ -46,7 +46,7 @@ COPY --from=builder /debio/target/release/debio-node /usr/local/bin
 
 USER debio
 
-RUN /usr/local/bin/debio-node --version
+RUN /usr/local/bin/debio-node --dev --tmp
 
 EXPOSE 30333 9933 9944
 
