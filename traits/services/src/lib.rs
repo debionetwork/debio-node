@@ -4,7 +4,7 @@ use frame_system::Config;
 use sp_std::prelude::*;
 
 pub mod types {
-    use frame_support::codec::{Encode, Decode};
+    use frame_support::codec::{Decode, Encode};
     use frame_support::pallet_prelude::*;
     use sp_std::prelude::*;
 
@@ -14,7 +14,9 @@ pub mod types {
         Ethereum,
     }
     impl Default for CurrencyType {
-        fn default() -> Self { CurrencyType::Dai }
+        fn default() -> Self {
+            CurrencyType::Dai
+        }
     }
 
     #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
@@ -38,9 +40,11 @@ pub mod types {
         Days,
     }
     impl Default for DurationType {
-        fn default() -> Self { DurationType::WorkingDays }
+        fn default() -> Self {
+            DurationType::WorkingDays
+        }
     }
-    
+
     #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
     pub struct ExpectedDuration {
         pub duration: i8,
@@ -74,4 +78,3 @@ pub trait ServiceOwner<T: Config> {
     fn associate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
     fn disassociate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
 }
-

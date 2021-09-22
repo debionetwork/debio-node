@@ -15,8 +15,13 @@ pub trait ElectronicMedicalRecordInfosProvider<T: Config + TimeConfig> {
     type Moment;
     type ElectronicMedicalRecordInfo: ElectronicMedicalRecordInfo<T> + sp_std::fmt::Debug;
 
-    fn remove_electronic_medical_record_info(owner_id: &T::AccountId, electronic_medical_record_info_id: &T::Hash) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error>;
-    fn electronic_medical_record_info_by_id(electronic_medical_record_info_id: &T::Hash) -> Option<Self::ElectronicMedicalRecordInfo>;
+    fn remove_electronic_medical_record_info(
+        owner_id: &T::AccountId,
+        electronic_medical_record_info_id: &T::Hash,
+    ) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error>;
+    fn electronic_medical_record_info_by_id(
+        electronic_medical_record_info_id: &T::Hash,
+    ) -> Option<Self::ElectronicMedicalRecordInfo>;
 }
 
 pub trait ElectronicMedicalRecordInfoOwnerInfo<T: Config> {
