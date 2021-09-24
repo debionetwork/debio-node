@@ -46,8 +46,9 @@ COPY --from=builder /debio/target/release/debio-node /usr/local/bin
 
 USER debio
 
-RUN /usr/local/bin/debio-node --dev --tmp
+# verify binary file
+RUN /usr/local/bin/debio-node --verison
 
-EXPOSE 30333 9933 9944
+EXPOSE 30333 9933 9944 9615
 
 ENTRYPOINT ["/usr/local/bin/debio-node"]
