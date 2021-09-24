@@ -114,6 +114,7 @@ steps:
       branch:
         - development
 
+  # TODO: use staging network from chainspec
   - name: reload service - staging
     pull: if-not-exists
     image: appleboy/drone-ssh
@@ -135,6 +136,7 @@ steps:
       branch:
         - staging
 
+  # TODO: use demo network from chainspec
   - name: reload service - demo
     pull: if-not-exists
     image: appleboy/drone-ssh
