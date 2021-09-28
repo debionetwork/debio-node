@@ -47,7 +47,7 @@ COPY --from=builder /debio/target/release/debio-node /usr/local/bin
 USER debio
 
 # verify binary file
-RUN /usr/local/bin/debio-node --verison
+RUN /usr/local/bin/debio-node --version
 
 EXPOSE 30333 9933 9944 9615
 
