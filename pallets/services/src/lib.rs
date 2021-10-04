@@ -1,15 +1,13 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use frame_support::codec::{Decode, Encode};
+use frame_support::pallet_prelude::*;
+use frame_support::traits::Currency;
 pub use pallet::*;
 use traits_services::{
-    ServicesProvider,
-    ServiceOwner,
-    ServiceInfo as ServiceInfoT,
-    types::{ PriceByCurrency, ExpectedDuration },
+    types::{ExpectedDuration, PriceByCurrency},
+    ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
 };
-use frame_support::traits::{ Currency };
-use frame_support::codec::{Encode, Decode};
-use frame_support::pallet_prelude::*;
 
 pub mod interface;
 pub use interface::ServiceInterface;
@@ -37,11 +35,7 @@ pub struct Service<AccountId, Hash, Balance> {
 }
 impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
     pub fn new(id: Hash, owner_id: AccountId, info: ServiceInfo<Balance>) -> Self {
-        Self {
-            id,
-            owner_id,
-            info
-        }
+        Self { id, owner_id, info }
     }
 
     pub fn get_id(&self) -> &Hash {
@@ -58,7 +52,8 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
 }
 
 impl<T, AccountId, Hash, Balance> ServiceInfoT<T, Balance> for Service<AccountId, Hash, Balance>
-    where T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
+where
+    T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
 {
     fn get_id(&self) -> &Hash {
         self.get_id()
@@ -73,13 +68,11 @@ impl<T, AccountId, Hash, Balance> ServiceInfoT<T, Balance> for Service<AccountId
 
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::{
-        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
-    };
+    use crate::interface::ServiceInterface;
+    use crate::{Currency, Service, ServiceInfo, ServiceOwner};
+    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
-    use crate::{Service, ServiceInfo, ServiceOwner, Currency};
-    use crate::interface::ServiceInterface;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -96,7 +89,6 @@ pub mod pallet {
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
     // --------------------------------------------------------
-    
 
     // ----- Types -------
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
@@ -121,7 +113,6 @@ pub mod pallet {
     #[pallet::getter(fn services_count_by_owner)]
     pub type ServicesCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
     // -----------------------------
-
 
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
@@ -148,51 +139,60 @@ pub mod pallet {
         /// Ordering a service that does not exist
         ServiceDoesNotExist,
     }
-    
+
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn create_service(origin: OriginFor<T>, service_info: ServiceInfoOf<T>) -> DispatchResultWithPostInfo {
+        pub fn create_service(
+            origin: OriginFor<T>,
+            service_info: ServiceInfoOf<T>,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as ServiceInterface<T>>::create_service(&who, &service_info) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceCreated(service, who.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
-        
+
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn update_service(origin: OriginFor<T>, service_id: HashOf<T>, service_info: ServiceInfoOf<T>) -> DispatchResultWithPostInfo {
+        pub fn update_service(
+            origin: OriginFor<T>,
+            service_id: HashOf<T>,
+            service_info: ServiceInfoOf<T>,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as ServiceInterface<T>>::update_service(&who, &service_id, &service_info) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceUpdated(service, who.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
 
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn delete_service(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn delete_service(
+            origin: OriginFor<T>,
+            service_id: T::Hash,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             match <Self as ServiceInterface<T>>::delete_service(&who, &service_id) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceDeleted(service, who.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
     }
 }
 
 use frame_support::sp_runtime::traits::Hash;
-use traits_services::{ServiceOwnerInfo};
+use traits_services::ServiceOwnerInfo;
 
 /// Service Interface Implementation
 impl<T: Config> ServiceInterface<T> for Pallet<T> {
@@ -214,7 +214,10 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     /// Add reference to ServicesByCountryCity storage
     /// Associate service reference to the owner (creator)
     /// Increment Counts
-    fn create_service(owner_id: &T::AccountId, service_info: &Self::ServiceInfo) -> Result<Self::Service, Self::Error> { 
+    fn create_service(
+        owner_id: &T::AccountId,
+        service_info: &Self::ServiceInfo,
+    ) -> Result<Self::Service, Self::Error> {
         // Check if user can create_service
         let can_create_service = T::ServiceOwner::can_create_service(owner_id);
         if !can_create_service {
@@ -231,12 +234,12 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             for price_component in price_by_currency.price_components.iter() {
                 service_info_mut.prices_by_currency[idx].total_price += price_component.value;
             }
-    
+
             for additional_price in price_by_currency.additional_prices.iter() {
                 service_info_mut.prices_by_currency[idx].total_price += additional_price.value;
             }
         }
-        
+
         let service = Service::new(service_id.clone(), owner_id.clone(), service_info_mut);
         // Store to Services storage
         Services::<T>::insert(&service_id, &service);
@@ -245,15 +248,19 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
         Self::add_services_count();
         // Increment ServicesCountByOwner
         Self::add_services_count_by_owner(&service.owner_id);
-        
+
         // Associate created service to the owner
         T::ServiceOwner::associate(owner_id, &service_id);
 
-        Ok(service) 
+        Ok(service)
     }
 
     /// Update Service information
-    fn update_service(owner_id: &T::AccountId, service_id: &Self::ServiceId, service_info: &Self::ServiceInfo) -> Result<Self::Service, Self::Error> {
+    fn update_service(
+        owner_id: &T::AccountId,
+        service_id: &Self::ServiceId,
+        service_info: &Self::ServiceInfo,
+    ) -> Result<Self::Service, Self::Error> {
         let service = Services::<T>::get(service_id);
         if service == None {
             return Err(Error::<T>::ServiceDoesNotExist)?;
@@ -271,7 +278,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             for price_component in price_by_currency.price_components.iter() {
                 service_info_mut.prices_by_currency[idx].total_price += price_component.value;
             }
-    
+
             for additional_price in price_by_currency.additional_prices.iter() {
                 service_info_mut.prices_by_currency[idx].total_price += additional_price.value;
             }
@@ -288,7 +295,10 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     /// Remove the service id reference in ServicesByCountryCity storage
     /// Disassociate service id from the owner
     /// Decrement Counts
-    fn delete_service(owner_id: &T::AccountId, service_id: &Self::ServiceId) -> Result<Self::Service, Self::Error> {
+    fn delete_service(
+        owner_id: &T::AccountId,
+        service_id: &Self::ServiceId,
+    ) -> Result<Self::Service, Self::Error> {
         let service = Services::<T>::get(service_id);
         if service == None {
             return Err(Error::<T>::ServiceDoesNotExist)?;
@@ -314,7 +324,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     fn service_by_id(service_id: &Self::ServiceId) -> Option<Self::Service> {
         match Services::<T>::get(service_id) {
             None => None,
-            Some(service) => Some(service)
+            Some(service) => Some(service),
         }
     }
 
@@ -350,8 +360,9 @@ impl<T: Config> Pallet<T> {
 }
 
 /// ServicesProvider Trait Implementation
-impl<T: Config, Balance> ServicesProvider<T, Balance> for Pallet<T> 
-    where ServiceOf<T>: traits_services::ServiceInfo<T, Balance>
+impl<T: Config, Balance> ServicesProvider<T, Balance> for Pallet<T>
+where
+    ServiceOf<T>: traits_services::ServiceInfo<T, Balance>,
 {
     type Error = Error<T>;
     type Service = ServiceOf<T>;
@@ -364,4 +375,3 @@ impl<T: Config, Balance> ServicesProvider<T, Balance> for Pallet<T>
         <Self as ServiceInterface<T>>::delete_service(owner_id, id)
     }
 }
-

@@ -1,13 +1,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use frame_support::codec::{Decode, Encode};
+use frame_support::pallet_prelude::*;
 pub use pallet::*;
 use traits_doctor_certifications::{
+    DoctorCertificationInfo as DoctorCertificationInfoT, DoctorCertificationOwner,
     DoctorCertificationsProvider,
-    DoctorCertificationOwner,
-    DoctorCertificationInfo as DoctorCertificationInfoT
 };
-use frame_support::codec::{Encode, Decode};
-use frame_support::pallet_prelude::*;
 
 pub mod interface;
 pub use interface::DoctorCertificationInterface;
@@ -33,11 +32,7 @@ pub struct DoctorCertification<AccountId, Hash> {
 }
 impl<AccountId, Hash> DoctorCertification<AccountId, Hash> {
     pub fn new(id: Hash, owner_id: AccountId, info: DoctorCertificationInfo) -> Self {
-        Self {
-            id,
-            owner_id,
-            info
-        }
+        Self { id, owner_id, info }
     }
 
     pub fn get_id(&self) -> &Hash {
@@ -50,7 +45,8 @@ impl<AccountId, Hash> DoctorCertification<AccountId, Hash> {
 }
 
 impl<T, AccountId, Hash> DoctorCertificationInfoT<T> for DoctorCertification<AccountId, Hash>
-    where T: frame_system::Config<AccountId = AccountId, Hash = Hash>
+where
+    T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
 {
     fn get_id(&self) -> &Hash {
         self.get_id()
@@ -62,13 +58,11 @@ impl<T, AccountId, Hash> DoctorCertificationInfoT<T> for DoctorCertification<Acc
 
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::{
-        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
-    };
+    use crate::interface::DoctorCertificationInterface;
+    use crate::{DoctorCertification, DoctorCertificationInfo, DoctorCertificationOwner};
+    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
-    use crate::{DoctorCertification, DoctorCertificationInfo, DoctorCertificationOwner};
-    use crate::interface::DoctorCertificationInterface;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -84,7 +78,6 @@ pub mod pallet {
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
     // --------------------------------------------------------
-    
 
     // ----- Types -------
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
@@ -96,7 +89,8 @@ pub mod pallet {
     // ------- Storage -------------
     #[pallet::storage]
     #[pallet::getter(fn certification_by_id)]
-    pub type DoctorCertifications<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, DoctorCertificationOf<T>>;
+    pub type DoctorCertifications<T> =
+        StorageMap<_, Blake2_128Concat, HashOf<T>, DoctorCertificationOf<T>>;
     //                                _,  Hasher         ,  Key     ,  Value
 
     #[pallet::storage]
@@ -105,9 +99,9 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn certification_count_by_owner)]
-    pub type DoctorCertificationsCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
+    pub type DoctorCertificationsCountByOwner<T> =
+        StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
     // -----------------------------
-
 
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
@@ -134,51 +128,79 @@ pub mod pallet {
         /// Ordering a certification that does not exist
         DoctorCertificationDoesNotExist,
     }
-    
+
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn create_certification(origin: OriginFor<T>, certification_info: DoctorCertificationInfoOf) -> DispatchResultWithPostInfo {
+        pub fn create_certification(
+            origin: OriginFor<T>,
+            certification_info: DoctorCertificationInfoOf,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as DoctorCertificationInterface<T>>::create_certification(&who, &certification_info) {
+            match <Self as DoctorCertificationInterface<T>>::create_certification(
+                &who,
+                &certification_info,
+            ) {
                 Ok(certification) => {
-                    Self::deposit_event(Event::DoctorCertificationCreated(certification, who.clone()));
+                    Self::deposit_event(Event::DoctorCertificationCreated(
+                        certification,
+                        who.clone(),
+                    ));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
-            }
-        }
-        
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn update_certification(origin: OriginFor<T>, certification_id: HashOf<T>, certification_info: DoctorCertificationInfoOf) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            match <Self as DoctorCertificationInterface<T>>::update_certification(&who, &certification_id, &certification_info) {
-                Ok(certification) => {
-                    Self::deposit_event(Event::DoctorCertificationUpdated(certification, who.clone()));
-                    Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
 
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn update_certification(
+            origin: OriginFor<T>,
+            certification_id: HashOf<T>,
+            certification_info: DoctorCertificationInfoOf,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            match <Self as DoctorCertificationInterface<T>>::delete_certification(&who, &certification_id) {
+            match <Self as DoctorCertificationInterface<T>>::update_certification(
+                &who,
+                &certification_id,
+                &certification_info,
+            ) {
                 Ok(certification) => {
-                    Self::deposit_event(Event::DoctorCertificationDeleted(certification, who.clone()));
+                    Self::deposit_event(Event::DoctorCertificationUpdated(
+                        certification,
+                        who.clone(),
+                    ));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
+            }
+        }
+
+        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        pub fn delete_certification(
+            origin: OriginFor<T>,
+            certification_id: T::Hash,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            match <Self as DoctorCertificationInterface<T>>::delete_certification(
+                &who,
+                &certification_id,
+            ) {
+                Ok(certification) => {
+                    Self::deposit_event(Event::DoctorCertificationDeleted(
+                        certification,
+                        who.clone(),
+                    ));
+                    Ok(().into())
+                }
+                Err(error) => Err(error)?,
             }
         }
     }
 }
 
 use frame_support::sp_runtime::traits::Hash;
-use traits_doctor_certifications::{DoctorCertificationOwnerInfo};
+use traits_doctor_certifications::DoctorCertificationOwnerInfo;
 
 /// DoctorCertification Interface Implementation
 impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
@@ -187,7 +209,10 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
     type DoctorCertification = DoctorCertificationOf<T>;
     type DoctorCertificationInfo = DoctorCertificationInfoOf;
 
-    fn generate_certification_id(owner_id: &T::AccountId, certification_count: u64) -> Self::DoctorCertificationId {
+    fn generate_certification_id(
+        owner_id: &T::AccountId,
+        certification_count: u64,
+    ) -> Self::DoctorCertificationId {
         let mut account_id_bytes = owner_id.encode();
         let mut certification_count_bytes = certification_count.encode();
         account_id_bytes.append(&mut certification_count_bytes);
@@ -200,17 +225,26 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
     /// Add reference to DoctorCertificationsByCountryCity storage
     /// Associate certification reference to the owner (creator)
     /// Increment Counts
-    fn create_certification(owner_id: &T::AccountId, certification_info: &Self::DoctorCertificationInfo) -> Result<Self::DoctorCertification, Self::Error> { 
+    fn create_certification(
+        owner_id: &T::AccountId,
+        certification_info: &Self::DoctorCertificationInfo,
+    ) -> Result<Self::DoctorCertification, Self::Error> {
         // Check if user can create_certification
-        let can_create_certification = T::DoctorCertificationOwner::can_create_certification(owner_id);
+        let can_create_certification =
+            T::DoctorCertificationOwner::can_create_certification(owner_id);
         if !can_create_certification {
             return Err(Error::<T>::NotAllowedToCreate)?;
         }
 
-        let owner_certification_count = <Self as DoctorCertificationInterface<T>>::certification_count_by_owner(owner_id);
+        let owner_certification_count =
+            <Self as DoctorCertificationInterface<T>>::certification_count_by_owner(owner_id);
         let certification_id = Self::generate_certification_id(owner_id, owner_certification_count);
-        
-        let certification = DoctorCertification::new(certification_id.clone(), owner_id.clone(), certification_info.clone());
+
+        let certification = DoctorCertification::new(
+            certification_id.clone(),
+            owner_id.clone(),
+            certification_info.clone(),
+        );
         // Store to DoctorCertifications storage
         DoctorCertifications::<T>::insert(&certification_id, &certification);
 
@@ -218,15 +252,19 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
         Self::add_certifications_count();
         // Increment DoctorCertificationsCountByOwner
         Self::add_certification_count_by_owner(&certification.owner_id);
-        
+
         // Associate created certification to the owner
         T::DoctorCertificationOwner::associate(owner_id, &certification_id);
 
-        Ok(certification) 
+        Ok(certification)
     }
 
     /// Update DoctorCertification information
-    fn update_certification(owner_id: &T::AccountId, certification_id: &Self::DoctorCertificationId, certification_info: &Self::DoctorCertificationInfo) -> Result<Self::DoctorCertification, Self::Error> {
+    fn update_certification(
+        owner_id: &T::AccountId,
+        certification_id: &Self::DoctorCertificationId,
+        certification_info: &Self::DoctorCertificationInfo,
+    ) -> Result<Self::DoctorCertification, Self::Error> {
         let certification = DoctorCertifications::<T>::get(certification_id);
         if certification == None {
             return Err(Error::<T>::DoctorCertificationDoesNotExist)?;
@@ -248,7 +286,10 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
     /// Remove the certification id reference in DoctorCertificationsByCountryCity storage
     /// Disassociate certification id from the owner
     /// Decrement Counts
-    fn delete_certification(owner_id: &T::AccountId, certification_id: &Self::DoctorCertificationId) -> Result<Self::DoctorCertification, Self::Error> {
+    fn delete_certification(
+        owner_id: &T::AccountId,
+        certification_id: &Self::DoctorCertificationId,
+    ) -> Result<Self::DoctorCertification, Self::Error> {
         let certification = DoctorCertifications::<T>::get(certification_id);
         if certification == None {
             return Err(Error::<T>::DoctorCertificationDoesNotExist)?;
@@ -271,10 +312,12 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
         Ok(certification)
     }
 
-    fn certification_by_id(certification_id: &Self::DoctorCertificationId) -> Option<Self::DoctorCertification> {
+    fn certification_by_id(
+        certification_id: &Self::DoctorCertificationId,
+    ) -> Option<Self::DoctorCertification> {
         match DoctorCertifications::<T>::get(certification_id) {
             None => None,
-            Some(certification) => Some(certification)
+            Some(certification) => Some(certification),
         }
     }
 
@@ -293,8 +336,12 @@ impl<T: Config> Pallet<T> {
     }
     // Add certifications count by owner
     pub fn add_certification_count_by_owner(owner_id: &T::AccountId) {
-        let certifications_count = DoctorCertificationsCountByOwner::<T>::get(owner_id).unwrap_or(0);
-        DoctorCertificationsCountByOwner::<T>::insert(owner_id, certifications_count.wrapping_add(1))
+        let certifications_count =
+            DoctorCertificationsCountByOwner::<T>::get(owner_id).unwrap_or(0);
+        DoctorCertificationsCountByOwner::<T>::insert(
+            owner_id,
+            certifications_count.wrapping_add(1),
+        )
     }
 
     // Subtract certifications count
@@ -304,7 +351,8 @@ impl<T: Config> Pallet<T> {
     }
     // Subtract certifications count by owner
     pub fn sub_certification_count_by_owner(owner_id: &T::AccountId) {
-        let certifications_count = DoctorCertificationsCountByOwner::<T>::get(owner_id).unwrap_or(1);
+        let certifications_count =
+            DoctorCertificationsCountByOwner::<T>::get(owner_id).unwrap_or(1);
         DoctorCertificationsCountByOwner::<T>::insert(owner_id, certifications_count - 1);
     }
 }
@@ -318,7 +366,10 @@ impl<T: Config> DoctorCertificationsProvider<T> for Pallet<T> {
         <Self as DoctorCertificationInterface<T>>::certification_by_id(id)
     }
 
-    fn delete_certification(owner_id: &T::AccountId, id: &T::Hash) -> Result<Self::DoctorCertification, Self::Error> {
+    fn delete_certification(
+        owner_id: &T::AccountId,
+        id: &T::Hash,
+    ) -> Result<Self::DoctorCertification, Self::Error> {
         <Self as DoctorCertificationInterface<T>>::delete_certification(owner_id, id)
     }
 }
