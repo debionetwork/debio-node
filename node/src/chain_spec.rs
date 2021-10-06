@@ -1,6 +1,6 @@
 use debio_runtime::{
     currency::DBIO, AccountId, AuraConfig, Balance, BalancesConfig, GenesisConfig, GrandpaConfig,
-    OrdersConfig, SudoConfig, SystemConfig, WASM_BINARY,
+    OrdersConfig, RewardsConfig, SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::{ChainType, Properties};
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -59,6 +59,9 @@ pub fn development_config() -> Result<ChainSpec, String> {
                 // Orders Pallet admin key
                 // API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
                 hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+                // Rewarders Pallet admin key
+                // API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+                hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
                 // Pre-funded accounts
                 vec![
                     // Sudo         5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
@@ -109,6 +112,9 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                 // Orders Pallet admin key
                 // API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
                 hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+                // Rewarders Pallet admin key
+                // API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+                hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
                 // Pre-funded accounts
                 vec![
                     // Sudo     5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
@@ -140,6 +146,7 @@ fn testnet_genesis(
     initial_authorities: Vec<(AuraId, GrandpaId)>,
     root_key: AccountId,
     orders_escrow_key: AccountId,
+    rewarder_key: AccountId,
     endowed_accounts: Vec<AccountId>,
     _enable_println: bool,
 ) -> GenesisConfig {
@@ -174,6 +181,9 @@ fn testnet_genesis(
         }),
         orders: Some(OrdersConfig {
             escrow_key: orders_escrow_key,
+        }),
+        rewards: Some(RewardsConfig {
+            rewarder_key: rewarder_key,
         }),
     }
 }

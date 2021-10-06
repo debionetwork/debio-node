@@ -1273,6 +1273,7 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "parity-scale-codec",
+ "rewards",
  "serde",
  "services",
  "sp-api",

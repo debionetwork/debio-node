@@ -1,5 +1,5 @@
 [package]
-authors = ['Debio Devloper <https://github.com/debionetwork>']
+authors = ['Debio Developer <https://github.com/debionetwork>']
 edition = '2018'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
@@ -26,6 +26,7 @@ serde = { features = ['derive'], optional = true, version = '1.0.119' }
 
 # local dependencies
 labs = { path = '../pallets/labs', default-features = false }
+rewards = { path = '../pallets/rewards', default-features = false }
 services = { path = '../pallets/services', default-features = false }
 orders = { path = '../pallets/orders', default-features = false }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
@@ -103,6 +104,7 @@ std = [
     'sp-transaction-pool/std',
     'sp-version/std',
     'labs/std',
+    'rewards/std',
     'services/std',
     'orders/std',
     'genetic-testing/std',

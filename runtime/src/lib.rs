@@ -51,6 +51,7 @@ pub use hospital_certifications;
 pub use hospitals;
 /// Import the debio pallets.
 pub use labs;
+pub use rewards;
 pub use orders;
 pub use services;
 pub use user_profile;
@@ -304,6 +305,13 @@ impl labs::Config for Runtime {
     type UserProfile = UserProfile;
 }
 
+impl rewards::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type Reward = ();
+    type Slash = ();
+}
+
 impl hospitals::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
@@ -381,6 +389,7 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         // Include the custom logic from the debio pallets in the runtime.
         Labs: labs::{Module, Call, Storage, Event<T>},
+        Rewards: rewards::{Module, Call, Storage, Config<T>, Event<T>},
         Services: services::{Module, Call, Storage, Event<T>},
         Orders: orders::{Module, Call, Storage, Config<T>, Event<T>},
         GeneticTesting: genetic_testing::{Module, Call, Storage, Event<T>},

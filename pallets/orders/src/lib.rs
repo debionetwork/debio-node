@@ -91,9 +91,8 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
 #[frame_support::pallet]
 pub mod pallet {
     use crate::*;
-    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+    use frame_support::{dispatch::DispatchResultWithPostInfo};
     use frame_system::pallet_prelude::*;
-    use sp_std::prelude::*;
 
     #[pallet::config]
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
