@@ -20,7 +20,7 @@ use crate::{
 	cli::{Cli, Subcommand},
 	service,
 };
-use appchain_barnacle_runtime::Block;
+use debio_runtime::Block;
 use sc_cli::{ChainSpec, Role, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
 
@@ -59,7 +59,7 @@ impl SubstrateCli for Cli {
 	}
 
 	fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		&appchain_barnacle_runtime::VERSION
+		&debio_runtime::VERSION
 	}
 }
 

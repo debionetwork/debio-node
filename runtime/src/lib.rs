@@ -83,6 +83,23 @@ pub type Hash = sp_core::H256;
 /// Digest item type.
 pub type DigestItem = generic::DigestItem<Hash>;
 
+/// DBIO, the native token, uses 18 decimals of precision.
+pub mod currency {
+	use super::Balance;
+
+	pub const DBIO: Balance = 1_000_000_000_000_000_000;
+	pub const KILODBIO: Balance = DBIO * 1_000;
+	pub const MILLIDBIO: Balance = DBIO / 1_000;
+	pub const MICRODBIO: Balance = MILLIDBIO / 1_000;
+	pub const NANODBIO: Balance = MICRODBIO / 1_000;
+
+	pub const BYTE_FEE: Balance = 100 * MICRODBIO;
+
+	pub const fn deposit(items: u32, bytes: u32) -> Balance {
+		(items as Balance) * DBIO + (bytes as Balance) * BYTE_FEE
+	}
+}
+
 /// Ethereum Address type
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug)]
 pub struct EthereumAddress([u8; 20]);

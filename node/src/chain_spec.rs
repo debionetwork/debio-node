@@ -1,9 +1,9 @@
 use debio_runtime::{
-	currency::DBIO, AccountId, Balance, BeefyConfig, BalancesConfig, GenesisConfig, GrandpaConfig,
-	SudoConfig, SystemConfig, SessionConfig, OctopusLposConfig, BabeConfig, ImOnlineConfig, 
+	currency::DBIO, AccountId, BalancesConfig, GenesisConfig, Signature, GrandpaConfig,
+	SudoConfig, SystemConfig, BabeConfig, 
 	WASM_BINARY, OrdersConfig,
 };
-use sc_service::ChainType;
+use sc_service::{ChainType, Properties};
 use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
@@ -18,6 +18,8 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_octopus_appchain::AuthorityId as OctopusId;
 use pallet_octopus_lpos::StakerStatus;
 use sp_consensus_babe::AuthorityId as BabeId;
+
+use hex_literal::hex;
 
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -176,14 +178,34 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AuraId, GrandpaId)>,
+	initial_authorities: Vec<(AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId)>,
 	initial_nominators: Vec<AccountId>,
 	root_key: AccountId,
 	orders_escrow_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 	_enable_println: bool,
 ) -> GenesisConfig {
+	// stakers: all validators and nominators.
+	let mut rng = rand::thread_rng();
+	let stakers = initial_authorities
+		.iter()
+		.map(|x| (x.0.clone(), STASH, StakerStatus::Validator))
+		.chain(initial_nominators.iter().map(|x| {
+			use rand::{seq::SliceRandom, Rng};
+			let limit = (16 as usize).min(initial_authorities.len());
+			let count = rng.gen::<usize>() % limit;
+			let nominations = initial_authorities
+				.as_slice()
+				.choose_multiple(&mut rng, count)
+				.into_iter()
+				.map(|choice| choice.0.clone())
+				.collect::<Vec<_>>();
+			(x.clone(), STASH, StakerStatus::Nominator(nominations))
+		}))
+		.collect::<Vec<_>>();
+
 	const ENDOWMENT: Balance = 33_333_333 * DBIO;
+	const STASH: Balance = 100 * DBIO;
 
 	GenesisConfig {
 		system: SystemConfig {
