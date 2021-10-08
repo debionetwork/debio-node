@@ -1273,6 +1273,7 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "parity-scale-codec",
+ "rewards",
  "serde",
  "services",
  "sp-api",
@@ -5109,12 +5110,14 @@ version = "0.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "parity-scale-codec",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "user-profile",
 ]
 
 [[package]]

@@ -18,13 +18,14 @@ package = 'parity-scale-codec'
 version = '2.0.0'
 
 [dependencies]
+serde = { default-features = false, version = "1.0.119", features = ["derive"] }
 sp-std = { default-features = false, version = '3.0.0' }
-
 frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
+user-profile = { default-features = false, path = '../user-profile', version = '0.1.0'}
+genetic-testing = { default-features = false, path= '../genetic-testing', version = '0.1.0'}
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.119" }
 sp-core = { default-features = false, version = '3.0.0' }
 sp-runtime = { default-features = false, version = '3.0.0' }
 sp-io = { default-features = false, version = '3.0.0' }
@@ -33,9 +34,11 @@ sp-io = { default-features = false, version = '3.0.0' }
 [features]
 default = ['std']
 std = [
+    'serde/std',
 	'codec/std',
 	'sp-std/std',
     'sp-io/std',
 	'frame-support/std',
 	'frame-system/std',
+	'user-profile/std',
 ]

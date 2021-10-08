@@ -12,7 +12,11 @@ pub trait GeneticTestingProvider<T: frame_system::Config> {
     type DnaSample: DnaSampleTracking + sp_std::fmt::Debug;
     type Error;
 
-    fn register_dna_sample(lab_id: &T::AccountId, owner_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::DnaSample, Self::Error>;
+    fn register_dna_sample(
+        lab_id: &T::AccountId,
+        owner_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> Result<Self::DnaSample, Self::Error>;
     fn dna_sample_by_tracking_id(tracking_id: &Vec<u8>) -> Option<Self::DnaSample>;
     fn delete_dna_sample(tracking_id: &Vec<u8>) -> Result<Self::DnaSample, Self::Error>;
 }

@@ -8,8 +8,8 @@ pub use pallet::*;
 pub mod interface;
 pub use crate::interface::HospitalInterface;
 use frame_support::pallet_prelude::*;
-use traits_hospital_certifications::{HospitalCertificationOwnerInfo};
-use traits_user_profile::{UserProfileProvider};
+use traits_hospital_certifications::HospitalCertificationOwnerInfo;
+use traits_user_profile::UserProfileProvider;
 
 // HospitalInfo Struct
 // Used as parameter of dispatchable calls
@@ -30,7 +30,8 @@ pub struct HospitalInfo {
 // the fields (excluding account_id and certifications) come from HospitalInfo struct
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct Hospital<AccountId, Hash>
-    where Hash: PartialEq + Eq
+where
+    Hash: PartialEq + Eq,
 {
     account_id: AccountId,
     certifications: Vec<Hash>,
@@ -38,12 +39,10 @@ pub struct Hospital<AccountId, Hash>
 }
 
 impl<AccountId, Hash> Hospital<AccountId, Hash>
-    where Hash: PartialEq + Eq
+where
+    Hash: PartialEq + Eq,
 {
-    pub fn new (
-        account_id: AccountId,
-        info: HospitalInfo,
-    ) -> Self {
+    pub fn new(account_id: AccountId, info: HospitalInfo) -> Self {
         Self {
             account_id,
             certifications: Vec::<Hash>::new(),
@@ -81,22 +80,25 @@ impl<AccountId, Hash> Hospital<AccountId, Hash>
     }
 
     pub fn remove_certification(&mut self, certification_id: Hash) -> () {
-        if let Some(pos) = &self.certifications.iter().position(|x| *x == certification_id) {
+        if let Some(pos) = &self
+            .certifications
+            .iter()
+            .position(|x| *x == certification_id)
+        {
             &self.certifications.remove(*pos);
         }
     }
 }
 
 impl<T, AccountId, Hash> HospitalCertificationOwnerInfo<T> for Hospital<AccountId, Hash>
-    where
-        Hash: PartialEq + Eq,
-        T: frame_system::Config<AccountId = AccountId>
+where
+    Hash: PartialEq + Eq,
+    T: frame_system::Config<AccountId = AccountId>,
 {
     fn get_owner_id(&self) -> &AccountId {
         &self.get_account_id()
     }
 }
-
 
 pub mod helpers {
     use crate::*;
@@ -109,7 +111,7 @@ pub mod helpers {
         // dash character as u8
         let mut dash = ['-'].iter().map(|c| *c as u8).collect::<Vec<u8>>();
         let mut region_code = region_code.clone();
-        
+
         country_region_code.append(&mut country_code);
         country_region_code.append(&mut dash);
         country_region_code.append(&mut region_code);
@@ -120,28 +122,35 @@ pub mod helpers {
 
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::{
-        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
-    };
-    use frame_system::pallet_prelude::*;
-    pub use sp_std::prelude::*;
-    use crate::*;
     use crate::interface::HospitalInterface;
     use crate::Hospital;
     use crate::HospitalInfo;
-    pub use traits_hospital_certifications::{HospitalCertificationsProvider, HospitalCertificationOwner};
+    use crate::*;
+    use codec::EncodeLike;
     use frame_support::traits::Currency;
-    use codec::{EncodeLike};
-
+    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+    use frame_system::pallet_prelude::*;
+    pub use sp_std::prelude::*;
+    pub use traits_hospital_certifications::{
+        HospitalCertificationOwner, HospitalCertificationsProvider,
+    };
 
     #[pallet::config]
     /// Configure the pallet by specifying the parameters and types on which it depends.
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
-	type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Currency: Currency<Self::AccountId>;
         type HospitalCertifications: HospitalCertificationsProvider<Self>;
-        type EthereumAddress: Clone + Copy + PartialEq + Eq + Encode + EncodeLike + Decode + Default + sp_std::fmt::Debug;
+        type EthereumAddress: Clone
+            + Copy
+            + PartialEq
+            + Eq
+            + Encode
+            + EncodeLike
+            + Decode
+            + Default
+            + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
     }
 
@@ -154,7 +163,6 @@ pub mod pallet {
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
     // --------------------------------------------------------
 
-    
     // ---- Types ----------------------
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
@@ -169,14 +177,18 @@ pub mod pallet {
     #[pallet::getter(fn hospital_by_account_id)]
     pub type Hospitals<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, HospitalOf<T>>;
 
-    
     /// Get HospitalId by Country-Region, City
     /// (CountryRegionCode, CityCode) => Vec<AccountId>
     #[pallet::storage]
     #[pallet::getter(fn hospitals_by_country_region_city)]
-    pub type HospitalsByCountryRegionCity<T> =
-        StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, Vec<AccountIdOf<T>>>;
-
+    pub type HospitalsByCountryRegionCity<T> = StorageDoubleMap<
+        _,
+        Blake2_128Concat,
+        CountryRegionCode,
+        Blake2_128Concat,
+        CityCode,
+        Vec<AccountIdOf<T>>,
+    >;
 
     /// Get total hospital count
     /// u32
@@ -184,15 +196,13 @@ pub mod pallet {
     #[pallet::getter(fn hospital_count)]
     pub type HospitalCount<T> = StorageValue<_, u64>;
 
-
     /// Get total hospital count by Country-Region, City
     /// (CountryRegionCode, CityCode) => u32
     #[pallet::storage]
     #[pallet::getter(fn hospital_count_by_country_region_city)]
-    pub type HospitalCountByCountryRegionCity<T>
-        = StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, u64>;
+    pub type HospitalCountByCountryRegionCity<T> =
+        StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, u64>;
     // -----------------------------------
-
 
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId", HospitalOf<T> = "Hospital")]
@@ -217,35 +227,40 @@ pub mod pallet {
         /// Hospital identified by the AccountId does not exist
         HospitalDoesNotExist,
         /// Hospital is not the owner of the certification
-        HospitalIsNotOwner
+        HospitalIsNotOwner,
     }
-
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn register_hospital(origin: OriginFor<T>, hospital_info: HospitalInfo) -> DispatchResultWithPostInfo {
+        pub fn register_hospital(
+            origin: OriginFor<T>,
+            hospital_info: HospitalInfo,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match Self::create_hospital(&who, &hospital_info) {
                 Ok(hospital) => {
                     Self::deposit_event(Event::HospitalRegistered(hospital, who.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)? 
+                }
+                Err(error) => Err(error)?,
             }
         }
 
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn update_hospital(origin: OriginFor<T>, hospital_info: HospitalInfo) -> DispatchResultWithPostInfo {
+        pub fn update_hospital(
+            origin: OriginFor<T>,
+            hospital_info: HospitalInfo,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as HospitalInterface<T>>::update_hospital(&who, &hospital_info) {
                 Ok(hospital) => {
                     Self::deposit_event(Event::HospitalUpdated(hospital, who.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
 
@@ -262,13 +277,11 @@ pub mod pallet {
                 Ok(hospital) => {
                     Self::deposit_event(Event::HospitalDeleted(hospital, who.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
-
     }
-
 }
 
 impl<T: Config> HospitalInterface<T> for Pallet<T> {
@@ -276,7 +289,10 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
     type HospitalInfo = HospitalInfo;
     type Hospital = HospitalOf<T>;
 
-    fn create_hospital(account_id: &T::AccountId, hospital_info: &Self::HospitalInfo) -> Result<Self::Hospital, Self::Error> {
+    fn create_hospital(
+        account_id: &T::AccountId,
+        hospital_info: &Self::HospitalInfo,
+    ) -> Result<Self::Hospital, Self::Error> {
         if Hospitals::<T>::contains_key(account_id) {
             return Err(Error::<T>::HospitalAlreadyRegistered)?;
         }
@@ -292,7 +308,10 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
         Ok(hospital)
     }
 
-    fn update_hospital(account_id: &T::AccountId, hospital_info: &Self::HospitalInfo) -> Result<Self::Hospital, Self::Error> {
+    fn update_hospital(
+        account_id: &T::AccountId,
+        hospital_info: &Self::HospitalInfo,
+    ) -> Result<Self::Hospital, Self::Error> {
         let hospital = Hospitals::<T>::get(account_id);
         if hospital == None {
             return Err(Error::<T>::HospitalDoesNotExist)?;
@@ -326,7 +345,8 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
         let hospital = hospital.unwrap();
         // Delete hospital's certifications
         for certification_id in &hospital.certifications {
-            let _result = T::HospitalCertifications::delete_certification(account_id, &certification_id);
+            let _result =
+                T::HospitalCertifications::delete_certification(account_id, &certification_id);
         }
         Self::remove_hospital_id_from_location(&hospital);
         Self::sub_hospital_count_by_location(&hospital);
@@ -336,7 +356,10 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
         Ok(hospital)
     }
 
-    fn hospitals_by_country_region_city(country_region_code: &Vec<u8>, city_code: &Vec<u8>) -> Option<Vec<T::AccountId>> {
+    fn hospitals_by_country_region_city(
+        country_region_code: &Vec<u8>,
+        city_code: &Vec<u8>,
+    ) -> Option<Vec<T::AccountId>> {
         Self::hospitals_by_country_region_city(country_region_code, city_code)
     }
 
@@ -347,7 +370,6 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
 
 impl<T: Config> Pallet<T> {
     pub fn insert_hospital_id_to_location(hospital: &HospitalOf<T>) -> () {
-
         let country_region_code = hospital.get_country_region();
         let city_code = hospital.get_city();
         let hospital_account_id = hospital.get_account_id();
@@ -356,11 +378,19 @@ impl<T: Config> Pallet<T> {
             None => {
                 let mut hospitals = Vec::new();
                 hospitals.push(hospital_account_id.clone());
-                HospitalsByCountryRegionCity::<T>::insert(&country_region_code, city_code, hospitals);
-            },
+                HospitalsByCountryRegionCity::<T>::insert(
+                    &country_region_code,
+                    city_code,
+                    hospitals,
+                );
+            }
             Some(mut hospitals) => {
                 hospitals.push(hospital_account_id.clone());
-                HospitalsByCountryRegionCity::<T>::insert(&country_region_code, city_code, hospitals);
+                HospitalsByCountryRegionCity::<T>::insert(
+                    &country_region_code,
+                    city_code,
+                    hospitals,
+                );
             }
         }
     }
@@ -371,11 +401,17 @@ impl<T: Config> Pallet<T> {
         let hospital_account_id = hospital.get_account_id();
 
         // Get the hospital_account_id list
-        let mut hospitals_by_location = HospitalsByCountryRegionCity::<T>::get(&country_region_code, city_code).unwrap_or(Vec::new());
+        let mut hospitals_by_location =
+            HospitalsByCountryRegionCity::<T>::get(&country_region_code, city_code)
+                .unwrap_or(Vec::new());
         // Remove id from the list
         hospitals_by_location.retain(|l_id| l_id != hospital_account_id);
         //  Put back the list to storage
-        HospitalsByCountryRegionCity::<T>::insert(&country_region_code, city_code, hospitals_by_location);
+        HospitalsByCountryRegionCity::<T>::insert(
+            &country_region_code,
+            city_code,
+            hospitals_by_location,
+        );
     }
 
     // Add hospital count
@@ -389,8 +425,16 @@ impl<T: Config> Pallet<T> {
         let country_region_code = hospital.get_country_region();
         let city_code = hospital.get_city();
 
-        let hospital_count = <HospitalCountByCountryRegionCity<T>>::get(country_region_code.clone(), city_code.clone()).unwrap_or(0);
-        <HospitalCountByCountryRegionCity<T>>::insert(country_region_code.clone(), city_code.clone(), hospital_count.wrapping_add(1));
+        let hospital_count = <HospitalCountByCountryRegionCity<T>>::get(
+            country_region_code.clone(),
+            city_code.clone(),
+        )
+        .unwrap_or(0);
+        <HospitalCountByCountryRegionCity<T>>::insert(
+            country_region_code.clone(),
+            city_code.clone(),
+            hospital_count.wrapping_add(1),
+        );
     }
 
     // Subtract hospital count
@@ -404,8 +448,16 @@ impl<T: Config> Pallet<T> {
         let country_region_code = hospital.get_country_region();
         let city_code = hospital.get_city();
 
-        let hospital_count = HospitalCountByCountryRegionCity::<T>::get(country_region_code.clone(), city_code.clone()).unwrap_or(1);
-        HospitalCountByCountryRegionCity::<T>::insert(country_region_code.clone(), city_code.clone(), hospital_count - 1);
+        let hospital_count = HospitalCountByCountryRegionCity::<T>::get(
+            country_region_code.clone(),
+            city_code.clone(),
+        )
+        .unwrap_or(1);
+        HospitalCountByCountryRegionCity::<T>::insert(
+            country_region_code.clone(),
+            city_code.clone(),
+            hospital_count - 1,
+        );
     }
 }
 
@@ -423,7 +475,7 @@ impl<T: Config> HospitalCertificationOwner<T> for Pallet<T> {
     }
 
     fn associate(owner_id: &T::AccountId, certification_id: &T::Hash) -> () {
-        <Hospitals<T>>::mutate(owner_id, | hospital | {
+        <Hospitals<T>>::mutate(owner_id, |hospital| {
             match hospital {
                 None => (), // If hospital does not exist, do nothing
                 Some(hospital) => {
@@ -434,12 +486,10 @@ impl<T: Config> HospitalCertificationOwner<T> for Pallet<T> {
     }
 
     fn disassociate(owner_id: &T::AccountId, certification_id: &T::Hash) -> () {
-        Hospitals::<T>::mutate(owner_id, | hospital | {
-            match hospital {
-                None => (),
-                Some(hospital) => {
-                    hospital.remove_certification(*certification_id);
-                }
+        Hospitals::<T>::mutate(owner_id, |hospital| match hospital {
+            None => (),
+            Some(hospital) => {
+                hospital.remove_certification(*certification_id);
             }
         });
     }

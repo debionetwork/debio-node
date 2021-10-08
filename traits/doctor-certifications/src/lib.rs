@@ -12,7 +12,10 @@ pub trait DoctorCertificationsProvider<T: Config> {
     type Error;
     type DoctorCertification: DoctorCertificationInfo<T> + sp_std::fmt::Debug;
 
-    fn delete_certification(owner_id: &T::AccountId, id: &T::Hash) -> Result<Self::DoctorCertification, Self::Error>;
+    fn delete_certification(
+        owner_id: &T::AccountId,
+        id: &T::Hash,
+    ) -> Result<Self::DoctorCertification, Self::Error>;
     fn certification_by_id(id: &T::Hash) -> Option<Self::DoctorCertification>;
 }
 
@@ -28,4 +31,3 @@ pub trait DoctorCertificationOwner<T: Config> {
     fn associate(owner_id: &T::AccountId, certification_id: &T::Hash) -> ();
     fn disassociate(owner_id: &T::AccountId, certification_id: &T::Hash) -> ();
 }
-
