@@ -25,29 +25,29 @@ use sc_cli::{ChainSpec, Role, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
 
 impl SubstrateCli for Cli {
-	fn impl_name() -> String {
-		"Substrate Node".into()
-	}
+    fn impl_name() -> String {
+        "Substrate Node".into()
+    }
 
-	fn impl_version() -> String {
-		env!("SUBSTRATE_CLI_IMPL_VERSION").into()
-	}
+    fn impl_version() -> String {
+        env!("SUBSTRATE_CLI_IMPL_VERSION").into()
+    }
 
-	fn description() -> String {
-		env!("CARGO_PKG_DESCRIPTION").into()
-	}
+    fn description() -> String {
+        env!("CARGO_PKG_DESCRIPTION").into()
+    }
 
-	fn author() -> String {
-		env!("CARGO_PKG_AUTHORS").into()
-	}
+    fn author() -> String {
+        env!("CARGO_PKG_AUTHORS").into()
+    }
 
-	fn support_url() -> String {
-		"support.anonymous.an".into()
-	}
+    fn support_url() -> String {
+        "support.anonymous.an".into()
+    }
 
-	fn copyright_start_year() -> i32 {
-		2017
-	}
+    fn copyright_start_year() -> i32 {
+        2017
+    }
 
 	fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
 		Ok(match id {
@@ -58,14 +58,14 @@ impl SubstrateCli for Cli {
 		})
 	}
 
-	fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		&debio_runtime::VERSION
-	}
+    fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
+        &debio_runtime::VERSION
+    }
 }
 
 /// Parse and run command line arguments
 pub fn run() -> sc_cli::Result<()> {
-	let cli = Cli::from_args();
+    let cli = Cli::from_args();
 
 	match &cli.subcommand {
 		Some(Subcommand::Key(cmd)) => cmd.run(&cli),

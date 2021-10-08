@@ -39,10 +39,10 @@ use sc_finality_grandpa as grandpa;
 
 // Our native executor instance.
 native_executor_instance!(
-	pub Executor,
-	debio_runtime::api::dispatch,
-	debio_runtime::native_version,
-	frame_benchmarking::benchmarking::HostFunctions,
+    pub Executor,
+    debio_runtime::api::dispatch,
+    debio_runtime::native_version,
+    frame_benchmarking::benchmarking::HostFunctions,
 );
 
 type FullClient = sc_service::TFullClient<Block, RuntimeApi, Executor>;

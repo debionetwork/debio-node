@@ -3,19 +3,17 @@
 pub mod interface;
 use interface::OrderInterface;
 
-pub use pallet::*;
-use frame_support::traits::{ Currency };
-use frame_support::codec::{Encode, Decode};
+use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
+use frame_support::traits::Currency;
+pub use pallet::*;
 use sp_std::prelude::*;
-use traits_services::{
-    ServicesProvider,
-    ServiceInfo,
-    types::{ Price, CurrencyType }
-};
-use traits_genetic_testing::{GeneticTestingProvider, DnaSampleTracking};
+use traits_genetic_testing::{DnaSampleTracking, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
-
+use traits_services::{
+    types::{CurrencyType, Price},
+    ServiceInfo, ServicesProvider,
+};
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
 pub enum OrderStatus {
@@ -27,7 +25,9 @@ pub enum OrderStatus {
     Failed,
 }
 impl Default for OrderStatus {
-    fn default() -> Self { OrderStatus::Unpaid }
+    fn default() -> Self {
+        OrderStatus::Unpaid
+    }
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
@@ -58,16 +58,14 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
         additional_prices: Vec<Price<Balance>>,
         created_at: Moment,
         updated_at: Moment,
-    )
-        -> Self
-    {
+    ) -> Self {
         Self {
             id,
             service_id,
             customer_id,
             customer_box_public_key,
             seller_id,
-            dna_sample_tracking_id, 
+            dna_sample_tracking_id,
             currency,
             prices,
             additional_prices,
@@ -92,12 +90,9 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
 
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::{
-        dispatch::DispatchResultWithPostInfo, pallet_prelude::*,
-    };
-    use frame_system::pallet_prelude::*;
-    use sp_std::prelude::*;
     use crate::*;
+    use frame_support::{dispatch::DispatchResultWithPostInfo};
+    use frame_system::pallet_prelude::*;
 
     #[pallet::config]
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
@@ -106,7 +101,6 @@ pub mod pallet {
         type GeneticTesting: GeneticTestingProvider<Self>;
         type Currency: Currency<<Self as frame_system::Config>::AccountId>;
     }
-
 
     // ----- This is template code, every pallet needs this ---
     #[pallet::pallet]
@@ -148,7 +142,6 @@ pub mod pallet {
     #[pallet::getter(fn admin_key)]
     pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
     // -----------------------------------------
-
 
     // ----- Genesis Configs ------------------
     #[pallet::genesis_config]
@@ -198,7 +191,6 @@ pub mod pallet {
         /// parameters, [Order]
         OrderFailed(OrderOf<T>),
     }
-      
 
     #[pallet::error]
     pub enum Error<T> {
@@ -226,20 +218,28 @@ pub mod pallet {
         PriceIndexNotFound,
     }
 
-
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn create_order(origin: OriginFor<T>, service_id: T::Hash, price_index: u32, customer_box_public_key: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn create_order(
+            origin: OriginFor<T>,
+            service_id: T::Hash,
+            price_index: u32,
+            customer_box_public_key: T::Hash,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as OrderInterface<T>>::create_order(&who, &service_id, price_index, &customer_box_public_key) {
+            match <Self as OrderInterface<T>>::create_order(
+                &who,
+                &service_id,
+                price_index,
+                &customer_box_public_key,
+            ) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderCreated(order.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
 
@@ -251,47 +251,56 @@ pub mod pallet {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderCancelled(order.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
 
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn set_order_paid(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn set_order_paid(
+            origin: OriginFor<T>,
+            order_id: T::Hash,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as OrderInterface<T>>::set_order_paid(&who, &order_id) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderPaid(order.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
 
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn fulfill_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn fulfill_order(
+            origin: OriginFor<T>,
+            order_id: T::Hash,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as OrderInterface<T>>::fulfill_order(&who, &order_id) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderFulfilled(order.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
-        
+
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn set_order_refunded(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
+        pub fn set_order_refunded(
+            origin: OriginFor<T>,
+            order_id: T::Hash,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as OrderInterface<T>>::set_order_refunded(&who, &order_id) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderRefunded(order.clone()));
                     Ok(().into())
-                },
-                Err(error) => Err(error)?
+                }
+                Err(error) => Err(error)?,
             }
         }
     }
@@ -301,7 +310,12 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
     type Order = OrderOf<T>;
     type Error = Error<T>;
 
-    fn create_order(customer_id: &T::AccountId, service_id: &T::Hash, price_index: u32, customer_box_public_key: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn create_order(
+        customer_id: &T::AccountId,
+        service_id: &T::Hash,
+        price_index: u32,
+        customer_box_public_key: &T::Hash,
+    ) -> Result<Self::Order, Self::Error> {
         let service = T::Services::service_by_id(service_id);
         if service.is_none() {
             return Err(Error::<T>::ServiceDoesNotExist);
@@ -311,7 +325,9 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         let seller_id = service.get_owner_id();
         let prices_by_currency = service.get_prices_by_currency();
 
-        if prices_by_currency.len() == 0 || prices_by_currency.len() - 1 < price_index.try_into().unwrap() {
+        if prices_by_currency.len() == 0
+            || prices_by_currency.len() - 1 < price_index.try_into().unwrap()
+        {
             return Err(Error::<T>::PriceIndexNotFound);
         }
 
@@ -341,14 +357,17 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             prices.clone(),
             additional_prices.clone(),
             now,
-            now
+            now,
         );
         Self::insert_order_to_storage(&order);
 
         Ok(order)
     }
 
-    fn cancel_order(customer_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn cancel_order(
+        customer_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> Result<Self::Order, Self::Error> {
         let order = Orders::<T>::get(order_id);
         if order.is_none() {
             return Err(Error::<T>::OrderNotFound);
@@ -367,7 +386,10 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         Ok(order)
     }
 
-    fn set_order_paid(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn set_order_paid(
+        escrow_account_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> Result<Self::Order, Self::Error> {
         if escrow_account_id.clone() != EscrowKey::<T>::get() {
             return Err(Error::<T>::Unauthorized);
         }
@@ -380,7 +402,10 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         Ok(order.unwrap())
     }
 
-    fn fulfill_order(seller_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn fulfill_order(
+        seller_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> Result<Self::Order, Self::Error> {
         let order = Orders::<T>::get(order_id);
         if order.is_none() {
             return Err(Error::<T>::OrderNotFound);
@@ -392,7 +417,8 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             return Err(Error::<T>::UnauthorizedOrderFulfillment);
         }
 
-        let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id);
+        let dna_sample =
+            T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id);
         if dna_sample.unwrap().process_success() == false {
             return Err(Error::<T>::DnaSampleNotSuccessfullyProcessed);
         }
@@ -402,7 +428,10 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         Ok(order.unwrap())
     }
 
-    fn set_order_refunded(escrow_account_id: &T::AccountId, order_id: &T::Hash) -> Result<Self::Order, Self::Error> {
+    fn set_order_refunded(
+        escrow_account_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> Result<Self::Order, Self::Error> {
         if escrow_account_id.clone() != EscrowKey::<T>::get() {
             return Err(Error::<T>::Unauthorized);
         }
@@ -423,7 +452,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 }
 
 use frame_support::sp_runtime::traits::Hash;
-use frame_support::sp_std::convert::{TryInto};
+use frame_support::sp_std::convert::TryInto;
 
 impl<T: Config> Pallet<T> {
     pub fn generate_order_id(customer_id: &T::AccountId, service_id: &T::Hash) -> T::Hash {
@@ -439,17 +468,16 @@ impl<T: Config> Pallet<T> {
         T::Hashing::hash(seed)
     }
 
-    pub fn update_order_status(order_id: &T::Hash, status: OrderStatus)
-        -> Option<Order<T::Hash, T::AccountId, BalanceOf<T>, T::Moment>>
-    {
-        Orders::<T>::mutate(order_id, |order| {
-            match order {
-                None => None,
-                Some(order) => {
-                    order.status = status;
-                    order.updated_at = pallet_timestamp::Pallet::<T>::get();
-                    Some(order.clone())
-                }
+    pub fn update_order_status(
+        order_id: &T::Hash,
+        status: OrderStatus,
+    ) -> Option<Order<T::Hash, T::AccountId, BalanceOf<T>, T::Moment>> {
+        Orders::<T>::mutate(order_id, |order| match order {
+            None => None,
+            Some(order) => {
+                order.status = status;
+                order.updated_at = pallet_timestamp::Pallet::<T>::get();
+                Some(order.clone())
             }
         })
     }
@@ -467,7 +495,7 @@ impl<T: Config> Pallet<T> {
                 let mut orders = Vec::new();
                 orders.push(order.id.clone());
                 OrdersBySeller::<T>::insert(&order.seller_id, orders);
-            },
+            }
             Some(mut orders) => {
                 orders.push(order.id.clone());
                 OrdersBySeller::<T>::insert(&order.seller_id, orders);
@@ -481,7 +509,7 @@ impl<T: Config> Pallet<T> {
                 let mut orders = Vec::new();
                 orders.push(order.id.clone());
                 OrdersByCustomer::<T>::insert(&order.customer_id, orders);
-            },
+            }
             Some(mut orders) => {
                 orders.push(order.id.clone());
                 OrdersByCustomer::<T>::insert(&order.customer_id, orders);
@@ -489,20 +517,27 @@ impl<T: Config> Pallet<T> {
         }
     }
 
-    pub fn remove_order_id_from_orders_by_seller(seller_id: &T::AccountId, order_id: &T::Hash) -> () {
+    pub fn remove_order_id_from_orders_by_seller(
+        seller_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> () {
         let mut orders = OrdersBySeller::<T>::get(seller_id).unwrap_or(Vec::new());
         orders.retain(|o_id| o_id != order_id);
         OrdersBySeller::<T>::insert(seller_id, orders);
     }
 
-    pub fn remove_order_id_from_orders_by_customer(customer_id: &T::AccountId, order_id: &T::Hash) -> () {
+    pub fn remove_order_id_from_orders_by_customer(
+        customer_id: &T::AccountId,
+        order_id: &T::Hash,
+    ) -> () {
         let mut orders = OrdersByCustomer::<T>::get(customer_id).unwrap_or(Vec::new());
         orders.retain(|o_id| o_id != order_id);
         OrdersByCustomer::<T>::insert(customer_id, orders);
     }
 
     pub fn order_can_be_refunded(order: OrderOf<T>) -> bool {
-        let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
+        let dna_sample =
+            T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
         if !dna_sample.is_rejected() {
             return false;
         }
@@ -514,7 +549,7 @@ impl<T: Config> OrderEventEmitter<T> for Pallet<T> {
     fn emit_event_order_failed(order_id: &HashOf<T>) -> () {
         match Self::order_by_id(order_id) {
             None => Self::deposit_event(Event::OrderNotFound),
-            Some(order) => Self::deposit_event(Event::OrderFailed(order))
+            Some(order) => Self::deposit_event(Event::OrderFailed(order)),
         }
     }
 }
@@ -525,7 +560,7 @@ impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
             None => Self::deposit_event(Event::OrderNotFound),
             Some(order) => {
                 Self::update_order_status(&order.id, OrderStatus::Failed);
-            },
+            }
         }
     }
 }

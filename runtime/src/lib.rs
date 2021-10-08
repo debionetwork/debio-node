@@ -85,19 +85,19 @@ pub type DigestItem = generic::DigestItem<Hash>;
 
 /// DBIO, the native token, uses 18 decimals of precision.
 pub mod currency {
-	use super::Balance;
+    use super::Balance;
 
-	pub const DBIO: Balance = 1_000_000_000_000_000_000;
-	pub const KILODBIO: Balance = DBIO * 1_000;
-	pub const MILLIDBIO: Balance = DBIO / 1_000;
-	pub const MICRODBIO: Balance = MILLIDBIO / 1_000;
-	pub const NANODBIO: Balance = MICRODBIO / 1_000;
+    pub const DBIO: Balance = 1_000_000_000_000_000_000;
+    pub const KILODBIO: Balance = DBIO * 1_000;
+    pub const MILLIDBIO: Balance = DBIO / 1_000;
+    pub const MICRODBIO: Balance = MILLIDBIO / 1_000;
+    pub const NANODBIO: Balance = MICRODBIO / 1_000;
 
-	pub const BYTE_FEE: Balance = 100 * MICRODBIO;
+    pub const BYTE_FEE: Balance = 100 * MICRODBIO;
 
-	pub const fn deposit(items: u32, bytes: u32) -> Balance {
-		(items as Balance) * DBIO + (bytes as Balance) * BYTE_FEE
-	}
+    pub const fn deposit(items: u32, bytes: u32) -> Balance {
+        (items as Balance) * DBIO + (bytes as Balance) * BYTE_FEE
+    }
 }
 
 /// Ethereum Address type
@@ -298,23 +298,23 @@ impl frame_system::Config for Runtime {
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
 impl pallet_grandpa::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+    type Event = Event;
+    type Call = Call;
 
 	type KeyOwnerProofSystem = Historical;
 
-	type KeyOwnerProof =
-		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
+    type KeyOwnerProof =
+        <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
 
-	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
-		KeyTypeId,
-		GrandpaId,
-	)>>::IdentificationTuple;
+    type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
+        KeyTypeId,
+        GrandpaId,
+    )>>::IdentificationTuple;
 
 	type HandleEquivocation =
 		pallet_grandpa::EquivocationHandler<Self::KeyOwnerIdentification, (), ReportLongevity>;
 
-	type WeightInfo = ();
+    type WeightInfo = ();
 }
 
 parameter_types! {
@@ -356,10 +356,10 @@ parameter_types! {
 }
 
 impl pallet_transaction_payment::Config for Runtime {
-	type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
-	type TransactionByteFee = TransactionByteFee;
-	type WeightToFee = IdentityFee<Balance>;
-	type FeeMultiplierUpdate = ();
+    type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
+    type TransactionByteFee = TransactionByteFee;
+    type WeightToFee = IdentityFee<Balance>;
+    type FeeMultiplierUpdate = ();
 }
 
 parameter_types! {
@@ -613,8 +613,8 @@ impl pallet_octopus_appchain::Config for Runtime {
 }
 
 impl pallet_sudo::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+    type Event = Event;
+    type Call = Call;
 }
 
 // ------------------------------
@@ -628,6 +628,14 @@ impl labs::Config for Runtime {
     type EthereumAddress = EthereumAddress;
     type UserProfile = UserProfile;
 }
+
+impl rewards::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type Reward = ();
+    type Slash = ();
+}
+
 impl hospitals::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
@@ -706,6 +714,7 @@ construct_runtime!(
 		// Include the custom logic from the template pallet in the runtime.
 		Labs: labs::{Pallet, Call, Storage, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
+        Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
