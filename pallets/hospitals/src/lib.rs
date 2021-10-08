@@ -128,7 +128,7 @@ pub mod pallet {
     use crate::*;
     use codec::EncodeLike;
     use frame_support::traits::Currency;
-    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+    use frame_support::{dispatch::DispatchResultWithPostInfo};
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
     pub use traits_hospital_certifications::{
