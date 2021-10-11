@@ -136,7 +136,7 @@ pub mod opaque {
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("appchain"),
-	impl_name: create_runtime_str!("appchain-barnacle"),
+	impl_name: create_runtime_str!("debio"),
 	authoring_version: 1,
 	// The version of the runtime specification. A full node will not attempt to use its native
 	//   runtime in substitute for the on-chain Wasm runtime unless all of `spec_name`,
