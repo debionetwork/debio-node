@@ -3,6 +3,13 @@
 use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 pub use pallet::*;
+
+#[cfg(test)]
+mod mock;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+
 use traits_certifications::{
     CertificationInfo as CertificationInfoT, CertificationOwner, CertificationsProvider,
 };
