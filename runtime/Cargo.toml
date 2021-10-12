@@ -76,7 +76,7 @@ pallet-beefy = { git = 'https://github.com/paritytech/grandpa-bridge-gadget', br
 
 # Octopus Dependencies
 ## Octopus Pallet Dependencies
-pallet-octopus-appchain = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
+pallet-octopus-support = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
 pallet-octopus-lpos = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
 pallet-octopus-upward-messages = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
 
@@ -114,8 +114,6 @@ runtime-benchmarks = [
 	'pallet-grandpa/runtime-benchmarks',
 	'pallet-im-online/runtime-benchmarks',
 	'pallet-mmr/runtime-benchmarks',
-	
-	'certifications/runtime-benchmarks',
 ]
 std = [
     'codec/std',
@@ -157,7 +155,7 @@ std = [
 	'pallet-authorship/std',
 	'pallet-mmr/std',
     
-	'pallet-octopus-appchain/std',
+	'pallet-octopus-support/std',
 	'pallet-octopus-lpos/std',
     'pallet-octopus-upward-messages/std',
 

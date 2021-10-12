@@ -12,10 +12,10 @@ use debio_runtime::BeefyConfig;
 use debio_runtime::{
 	opaque::SessionKeys, Balance, ImOnlineConfig, SessionConfig,
 };
-use debio_runtime::{OctopusAppchainConfig, OctopusLposConfig};
+use debio_runtime::{OctopusSupportConfig, OctopusLposConfig};
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_octopus_appchain::AuthorityId as OctopusId;
+use pallet_octopus_support::AuthorityId as OctopusId;
 use sp_consensus_babe::AuthorityId as BabeId;
 
 use hex_literal::hex;
@@ -275,7 +275,7 @@ fn testnet_genesis(
 		im_online: ImOnlineConfig { keys: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		beefy: BeefyConfig { authorities: vec![] },
-		octopus_appchain: OctopusAppchainConfig {
+		octopus_appchain: OctopusSupportConfig {
 			appchain_id: "".to_string(),
 			anchor_contract: "octopus-anchor.testnet".to_string(),
 			asset_id_by_name: vec![("usdc.testnet".to_string(), 0)],
@@ -345,7 +345,7 @@ fn genesis(
 		im_online: ImOnlineConfig { keys: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		beefy: BeefyConfig { authorities: vec![] },
-		octopus_appchain: OctopusAppchainConfig {
+		octopus_appchain: OctopusSupportConfig {
 			appchain_id: "".to_string(),
 			anchor_contract: "octopus-anchor.testnet".to_string(),
 			asset_id_by_name: vec![("usdc.testnet".to_string(), 0)],

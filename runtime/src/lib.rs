@@ -125,7 +125,7 @@ pub mod opaque {
 			pub grandpa: Grandpa,
 			pub im_online: ImOnline,
 			pub beefy: Beefy,
-			pub octopus: OctopusAppchain,
+			pub octopus: OctopusSupport,
 		}
 	}
 }
@@ -552,22 +552,22 @@ pub struct OctopusAppCrypto;
 impl frame_system::offchain::AppCrypto<<Signature as Verify>::Signer, Signature>
 	for OctopusAppCrypto
 {
-	type RuntimeAppPublic = pallet_octopus_appchain::AuthorityId;
+	type RuntimeAppPublic = pallet_octopus_support::AuthorityId;
 	type GenericSignature = sp_core::sr25519::Signature;
 	type GenericPublic = sp_core::sr25519::Public;
 }
 
 parameter_types! {
-	pub const OctopusAppchainPalletId: PalletId = PalletId(*b"py/octps");
+	pub const OctopusSupportPalletId: PalletId = PalletId(*b"py/octps");
 	pub const GracePeriod: u32 = 5;
 	pub const UnsignedPriority: u64 = 1 << 20;
 }
 
-impl pallet_octopus_appchain::Config for Runtime {
+impl pallet_octopus_support::Config for Runtime {
 	type AuthorityId = OctopusAppCrypto;
 	type Event = Event;
 	type Call = Call;
-	type PalletId = OctopusAppchainPalletId;
+	type PalletId = OctopusSupportPalletId;
 	type LposInterface = OctopusLpos;
 	type UpwardMessagesInterface = OctopusUpwardMessages;
 	type Currency = Balances;
@@ -592,10 +592,10 @@ impl pallet_octopus_lpos::Config for Runtime {
 	type BlocksPerEra = BlocksPerEra;
 	type BondingDuration = BondingDuration;
 	type SessionInterface = Self;
-	type ValidatorsProvider = OctopusAppchain;
+	type ValidatorsProvider = OctopusSupport;
 	type WeightInfo = pallet_octopus_lpos::weights::SubstrateWeight<Runtime>;
 	type UpwardMessagesInterface = OctopusUpwardMessages;
-	type PalletId = OctopusAppchainPalletId;
+	type PalletId = OctopusSupportPalletId;
 }
 
 impl pallet_octopus_upward_messages::Config for Runtime {
@@ -691,7 +691,7 @@ construct_runtime!(
 		Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
-		OctopusAppchain: pallet_octopus_appchain::{Pallet, Call, Storage, Config<T>, Event<T>, ValidateUnsigned},
+		OctopusSupport: pallet_octopus_support::{Pallet, Call, Storage, Config<T>, Event<T>, ValidateUnsigned},
 		OctopusLpos: pallet_octopus_lpos::{Pallet, Call, Config, Storage, Event<T>},
 		OctopusUpwardMessages: pallet_octopus_upward_messages::{Pallet, Call, Storage, Event<T>},
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>},
