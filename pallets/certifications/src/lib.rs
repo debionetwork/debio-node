@@ -4,12 +4,6 @@ use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 pub use pallet::*;
 
-#[cfg(test)]
-mod mock;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
-
 use traits_certifications::{
     CertificationInfo as CertificationInfoT, CertificationOwner, CertificationsProvider,
 };
@@ -22,12 +16,12 @@ use sp_std::prelude::*;
 /// Information that is mutable by user
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct CertificationInfo {
-    title: Vec<u8>,
-    issuer: Vec<u8>,
-    month: Vec<u8>,
-    year: Vec<u8>,
-    description: Vec<u8>,
-    supporting_document: Option<Vec<u8>>,
+    pub title: Vec<u8>,
+    pub issuer: Vec<u8>,
+    pub month: Vec<u8>,
+    pub year: Vec<u8>,
+    pub description: Vec<u8>,
+    pub supporting_document: Option<Vec<u8>>,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]

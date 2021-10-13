@@ -810,9 +810,28 @@ dependencies = [
 name = "certifications"
 version = "0.1.0"
 dependencies = [
+ "frame-support",
+ "frame-system",
+ "labs",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-certifications",
+]
+
+[[package]]
+name = "certifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "labs",
+ "pallet-balances",
  "parity-scale-codec",
  "serde",
  "sp-core",
@@ -1399,6 +1418,7 @@ version = "3.0.0"
 dependencies = [
  "beefy-primitives",
  "certifications",
+ "certifications-benchmarking",
  "doctor-certifications",
  "doctors",
  "electronic-medical-record",

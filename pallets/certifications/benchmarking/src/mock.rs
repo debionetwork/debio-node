@@ -1,11 +1,11 @@
-use crate as certifications;
+#![cfg(test)]
+
+use super::*;
+
 use frame_support::parameter_types;
-use frame_system as system;
-use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
-	testing::Header,
-	traits::{AccountIdLookup, BlakeTwo256, IdentifyAccount, Verify},
+	traits::{AccountIdLookup, IdentifyAccount, Verify},
     MultiSignature
 };
 
@@ -22,6 +22,8 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		Labs: labs::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 	}
 );
@@ -31,7 +33,7 @@ parameter_types! {
 	pub const SS58Prefix: u8 = 42;
 }
 
-impl system::Config for Test {
+impl frame_system::Config for Test {
 	type BaseCallFilter = ();
 	type BlockWeights = ();
 	type BlockLength = ();
@@ -40,9 +42,9 @@ impl system::Config for Test {
 	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Index = u64;
 	type BlockNumber = u64;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
-	type Header = Header;
+	type Hash = sp_core::H256;
+	type Hashing = ::sp_runtime::traits::BlakeTwo256;
+	type Header = sp_runtime::testing::Header;
 	type Event = Event;
 	type Origin = Origin;
 	type BlockHashCount = BlockHashCount;
@@ -57,16 +59,43 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
-impl certifications::Config for Runtime {
+type Balance = u64;
+
+parameter_types! {
+	pub const ExistentialDeposit: Balance = 10;
+}
+
+impl pallet_balances::Config for Test {
+	type MaxLocks = ();
+	type MaxReserves = ();
+	type ReserveIdentifier = [u8; 8];
+	type Balance = Balance;
+	type Event = Event;
+	type DustRemoval = ();
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
+	type WeightInfo = ();
+}
+
+impl labs::Config for Test {
     type Event = Event;
-	type CertificationOwner = ();
+    type Currency = Balances;
+    type Services = ();
+    type Certifications = Certifications;
+    type EthereumAddress = ();
+    type UserProfile = ();
+}
+
+impl certifications::Config for Test {
+    type Event = Event;
+	type CertificationOwner = Labs;
 }
 
 pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
 		TestExternalities::from(storage)
 	}
 }

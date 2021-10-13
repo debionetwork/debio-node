@@ -89,6 +89,7 @@ genetic-testing = { path = '../pallets/genetic-testing', default-features = fals
 user-profile = { path = '../pallets/user-profile', default-features = false }
 electronic-medical-record = { path = '../pallets/electronic-medical-record', default-features = false }
 certifications = { path = '../pallets/certifications', default-features = false }
+certifications-benchmarking = { path = '../pallets/certifications/benchmarking', default-features = false, optional = true }
 hospitals = { path = '../pallets/hospitals', default-features = false }
 hospital-certifications = { path = '../pallets/hospital-certifications', default-features = false }
 doctors = { path = '../pallets/doctors', default-features = false }
@@ -116,7 +117,8 @@ runtime-benchmarks = [
 	'pallet-mmr/runtime-benchmarks',
 	
 	'labs/runtime-benchmarks',
-	'certifications/runtime-benchmarks',
+
+	'certifications-benchmarking',
 ]
 std = [
     'codec/std',
