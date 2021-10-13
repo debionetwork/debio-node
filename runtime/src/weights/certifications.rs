@@ -37,8 +37,18 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> certifications::WeightInfo for WeightInfo<T> {
 	fn create_certification() -> Weight {
-		(132_073_000 as Weight)
+		(74_749_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(3 as Weight))
+			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+	}
+	fn update_certification() -> Weight {
+		(80_144_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn delete_certification() -> Weight {
+		(155_487_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
 }
