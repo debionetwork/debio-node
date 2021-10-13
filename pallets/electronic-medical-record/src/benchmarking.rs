@@ -38,23 +38,25 @@ benchmarks! {
         "DeBio EMR Link".as_bytes().to_vec()
     )
     
-	// remove_electronic_medical_record_info {
-	// 	let caller: T::AccountId = whitelisted_caller();
-	// 	let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+	remove_electronic_medical_record_info {
+		let caller: T::AccountId = whitelisted_caller();
+		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
-	// 	let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(caller_origin.clone());
+		let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(caller_origin.clone());
 
-	// 	let _add_electronic_medical_record_info: ElectronicMedicalRecordInfo<T::AccountId, T::Hash, T::Moment> = ElectronicMedicalRecord::<T>::add_electronic_medical_record_info(
-    //         caller_origin.clone(),
-    //         "DeBio EMR".as_bytes().to_vec(),
-    //         "DeBio EMR Description".as_bytes().to_vec(),
-    //         "DeBio EMR Link".as_bytes().to_vec(),
-    //     ).unwrap();
+		let _add_electronic_medical_record_info = ElectronicMedicalRecord::<T>::add_electronic_medical_record_info(
+            caller_origin.clone(),
+            "DeBio EMR".as_bytes().to_vec(),
+            "DeBio EMR Description".as_bytes().to_vec(),
+            "DeBio EMR Link".as_bytes().to_vec(),
+        );
 
-	// }: remove_electronic_medical_record_info(
-    //     RawOrigin::Signed(caller), 
-    //     _add_electronic_medical_record_info.id
-    // )
+        let _emr_info = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(caller.clone())
+            .unwrap();
+	}: remove_electronic_medical_record_info(
+        RawOrigin::Signed(caller), 
+        _emr_info.info[0]
+    )
 }
 
 impl_benchmark_test_suite! {ElectronicMedicalRecord, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
