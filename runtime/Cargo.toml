@@ -117,6 +117,8 @@ runtime-benchmarks = [
 	
 	'labs/runtime-benchmarks',
 	'certifications/runtime-benchmarks',
+
+	'hospitals/runtime-benchmarks',
 ]
 std = [
     'codec/std',

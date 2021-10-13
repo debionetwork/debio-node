@@ -1014,8 +1014,10 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, pallet_im_online, ImOnline);
 			add_benchmark!(params, batches, pallet_mmr, Mmr);
 			
-			add_benchmark!(params, batches, certifications, Certifications);
 			add_benchmark!(params, batches, labs, Labs);
+			add_benchmark!(params, batches, certifications, Certifications);
+			
+			add_benchmark!(params, batches, hospitals, Hospitals);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)
