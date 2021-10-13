@@ -15,15 +15,15 @@ use traits_user_profile::UserProfileProvider;
 // Used as parameter of dispatchable calls
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct DoctorInfo {
-    name: Vec<u8>,
-    email: Vec<u8>,
-    country: Vec<u8>,
-    region: Vec<u8>,
-    city: Vec<u8>,
-    address: Vec<u8>,
-    latitude: Option<Vec<u8>>,
-    longitude: Option<Vec<u8>>,
-    profile_image: Option<Vec<u8>>,
+    pub name: Vec<u8>,
+    pub email: Vec<u8>,
+    pub country: Vec<u8>,
+    pub region: Vec<u8>,
+    pub city: Vec<u8>,
+    pub address: Vec<u8>,
+    pub latitude: Option<Vec<u8>>,
+    pub longitude: Option<Vec<u8>>,
+    pub profile_image: Option<Vec<u8>>,
 }
 
 // Doctor Struct
@@ -33,9 +33,9 @@ pub struct Doctor<AccountId, Hash>
 where
     Hash: PartialEq + Eq,
 {
-    account_id: AccountId,
-    certifications: Vec<Hash>,
-    info: DoctorInfo,
+    pub account_id: AccountId,
+    pub certifications: Vec<Hash>,
+    pub info: DoctorInfo,
 }
 
 impl<AccountId, Hash> Doctor<AccountId, Hash>

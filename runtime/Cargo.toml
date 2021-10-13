@@ -94,6 +94,7 @@ hospitals = { path = '../pallets/hospitals', default-features = false }
 hospital-certifications = { path = '../pallets/hospital-certifications', default-features = false }
 doctors = { path = '../pallets/doctors', default-features = false }
 doctor-certifications = { path = '../pallets/doctor-certifications', default-features = false }
+doctor-certifications-benchmarking = { path = '../pallets/doctor-certifications/benchmarking', default-features = false, optional = true }
 
 [features]
 default = ['std']
@@ -119,6 +120,8 @@ runtime-benchmarks = [
 	'labs/runtime-benchmarks',
 
 	'certifications-benchmarking',
+
+	'doctor-certifications-benchmarking',
 ]
 std = [
     'codec/std',
