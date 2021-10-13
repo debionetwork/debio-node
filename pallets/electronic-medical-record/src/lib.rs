@@ -3,6 +3,13 @@
 use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 pub use pallet::*;
+
+#[cfg(test)]
+mod mock;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+
 use traits_electronic_medical_record::{
     ElectronicMedicalRecordInfo as ElectronicMedicalRecordInfoT, ElectronicMedicalRecordInfoOwner,
     ElectronicMedicalRecordInfosProvider,
@@ -209,7 +216,9 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn add_electronic_medical_record(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+        pub fn add_electronic_medical_record(
+            origin: OriginFor<T>
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record(&who)
