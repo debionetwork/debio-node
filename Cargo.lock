@@ -1420,6 +1420,7 @@ dependencies = [
  "certifications",
  "certifications-benchmarking",
  "doctor-certifications",
+ "doctor-certifications-benchmarking",
  "doctors",
  "electronic-medical-record",
  "frame-benchmarking",
@@ -1560,8 +1561,28 @@ dependencies = [
 name = "doctor-certifications"
 version = "0.1.0"
 dependencies = [
+ "doctors",
  "frame-support",
  "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-doctor-certifications",
+]
+
+[[package]]
+name = "doctor-certifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "doctor-certifications",
+ "doctors",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
  "parity-scale-codec",
  "serde",
  "sp-core",
