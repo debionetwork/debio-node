@@ -1017,6 +1017,8 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, certifications, Certifications);
 			add_benchmark!(params, batches, labs, Labs);
 
+			add_benchmark!(params, batches, rewards, Rewards);
+
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)
 		}
