@@ -990,10 +990,12 @@ impl_runtime_apis! {
 			use frame_system_benchmarking::Pallet as SystemBench;
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl certifications_benchmarking::Config for Runtime {}
 			impl doctor_certifications_benchmarking::Config for Runtime {}
+			impl hospital_certifications_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1024,6 +1026,8 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, certifications, CertificationsBench::<Runtime>);
 			
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
+			
+			add_benchmark!(params, batches, hospital_certifications, HospitalCertificationsBench::<Runtime>);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)

@@ -1433,6 +1433,7 @@ dependencies = [
  "genetic-testing",
  "hex-literal",
  "hospital-certifications",
+ "hospital-certifications-benchmarking",
  "hospitals",
  "labs",
  "log",
@@ -2559,6 +2560,26 @@ version = "0.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
+ "hospitals",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-hospital-certifications",
+]
+
+[[package]]
+name = "hospital-certifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hospital-certifications",
+ "hospitals",
+ "pallet-balances",
  "parity-scale-codec",
  "serde",
  "sp-core",
