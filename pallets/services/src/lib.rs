@@ -17,14 +17,14 @@ use sp_std::prelude::*;
 /// Information that is mutable by user
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct ServiceInfo<Balance> {
-    name: Vec<u8>,
-    prices_by_currency: Vec<PriceByCurrency<Balance>>,
-    expected_duration: ExpectedDuration,
-    category: Vec<u8>,
-    description: Vec<u8>, // TODO: limit the length
-    test_result_sample: Vec<u8>,
-    long_description: Option<Vec<u8>>,
-    image: Option<Vec<u8>>,
+    pub name: Vec<u8>,
+    pub prices_by_currency: Vec<PriceByCurrency<Balance>>,
+    pub expected_duration: ExpectedDuration,
+    pub category: Vec<u8>,
+    pub description: Vec<u8>, // TODO: limit the length
+    pub test_result_sample: Vec<u8>,
+    pub long_description: Option<Vec<u8>>,
+    pub image: Option<Vec<u8>>,
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]

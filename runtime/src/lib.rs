@@ -987,7 +987,10 @@ impl_runtime_apis! {
 			use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
 
 			use frame_system_benchmarking::Pallet as SystemBench;
+			use services_benchmarking::Pallet as ServicesBench;
+
 			impl frame_system_benchmarking::Config for Runtime {}
+			impl services_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1016,6 +1019,8 @@ impl_runtime_apis! {
 			
 			add_benchmark!(params, batches, certifications, Certifications);
 			add_benchmark!(params, batches, labs, Labs);
+
+			add_benchmark!(params, batches, services, ServicesBench::<Runtime>);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)

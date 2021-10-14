@@ -84,6 +84,7 @@ pallet-octopus-lpos-reward-curve = { git = 'https://github.com/blocksphereid/oct
 labs = { path = '../pallets/labs', default-features = false }
 rewards = { path = '../pallets/rewards', default-features = false }
 services = { path = '../pallets/services', default-features = false }
+services-benchmarking = { path = '../pallets/services/benchmarking', default-features = false, optional = true }
 orders = { path = '../pallets/orders', default-features = false }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
 user-profile = { path = '../pallets/user-profile', default-features = false }
@@ -117,6 +118,8 @@ runtime-benchmarks = [
 	
 	'labs/runtime-benchmarks',
 	'certifications/runtime-benchmarks',
+
+	'services-benchmarking',
 ]
 std = [
     'codec/std',
