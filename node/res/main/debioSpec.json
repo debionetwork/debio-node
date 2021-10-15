@@ -1,7 +1,7 @@
 {
-  "name": "Debio Dev Net",
-  "id": "debio_dev_net",
-  "chainType": "Development",
+  "name": "DeBio Mainnet",
+  "id": "debio_mainnet",
+  "chainType": "Live",
   "bootNodes": [],
   "telemetryEndpoints": null,
   "protocolId": null,
@@ -30,20 +30,7 @@
         }
       },
       "balances": {
-        "balances": [
-          [
-            "5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6",
-            33333333000000000000000000
-          ],
-          [
-            "5HbNav6B8wUj8F9jRCVEcL6a576iHP8HJhfSfZM7fEHnRs2X",
-            33333333000000000000000000
-          ],
-          [
-            "5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx",
-            33333333000000000000000000
-          ]
-        ]
+        "balances": []
       },
       "octopusAppchain": {
         "appchainId": "",
@@ -59,28 +46,10 @@
         "historyDepth": 84,
         "forceEra": "NotForcing",
         "canceledPayout": 0,
-        "stakers": [
-          [
-            "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-            100000000000000000000,
-            "Validator"
-          ]
-        ]
+        "stakers": []
       },
       "session": {
-        "keys": [
-          [
-            "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-            "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-            {
-              "babe": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-              "grandpa": "5FA9nQDVg267DEd8m1ZypXLBnvN7SFxYwV7ndqSYGiN9TTpu",
-              "im_online": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-              "beefy": "KW39r9CJjAVzmkf9zQ4YDb2hqfAVGdRqn53eRqyruqpxAP5YL",
-              "octopus": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
-            }
-          ]
-        ]
+        "keys": []
       },
       "grandpa": {
         "authorities": []
