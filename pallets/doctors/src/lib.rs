@@ -5,6 +5,12 @@
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
 
+#[cfg(test)]
+mod mock;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+
 pub mod interface;
 pub use crate::interface::DoctorInterface;
 use frame_support::pallet_prelude::*;
