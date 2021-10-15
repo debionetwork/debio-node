@@ -1009,6 +1009,8 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, labs, Labs);
 			add_benchmark!(params, batches, certifications, Certifications);
       
+			add_benchmark!(params, batches, electronic_medical_record, ElectronicMedicalRecord);
+      
 			add_benchmark!(params, batches, hospitals, Hospitals);
 			
 			add_benchmark!(params, batches, doctors, Doctors);

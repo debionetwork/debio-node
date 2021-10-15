@@ -118,6 +118,8 @@ runtime-benchmarks = [
 	'labs/runtime-benchmarks',
 	'certifications/runtime-benchmarks',
 
+	'electronic-medical-record/runtime-benchmarks',
+  
 	'hospitals/runtime-benchmarks',
   
 	'doctors/runtime-benchmarks',
