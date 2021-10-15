@@ -12,11 +12,10 @@ use debio_runtime::BeefyConfig;
 use debio_runtime::{
 	opaque::SessionKeys, Balance, ImOnlineConfig, SessionConfig,
 };
-use debio_runtime::{OctopusAppchainConfig, OctopusLposConfig};
+use debio_runtime::{OctopusSupportConfig, OctopusLposConfig};
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_octopus_appchain::AuthorityId as OctopusId;
-use pallet_octopus_lpos::StakerStatus;
+use pallet_octopus_support::AuthorityId as OctopusId;
 use sp_consensus_babe::AuthorityId as BabeId;
 
 use hex_literal::hex;
@@ -85,61 +84,10 @@ pub fn development_config() -> Result<ChainSpec, String> {
 
 	Ok(ChainSpec::from_genesis(
 		// Name
-		"Debio Dev Net",
+		"DeBio Development Testnet",
 		// ID
-		"debio_dev_net",
+		"debio_development_testnet",
 		ChainType::Development,
-		move || testnet_genesis(
-			wasm_binary,
-			// Initial PoA authorities
-			vec![
-				authority_keys_from_seed("Alice"),
-			],
-			vec![],
-			// Sudo account
-			// 5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
-			hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
-			// Orders Pallet admin key
-			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
-			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
-			// Rewarders Pallet admin key
-			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
-			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
-			// Pre-funded accounts
-			vec![
-				// Sudo         5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
-				hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
-				// Faucet       5HbNav6B8wUj8F9jRCVEcL6a576iHP8HJhfSfZM7fEHnRs2X
-				hex!["f490e69c55aa14d06bb5d62d12b81db20f3c125d6ea5d1cfddfcf98767272e6b"].into(),
-				// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
-				hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
-			],
-			true,
-		),
-		// Bootnodes
-		vec![],
-		// Telemetry
-		None,
-		// Protocol ID
-		None,
-		// Properties
-		Some(properties),
-		// Extensions
-		None,
-	))
-}
-
-pub fn local_testnet_config() -> Result<ChainSpec, String> {
-    let wasm_binary =
-        WASM_BINARY.ok_or_else(|| "Development wasm binary not available".to_string())?;
-    let properties = get_properties("DBIO", 18, 42);
-
-	Ok(ChainSpec::from_genesis(
-		// Name
-		"Debio Local Testnet",
-		// ID
-		"debio_local_testnet",
-		ChainType::Local,
 		move || testnet_genesis(
 			wasm_binary,
 			// Initial PoA authorities
@@ -147,7 +95,6 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 				authority_keys_from_seed("Alice"),
 				authority_keys_from_seed("Bob"),
 			],
-			vec![],
 			// Sudo account
 			// 5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
 			hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
@@ -181,38 +128,116 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 	))
 }
 
-/// Configure initial storage state for FRAME modules.
+pub fn local_testnet_config() -> Result<ChainSpec, String> {
+    let wasm_binary =
+        WASM_BINARY.ok_or_else(|| "Local Testnet wasm binary not available".to_string())?;
+    let properties = get_properties("DBIO", 18, 42);
+
+	Ok(ChainSpec::from_genesis(
+		// Name
+		"DeBio Local Testnet",
+		// ID
+		"debio_local_testnet",
+		ChainType::Local,
+		move || testnet_genesis(
+			wasm_binary,
+			// Initial PoA authorities
+			vec![
+				authority_keys_from_seed("Alice"),
+				authority_keys_from_seed("Bob"),
+			],
+			// Sudo account
+			// 5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
+			hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
+			// Orders Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			// Rewarders Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			// Pre-funded accounts
+			vec![
+				// Sudo     5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
+				hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
+				// Faucet   5HbNav6B8wUj8F9jRCVEcL6a576iHP8HJhfSfZM7fEHnRs2X
+				hex!["f490e69c55aa14d06bb5d62d12b81db20f3c125d6ea5d1cfddfcf98767272e6b"].into(),
+				// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+				hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			],
+			true,
+		),
+		// Bootnodes
+		vec![],
+		// Telemetry
+		None,
+		// Protocol ID
+		None,
+		// Properties
+		Some(properties),
+		// Extensions
+		None,
+	))
+}
+
+pub fn genesis_config() -> Result<ChainSpec, String> {
+    let wasm_binary =
+        WASM_BINARY.ok_or_else(|| "DeBio wasm binary not available".to_string())?;
+    let properties = get_properties("DBIO", 18, 42);
+
+	Ok(ChainSpec::from_genesis(
+		// Name
+		"DeBio Mainnet",
+		// ID
+		"debio_mainnet",
+		ChainType::Live,
+		move || genesis(
+			wasm_binary,
+			// Initial PoA authorities
+			vec![],
+			vec![],
+			// Sudo account
+			// 5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
+			hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
+			// Orders Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			// Rewarders Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			true,
+		),
+		// Bootnodes
+		vec![],
+		// Telemetry
+		None,
+		// Protocol ID
+		None,
+		// Properties
+		Some(properties),
+		// Extensions
+		None,
+	))
+}
+
+/// Configure initial storage state for FRAME modules for testnet.
 fn testnet_genesis(
 	wasm_binary: &[u8],
 	initial_authorities: Vec<(AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId)>,
-	initial_nominators: Vec<AccountId>,
 	root_key: AccountId,
 	orders_escrow_key: AccountId,
     rewarder_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 	_enable_println: bool,
 ) -> GenesisConfig {
-	// stakers: all validators and nominators.
-	let mut rng = rand::thread_rng();
-	let stakers = initial_authorities
-		.iter()
-		.map(|x| (x.0.clone(), STASH, StakerStatus::Validator))
-		.chain(initial_nominators.iter().map(|x| {
-			use rand::{seq::SliceRandom, Rng};
-			let limit = (16 as usize).min(initial_authorities.len());
-			let count = rng.gen::<usize>() % limit;
-			let nominations = initial_authorities
-				.as_slice()
-				.choose_multiple(&mut rng, count)
-				.into_iter()
-				.map(|choice| choice.0.clone())
-				.collect::<Vec<_>>();
-			(x.clone(), STASH, StakerStatus::Nominator(nominations))
-		}))
-		.collect::<Vec<_>>();
-
 	const ENDOWMENT: Balance = 33_333_333 * DBIO;
 	const STASH: Balance = 100 * DBIO;
+
+	initial_authorities.iter().map(|x| &x.0).for_each(|x| {
+		if !endowed_accounts.contains(&x) {
+			endowed_accounts.push(x.clone())
+		}
+	});
+	let validators = initial_authorities.iter().map(|x| (x.0.clone(), STASH)).collect::<Vec<_>>();
 
 	GenesisConfig {
 		system: SystemConfig {
@@ -241,10 +266,7 @@ fn testnet_genesis(
 				})
 				.collect::<Vec<_>>(),
 		},
-		octopus_lpos: OctopusLposConfig {
-			stakers,
-			..Default::default()
-		},
+		octopus_lpos: OctopusLposConfig { era_payout: 1024, ..Default::default() },
 		sudo: SudoConfig { key: root_key },
 		babe: BabeConfig {
 			authorities: vec![],
@@ -253,10 +275,81 @@ fn testnet_genesis(
 		im_online: ImOnlineConfig { keys: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		beefy: BeefyConfig { authorities: vec![] },
-		octopus_appchain: OctopusAppchainConfig {
+		octopus_appchain: OctopusSupportConfig {
 			appchain_id: "".to_string(),
-			relay_contract: "oct-relay.testnet".to_string(),
+			anchor_contract: "octopus-anchor.testnet".to_string(),
 			asset_id_by_name: vec![("usdc.testnet".to_string(), 0)],
+			validators,
+		},
+		orders: OrdersConfig {
+			escrow_key: orders_escrow_key,
+		},
+        rewards: RewardsConfig {
+            rewarder_key: rewarder_key,
+        },
+	}
+}
+
+/// Configure initial storage state for FRAME modules.
+fn genesis(
+	wasm_binary: &[u8],
+	initial_authorities: Vec<(AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId)>,
+	initial_nominators: Vec<AccountId>,
+	root_key: AccountId,
+	orders_escrow_key: AccountId,
+    rewarder_key: AccountId,
+	_enable_println: bool,
+) -> GenesisConfig {
+	const STASH: Balance = 100 * DBIO;
+
+	initial_authorities.iter().map(|x| &x.0).for_each(|x| {
+		if !endowed_accounts.contains(&x) {
+			endowed_accounts.push(x.clone())
+		}
+	});
+	let validators = initial_authorities.iter().map(|x| (x.0.clone(), STASH)).collect::<Vec<_>>();
+
+	GenesisConfig {
+		system: SystemConfig {
+			// Add Wasm runtime to storage.
+			code: wasm_binary.to_vec(),
+			changes_trie_config: Default::default(),
+		},
+		balances: BalancesConfig {
+			balances: vec![],
+		},
+		session: SessionConfig {
+			keys: initial_authorities
+				.iter()
+				.map(|x| {
+					(
+						x.0.clone(),
+						x.0.clone(),
+						session_keys(
+							x.1.clone(),
+							x.2.clone(),
+							x.3.clone(),
+							x.4.clone(),
+							x.5.clone(),
+						),
+					)
+				})
+				.collect::<Vec<_>>(),
+		},
+		octopus_lpos: OctopusLposConfig { era_payout: 1024, ..Default::default() },
+		sudo: SudoConfig { key: root_key },
+		babe: BabeConfig {
+			authorities: vec![],
+			epoch_config: Some(debio_runtime::BABE_GENESIS_EPOCH_CONFIG),
+		},
+		im_online: ImOnlineConfig { keys: vec![] },
+		grandpa: GrandpaConfig { authorities: vec![] },
+		beefy: BeefyConfig { authorities: vec![] },
+		octopus_appchain: OctopusSupportConfig {
+			appchain_id: "".to_string(),
+			anchor_contract: "octopus-anchor.testnet".to_string(),
+			asset_id_by_name: vec![("usdc.testnet".to_string(), 0)],
+			validators,
 		},
 		orders: OrdersConfig {
 			escrow_key: orders_escrow_key,

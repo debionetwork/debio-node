@@ -24,6 +24,7 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false, optional = true }
 traits-electronic-medical-record = { path = '../../traits/electronic-medical-record', default-features = false }
 
 [dev-dependencies]
@@ -42,4 +43,7 @@ std = [
     'sp-io/std',
     'pallet-timestamp/std',
     'traits-electronic-medical-record/std',
+]
+runtime-benchmarks = [
+	'frame-benchmarking'
 ]
