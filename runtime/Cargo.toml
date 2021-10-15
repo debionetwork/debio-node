@@ -120,6 +120,8 @@ runtime-benchmarks = [
 
 	'hospitals/runtime-benchmarks',
   
+	'doctors/runtime-benchmarks',
+  
 	'user-profile/runtime-benchmarks',
 ]
 std = [
