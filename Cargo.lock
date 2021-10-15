@@ -2624,6 +2624,7 @@ dependencies = [
 name = "hospitals"
 version = "0.1.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
  "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
  "parity-scale-codec",
