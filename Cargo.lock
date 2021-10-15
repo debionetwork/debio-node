@@ -810,9 +810,29 @@ dependencies = [
 name = "certifications"
 version = "0.1.0"
 dependencies = [
+ "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "labs",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-certifications",
+]
+
+[[package]]
+name = "certifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
  "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "labs",
+ "pallet-balances",
+ "frame-benchmarking",
  "parity-scale-codec",
  "serde",
  "sp-core 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
@@ -1399,7 +1419,9 @@ version = "3.0.0"
 dependencies = [
  "beefy-primitives",
  "certifications",
+ "certifications-benchmarking",
  "doctor-certifications",
+ "doctor-certifications-benchmarking",
  "doctors",
  "electronic-medical-record",
  "frame-benchmarking",
@@ -1412,6 +1434,7 @@ dependencies = [
  "genetic-testing",
  "hex-literal",
  "hospital-certifications",
+ "hospital-certifications-benchmarking",
  "hospitals",
  "labs",
  "log",
@@ -1540,8 +1563,28 @@ dependencies = [
 name = "doctor-certifications"
 version = "0.1.0"
 dependencies = [
+ "doctors",
  "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
  "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-doctor-certifications",
+]
+
+[[package]]
+name = "doctor-certifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "doctor-certifications",
+ "doctors",
+ "frame-benchmarking",
+ "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "pallet-balances",
  "parity-scale-codec",
  "serde",
  "sp-core 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
@@ -2613,6 +2656,26 @@ version = "0.1.0"
 dependencies = [
  "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
  "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "hospitals",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-hospital-certifications",
+]
+
+[[package]]
+name = "hospital-certifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "frame-system 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",
+ "hospital-certifications",
+ "hospitals",
+ "pallet-balances",
  "parity-scale-codec",
  "serde",
  "sp-core 3.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.8)",

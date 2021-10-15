@@ -25,16 +25,16 @@ pub struct LabInfo<Hash>
 where
     Hash: PartialEq + Eq,
 {
-    box_public_key: Hash,
-    name: Vec<u8>,
-    email: Vec<u8>,
-    country: Vec<u8>,
-    region: Vec<u8>,
-    city: Vec<u8>,
-    address: Vec<u8>,
-    latitude: Option<Vec<u8>>,
-    longitude: Option<Vec<u8>>,
-    profile_image: Option<Vec<u8>>,
+    pub box_public_key: Hash,
+    pub name: Vec<u8>,
+    pub email: Vec<u8>,
+    pub country: Vec<u8>,
+    pub region: Vec<u8>,
+    pub city: Vec<u8>,
+    pub address: Vec<u8>,
+    pub latitude: Option<Vec<u8>>,
+    pub longitude: Option<Vec<u8>>,
+    pub profile_image: Option<Vec<u8>>,
 }
 
 // Lab Struct
@@ -44,10 +44,10 @@ pub struct Lab<AccountId, Hash>
 where
     Hash: PartialEq + Eq,
 {
-    account_id: AccountId,
-    services: Vec<Hash>,
-    certifications: Vec<Hash>,
-    info: LabInfo<Hash>,
+    pub account_id: AccountId,
+    pub services: Vec<Hash>,
+    pub certifications: Vec<Hash>,
+    pub info: LabInfo<Hash>,
 }
 
 impl<AccountId, Hash> Lab<AccountId, Hash>

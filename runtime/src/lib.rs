@@ -978,8 +978,16 @@ impl_runtime_apis! {
 		) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
 			use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
 
+			// Separated benchmarks to prevent cyclic dependencies
 			use frame_system_benchmarking::Pallet as SystemBench;
+			use certifications_benchmarking::Pallet as CertificationsBench;
+			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
+
 			impl frame_system_benchmarking::Config for Runtime {}
+			impl certifications_benchmarking::Config for Runtime {}
+			impl doctor_certifications_benchmarking::Config for Runtime {}
+			impl hospital_certifications_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1012,8 +1020,10 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, electronic_medical_record, ElectronicMedicalRecord);
       
 			add_benchmark!(params, batches, hospitals, Hospitals);
+			add_benchmark!(params, batches, hospital_certifications, HospitalCertificationsBench::<Runtime>);
 			
 			add_benchmark!(params, batches, doctors, Doctors);
+			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
       
 			add_benchmark!(params, batches, user_profile, UserProfile);
 
