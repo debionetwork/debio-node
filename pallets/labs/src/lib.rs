@@ -7,8 +7,9 @@ pub use pallet::*;
 
 #[cfg(test)]
 mod mock;
-#[cfg(test)]
-mod tests;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 pub mod interface;
 pub use crate::interface::LabInterface;
@@ -160,7 +161,7 @@ pub mod pallet {
     use crate::*;
     use codec::EncodeLike;
     use frame_support::traits::Currency;
-    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+    use frame_support::dispatch::DispatchResultWithPostInfo;
     use frame_system::pallet_prelude::*;
     pub use sp_std::prelude::*;
     pub use traits_certifications::{CertificationOwner, CertificationsProvider};

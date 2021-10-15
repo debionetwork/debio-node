@@ -1,4 +1,4 @@
-use crate as labs;
+use crate as certifications;
 use frame_support::parameter_types;
 use frame_system as system;
 use sp_core::H256;
@@ -22,7 +22,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Labs: labs::{Pallet, Call, Storage, Event<T>},
+		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -57,13 +57,9 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
-impl labs::Config for Runtime {
+impl certifications::Config for Runtime {
     type Event = Event;
-    type Currency = ();
-    type Services = ();
-    type Certifications = ();
-    type EthereumAddress = ();
-    type UserProfile = ();
+	type CertificationOwner = ();
 }
 
 pub struct ExternalityBuilder;

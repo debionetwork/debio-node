@@ -1,7 +1,7 @@
-use crate as labs;
+use crate as user_profile;
 use frame_support::parameter_types;
 use frame_system as system;
-use sp_core::H256;
+use sp_core::{H256, Encode, Decode, RuntimeDebug};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
@@ -15,6 +15,10 @@ type Block = frame_system::mocking::MockBlock<Test>;
 pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 
+/// Ethereum Address type
+#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug)]
+pub struct EthereumAddress([u8; 20]);
+
 frame_support::construct_runtime!(
 	pub enum Test where
 		Block = Block,
@@ -22,7 +26,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Labs: labs::{Pallet, Call, Storage, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -57,13 +61,9 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
-impl labs::Config for Runtime {
+impl user_profile::Config for Runtime {
     type Event = Event;
-    type Currency = ();
-    type Services = ();
-    type Certifications = ();
-    type EthereumAddress = ();
-    type UserProfile = ();
+    type EthereumAddress = EthereumAddress;
 }
 
 pub struct ExternalityBuilder;
