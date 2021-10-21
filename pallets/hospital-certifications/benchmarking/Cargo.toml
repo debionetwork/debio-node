@@ -1,5 +1,5 @@
 [package]
-name = "certifications"
+name = "hospital-certifications-benchmarking"
 version = "0.1.0"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
@@ -21,28 +21,39 @@ version = '2.0.0'
 [dependencies]
 frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+
+pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.8', default-features = false }
+
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
-frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false, optional = true }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 
-labs = { path = '../labs', default-features = false }
-
-traits-certifications = { path = '../../traits/certifications', default-features = false }
+hospitals = { path = '../../hospitals', default-features = false }
+hospital-certifications = { path = '../../hospital-certifications', default-features = false }
+traits-hospital-certifications = { path = '../../../traits/hospital-certifications', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
-sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
-sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 
 [features]
 default = ['std']
 std = [
     'codec/std',
+    
+    'sp-io/std',
+    'sp-core/std',
+    'sp-runtime/std',
+	
+    'frame-benchmarking/std',
     'frame-support/std',
     'frame-system/std',
-    'sp-io/std',
-    'traits-certifications/std',
-    'labs/std',
+    
+	'pallet-balances/std',
+
+    'hospitals/std',
+    'hospital-certifications/std',
+
+    'traits-hospital-certifications/std',
 ]
-runtime-benchmarks = []
-try-runtime = ["frame-support/try-runtime"]

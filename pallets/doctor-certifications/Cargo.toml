@@ -23,6 +23,9 @@ frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 
 frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+
+doctors = { path = '../doctors', default-features = false }
+
 traits-doctor-certifications = { path = '../../traits/doctor-certifications', default-features = false }
 
 [dev-dependencies]
@@ -34,9 +37,11 @@ sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'po
 default = ['std']
 std = [
     'codec/std',
-    'sp-std/std',
-    'sp-io/std',
     'frame-support/std',
     'frame-system/std',
+    'sp-io/std',
     'traits-doctor-certifications/std',
+    'doctors/std',
 ]
+runtime-benchmarks = []
+try-runtime = ["frame-support/try-runtime"]

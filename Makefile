@@ -15,6 +15,10 @@ run:
 	cargo run --release -- --dev --tmp
 	#cargo run -- --dev --tmp
 
+.PHONY: build-benchmark
+build-benchmark:
+	cargo build --release --features runtime-benchmarks
+
 .PHONY: build
 build:
-	 cargo build --release
+	cargo build --release
