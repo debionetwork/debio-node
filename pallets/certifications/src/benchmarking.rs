@@ -3,9 +3,8 @@ use super::*;
 #[allow(unused)]
 use crate::Pallet as Certifications;
 use crate::CertificationInfo;
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
+use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
-use sp_std::vec::Vec;
 
 benchmarks! {
 	create_certification {

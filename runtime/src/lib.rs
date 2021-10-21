@@ -980,11 +980,13 @@ impl_runtime_apis! {
 
 			// Separated benchmarks to prevent cyclic dependencies
 			use frame_system_benchmarking::Pallet as SystemBench;
+			use services_benchmarking::Pallet as ServicesBench;
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
+			impl services_benchmarking::Config for Runtime {}
 			impl certifications_benchmarking::Config for Runtime {}
 			impl doctor_certifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
@@ -1013,9 +1015,10 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, pallet_grandpa, Grandpa);
 			add_benchmark!(params, batches, pallet_im_online, ImOnline);
 			add_benchmark!(params, batches, pallet_mmr, Mmr);
-		
+      
 			add_benchmark!(params, batches, labs, Labs);
-			add_benchmark!(params, batches, certifications, Certifications);
+			add_benchmark!(params, batches, services, ServicesBench::<Runtime>);
+			add_benchmark!(params, batches, certifications, CertificationsBench::<Runtime>);
       
 			add_benchmark!(params, batches, electronic_medical_record, ElectronicMedicalRecord);
       
