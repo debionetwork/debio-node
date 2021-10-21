@@ -26,7 +26,6 @@ pub trait Config:
 {}
 
 use doctor_certifications::Call;
-use frame_support::sp_runtime::traits::Hash;
 
 benchmarks! {
 	create_certification {
