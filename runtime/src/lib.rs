@@ -980,7 +980,7 @@ impl_runtime_apis! {
 
 			// Separated benchmarks to prevent cyclic dependencies
 			use frame_system_benchmarking::Pallet as SystemBench;
-			use services_benchmarking::Pallet as ServicesBench;
+			use services_benchmarking::Pallet as ServicesBench;	
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
