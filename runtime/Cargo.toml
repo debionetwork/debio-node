@@ -78,21 +78,25 @@ pallet-beefy = { git = 'https://github.com/paritytech/grandpa-bridge-gadget', br
 ## Octopus Pallet Dependencies
 pallet-octopus-appchain = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
 pallet-octopus-lpos = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
-pallet-octopus-lpos-reward-curve = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
+pallet-octopus-upward-messages = { git = 'https://github.com/blocksphereid/octopus-pallets.git', branch = 'polkadot-v0.9.8', default-features = false }
 
 # Local dependencies
 labs = { path = '../pallets/labs', default-features = false }
 rewards = { path = '../pallets/rewards', default-features = false }
 services = { path = '../pallets/services', default-features = false }
+services-benchmarking = { path = '../pallets/services/benchmarking', default-features = false, optional = true }
 orders = { path = '../pallets/orders', default-features = false }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
 user-profile = { path = '../pallets/user-profile', default-features = false }
 electronic-medical-record = { path = '../pallets/electronic-medical-record', default-features = false }
 certifications = { path = '../pallets/certifications', default-features = false }
+certifications-benchmarking = { path = '../pallets/certifications/benchmarking', default-features = false, optional = true }
 hospitals = { path = '../pallets/hospitals', default-features = false }
 hospital-certifications = { path = '../pallets/hospital-certifications', default-features = false }
+hospital-certifications-benchmarking = { path = '../pallets/hospital-certifications/benchmarking', default-features = false, optional = true }
 doctors = { path = '../pallets/doctors', default-features = false }
 doctor-certifications = { path = '../pallets/doctor-certifications', default-features = false }
+doctor-certifications-benchmarking = { path = '../pallets/doctor-certifications/benchmarking', default-features = false, optional = true }
 
 [features]
 default = ['std']
@@ -116,7 +120,18 @@ runtime-benchmarks = [
 	'pallet-mmr/runtime-benchmarks',
 	
 	'labs/runtime-benchmarks',
-	'certifications/runtime-benchmarks',
+	'services-benchmarking',
+	'certifications-benchmarking',
+
+	'electronic-medical-record/runtime-benchmarks',
+  
+	'hospitals/runtime-benchmarks',
+	'hospital-certifications-benchmarking',
+  
+	'doctors/runtime-benchmarks',
+	'doctor-certifications-benchmarking',
+  
+	'user-profile/runtime-benchmarks',
 	
 	'rewards/runtime-benchmarks',
 ]
@@ -162,6 +177,7 @@ std = [
     
 	'pallet-octopus-appchain/std',
 	'pallet-octopus-lpos/std',
+    'pallet-octopus-upward-messages/std',
 
     'labs/std',
     'rewards/std',
