@@ -132,6 +132,8 @@ runtime-benchmarks = [
 	'doctor-certifications-benchmarking',
   
 	'user-profile/runtime-benchmarks',
+	
+	'rewards/runtime-benchmarks',
 ]
 std = [
     'codec/std',

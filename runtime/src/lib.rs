@@ -1029,6 +1029,8 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
       
 			add_benchmark!(params, batches, user_profile, UserProfile);
+			
+			add_benchmark!(params, batches, rewards, Rewards);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)

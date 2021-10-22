@@ -7,7 +7,15 @@ use frame_support::pallet_prelude::*;
 use frame_support::{
     traits::{Currency, Imbalance, OnUnbalanced, ReservableCurrency},
 };
+
 pub use pallet::*;
+
+#[cfg(test)]
+mod mock;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+
 use sp_std::prelude::*;
 
 #[frame_support::pallet]
