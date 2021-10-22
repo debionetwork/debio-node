@@ -12,10 +12,10 @@ use debio_runtime::BeefyConfig;
 use debio_runtime::{
 	opaque::SessionKeys, Balance, ImOnlineConfig, SessionConfig,
 };
-use debio_runtime::{OctopusSupportConfig, OctopusLposConfig};
+use debio_runtime::{OctopusAppchainConfig, OctopusLposConfig};
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_octopus_support::AuthorityId as OctopusId;
+use pallet_octopus_appchain::AuthorityId as OctopusId;
 use sp_consensus_babe::AuthorityId as BabeId;
 
 use hex_literal::hex;
@@ -105,14 +105,14 @@ pub fn development_config() -> Result<ChainSpec, String> {
 			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
 			// Pre-funded accounts
-			vec![
+			Some(vec![
 				// Sudo     5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
 				hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
 				// Faucet   5HbNav6B8wUj8F9jRCVEcL6a576iHP8HJhfSfZM7fEHnRs2X
 				hex!["f490e69c55aa14d06bb5d62d12b81db20f3c125d6ea5d1cfddfcf98767272e6b"].into(),
 				// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 				hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
-			],
+			]),
 			true,
 		),
 		// Bootnodes
@@ -156,14 +156,14 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
 			// Pre-funded accounts
-			vec![
+			Some(vec![
 				// Sudo     5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
 				hex!["7a3e54fe532670c009cc839a7a9b8578239d08ed5234909d991da8ba39f45346"].into(),
 				// Faucet   5HbNav6B8wUj8F9jRCVEcL6a576iHP8HJhfSfZM7fEHnRs2X
 				hex!["f490e69c55aa14d06bb5d62d12b81db20f3c125d6ea5d1cfddfcf98767272e6b"].into(),
 				// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 				hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
-			],
+			]),
 			true,
 		),
 		// Bootnodes
@@ -193,7 +193,6 @@ pub fn genesis_config() -> Result<ChainSpec, String> {
 		move || genesis(
 			wasm_binary,
 			// Initial PoA authorities
-			vec![],
 			vec![],
 			// Sudo account
 			// 5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
@@ -226,11 +225,22 @@ fn testnet_genesis(
 	root_key: AccountId,
 	orders_escrow_key: AccountId,
     rewarder_key: AccountId,
-	endowed_accounts: Vec<AccountId>,
+	endowed_accounts: Option<Vec<AccountId>>,
 	_enable_println: bool,
 ) -> GenesisConfig {
 	const ENDOWMENT: Balance = 33_333_333 * DBIO;
 	const STASH: Balance = 100 * DBIO;
+
+	let mut endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(|| {
+		vec![
+			get_account_id_from_seed::<sr25519::Public>("Alice"),
+			get_account_id_from_seed::<sr25519::Public>("Bob"),
+			get_account_id_from_seed::<sr25519::Public>("Charlie"),
+			get_account_id_from_seed::<sr25519::Public>("Dave"),
+			get_account_id_from_seed::<sr25519::Public>("Eve"),
+			get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+		]
+	});
 
 	initial_authorities.iter().map(|x| &x.0).for_each(|x| {
 		if !endowed_accounts.contains(&x) {
@@ -275,7 +285,7 @@ fn testnet_genesis(
 		im_online: ImOnlineConfig { keys: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		beefy: BeefyConfig { authorities: vec![] },
-		octopus_appchain: OctopusSupportConfig {
+		octopus_appchain: OctopusAppchainConfig {
 			appchain_id: "".to_string(),
 			anchor_contract: "octopus-anchor.testnet".to_string(),
 			asset_id_by_name: vec![("usdc.testnet".to_string(), 0)],
@@ -294,7 +304,6 @@ fn testnet_genesis(
 fn genesis(
 	wasm_binary: &[u8],
 	initial_authorities: Vec<(AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId)>,
-	initial_nominators: Vec<AccountId>,
 	root_key: AccountId,
 	orders_escrow_key: AccountId,
     rewarder_key: AccountId,
@@ -302,11 +311,6 @@ fn genesis(
 ) -> GenesisConfig {
 	const STASH: Balance = 100 * DBIO;
 
-	initial_authorities.iter().map(|x| &x.0).for_each(|x| {
-		if !endowed_accounts.contains(&x) {
-			endowed_accounts.push(x.clone())
-		}
-	});
 	let validators = initial_authorities.iter().map(|x| (x.0.clone(), STASH)).collect::<Vec<_>>();
 
 	GenesisConfig {
@@ -345,7 +349,7 @@ fn genesis(
 		im_online: ImOnlineConfig { keys: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		beefy: BeefyConfig { authorities: vec![] },
-		octopus_appchain: OctopusSupportConfig {
+		octopus_appchain: OctopusAppchainConfig {
 			appchain_id: "".to_string(),
 			anchor_contract: "octopus-anchor.testnet".to_string(),
 			asset_id_by_name: vec![("usdc.testnet".to_string(), 0)],
