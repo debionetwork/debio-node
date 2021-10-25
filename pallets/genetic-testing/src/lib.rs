@@ -56,7 +56,7 @@ pub mod pallet {
         /// Dna Test Result Submitted
         DnaTestResultSubmitted(DnaTestResultOf<T>),
         /// Submit Data Staking Details
-        DataStaked(AccountIdOf<T>, HashOf<T>),
+        DataStaked(AccountIdOf<T>, HashOf<T>, HashOf<T>),
     }
 
     #[pallet::error]
@@ -112,6 +112,10 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn staked_data_by_account_id)]
     pub type StakedDataByAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, HashOf<T>>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn staked_data_by_order_id)]
+    pub type StakedDataByOrderId<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, HashOf<T>>;
     // --------------------------
 
     #[pallet::call]
@@ -214,17 +218,18 @@ pub mod pallet {
         }
 
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-        pub fn submit_data_staking_details(
+        pub fn submit_data_bounty_details(
             origin: OriginFor<T>,
             data_hash: T::Hash,
+            order_id: T::Hash,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as GeneticTestingInterface<T>>::submit_data_staking_details(
-                &who, &data_hash,
+            match <Self as GeneticTestingInterface<T>>::submit_data_bounty_details(
+                &who, &data_hash, &order_id
             ) {
                 Ok(_data_staker) => {
-                    Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash.clone()));
+                    Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash.clone(), order_id.clone()));
                     Ok(().into())
                 }
                 Err(error) => Err(error)?,
@@ -241,6 +246,7 @@ pub enum DnaSampleStatus {
     QualityControlled,
     WetWork,
     ResultReady,
+    SubmittedAsDataBounty
 }
 impl Default for DnaSampleStatus {
     fn default() -> Self {
@@ -549,16 +555,18 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         Self::dna_test_results_by_lab_id(lab_id)
     }
 
-    // Submit data staking details
-    fn submit_data_staking_details(
+    // Submit data bounty details
+    fn submit_data_bounty_details(
         data_staker: &T::AccountId,
         data_hash: &T::Hash,
+        order_id: &T::Hash,
     ) -> Result<Self::StakedData, Self::Error> {
         let data_staker = data_staker.clone();
 
         let data_hash = data_hash.clone();
 
         StakedDataByAccountId::<T>::insert(data_staker, data_hash);
+        StakedDataByOrderId::<T>::insert(order_id, data_hash);
 
         Ok(data_hash)
     }

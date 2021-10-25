@@ -47,9 +47,10 @@ pub trait GeneticTestingInterface<T: frame_system::Config> {
     fn dna_test_results_by_owner_id(owner_id: &T::AccountId) -> Option<Vec<Vec<u8>>>;
     // Return dna sample tracking ids
     fn dna_test_results_by_lab_id(lab_id: &T::AccountId) -> Option<Vec<Vec<u8>>>;
-    // Submit data staking details
-    fn submit_data_staking_details(
+    // Submit data bounty details
+    fn submit_data_bounty_details(
         data_staker: &T::AccountId,
         data_hash: &T::Hash,
+        order_id: &T::Hash,
     ) -> Result<Self::StakedData, Self::Error>;
 }
