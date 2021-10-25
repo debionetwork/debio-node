@@ -181,6 +181,8 @@
     "id": "H256",
     "owner_id": "AccountId",
     "title": "Text",
+    "category": "Text",
+    "document_title": "Text",
     "description": "Text",
     "record_link": "Text",
     "uploaded_at": "Moment"
