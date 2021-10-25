@@ -37,21 +37,21 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> electronic_medical_record::WeightInfo for WeightInfo<T> {
 	fn add_electronic_medical_record() -> Weight {
-		(17_261_000 as Weight)
+		(15_569_000 as Weight)
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
 	fn remove_electronic_medical_record() -> Weight {
-		(22_337_000 as Weight)
+		(21_093_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
-	fn add_electronic_medical_record_info() -> Weight {
-		(42_705_000 as Weight)
+	fn add_electronic_medical_record_file() -> Weight {
+		(41_256_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
-	fn remove_electronic_medical_record_info() -> Weight {
-		(47_437_000 as Weight)
+	fn remove_electronic_medical_record_file() -> Weight {
+		(40_359_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
