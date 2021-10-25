@@ -3,12 +3,8 @@ use super::*;
 #[allow(unused)]
 use crate::Pallet as Doctors;
 use crate::DoctorInfo;
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
+use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
-use sp_std::vec::Vec;
-
-use frame_support::sp_runtime::traits::Hash;
-use frame_support::sp_std::convert::TryInto;
 
 benchmarks! {
 	register_doctor {
