@@ -1,7 +1,7 @@
 use debio_runtime::{
 	currency::DBIO, AccountId, BalancesConfig, GenesisConfig, Signature, GrandpaConfig,
 	SudoConfig, SystemConfig, BabeConfig, 
-	WASM_BINARY, OrdersConfig, RewardsConfig,
+	WASM_BINARY, OrdersConfig, RewardsConfig, LabsConfig
 };
 use sc_service::{ChainType, Properties};
 use sp_core::{sr25519, Pair, Public};
@@ -104,6 +104,9 @@ pub fn development_config() -> Result<ChainSpec, String> {
 			// Rewarders Pallet admin key
 			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			// Verifier Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
 			// Pre-funded accounts
 			Some(vec![
 				// Sudo     5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
@@ -155,6 +158,9 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 			// Rewarders Pallet admin key
 			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			// Verifier Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
 			// Pre-funded accounts
 			Some(vec![
 				// Sudo     5EpzDTRWDoVTnE31ybM2tse77CkZyG2eKC58Z3gbALHphHN6
@@ -203,6 +209,9 @@ pub fn genesis_config() -> Result<ChainSpec, String> {
 			// Rewarders Pallet admin key
 			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
 			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
+			// Verifier Pallet admin key
+			// API Server   5GRjDZsTCatwWfNosGF8QRAPR1zYPJ7jJppt224tjE7x8cSx
+			hex!["c0f9aaa3ce6b6c57eadc5fef443aaf8152fa8e49a8fc684ecc47c3304fdf3c0c"].into(),
 			true,
 		),
 		// Bootnodes
@@ -225,6 +234,7 @@ fn testnet_genesis(
 	root_key: AccountId,
 	orders_escrow_key: AccountId,
     rewarder_key: AccountId,
+    verifier_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
 	_enable_println: bool,
 ) -> GenesisConfig {
@@ -297,6 +307,9 @@ fn testnet_genesis(
         rewards: RewardsConfig {
             rewarder_key: rewarder_key,
         },
+        labs: LabsConfig {
+            lab_verifier_key: verifier_key,
+        },
 	}
 }
 
@@ -307,6 +320,7 @@ fn genesis(
 	root_key: AccountId,
 	orders_escrow_key: AccountId,
     rewarder_key: AccountId,
+    verifier_key: AccountId,
 	_enable_println: bool,
 ) -> GenesisConfig {
 	const STASH: Balance = 100 * DBIO;
@@ -360,6 +374,9 @@ fn genesis(
 		},
         rewards: RewardsConfig {
             rewarder_key: rewarder_key,
+        },
+        labs: LabsConfig {
+            lab_verifier_key: verifier_key,
         },
 	}
 }

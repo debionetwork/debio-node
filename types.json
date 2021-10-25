@@ -9,6 +9,14 @@
   "Moment": "u64",
   "CountryRegionCode": "Text",
   "CityCode": "Text",
+  "LabVerificationStatus": {
+    "_enum": [
+      "Unverified",
+      "Verified",
+      "Rejected",
+      "Revoked"
+    ]
+  },
   "LabInfo": {
     "box_public_key": "H256",
     "name": "Text",
@@ -25,6 +33,7 @@
     "account_id": "AccountId",
     "services": "Vec<H256>",
     "certifications": "Vec<H256>",
+    "verification_status": "LabVerificationStatus",
     "info": "LabInfo"
   },
   "LabOf": "Lab",
