@@ -6,6 +6,7 @@ pub trait LabInterface<T: frame_system::Config> {
     type Error;
     type LabInfo;
     type Lab;
+    type LabVerificationStatus;
 
     /// Get lab by associated account_id
     fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab>;
@@ -24,6 +25,11 @@ pub trait LabInterface<T: frame_system::Config> {
     fn update_lab(
         account_id: &T::AccountId,
         lab_info: &Self::LabInfo,
+    ) -> Result<Self::Lab, Self::Error>;
+    /// Update a Lab verification status
+    fn update_lab_verification_status(
+        account_id: &T::AccountId,
+        status: &Self::LabVerificationStatus,
     ) -> Result<Self::Lab, Self::Error>;
     /// Delete Lab
     fn delete_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error>;
