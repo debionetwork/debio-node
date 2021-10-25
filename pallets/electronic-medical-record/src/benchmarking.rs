@@ -34,6 +34,8 @@ benchmarks! {
 	}: add_electronic_medical_record_info(
         RawOrigin::Signed(caller),
         "DeBio EMR".as_bytes().to_vec(),
+        "DeBio EMR Category".as_bytes().to_vec(),
+        "DeBio EMR Document Title".as_bytes().to_vec(),
         "DeBio EMR Description".as_bytes().to_vec(),
         "DeBio EMR Link".as_bytes().to_vec()
     )
@@ -47,6 +49,8 @@ benchmarks! {
 		let _add_electronic_medical_record_info = ElectronicMedicalRecord::<T>::add_electronic_medical_record_info(
             caller_origin.clone(),
             "DeBio EMR".as_bytes().to_vec(),
+            "DeBio EMR Category".as_bytes().to_vec(),
+            "DeBio EMR Document Title".as_bytes().to_vec(),
             "DeBio EMR Description".as_bytes().to_vec(),
             "DeBio EMR Link".as_bytes().to_vec(),
         );

@@ -26,6 +26,8 @@ pub trait ElectronicMedicalRecordInterface<T: frame_system::Config> {
     fn add_electronic_medical_record_info(
         owner_id: &T::AccountId,
         title: &mut Vec<u8>,
+        category: &mut Vec<u8>,
+        document_title: &mut Vec<u8>,
         description: &mut Vec<u8>,
         record_link: &mut Vec<u8>,
     ) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error>;

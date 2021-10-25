@@ -64,6 +64,8 @@ where
     pub id: Hash,
     pub owner_id: AccountId,
     pub title: Vec<u8>,
+    pub category: Vec<u8>,
+    pub document_title: Vec<u8>,
     pub description: Vec<u8>, // TODO: limit the length
     pub record_link: Vec<u8>,
     pub uploaded_at: Moment,
@@ -77,6 +79,8 @@ where
         id: Hash,
         owner_id: AccountId,
         title: Vec<u8>,
+        category: Vec<u8>,
+        document_title: Vec<u8>,
         description: Vec<u8>,
         record_link: Vec<u8>,
         uploaded_at: Moment,
@@ -85,6 +89,8 @@ where
             id,
             owner_id,
             title,
+            category,
+            document_title,
             description,
             record_link,
             uploaded_at,
@@ -257,6 +263,8 @@ pub mod pallet {
         pub fn add_electronic_medical_record_info(
             origin: OriginFor<T>,
             mut title: Vec<u8>,
+            mut category: Vec<u8>,
+            mut document_title: Vec<u8>,
             mut description: Vec<u8>,
             mut record_link: Vec<u8>,
         ) -> DispatchResultWithPostInfo {
@@ -265,6 +273,8 @@ pub mod pallet {
             match <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record_info(
                 &who,
                 &mut title,
+                &mut category,
+                &mut document_title,
                 &mut description,
                 &mut record_link,
             ) {
@@ -356,6 +366,8 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     fn add_electronic_medical_record_info(
         owner_id: &T::AccountId,
         title: &mut Vec<u8>,
+        category: &mut Vec<u8>,
+        document_title: &mut Vec<u8>,
         description: &mut Vec<u8>,
         record_link: &mut Vec<u8>,
     ) -> Result<Self::ElectronicMedicalRecordInfo, Self::Error> {
@@ -370,6 +382,8 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             electronic_medical_record_info_id.clone(),
             owner_id.clone(),
             title.clone(),
+            category.clone(),
+            document_title.clone(),
             description.clone(),
             record_link.clone(),
             now,
