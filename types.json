@@ -1,5 +1,5 @@
 {
-  "AccountInfo": "AccountInfoWithDualRefCount",
+  "AccountInfoWithProviders": "AccountInfoWithDualRefCount",
   "Address": "MultiAddress",
   "LookupSource": "MultiAddress",
   "AccountIdOf": "AccountId",
