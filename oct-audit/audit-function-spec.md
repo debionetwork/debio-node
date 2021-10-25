@@ -32,8 +32,8 @@
 - Create, Update, Delete EMR : Pallet EMR 
     - addElectronicMedicalRecord() 
     - removeElectronicMedicalRecord() 
-    - addElectronicMedicalRecordInfo(title, description) 
-    - removeElectronicMedicalRecord(electronic_medical_record_info_id) 
+    - addElectronicMedicalRecordFile(title, description) 
+    - removeElectronicMedicalRecord(electronic_medical_record_file_id) 
 
 ### As Escrow
 - Set Order to Paid : Pallet Order
