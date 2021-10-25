@@ -28,6 +28,7 @@ pub trait LabInterface<T: frame_system::Config> {
     ) -> Result<Self::Lab, Self::Error>;
     /// Update a Lab verification status
     fn update_lab_verification_status(
+        lab_verifier_key: &T::AccountId,
         account_id: &T::AccountId,
         status: &Self::LabVerificationStatus,
     ) -> Result<Self::Lab, Self::Error>;

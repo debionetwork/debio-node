@@ -253,7 +253,34 @@ pub mod pallet {
     #[pallet::getter(fn lab_count_by_country_region_city)]
     pub type LabCountByCountryRegionCity<T> =
         StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, u64>;
-    // -----------------------------------
+    
+    #[pallet::storage]
+    #[pallet::getter(fn admin_key)]
+    pub type LabVerifierKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+    // -----------------------------------------
+
+    // ----- Genesis Configs ------------------
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub lab_verifier_key: T::AccountId,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self {
+                lab_verifier_key: Default::default(),
+            }
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            LabVerifierKey::<T>::put(&self.lab_verifier_key);
+        }
+    }
+    // ----------------------------------------
 
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId", LabOf<T> = "Lab")]
@@ -279,6 +306,8 @@ pub mod pallet {
         LabDoesNotExist,
         /// Lab is not the owner of the service
         LabIsNotOwner,
+        /// Unauthorized access to extrinsic
+        Unauthorized,
     }
 
     #[pallet::call]
@@ -318,11 +347,12 @@ pub mod pallet {
         #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn update_lab_verification_status(
             origin: OriginFor<T>,
+            account_id: T::AccountId,
             lab_verification_status: LabVerificationStatus,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as LabInterface<T>>::update_lab_verification_status(&who, &lab_verification_status) {
+            match <Self as LabInterface<T>>::update_lab_verification_status(&who, &account_id, &lab_verification_status) {
                 Ok(lab) => {
                     Self::deposit_event(Event::LabUpdated(lab, who.clone()));
                     Ok(().into())
@@ -406,9 +436,14 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
     }
 
     fn update_lab_verification_status(
+        lab_verifier_key: &T::AccountId,
         account_id: &T::AccountId,
         status: &Self::LabVerificationStatus,
     ) -> Result<Self::Lab, Self::Error> {
+        if lab_verifier_key.clone() != LabVerifierKey::<T>::get() {
+            return Err(Error::<T>::Unauthorized);
+        }
+
         let lab = Labs::<T>::get(account_id);
         if lab == None {
             return Err(Error::<T>::LabDoesNotExist)?;

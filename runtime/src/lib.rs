@@ -704,7 +704,7 @@ construct_runtime!(
 		Mmr: pallet_mmr::{Pallet, Storage},
 		Beefy: pallet_beefy::{Pallet, Config<T>},
 		// Include the custom logic from the template pallet in the runtime.
-		Labs: labs::{Pallet, Call, Storage, Event<T>},
+		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
         Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
