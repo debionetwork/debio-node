@@ -127,7 +127,7 @@ pub mod pallet {
     pub type Orders<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, OrderOf<T>>;
 
     #[pallet::storage]
-    #[pallet::getter(fn orders_by_costumer_id)]
+    #[pallet::getter(fn orders_by_customer_id)]
     pub type OrdersByCustomer<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
 
     #[pallet::storage]
