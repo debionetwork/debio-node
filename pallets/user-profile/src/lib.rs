@@ -105,6 +105,24 @@ pub mod pallet {
             Ok(().into())
         }
     }
+
+    #[pallet::weight(0)]
+    pub fn sudo_set_eth_address(
+        origin: OriginFor<T>,
+        account_id: AccountIdOf<T>,
+        eth_address: EthereumAddressOf<T>,
+    ) -> DispatchResultWithPostInfo {
+        ensure_root(origin)?;
+
+        <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
+            &account_id,
+            &eth_address,
+        );
+
+        Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id));
+
+        Ok(().into())
+    }
 }
 
 impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
