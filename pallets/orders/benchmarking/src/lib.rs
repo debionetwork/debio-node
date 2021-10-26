@@ -30,7 +30,7 @@ use orders::{
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
 use frame_system::RawOrigin;
 
-pub struct Pallet<T: Config>(Services<T>);
+pub struct Pallet<T: Config>(Orders<T>);
 
 pub trait Config:
 	ServicesConfig
