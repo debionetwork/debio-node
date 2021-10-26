@@ -82,6 +82,7 @@ benchmarks! {
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), old_lab);
 	}: update_lab_verification_status(
         RawOrigin::Signed(caller), 
+        caller.clone(),
         LabVerificationStatus::default()
     )
     
