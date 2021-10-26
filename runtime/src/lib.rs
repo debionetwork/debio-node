@@ -985,6 +985,7 @@ impl_runtime_apis! {
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use orders_benchmarking::Pallet as OrdersBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl services_benchmarking::Config for Runtime {}
@@ -992,6 +993,7 @@ impl_runtime_apis! {
 			impl doctor_certifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
 			impl genetic_testing_benchmarking::Config for Runtime {}
+			impl orders_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1021,7 +1023,8 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, labs, Labs);
 			add_benchmark!(params, batches, services, ServicesBench::<Runtime>);
 			add_benchmark!(params, batches, certifications, CertificationsBench::<Runtime>);
-      
+			
+			add_benchmark!(params, batches, orders, OrdersBench::<Runtime>);
 			add_benchmark!(params, batches, electronic_medical_record, ElectronicMedicalRecord);
       
 			add_benchmark!(params, batches, hospitals, Hospitals);

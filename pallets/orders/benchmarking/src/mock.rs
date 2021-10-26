@@ -1,10 +1,12 @@
-use crate as rewards;
+#![cfg(test)]
+
+use super::*;
+
 use frame_support::parameter_types;
-use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{AccountIdLookup, BlakeTwo256, IdentifyAccount, Verify},
+	traits::{AccountIdLookup, IdentifyAccount, Verify},
     MultiSignature
 };
 
@@ -21,7 +23,11 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Rewards: rewards::{Pallet, Call, Storage, Event<T>},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		Labs: labs::{Pallet, Call, Storage, Event<T>},
+		Services: services::{Pallet, Call, Storage, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
 );
 
@@ -39,9 +45,9 @@ impl frame_system::Config for Test {
 	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Index = u64;
 	type BlockNumber = u64;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
-	type Header = Header;
+	type Hash = sp_core::H256;
+	type Hashing = ::sp_runtime::traits::BlakeTwo256;
+	type Header = sp_runtime::testing::Header;
 	type Event = Event;
 	type Origin = Origin;
 	type BlockHashCount = BlockHashCount;
@@ -56,11 +62,48 @@ impl frame_system::Config for Test {
 	type OnSetCode = ();
 }
 
-impl rewards::Config for Runtime {
+type Balance = u64;
+
+parameter_types! {
+	pub const ExistentialDeposit: Balance = 10;
+}
+
+impl pallet_balances::Config for Test {
+	type MaxLocks = ();
+	type MaxReserves = ();
+	type ReserveIdentifier = [u8; 8];
+	type Balance = Balance;
+	type Event = Event;
+	type DustRemoval = ();
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
+	type WeightInfo = ();
+}
+
+impl labs::Config for Test {
     type Event = Event;
     type Currency = Balances;
-    type Reward = ();
-    type Slash = ();
+    type Services = ();
+    type Certifications = Certifications;
+    type EthereumAddress = ();
+    type UserProfile = ();
+}
+
+impl services::Config for Test {
+    type Currency = Balances;
+    type ServiceOwner = Labs;
+}
+
+impl user_profile::Config for Runtime {
+    type Event = Event;
+    type EthereumAddress = EthereumAddress;
+}
+
+impl orders::Config for Test {
+    type Event = Event;
+    type Services = Services;
+    type GeneticTesting = ();
+    type Currency = Balances;
 }
 
 pub struct ExternalityBuilder;
@@ -76,8 +119,8 @@ impl ExternalityBuilder {
 			balances: pallet_balances::Config {
 				balances: vec![],
 			},
-			rewards: RewardsConfig {
-				rewarder_key: hex_literal::hex!["d86cd72037edd033b21e5a54fb8ecb687effe90e0af2d12c1c23acba2021ac56"].into(),
+			orders: OrdersConfig {
+				escrow_key: T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default(),
 			},
 		};
 		

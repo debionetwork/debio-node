@@ -1439,6 +1439,7 @@ dependencies = [
  "labs",
  "log",
  "orders",
+ "orders-benchmarking",
  "pallet-assets",
  "pallet-authorship",
  "pallet-babe",
@@ -4305,6 +4306,30 @@ dependencies = [
  "traits-order",
  "traits-services",
  "traits-user-profile",
+]
+
+[[package]]
+name = "orders-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex-literal",
+ "labs",
+ "orders",
+ "pallet-balances",
+ "parity-scale-codec",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-order",
+ "traits-services",
+ "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]

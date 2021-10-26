@@ -8,7 +8,7 @@ use frame_support::sp_runtime::traits::Saturating;
 
 benchmarks! {
 	reward_funds {
-		let caller: T::AccountId = whitelisted_caller();
+		let caller: T::AccountId = T::AccountId::decode(&mut "5GxUXqtJ54gnG4ByJ6wtnoV4pvYBDWdz8o554VBXsXsTe7vz".as_bytes()).unwrap_or_default();
 		let value = T::Currency::minimum_balance().saturating_mul(100u32.into());
         let _id = caller.clone();
 	}: reward_funds(
@@ -18,7 +18,7 @@ benchmarks! {
     )
 
 	slash_funds {
-		let caller: T::AccountId = whitelisted_caller();
+		let caller: T::AccountId = T::AccountId::decode(&mut "5GxUXqtJ54gnG4ByJ6wtnoV4pvYBDWdz8o554VBXsXsTe7vz".as_bytes()).unwrap_or_default();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let value = T::Currency::minimum_balance().saturating_mul(100u32.into());
