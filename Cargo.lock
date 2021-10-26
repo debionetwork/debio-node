@@ -1431,6 +1431,7 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "genetic-testing",
+ "genetic-testing-benchmarking",
  "hex-literal",
  "hospital-certifications",
  "hospital-certifications-benchmarking",
@@ -2316,6 +2317,31 @@ dependencies = [
  "sp-std",
  "traits-genetic-testing",
  "traits-order",
+]
+
+[[package]]
+name = "genetic-testing-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-testing",
+ "labs",
+ "orders",
+ "pallet-balances",
+ "parity-scale-codec",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-testing",
+ "traits-order",
+ "traits-services",
+ "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]

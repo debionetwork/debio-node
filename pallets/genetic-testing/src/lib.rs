@@ -336,9 +336,9 @@ impl<AccountId, Hash, Moment: Copy> DnaTestResult<AccountId, Hash, Moment> {
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
 pub struct DnaTestResultSubmission {
-    comments: Option<Vec<u8>>,
-    result_link: Option<Vec<u8>>,
-    report_link: Option<Vec<u8>>,
+    pub comments: Option<Vec<u8>>,
+    pub result_link: Option<Vec<u8>>,
+    pub report_link: Option<Vec<u8>>,
 }
 
 impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
