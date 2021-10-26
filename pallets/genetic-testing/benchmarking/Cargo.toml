@@ -1,0 +1,70 @@
+[package]
+name = "genetic-testing-benchmarking"
+version = "0.1.0"
+authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
+edition = "2018"
+description = ''
+homepage = ''
+license = 'Unlicense'
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+# alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
+[dependencies]
+frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+
+pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.8', default-features = false }
+
+sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', default-features = false }
+
+labs = { path = '../../labs', default-features = false }
+services = { path = '../../services', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
+orders = { path = '../../orders', default-features = false }
+genetic-testing = { path = '../../genetic-testing', default-features = false }
+
+traits-services = { path = '../../../traits/services', default-features = false }
+traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
+traits-order = { path = '../../../traits/order', default-features = false }
+traits-genetic-testing = { path = '../../../traits/genetic-testing', default-features = false }
+
+[dev-dependencies]
+serde = { default-features = false, version = "1.0.119" }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+    
+    'sp-io/std',
+    'sp-core/std',
+    'sp-runtime/std',
+	
+    'frame-benchmarking/std',
+    'frame-support/std',
+    'frame-system/std',
+    
+	'pallet-balances/std',
+
+    'labs/std',
+    'services/std',
+    'user-profile/std',
+    'genetic-testing/std',
+
+    'traits-services/std',
+    'traits-user-profile/std',
+    'traits-order/std',
+]

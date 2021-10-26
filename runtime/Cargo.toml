@@ -88,6 +88,7 @@ services-benchmarking = { path = '../pallets/services/benchmarking', default-fea
 orders = { path = '../pallets/orders', default-features = false }
 orders-benchmarking = { path = '../pallets/orders/benchmarking', default-features = false, optional = true }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
+genetic-testing-benchmarking = { path = '../pallets/genetic-testing/benchmarking', default-features = false, optional = true }
 user-profile = { path = '../pallets/user-profile', default-features = false }
 electronic-medical-record = { path = '../pallets/electronic-medical-record', default-features = false }
 certifications = { path = '../pallets/certifications', default-features = false }
@@ -133,6 +134,7 @@ runtime-benchmarks = [
 	'doctors/runtime-benchmarks',
 	'doctor-certifications-benchmarking',
   
+	'genetic-testing-benchmarking',
 	'user-profile/runtime-benchmarks',
 	
 	'rewards/runtime-benchmarks',
