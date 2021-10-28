@@ -5,11 +5,11 @@
 <div align="Center">
 <h1> DeBio Node</h1>
 <h2> Decentralized Sovereign Biomed </h2>
-The Anonymous-First Platform for Medical and Bioinformatics Data.  
+The Anonymous-First Platform for Medical and Bioinformatics Data.
 <br>
 Built on Substrate.
 
-<br>  
+<br>
 <br>
 
 [![Substrate version](https://img.shields.io/badge/Substrate-3.0.0-brightgreen?logo=Parity%20Substrate)](https://substrate.dev/)
@@ -18,7 +18,7 @@ Built on Substrate.
 
 ---
 
-DeBio is a decentralized anonymous-first platform for medical and bioinformatics data. It uses blockchain technology as the immutable transaction ledger to support its processes.  
+DeBio is a decentralized anonymous-first platform for medical and bioinformatics data. It uses blockchain technology as the immutable transaction ledger to support its processes.
 
 DeBio blockchain nodes are built using Substrate, Parity's blockchain framework that allows for quick development of blockchains customizable by its pallets system.
 
@@ -37,19 +37,31 @@ First, complete the [basic Rust setup instructions](./doc/rust-setup.md).
 This command will start the single-node development chain with persistent state:
 
 ```bash
-./target/release/debio-node --dev
+./target/debug/debio-node \
+--base-path .local \
+--dev \
+--alice \
+--enable-offchain-indexing true
 ```
 
 Purge the development chain's state:
 
 ```bash
-./target/release/debio-node purge-chain --dev
+./target/debug/debio-node \
+--base-path .local \
+--dev \
+--alice \
+purge-chain
 ```
 
 Start the development chain with detailed logging:
 
 ```bash
-RUST_LOG=debug RUST_BACKTRACE=1 ./target/release/debio-node -lruntime=debug --dev
+RUST_LOG=debug RUST_BACKTRACE=1 ./target/debug/debio-node \
+--base-path .local \
+--dev \
+--alice \
+-lruntime=debug
 ```
 
 ### Run in Docker
@@ -60,20 +72,5 @@ First, install [Docker](https://docs.docker.com/get-docker/) and
 Then run the following command to start a single node development chain.
 
 ```bash
-./scripts/docker_run.sh
-```
-
-This command will firstly compile your code, and then start a local development network. You can
-also replace the default command (`cargo build --release && ./target/release/debio-node --dev --ws-external`)
-by appending your own. A few useful ones are as follow.
-
-```bash
-# Run Substrate node without re-compiling
-./scripts/docker_run.sh ./target/release/debio-node --dev --ws-external
-
-# Purge the local dev chain
-./scripts/docker_run.sh ./target/release/debio-node purge-chain --dev
-
-# Check whether the code is compilable
-./scripts/docker_run.sh cargo check
+./.maintain/docker/start-docker-compose.sh
 ```
