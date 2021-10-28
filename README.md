@@ -40,8 +40,7 @@ This command will start the single-node development chain with persistent state:
 ./target/debug/debio-node \
 --base-path .local \
 --dev \
---alice \
---enable-offchain-indexing true
+--alice
 ```
 
 Purge the development chain's state:
