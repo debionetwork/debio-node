@@ -10,12 +10,12 @@ pub mod types {
 
     #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
     pub enum CurrencyType {
-        Dai,
-        Ethereum,
+        DAI,
+        ETH,
     }
     impl Default for CurrencyType {
         fn default() -> Self {
-            CurrencyType::Dai
+            CurrencyType::DAI
         }
     }
 

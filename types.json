@@ -43,8 +43,8 @@
   },
   "CurrencyType": {
     "_enum": [
-      "Dai",
-      "Ethereum"
+      "DAI",
+      "ETH"
     ]
   },
   "PriceByCurrency": {
