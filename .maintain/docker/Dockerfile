@@ -1,54 +1,44 @@
-FROM phusion/baseimage:0.11 as builder
+FROM paritytech/ci-linux:9575dfcd-20210729 AS chef
+RUN cargo install cargo-chef --version 0.1.31
+WORKDIR /app
 
-ENV DEBIAN_FRONTEND=noninteractive
+FROM chef AS planner
+COPY ./node /app/node
+COPY ./pallets /app/pallets
+COPY ./runtime /app/runtime
+COPY ./traits /app/traits
+COPY ./Cargo.lock /app/Cargo.lock
+COPY ./Cargo.toml /app/Cargo.toml
+RUN cargo chef prepare --recipe-path recipe.json
 
-WORKDIR /debio
+# Rebuild the source code only when needed
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY ./node /app/node
+COPY ./pallets /app/pallets
+COPY ./runtime /app/runtime
+COPY ./traits /app/traits
+COPY ./Cargo.lock /app/Cargo.lock
+COPY ./Cargo.toml /app/Cargo.toml
+RUN cargo build --release
 
-COPY ../.. /debio
-
-RUN apt-get update && \
-	apt-get dist-upgrade -y -o Dpkg::Options::="--force-confold" && \
-	apt-get install -y pkg-config libssl-dev \
-		git clang build-essential \
-    curl cmake protobuf-compiler
-
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-RUN	make init && \
-	make build
-
-# ===== SECOND STAGE ======
-
-FROM phusion/baseimage:0.11
-
-# show backtraces
-ENV RUST_BACKTRACE 1
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-# install tools and dependencies
-RUN apt-get update && \
-	apt-get upgrade -y && \
-	apt-get install -y \
-		libssl1.1 \
-		ca-certificates \
-		curl && \
-# apt cleanup
-	apt-get autoremove -y && \
-	apt-get clean && \
-	find /var/lib/apt/lists/ -type f -not -name lock -delete; \
-# add user
-	useradd -m -u 1000 -U -s /bin/sh -d /debio debio
-
-COPY --from=builder /debio/target/release/debio-node /usr/local/bin
-
+# Production image, copy all the files and run
+FROM debian:buster-20210816-slim AS runner
+LABEL network.debio.image.authors="debio.dev@blocksphere.id"
+# Create user and set ownership and permissions as required
+RUN useradd -m -u 1001 -U -s /bin/sh -d /home/debio debio && \
+  # manage folder data
+  mkdir -p /home/debio/.local/share && \
+  mkdir /data && \
+  chown -R debio:debio /data && \
+  ln -s /data /home/debio/.local/share/debio
+# Copy from builder stage
+COPY --from=builder /app/target/release/debio-node /usr/local/bin
+# Set to a non-root built-in user
 USER debio
-
-# verify binary file
-RUN /usr/local/bin/debio-node --version
-
+# Set environment variable
+ENV RUST_BACKTRACE=1
 EXPOSE 30333 9933 9944 9615
-
+VOLUME ["/data"]
 ENTRYPOINT ["/usr/local/bin/debio-node"]
