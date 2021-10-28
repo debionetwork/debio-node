@@ -6,7 +6,7 @@ edition = '2018'
 authors = ['kevin <kevin.janada@gmail.com>']
 description = ''
 homepage = ''
-license = 'Unlicense'
+license = 'AGPL-3.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']

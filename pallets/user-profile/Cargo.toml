@@ -3,6 +3,7 @@ name = "user-profile"
 version = "0.1.0"
 authors = ["Kevin <kevin.janada@gmail.com>"]
 edition = "2018"
+license = 'AGPL-3.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']

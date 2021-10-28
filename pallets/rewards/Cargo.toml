@@ -2,7 +2,7 @@
 name = 'rewards'
 version = '0.1.0'
 edition = '2018'
-license = 'Unlicense'
+license = 'AGPL-3.0'
 authors = ['Debio Dev Team <https://github/debionetwork>']
 description = 'rewards pallet'
 homepage = 'https://debio.network'

@@ -2,7 +2,7 @@
 authors = ['Debio Developer <https://github.com/debionetwork>']
 edition = '2018'
 homepage = 'https://substrate.dev'
-license = 'Unlicense'
+license = 'AGPL-3.0'
 name = 'debio-runtime'
 repository = 'https://github.com/debionetwork'
 version = '3.0.0'
@@ -120,23 +120,24 @@ runtime-benchmarks = [
 	'pallet-grandpa/runtime-benchmarks',
 	'pallet-im-online/runtime-benchmarks',
 	'pallet-mmr/runtime-benchmarks',
-	
+
 	'labs/runtime-benchmarks',
 	'services-benchmarking',
 	'certifications-benchmarking',
 
 	'orders-benchmarking',
 	'electronic-medical-record/runtime-benchmarks',
-  
+
 	'hospitals/runtime-benchmarks',
 	'hospital-certifications-benchmarking',
-  
+
 	'doctors/runtime-benchmarks',
 	'doctor-certifications-benchmarking',
-  
+
 	'genetic-testing-benchmarking',
+
 	'user-profile/runtime-benchmarks',
-	
+
 	'rewards/runtime-benchmarks',
 ]
 std = [
@@ -178,7 +179,7 @@ std = [
 	'pallet-beefy/std',
 	'pallet-authorship/std',
 	'pallet-mmr/std',
-    
+
 	'pallet-octopus-appchain/std',
 	'pallet-octopus-lpos/std',
     'pallet-octopus-upward-messages/std',

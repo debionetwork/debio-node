@@ -5,7 +5,7 @@ authors = ["kevin <kevin.janada@gmail.com>"]
 edition = "2018"
 description = ''
 homepage = ''
-license = 'Unlicense'
+license = 'AGPL-3.0'
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [package.metadata.docs.rs]
