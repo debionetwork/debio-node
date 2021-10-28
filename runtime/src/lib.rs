@@ -165,7 +165,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 /// `SLOT_DURATION` should have the same value.
 ///
 /// <https://research.web3.foundation/en/latest/polkadot/block-production/Babe.html#-6.-practical-results>
-pub const MILLISECS_PER_BLOCK: Moment = 3000;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
 pub const SECS_PER_BLOCK: Moment = MILLISECS_PER_BLOCK / 1000;
 
 // NOTE: Currently it is not possible to change the slot duration after the chain has started.
@@ -177,7 +177,7 @@ pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
 
 // NOTE: Currently it is not possible to change the epoch duration after the chain has started.
 //       Attempting to do so will brick block production.
-pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 10 * MINUTES;
+pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 4 * HOURS;
 pub const EPOCH_DURATION_IN_SLOTS: u64 = {
 	const SLOT_FILL_RATE: f64 = MILLISECS_PER_BLOCK as f64 / SLOT_DURATION as f64;
 
@@ -185,19 +185,16 @@ pub const EPOCH_DURATION_IN_SLOTS: u64 = {
 };
 
 // These time units are defined in number of blocks.
-pub const MINUTES: BlockNumber = 60 / (SECS_PER_BLOCK as BlockNumber);
+pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
 pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
-
-pub const MILLICENTS: Balance = 1_000_000_000;
-pub const CENTS: Balance = 1_000 * MILLICENTS; // assume this is worth about a cent.
-pub const DOLLARS: Balance = 100 * CENTS;
+pub const WEEKS: BlockNumber = DAYS * 7;
 
 /// The BABE epoch configuration at genesis.
 pub const BABE_GENESIS_EPOCH_CONFIG: sp_consensus_babe::BabeEpochConfiguration =
 	sp_consensus_babe::BabeEpochConfiguration {
 		c: PRIMARY_PROBABILITY,
-		allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryPlainSlots,
+		allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryVRFSlots,
 	};
 
 /// The version information used to identify this runtime when compiled natively.
@@ -206,9 +203,9 @@ pub fn native_version() -> NativeVersion {
 	NativeVersion { runtime_version: VERSION, can_author_with: Default::default() }
 }
 
-/// We assume that ~10% of the block weight is consumed by `on_initialize` handlers.
-/// This is used to limit the maximal weight of a single extrinsic.
-const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(10);
+/// We assume that an on-initialize consumes 1% of the weight on average, hence a single extrinsic
+/// will not be allowed to consume more than `AvailableBlockRatio - 1%`.
+const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(1);
 /// We allow `Normal` extrinsics to fill up the block up to 75%, the rest can be used
 /// by  Operational  extrinsics.
 const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
@@ -329,11 +326,11 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-	pub const ExistentialDeposit: Balance = 1 * DOLLARS;
 	// For weight estimation, we assume that the most locks on an individual account will be 50.
 	// This number may need to be adjusted in the future if this assumption no longer holds true.
 	pub const MaxLocks: u32 = 50;
 	pub const MaxReserves: u32 = 50;
+	pub const ExistentialDeposit: Balance = currency::DBIO;
 }
 
 impl pallet_balances::Config for Runtime {
@@ -351,7 +348,7 @@ impl pallet_balances::Config for Runtime {
 }
 
 parameter_types! {
-	pub const TransactionByteFee: Balance = 10 * MILLICENTS;
+	pub const TransactionByteFee: Balance = currency::BYTE_FEE;
 }
 
 impl pallet_transaction_payment::Config for Runtime {
@@ -394,7 +391,7 @@ impl pallet_babe::Config for Runtime {
 }
 
 parameter_types! {
-	pub const UncleGenerations: BlockNumber = 5;
+	pub const UncleGenerations: BlockNumber = 0;
 }
 
 impl pallet_authorship::Config for Runtime {
@@ -520,11 +517,11 @@ impl pallet_mmr::Config for Runtime {
 }
 
 parameter_types! {
-	pub const AssetDeposit: Balance = 100 * DOLLARS;
-	pub const ApprovalDeposit: Balance = 1 * DOLLARS;
+	pub const AssetDeposit: Balance = 100 * currency::DBIO;
+	pub const ApprovalDeposit: Balance = currency::DBIO;
 	pub const StringLimit: u32 = 50;
-	pub const MetadataDepositBase: Balance = 10 * DOLLARS;
-	pub const MetadataDepositPerByte: Balance = 1 * DOLLARS;
+	pub const MetadataDepositBase: Balance = 10 * currency::DBIO;
+	pub const MetadataDepositPerByte: Balance = currency::DBIO;
 }
 
 impl pallet_assets::Config for Runtime {
@@ -980,7 +977,7 @@ impl_runtime_apis! {
 
 			// Separated benchmarks to prevent cyclic dependencies
 			use frame_system_benchmarking::Pallet as SystemBench;
-			use services_benchmarking::Pallet as ServicesBench;	
+			use services_benchmarking::Pallet as ServicesBench;
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
@@ -1019,22 +1016,23 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, pallet_grandpa, Grandpa);
 			add_benchmark!(params, batches, pallet_im_online, ImOnline);
 			add_benchmark!(params, batches, pallet_mmr, Mmr);
-      
+
 			add_benchmark!(params, batches, labs, Labs);
 			add_benchmark!(params, batches, services, ServicesBench::<Runtime>);
 			add_benchmark!(params, batches, certifications, CertificationsBench::<Runtime>);
-			
+
 			add_benchmark!(params, batches, orders, OrdersBench::<Runtime>);
+
 			add_benchmark!(params, batches, electronic_medical_record, ElectronicMedicalRecord);
-      
+
 			add_benchmark!(params, batches, hospitals, Hospitals);
 			add_benchmark!(params, batches, hospital_certifications, HospitalCertificationsBench::<Runtime>);
-			
+
 			add_benchmark!(params, batches, doctors, Doctors);
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
-      
+
 			add_benchmark!(params, batches, user_profile, UserProfile);
-			
+
 			add_benchmark!(params, batches, rewards, Rewards);
 			add_benchmark!(params, batches, genetic_testing, GeneticTestingBench::<Runtime>);
 

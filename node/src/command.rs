@@ -26,7 +26,7 @@ use sc_service::PartialComponents;
 
 impl SubstrateCli for Cli {
     fn impl_name() -> String {
-        "Substrate Node".into()
+        "DeBio".into()
     }
 
     fn impl_version() -> String {
@@ -42,18 +42,20 @@ impl SubstrateCli for Cli {
     }
 
     fn support_url() -> String {
-        "support.anonymous.an".into()
+        "https://github.com/debionetwork/debio-node/issues/new".into()
     }
 
     fn copyright_start_year() -> i32 {
-        2017
+        2021
     }
 
 	fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
 		Ok(match id {
-			"debio-dev" | "dev" => Box::new(chain_spec::development_config()?),
-			"" | "debio-local" | "local" => Box::new(chain_spec::local_testnet_config()?),
-			"debio-genesis" => Box::new(chain_spec::genesis_config()?),
+			"dev" => Box::new(chain_spec::development_config()?),
+			"local" | "" => Box::new(chain_spec::local_config()?),
+			"dev-testnet" => Box::new(chain_spec::development_testnet_config()?),
+			"stg-testnet" => Box::new(chain_spec::staging_testnet_config()?),
+			"testnet" => Box::new(chain_spec::testnet_config()?),
 			path =>
 				Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
 		})
