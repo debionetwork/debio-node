@@ -64,6 +64,12 @@
     "image": "Option<Text>",
     "dna_collection_process": "Option<Text>"
   },
+  "ServiceFlow": {
+    "_enum": [
+      "RequestTest",
+      "StakingRequestService"
+    ]
+  },
   "DurationType": {
     "_enum": [
       "WorkingDays",
@@ -78,7 +84,8 @@
   "Service": {
     "id": "H256",
     "owner_id": "AccountId",
-    "info": "ServiceInfo"
+    "info": "ServiceInfo",
+    "service_flow": "ServiceFlow"
   },
   "ServiceOf": "Service",
   "ServiceInfoOf": "ServiceInfo",
@@ -119,6 +126,7 @@
     "dna_sample_tracking_id": "Text",
     "currency": "CurrencyType",
     "prices": "Vec<Price>",
+    "order_flow": "ServiceFlow",
     "additional_prices": "Vec<Price>",
     "status": "OrderStatus",
     "created_at": "u64",
