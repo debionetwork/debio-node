@@ -5,12 +5,14 @@ pub trait ServiceInterface<T: frame_system::Config> {
     type ServiceId;
     type Service;
     type ServiceInfo;
+    type ServiceFlow;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId;
 
     fn create_service(
         owner_id: &T::AccountId,
         service: &Self::ServiceInfo,
+        service_flow: &Self::ServiceFlow
     ) -> Result<Self::Service, Self::Error>;
     fn update_service(
         owner_id: &T::AccountId,

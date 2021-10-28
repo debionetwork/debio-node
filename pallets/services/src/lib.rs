@@ -5,7 +5,7 @@ use frame_support::pallet_prelude::*;
 use frame_support::traits::Currency;
 pub use pallet::*;
 use traits_services::{
-    types::{ExpectedDuration, PriceByCurrency},
+    types::{ExpectedDuration, PriceByCurrency, ServiceFlow},
     ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
 };
 
@@ -32,10 +32,21 @@ pub struct Service<AccountId, Hash, Balance> {
     pub id: Hash,
     pub owner_id: AccountId,
     pub info: ServiceInfo<Balance>,
+    pub service_flow: ServiceFlow
 }
 impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
-    pub fn new(id: Hash, owner_id: AccountId, info: ServiceInfo<Balance>) -> Self {
-        Self { id, owner_id, info }
+    pub fn new(
+        id: Hash, 
+        owner_id: AccountId, 
+        info: ServiceInfo<Balance>,
+        service_flow: ServiceFlow,
+    ) -> Self {
+        Self { 
+            id, 
+            owner_id, 
+            info,
+            service_flow
+        }
     }
 
     pub fn get_id(&self) -> &Hash {
@@ -44,6 +55,10 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
 
     pub fn get_owner_id(&self) -> &AccountId {
         &self.owner_id
+    }
+
+    pub fn get_service_flow(&self) -> &ServiceFlow {
+        &self.service_flow
     }
 
     pub fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>> {
@@ -61,6 +76,9 @@ where
     fn get_owner_id(&self) -> &AccountId {
         self.get_owner_id()
     }
+    fn get_service_flow(&self) -> &ServiceFlow {
+        &self.get_service_flow()
+    }
     fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>> {
         self.get_prices_by_currency()
     }
@@ -69,6 +87,7 @@ where
 #[frame_support::pallet]
 pub mod pallet {
     use crate::interface::ServiceInterface;
+    use traits_services::types::ServiceFlow;
     use crate::{Currency, Service, ServiceInfo, ServiceOwner};
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
@@ -98,7 +117,7 @@ pub mod pallet {
     pub type ServiceOf<T> = Service<AccountIdOf<T>, HashOf<T>, BalanceOf<T>>;
     pub type ServiceInfoOf<T> = ServiceInfo<BalanceOf<T>>;
     pub type ServiceIdOf<T> = HashOf<T>;
-
+    
     // ------- Storage -------------
     #[pallet::storage]
     #[pallet::getter(fn service_by_id)]
@@ -146,10 +165,11 @@ pub mod pallet {
         pub fn create_service(
             origin: OriginFor<T>,
             service_info: ServiceInfoOf<T>,
+            service_flow: ServiceFlow,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as ServiceInterface<T>>::create_service(&who, &service_info) {
+            match <Self as ServiceInterface<T>>::create_service(&who, &service_info, &service_flow) {
                 Ok(service) => {
                     Self::deposit_event(Event::ServiceCreated(service, who.clone()));
                     Ok(().into())
@@ -200,6 +220,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     type ServiceId = T::Hash;
     type Service = ServiceOf<T>;
     type ServiceInfo = ServiceInfoOf<T>;
+    type ServiceFlow = ServiceFlow;
 
     fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId {
         let mut account_id_bytes = owner_id.encode();
@@ -217,6 +238,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     fn create_service(
         owner_id: &T::AccountId,
         service_info: &Self::ServiceInfo,
+        service_flow: &Self::ServiceFlow,
     ) -> Result<Self::Service, Self::Error> {
         // Check if user can create_service
         let can_create_service = T::ServiceOwner::can_create_service(owner_id);
@@ -240,7 +262,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             }
         }
 
-        let service = Service::new(service_id.clone(), owner_id.clone(), service_info_mut);
+        let service = Service::new(service_id.clone(), owner_id.clone(), service_info_mut, service_flow.clone());
         // Store to Services storage
         Services::<T>::insert(&service_id, &service);
 

@@ -19,7 +19,7 @@ use labs::{
 use user_profile::Pallet as UserProfile;
 use user_profile::Config as UserProfileConfig;
 
-use traits_services::types::{PriceByCurrency, ExpectedDuration};
+use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
 
 #[allow(unused)]
 use orders::Pallet as Orders;
@@ -77,7 +77,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info, ServiceFlow::default());
 		
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -121,7 +121,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info, ServiceFlow::default());
 		
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -175,7 +175,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info, ServiceFlow::default());
 		
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -229,7 +229,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info, ServiceFlow::default());
 		
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -288,7 +288,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info, ServiceFlow::default());
 		
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();

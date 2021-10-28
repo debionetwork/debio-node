@@ -11,7 +11,7 @@ use sp_std::prelude::*;
 use traits_genetic_testing::{DnaSampleTracking, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_services::{
-    types::{CurrencyType, Price},
+    types::{CurrencyType, Price, ServiceFlow},
     ServiceInfo, ServicesProvider,
 };
 
@@ -42,6 +42,7 @@ pub struct Order<Hash, AccountId, Balance, Moment> {
     pub prices: Vec<Price<Balance>>,
     pub additional_prices: Vec<Price<Balance>>,
     pub status: OrderStatus,
+    pub order_flow: ServiceFlow,
     pub created_at: Moment,
     pub updated_at: Moment,
 }
@@ -54,6 +55,7 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
         seller_id: AccountId,
         dna_sample_tracking_id: Vec<u8>,
         currency: CurrencyType,
+        order_flow: ServiceFlow,
         prices: Vec<Price<Balance>>,
         additional_prices: Vec<Price<Balance>>,
         created_at: Moment,
@@ -70,6 +72,7 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
             prices,
             additional_prices,
             status: OrderStatus::default(),
+            order_flow,
             created_at,
             updated_at,
         }
@@ -354,6 +357,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             seller_id.clone(),
             dna_sample.get_tracking_id().clone(),
             currency.clone(),
+            service.get_service_flow().clone(),
             prices.clone(),
             additional_prices.clone(),
             now,
