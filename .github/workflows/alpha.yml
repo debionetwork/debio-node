@@ -26,9 +26,44 @@ jobs:
           echo $version
           echo "::set-output name=latest_tag::$version"
 
-  build-and-publish-docker-image:
+  build:
     runs-on: ubuntu-20.04
     needs: compute-build-info
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2021-06-29
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+          override: true
+          default: true
+      - name: Cache rust or cargo project
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Cargo build
+        run: cargo build --release
+      - name: Generate the chainspec file
+        run: ./target/release/debio build-spec --disable-default-bootnode --chain stg-testnet > chain-spec.json
+      - name: Generate sha256 hash
+        run: sha256sum chain-spec.json> SHA256SUMS
+
+  build-and-publish-docker-image:
+    runs-on: ubuntu-20.04
+    needs: [compute-build-info, build]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -61,12 +96,14 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+      - name: Copy binnary file
+        run: cp target/release/debio .
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          # file: .maintain/docker/Dockerfile
+          file: .maintain/docker/injected-binnary.Dockerfile
           tags: |
             ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
             ${{ github.repository }}:latest-alpha
