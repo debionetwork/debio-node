@@ -37,7 +37,7 @@ First, complete the [basic Rust setup instructions](./doc/rust-setup.md).
 This command will start the single-node development chain with persistent state:
 
 ```bash
-./target/debug/debio-node \
+./target/debug/debio \
 --base-path .local \
 --dev \
 --alice
@@ -46,7 +46,7 @@ This command will start the single-node development chain with persistent state:
 Purge the development chain's state:
 
 ```bash
-./target/debug/debio-node \
+./target/debug/debio \
 --base-path .local \
 --dev \
 --alice \
@@ -56,7 +56,7 @@ purge-chain
 Start the development chain with detailed logging:
 
 ```bash
-RUST_LOG=debug RUST_BACKTRACE=1 ./target/debug/debio-node \
+RUST_LOG=debug RUST_BACKTRACE=1 ./target/debug/debio \
 --base-path .local \
 --dev \
 --alice \

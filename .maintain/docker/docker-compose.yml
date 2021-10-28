@@ -3,7 +3,7 @@ version: '3'
 services:
   node:
     container_name: debio-node
-    image: hub.debio.network/debio-node
+    image: debionetwork/debio-node
     build:
       context: ../../
       dockerfile: .maintain2/docker/Dockerfile

@@ -16,7 +16,7 @@ cd $PROJECT_ROOT
 
 PALLET=$1
 
-./target/release/debio-node benchmark \
+./target/release/debio benchmark \
   --chain=dev \
   --execution=wasm \
   --wasm-execution=compiled \

@@ -34,11 +34,11 @@ RUN useradd -m -u 1001 -U -s /bin/sh -d /home/debio debio && \
   chown -R debio:debio /data && \
   ln -s /data /home/debio/.local/share/debio
 # Copy from builder stage
-COPY --from=builder /app/target/release/debio-node /usr/local/bin
+COPY --from=builder /app/target/release/debio /usr/local/bin
 # Set to a non-root built-in user
 USER debio
 # Set environment variable
 ENV RUST_BACKTRACE=1
 EXPOSE 30333 9933 9944 9615
 VOLUME ["/data"]
-ENTRYPOINT ["/usr/local/bin/debio-node"]
+ENTRYPOINT ["/usr/local/bin/debio"]

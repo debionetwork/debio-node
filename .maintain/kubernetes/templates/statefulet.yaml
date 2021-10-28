@@ -90,7 +90,7 @@ spec:
           command: [ "sh" ]
           args:
             - -c
-            - exec /usr/local/bin/debio-node
+            - exec /usr/local/bin/debio
               --base-path=/data
               {{- if $.Values.config.chain }}
               --chain={{ $.Values.config.chain }}
