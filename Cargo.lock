@@ -1352,7 +1352,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "debio-node"
+name = "debio"
 version = "0.1.0"
 dependencies = [
  "beefy-gadget",
