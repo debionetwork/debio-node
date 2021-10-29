@@ -46,6 +46,8 @@ where
     pub region: Vec<u8>,
     pub city: Vec<u8>,
     pub address: Vec<u8>,
+    pub phone_number: Vec<u8>,
+    pub website: Vec<u8>,
     pub latitude: Option<Vec<u8>>,
     pub longitude: Option<Vec<u8>>,
     pub profile_image: Option<Vec<u8>>,

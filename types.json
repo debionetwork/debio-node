@@ -25,6 +25,8 @@
     "region": "Text",
     "city": "Text",
     "address": "Text",
+    "phone_number": "Text",
+    "website": "Text",
     "latitude": "Option<Text>",
     "longitude": "Option<Text>",
     "profile_image": "Option<Text>"
