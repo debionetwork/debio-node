@@ -294,6 +294,9 @@ pub mod pallet {
         /// Lab information updated
         /// parameters. [Lab, who]
         LabUpdated(LabOf<T>, AccountIdOf<T>),
+        /// Lab verification updated
+        /// parameters. [Lab, who]
+        LabUpdateVerificationStatus(LabOf<T>, AccountIdOf<T>),
         /// Lab deregistered
         /// parameters. [Lab, who]
         LabDeregistered(LabOf<T>, AccountIdOf<T>),
@@ -356,7 +359,7 @@ pub mod pallet {
 
             match <Self as LabInterface<T>>::update_lab_verification_status(&who, &account_id, &lab_verification_status) {
                 Ok(lab) => {
-                    Self::deposit_event(Event::LabUpdated(lab, who.clone()));
+                    Self::deposit_event(Event::LabUpdateVerificationStatus(lab, who.clone()));
                     Ok(().into())
                 }
                 Err(error) => Err(error)?,

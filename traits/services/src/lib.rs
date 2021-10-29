@@ -9,6 +9,17 @@ pub mod types {
     use sp_std::prelude::*;
 
     #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+    pub enum ServiceFlow {
+        RequestTest,
+        StakingRequestService,
+    }
+    impl Default for ServiceFlow {
+        fn default() -> Self {
+            ServiceFlow::RequestTest
+        }
+    }
+
+    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
     pub enum CurrencyType {
         DAI,
         ETH,
@@ -18,6 +29,7 @@ pub mod types {
             CurrencyType::DAI
         }
     }
+
 
     #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
     pub struct Price<Balance> {
@@ -56,6 +68,7 @@ pub trait ServiceInfo<T: Config, Balance> {
     fn get_id(&self) -> &T::Hash;
     fn get_owner_id(&self) -> &T::AccountId;
     fn get_prices_by_currency(&self) -> &Vec<types::PriceByCurrency<Balance>>;
+    fn get_service_flow(&self) -> &types::ServiceFlow;
 }
 
 pub trait ServicesProvider<T: Config, Balance> {

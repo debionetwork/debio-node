@@ -19,7 +19,7 @@ use labs::{
 use user_profile::Pallet as UserProfile;
 use user_profile::Config as UserProfileConfig;
 
-use traits_services::types::{PriceByCurrency, ExpectedDuration};
+use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
@@ -71,7 +71,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-	}: create_service(RawOrigin::Signed(caller), service_info)
+	}: create_service(RawOrigin::Signed(caller), service_info, ServiceFlow::default())
 
 	update_service {
 		let caller: T::AccountId = whitelisted_caller();
@@ -107,7 +107,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), old_service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), old_service_info, ServiceFlow::default());
 
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -160,7 +160,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), old_service_info);
+		let _create_service = Services::<T>::create_service(caller_origin.clone(), old_service_info, ServiceFlow::default());
 
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
