@@ -124,7 +124,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
-					1024,
+					0,
 					// Era Payout
 					1024,
 				),
@@ -220,7 +220,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
-					1024,
+					0,
 					// Era Payout
 					1024,
 				),
@@ -316,7 +316,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
-					1024,
+					0,
 					// Era Payout
 					1024,
 				),
@@ -380,7 +380,7 @@ pub fn local_config() -> Result<ChainSpec, String> {
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
-					1024,
+					0,
 					// Era Payout
 					1024,
 				),
@@ -444,7 +444,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
-					1024,
+					0,
 					// Era Payout
 					1024,
 				),
