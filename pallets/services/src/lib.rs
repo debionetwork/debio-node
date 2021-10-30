@@ -4,6 +4,7 @@ use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 use frame_support::traits::Currency;
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 use traits_services::{
     types::{ExpectedDuration, PriceByCurrency, ServiceFlow},
     ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
@@ -15,7 +16,7 @@ use sp_std::prelude::*;
 
 /// ServiceInfo struct
 /// Information that is mutable by user
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct ServiceInfo<Balance> {
     pub name: Vec<u8>,
     pub prices_by_currency: Vec<PriceByCurrency<Balance>>,
@@ -27,7 +28,7 @@ pub struct ServiceInfo<Balance> {
     pub image: Option<Vec<u8>>,
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct Service<AccountId, Hash, Balance> {
     pub id: Hash,
     pub owner_id: AccountId,
@@ -134,7 +135,6 @@ pub mod pallet {
     // -----------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event

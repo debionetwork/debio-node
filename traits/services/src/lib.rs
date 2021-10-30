@@ -7,19 +7,9 @@ pub mod types {
     use frame_support::codec::{Decode, Encode};
     use frame_support::pallet_prelude::*;
     use sp_std::prelude::*;
+	use scale_info::TypeInfo;
 
-    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
-    pub enum ServiceFlow {
-        RequestTest,
-        StakingRequestService,
-    }
-    impl Default for ServiceFlow {
-        fn default() -> Self {
-            ServiceFlow::RequestTest
-        }
-    }
-
-    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
     pub enum CurrencyType {
         DAI,
         ETH,
@@ -30,14 +20,13 @@ pub mod types {
         }
     }
 
-
-    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
     pub struct Price<Balance> {
         pub component: Vec<u8>,
         pub value: Balance,
     }
 
-    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
     pub struct PriceByCurrency<Balance> {
         pub currency: CurrencyType,
         pub total_price: Balance,
@@ -45,7 +34,7 @@ pub mod types {
         pub additional_prices: Vec<Price<Balance>>,
     }
 
-    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+    #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
     pub enum DurationType {
         WorkingDays,
         Hours,
@@ -57,7 +46,7 @@ pub mod types {
         }
     }
 
-    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+    #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
     pub struct ExpectedDuration {
         pub duration: i8,
         pub duration_type: DurationType,

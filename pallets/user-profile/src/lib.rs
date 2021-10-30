@@ -15,6 +15,7 @@ pub mod interface;
 pub use crate::interface::UserProfileInterface;
 // use frame_support::pallet_prelude::*;
 pub use codec::EncodeLike;
+pub use scale_info::TypeInfo;
 use traits_user_profile::UserProfileProvider;
 
 /// An Ethereum address (i.e. 20 bytes, used to represent an Ethereum account).
@@ -43,6 +44,7 @@ pub mod pallet {
             + EncodeLike
             + Decode
             + Default
+			+ TypeInfo
             + sp_std::fmt::Debug;
     }
 
@@ -72,7 +74,6 @@ pub mod pallet {
     // -----------------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId", LabOf<T> = "Lab")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// User AccountId registered as lab
@@ -112,14 +113,14 @@ pub mod pallet {
             eth_address: EthereumAddressOf<T>,
         ) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
-    
+
             <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
                 &account_id,
                 &eth_address,
             );
-    
+
             Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id));
-    
+
             Ok(().into())
         }
     }

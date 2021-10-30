@@ -4,6 +4,7 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -19,7 +20,7 @@ use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
 
 // LabVerificationStatus
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum LabVerificationStatus {
     Unverified,
     Verified,
@@ -34,7 +35,7 @@ impl Default for LabVerificationStatus {
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct LabInfo<Hash>
 where
     Hash: PartialEq + Eq,
@@ -55,7 +56,7 @@ where
 
 // Lab Struct
 // the fields (excluding account_id and services) come from LabInfo struct
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct Lab<AccountId, Hash>
 where
     Hash: PartialEq + Eq,
@@ -201,6 +202,7 @@ pub mod pallet {
             + EncodeLike
             + Decode
             + Default
+			+ TypeInfo
             + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
     }
@@ -255,7 +257,7 @@ pub mod pallet {
     #[pallet::getter(fn lab_count_by_country_region_city)]
     pub type LabCountByCountryRegionCity<T> =
         StorageDoubleMap<_, Blake2_128Concat, CountryRegionCode, Blake2_128Concat, CityCode, u64>;
-    
+
     #[pallet::storage]
     #[pallet::getter(fn admin_key)]
     pub type LabVerifierKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
@@ -285,7 +287,6 @@ pub mod pallet {
     // ----------------------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId", LabOf<T> = "Lab")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// User AccountId registered as lab

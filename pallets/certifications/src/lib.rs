@@ -3,6 +3,7 @@
 use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 
 use traits_certifications::{
     CertificationInfo as CertificationInfoT, CertificationOwner, CertificationsProvider,
@@ -14,7 +15,7 @@ use sp_std::prelude::*;
 
 /// CertificationInfo struct
 /// Information that is mutable by user
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct CertificationInfo {
     pub title: Vec<u8>,
     pub issuer: Vec<u8>,
@@ -24,7 +25,7 @@ pub struct CertificationInfo {
     pub supporting_document: Option<Vec<u8>>,
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct Certification<AccountId, Hash> {
     pub id: Hash,
     pub owner_id: AccountId,
@@ -102,7 +103,6 @@ pub mod pallet {
     // -----------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event
