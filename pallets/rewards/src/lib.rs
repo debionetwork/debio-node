@@ -9,6 +9,7 @@ use frame_support::{
 };
 
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -77,7 +78,6 @@ pub mod pallet {
     // ----------------------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         SlashFunds(T::AccountId, BalanceOf<T>, T::BlockNumber),
@@ -169,11 +169,11 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
         }
 
         let mut total_imbalance = <PositiveImbalanceOf<T>>::zero();
-        
+
         let r = T::Currency::deposit_creating(to_reward, reward);
         total_imbalance.subsume(r);
         T::Reward::on_unbalanced(total_imbalance);
-        
+
         Ok(().into())
     }
 }

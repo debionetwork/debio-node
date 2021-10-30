@@ -1,30 +1,42 @@
 use debio_runtime::{
-	currency::DBIO, AccountId, BalancesConfig, GenesisConfig, Signature, GrandpaConfig,
-	SudoConfig, SystemConfig, BabeConfig,
-	WASM_BINARY, BABE_GENESIS_EPOCH_CONFIG, OrdersConfig, RewardsConfig, LabsConfig,
+	currency::DBIO, opaque::Block, opaque::SessionKeys, AccountId, Balance, Signature,
+	GenesisConfig, BabeConfig, BalancesConfig, GrandpaConfig, ImOnlineConfig,
+	OctopusAppchainConfig, OctopusLposConfig, SessionConfig, SudoConfig, SystemConfig,
+	WASM_BINARY, BABE_GENESIS_EPOCH_CONFIG, OrdersConfig, RewardsConfig, LabsConfig
 };
-use sc_service::{ChainType, Properties};
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
-use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::traits::{IdentifyAccount, Verify};
-
-use debio_runtime::BeefyConfig;
-use debio_runtime::{
-	opaque::SessionKeys, Balance, ImOnlineConfig, SessionConfig,
-};
-use debio_runtime::{OctopusAppchainConfig, OctopusLposConfig};
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_octopus_appchain::AuthorityId as OctopusId;
+use sc_chain_spec::ChainSpecExtension;
+use sc_service::{ChainType, Properties};
+use serde::{Deserialize, Serialize};
 use sp_consensus_babe::AuthorityId as BabeId;
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
+use sp_finality_grandpa::AuthorityId as GrandpaId;
+use sp_runtime::traits::{IdentifyAccount, Verify};
 
 use hex_literal::hex;
 
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
+/// Node `ChainSpec` extensions.
+///
+/// Additional parameters for some Substrate core modules,
+/// customizable from the chain spec.
+#[derive(Default, Clone, Serialize, Deserialize, ChainSpecExtension)]
+#[serde(rename_all = "camelCase")]
+pub struct Extensions {
+	/// Block numbers with known hashes.
+	pub fork_blocks: sc_client_api::ForkBlocks<Block>,
+	/// Known bad block hashes.
+	pub bad_blocks: sc_client_api::BadBlocks<Block>,
+	/// The light sync state extension used by the sync-state rpc.
+	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
+}
+
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
-pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig>;
+pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
 
 fn session_keys(
 	babe: BabeId,
@@ -148,7 +160,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 		// Properties
 		Some(properties),
 		// Extensions
-		None,
+		Default::default(),
 	))
 }
 
@@ -244,7 +256,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 		// Properties
 		Some(properties),
 		// Extensions
-		None,
+		Default::default(),
 	))
 }
 
@@ -340,7 +352,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 		// Properties
 		Some(properties),
 		// Extensions
-		None,
+		Default::default(),
 	))
 }
 
@@ -404,7 +416,7 @@ pub fn local_config() -> Result<ChainSpec, String> {
 		// Properties
 		Some(properties),
 		// Extensions
-		None,
+		Default::default(),
 	))
 }
 
@@ -468,7 +480,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 		// Properties
 		Some(properties),
 		// Extensions
-		None,
+		Default::default(),
 	))
 }
 
@@ -496,10 +508,10 @@ fn genesis(
 			balances: endowed_accounts.iter().cloned().map(|x| (x, ENDOWMENT)).collect(),
 		},
 		sudo: SudoConfig { key: root_key },
-		babe: BabeConfig { authorities: vec![], epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: GrandpaConfig { authorities: vec![] },
-		im_online: ImOnlineConfig { keys: vec![] },
-		beefy: BeefyConfig { authorities: vec![] },
+		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
+		grandpa: Default::default(),
+		im_online: Default::default(),
+		beefy: Default::default(),
 		session: SessionConfig {
 			keys: initial_authorities
 				.iter()
@@ -518,6 +530,7 @@ fn genesis(
 				})
 				.collect(),
 		},
+		assets: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
 			appchain_id: appchain_config.0,
 			anchor_contract: appchain_config.1,

@@ -3,6 +3,7 @@
 use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -19,7 +20,7 @@ pub mod interface;
 pub use interface::ElectronicMedicalRecordInterface;
 use sp_std::prelude::*;
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct ElectronicMedicalRecord<AccountId, Hash>
 where
     Hash: PartialEq + Eq,
@@ -64,7 +65,7 @@ where
 
 /// ElectronicMedicalRecordFile struct
 /// Information that is mutable by user
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct ElectronicMedicalRecordFile<AccountId, Hash, Moment>
 where
     Hash: PartialEq + Eq,
@@ -193,7 +194,6 @@ pub mod pallet {
     // -----------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event

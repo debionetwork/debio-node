@@ -7,6 +7,7 @@ use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 use frame_support::traits::Currency;
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 use sp_std::prelude::*;
 use traits_genetic_testing::{DnaSampleTracking, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
@@ -15,7 +16,7 @@ use traits_services::{
     ServiceInfo, ServicesProvider,
 };
 
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum OrderStatus {
     Unpaid,
     Paid,
@@ -30,7 +31,7 @@ impl Default for OrderStatus {
     }
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct Order<Hash, AccountId, Balance, Moment> {
     pub id: Hash,
     pub service_id: Hash,

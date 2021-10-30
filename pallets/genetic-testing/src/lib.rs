@@ -6,6 +6,7 @@
 // mod tests;
 
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 
 pub mod interface;
 pub use frame_support::debug;
@@ -238,7 +239,7 @@ pub mod pallet {
     }
 }
 
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum DnaSampleStatus {
     Registered,
     Arrived,
@@ -254,7 +255,7 @@ impl Default for DnaSampleStatus {
     }
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct DnaSample<AccountId, Hash, Moment> {
     tracking_id: Vec<u8>,
     lab_id: AccountId,
@@ -299,7 +300,7 @@ impl<AccountId, Hash, Moment> DnaSampleTracking for DnaSample<AccountId, Hash, M
     }
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct DnaTestResult<AccountId, Hash, Moment> {
     tracking_id: Vec<u8>,
     lab_id: Option<AccountId>, // if lab_id == None, Test result is submitted independently
@@ -334,7 +335,7 @@ impl<AccountId, Hash, Moment: Copy> DnaTestResult<AccountId, Hash, Moment> {
     }
 }
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct DnaTestResultSubmission {
     pub comments: Option<Vec<u8>>,
     pub result_link: Option<Vec<u8>>,

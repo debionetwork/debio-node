@@ -4,6 +4,7 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -19,7 +20,7 @@ use traits_user_profile::UserProfileProvider;
 
 // HospitalInfo Struct
 // Used as parameter of dispatchable calls
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct HospitalInfo {
     pub name: Vec<u8>,
     pub email: Vec<u8>,
@@ -34,7 +35,7 @@ pub struct HospitalInfo {
 
 // Hospital Struct
 // the fields (excluding account_id and certifications) come from HospitalInfo struct
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct Hospital<AccountId, Hash>
 where
     Hash: PartialEq + Eq,
@@ -156,6 +157,7 @@ pub mod pallet {
             + EncodeLike
             + Decode
             + Default
+			+ TypeInfo
             + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
     }
@@ -211,7 +213,6 @@ pub mod pallet {
     // -----------------------------------
 
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId", HospitalOf<T> = "Hospital")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// User AccountId registered as hospital
