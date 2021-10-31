@@ -9,6 +9,17 @@ pub mod types {
     use sp_std::prelude::*;
 	use scale_info::TypeInfo;
 
+	#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+    pub enum ServiceFlow {
+        RequestTest,
+        StakingRequestService,
+    }
+    impl Default for ServiceFlow {
+        fn default() -> Self {
+            ServiceFlow::RequestTest
+        }
+    }
+
     #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
     pub enum CurrencyType {
         DAI,
