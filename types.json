@@ -63,8 +63,7 @@
     "description": "Text",
     "test_result_sample": "Text",
     "long_description": "Option<Text>",
-    "image": "Option<Text>",
-    "dna_collection_process": "Option<Text>"
+    "image": "Option<Text>"
   },
   "ServiceFlow": {
     "_enum": [
@@ -128,9 +127,9 @@
     "dna_sample_tracking_id": "Text",
     "currency": "CurrencyType",
     "prices": "Vec<Price>",
-    "order_flow": "ServiceFlow",
     "additional_prices": "Vec<Price>",
     "status": "OrderStatus",
+    "order_flow": "ServiceFlow",
     "created_at": "u64",
     "updated_at": "u64"
   },
@@ -141,12 +140,8 @@
       "Registered",
       "Arrived",
       "Rejected",
-      "Success",
-      "Failed",
       "QualityControlled",
-      "GenotypedSequenced",
-      "Reviewed",
-      "Computed",
+      "WetWork",
       "ResultReady"
     ]
   },
@@ -196,7 +191,7 @@
       "Doctor"
     ]
   },
-  "ElectronicMedicalRecordFile": {
+  "ElectronicMedicalRecordInfo": {
     "id": "H256",
     "owner_id": "AccountId",
     "title": "Text",
@@ -208,7 +203,7 @@
     "owner_id": "AccountId",
     "title": "Text",
     "category": "Text",
-    "info": "Vec<H256>"
+    "files": "Vec<H256>"
   },
   "ElectronicMedicalRecordOf": "ElectronicMedicalRecord",
   "ElectronicMedicalRecordFileOf": "ElectronicMedicalRecordFile",
