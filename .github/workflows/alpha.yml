@@ -156,15 +156,21 @@ jobs:
             SESSION_KEY_BABE_VALIDATOR_2:${{ secrets.STG_GCP_PROJECT_ID }}/SESSION_KEY_BABE_VALIDATOR_2
             SESSION_KEY_IMONLINE_VALIDATOR_2:${{ secrets.STG_GCP_PROJECT_ID }}/SESSION_KEY_IMONLINE_VALIDATOR_2
             SESSION_KEY_BEEFY_VALIDATOR_2:${{ secrets.STG_GCP_PROJECT_ID }}/SESSION_KEY_BEEFY_VALIDATOR_2
+            SSH_HOST:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_HOST
+            SSH_USERNAME:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_USERNAME
+            SSH_KEY:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_KEY
+            SSH_PORT:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_PORT
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEV_SSH_HOST }}
-          username: ${{ secrets.DEV_SSH_USERNAME }}
-          key: ${{ secrets.DEV_SSH_KEY }}
-          port: ${{ secrets.DEV_SSH_PORT }}
+          host: ${{ steps.secrets.outputs.SSH_HOST }}
+          username: ${{ steps.secrets.outputs.SSH_USERNAME }}
+          key: ${{ steps.secrets.outputs.SSH_KEY }}
+          port: ${{ steps.secrets.outputs.SSH_PORT }}
           script: |
-            helm upgrade debio-node .maintain/kubernetes \
+            helm repo add debio https://charts.debio.network
+            helm repo update
+            helm upgrade debio-node debio/debio-node \
               --install \
               --set-string image.tag=${{ needs.compute-build-info.outputs.latest_tag }} \
               --set-string config.chain=stg-testnet \
