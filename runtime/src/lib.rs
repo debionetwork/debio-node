@@ -649,6 +649,7 @@ impl genetic_testing::Config for Runtime {
     type Event = Event;
     type Orders = Orders;
     type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticTestingWeightInfo = ();
 }
 
 impl user_profile::Config for Runtime {

@@ -8,7 +8,9 @@
 pub use pallet::*;
 pub use scale_info::TypeInfo;
 
+pub mod weights;
 pub mod interface;
+pub use weights::WeightInfo;
 pub use frame_support::debug;
 pub use frame_support::dispatch::DispatchResultWithPostInfo;
 pub use frame_support::pallet_prelude::*;
@@ -30,6 +32,7 @@ pub mod pallet {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type RandomnessSource: Randomness<Self::Hash, Self::BlockNumber>;
         type Orders: OrderEventEmitter<Self> + OrderStatusUpdater<Self>;
+        type GeneticTestingWeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -121,7 +124,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::GeneticTestingWeightInfo::reject_dna_sample())]
         pub fn reject_dna_sample(
             origin: OriginFor<T>,
             tracking_id: Vec<u8>,
@@ -144,7 +147,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::GeneticTestingWeightInfo::process_dna_sample())]
         pub fn process_dna_sample(
             origin: OriginFor<T>,
             tracking_id: Vec<u8>,
@@ -174,7 +177,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::GeneticTestingWeightInfo::submit_test_result())]
         pub fn submit_test_result(
             origin: OriginFor<T>,
             tracking_id: Vec<u8>,
@@ -197,7 +200,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::GeneticTestingWeightInfo::submit_independent_test_result())]
         pub fn submit_independent_test_result(
             origin: OriginFor<T>,
             submission: DnaTestResultSubmission,
@@ -218,7 +221,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::GeneticTestingWeightInfo::submit_data_bounty_details())]
         pub fn submit_data_bounty_details(
             origin: OriginFor<T>,
             data_hash: T::Hash,
