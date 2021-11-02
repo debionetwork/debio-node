@@ -1,0 +1,51 @@
+[package]
+name = 'service-request'
+version = '0.1.0'
+edition = '2018'
+license = 'AGPL-3.0'
+authors = ['DeBio Dev Team <debio.dev@blocksphere.id>']
+homepage = 'https://debio.network/'
+repository = 'https://github.com/debionetwork/debio-node'
+
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+[dependencies]
+# External Dependencies
+codec = { package = 'parity-scale-codec', version = '2.0.0', default-features = false, features = ['derive'] }
+scale-info = { version = '1.0', default-features = false, features = ['derive'] }
+
+# Substrate packages
+## Substrate Primitive Dependencies
+sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+
+## Substrate Frame Dependencies
+frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
+
+## Substrate Pallets Dependencies
+pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+	'scale-info/std',
+
+	'sp-std/std',
+	'sp-core/std',
+	'sp-io/std',
+	'sp-runtime/std',
+
+    'frame-support/std',
+    'frame-system/std',
+	'frame-benchmarking/std',
+
+	'pallet-timestamp/std',
+]
+runtime-benchmarks = ['frame-benchmarking']
+try-runtime = ['frame-support/try-runtime']
