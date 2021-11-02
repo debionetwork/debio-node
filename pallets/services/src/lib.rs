@@ -10,6 +10,7 @@ use traits_services::{
     ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
 };
 
+pub mod weights;
 pub mod interface;
 pub use interface::ServiceInterface;
 use sp_std::prelude::*;
@@ -87,6 +88,7 @@ where
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use crate::interface::ServiceInterface;
     use traits_services::types::ServiceFlow;
     use crate::{Currency, Service, ServiceInfo, ServiceOwner};
@@ -99,6 +101,7 @@ pub mod pallet {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type Currency: Currency<<Self as frame_system::Config>::AccountId>;
         type ServiceOwner: ServiceOwner<Self>;
+        type WeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---

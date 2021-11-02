@@ -636,6 +636,7 @@ impl services::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
     type ServiceOwner = Labs;
+	type WeightInfo = ();
 }
 
 impl orders::Config for Runtime {
