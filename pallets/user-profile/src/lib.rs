@@ -1,15 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// https://substrate.dev/docs/en/knowledgebase/runtime/frame
-pub use pallet::*;
-
 #[cfg(test)]
 mod mock;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+
+pub mod weights;
+
+/// Edit this file to define custom logic or remove it if it is not needed.
+/// Learn more about FRAME and the core library of Substrate FRAME pallets:
+/// https://substrate.dev/docs/en/knowledgebase/runtime/frame
+pub use pallet::*;
+pub use weights::WeightInfo;
 
 pub mod interface;
 pub use crate::interface::UserProfileInterface;
@@ -46,6 +49,9 @@ pub mod pallet {
             + Default
 			+ TypeInfo
             + sp_std::fmt::Debug;
+            
+        /// Weight information for extrinsics in this pallet.
+        type WeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -89,7 +95,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::set_eth_address())]
         pub fn set_eth_address(
             origin: OriginFor<T>,
             eth_address: EthereumAddressOf<T>,

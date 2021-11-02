@@ -30,14 +30,27 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::Weight};
+use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
+/// Weight functions needed for pallet_platform.
+pub trait WeightInfo {
+	fn set_eth_address() -> Weight;
+}
+
 /// Weight functions for user_profile.
-pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> user_profile::WeightInfo for WeightInfo<T> {
+pub struct DeBioWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for DeBioWeight<T> {
 	fn set_eth_address() -> Weight {
-		(32_858_000 as Weight)
+		(32_858_000_u64)
 			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+	}
+}
+
+// For backwards compatibility and tests
+impl WeightInfo for () {
+	fn set_eth_address() -> Weight {
+		(32_858_000_u64)
+			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
 	}
 }
