@@ -676,6 +676,7 @@ impl doctor_certifications::Config for Runtime {
 impl hospital_certifications::Config for Runtime {
     type Event = Event;
 	type HospitalCertificationOwner = Hospitals;
+	type WeightInfo = ();
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
