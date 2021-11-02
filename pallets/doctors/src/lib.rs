@@ -1,9 +1,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub mod weights;
+
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
+pub use weights::WeightInfo;
 pub use scale_info::TypeInfo;
 
 #[cfg(test)]
@@ -160,6 +163,7 @@ pub mod pallet {
 			+ TypeInfo
             + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
+        type WeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -239,7 +243,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::register_doctor())]
         pub fn register_doctor(
             origin: OriginFor<T>,
             doctor_info: DoctorInfo,
@@ -255,7 +259,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::update_doctor())]
         pub fn update_doctor(
             origin: OriginFor<T>,
             doctor_info: DoctorInfo,
@@ -271,7 +275,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::deregister_doctor())]
         pub fn deregister_doctor(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             // Check if user is a doctor
