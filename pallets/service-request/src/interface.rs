@@ -32,28 +32,28 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		staking_amount: Self::Balance,
     ) -> Result<Self::Request, Self::Error>;
 
-	fn unstake(
-		requester_id: Self::RequesterId,
-		request_id: Self::RequestId,
-    ) -> Result<Self::Request, Self::Error>;
+	// fn unstake(
+	// 	requester_id: Self::RequesterId,
+	// 	request_id: Self::RequestId,
+    // ) -> Result<Self::Request, Self::Error>;
 
-	fn retrieve_unstaked_amount(
-		requester_id: Self::RequesterId,
-		request_id: Self::RequestId,
-    ) -> Result<Self::Request, Self::Error>;
+	// fn retrieve_unstaked_amount(
+	// 	requester_id: Self::RequesterId,
+	// 	request_id: Self::RequestId,
+    // ) -> Result<Self::Request, Self::Error>;
 
-	fn claim_request(
-		lab_id: Self::LabId,
-		service_id: Self::ServiceId,
-		testing_price: Self::Balance,
-		qc_price: Self::Balance,
-    ) -> Result<Self::ServiceOffer, Self::Error>;
+	// fn claim_request(
+	// 	lab_id: Self::LabId,
+	// 	service_id: Self::ServiceId,
+	// 	testing_price: Self::Balance,
+	// 	qc_price: Self::Balance,
+    // ) -> Result<Self::ServiceOffer, Self::Error>;
 
-	fn process_request(
-		requester_id: Self::RequesterId,
-		lab_id: Self::LabId,
-		request_id: Self::RequestId,
-		order_id: Self::OrderId,
-		dna_sample_tracking_id: Self::DNASampleTrackingId,
-    ) -> Result<Self::ServiceInvoice, Self::Error>;
+	// fn process_request(
+	// 	requester_id: Self::RequesterId,
+	// 	lab_id: Self::LabId,
+	// 	request_id: Self::RequestId,
+	// 	order_id: Self::OrderId,
+	// 	dna_sample_tracking_id: Self::DNASampleTrackingId,
+    // ) -> Result<Self::ServiceInvoice, Self::Error>;
 }

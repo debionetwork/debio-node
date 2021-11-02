@@ -8,7 +8,7 @@ use frame_support::{
 	scale_info::TypeInfo,
 	sp_std::prelude::*,
 	sp_runtime::{RuntimeDebug, traits::Hash},
-	traits::{Currency, tokens::*}
+	traits::{Currency}
 };
 use frame_system::pallet_prelude::*;
 
@@ -127,16 +127,16 @@ pub mod pallet {
 	pub type RequestIdOf<T> = HashOf<T>;
 	pub type RequesterIdOf<T> = AccountIdOf<T>;
 	pub type LabIdOf<T> = AccountIdOf<T>;
-	pub type CountryOf<T> = Vec<u8>;
-	pub type RegionOf<T> = Vec<u8>;
-	pub type CityOf<T> = Vec<u8>;
-	pub type ServiceCategoryOf<T> = Vec<u8>;
+	pub type CountryOf = Vec<u8>;
+	pub type RegionOf = Vec<u8>;
+	pub type CityOf = Vec<u8>;
+	pub type ServiceCategoryOf = Vec<u8>;
 	pub type ServiceIdOf<T> = HashOf<T>;
 	pub type OrderIdOf<T> = HashOf<T>;
 	pub type DNASampleTrackingIdOf<T> = HashOf<T>;
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 	}
@@ -179,21 +179,21 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn requests_by_country)]
-	pub type RequestsByCountry<T> = StorageMap<_, Blake2_128Concat, CountryOf<T>, RequestOf<T>, ValueQuery>;
+	pub type RequestsByCountry<T> = StorageMap<_, Blake2_128Concat, CountryOf, RequestOf<T>, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn requests_by_region)]
 	pub type RequestsByRegion<T> = StorageNMap<_, (
-		NMapKey<Blake2_128Concat, CountryOf<T>>,
-		NMapKey<Blake2_128Concat, RegionOf<T>>,
+		NMapKey<Blake2_128Concat, CountryOf>,
+		NMapKey<Blake2_128Concat, RegionOf>,
 	), RequestOf<T>, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn requests_by_city)]
 	pub type RequestsByCity<T> = StorageNMap<_, (
-		NMapKey<Blake2_128Concat, CountryOf<T>>,
-		NMapKey<Blake2_128Concat, RegionOf<T>>,
-		NMapKey<Blake2_128Concat, CityOf<T>>,
+		NMapKey<Blake2_128Concat, CountryOf>,
+		NMapKey<Blake2_128Concat, RegionOf>,
+		NMapKey<Blake2_128Concat, CityOf>,
 	), RequestOf<T>, ValueQuery>;
 
 	#[pallet::call]
@@ -210,15 +210,15 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::create_request(
-				who,
-				country,
-				region,
-				city,
-				service_category,
-				staking_amount,
+				who.clone(),
+				country.clone(),
+				region.clone(),
+				city.clone(),
+				service_category.clone(),
+				staking_amount.clone(),
 			) {
                 Ok(request) => {
-                    Self::deposit_event(Event::ServiceRequestCreated(who, request));
+                    Self::deposit_event(Event::ServiceRequestCreated(who.clone(), request));
                     Ok(().into())
                 }
                 Err(error) => Err(error)?,
@@ -233,7 +233,7 @@ impl<T: Config> Pallet<T> {
 }
 
 /// Service Request Interface Implementation
-impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
+impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type Balance = BalanceOf<T>;
 	type Request = RequestOf<T>;
@@ -242,10 +242,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type RequestId = RequestIdOf<T>;
 	type RequesterId = RequesterIdOf<T>;
 	type LabId = LabIdOf<T>;
-	type Country = CountryOf<T>;
-	type Region = RegionOf<T>;
-	type City = CityOf<T>;
-	type ServiceCategory = ServiceCategoryOf<T>;
+	type Country = CountryOf;
+	type Region = RegionOf;
+	type City = CityOf;
+	type ServiceCategory = ServiceCategoryOf;
 	type ServiceId = ServiceIdOf<T>;
 	type OrderId = OrderIdOf<T>;
 	type DNASampleTrackingId = DNASampleTrackingIdOf<T>;
@@ -260,13 +260,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let mut seed = requester_id.encode();
 		let account_info = frame_system::Pallet::<T>::account(requester_id);
 
-		seed.append(account_info.nonce.encode());
-		seed.append(country.encode());
-		seed.append(region.encode());
-		seed.append(city.encode());
-		seed.append(service_category.encode());
+		seed.append(&mut account_info.nonce.encode());
+		seed.append(&mut country.encode());
+		seed.append(&mut region.encode());
+		seed.append(&mut city.encode());
+		seed.append(&mut service_category.encode());
 
-		T::Hashing::hash(seed)
+		T::Hashing::hash(&seed)
 	}
 
     fn create_request(
@@ -279,60 +279,60 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
     ) -> Result<Self::Request, Self::Error> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 		let service_request_id = Self::generate_service_request_id(
-			requester_id,
-			country,
-			region,
-			city,
-			service_category
+			requester_id.clone(),
+			country.clone(),
+			region.clone(),
+			city.clone(),
+			service_category.clone()
 		);
 
 		let request = Request::new(
-			service_request_id,
-			requester_id,
+			service_request_id.clone(),
+			requester_id.clone(),
 			None,
-			country,
-			region,
-			city,
-			service_category,
-			staking_amount,
+			country.clone(),
+			region.clone(),
+			city.clone(),
+			service_category.clone(),
+			staking_amount.clone(),
 			now,
 			true
 		);
 
-		Requests::<T>::insert(request);
-		Ok(request)
+		Requests::<T>::insert(requester_id.clone(), request.clone());
+		Ok(request.clone())
 	}
 
-	fn unstake(
-		requester_id: Self::RequesterId,
-		request_id: Self::RequestId,
-    ) -> Result<Self::Request, Self::Error> {
+	// fn unstake(
+	// 	requester_id: Self::RequesterId,
+	// 	request_id: Self::RequestId,
+    // ) -> Result<Self::Request, Self::Error> {
+	// 	Ok(())
+	// }
 
-	}
+	// fn retrieve_unstaked_amount(
+	// 	requester_id: Self::RequesterId,
+	// 	request_id: Self::RequestId,
+    // ) -> Result<Self::Request, Self::Error> {
+	// 	Ok(())
+	// }
 
-	fn retrieve_unstaked_amount(
-		requester_id: Self::RequesterId,
-		request_id: Self::RequestId,
-    ) -> Result<Self::Request, Self::Error> {
+	// fn claim_request(
+	// 	lab_id: Self::LabId,
+	// 	service_id: Self::ServiceId,
+	// 	testing_price: Self::Balance,
+	// 	qc_price: Self::Balance,
+    // ) -> Result<Self::ServiceOffer, Self::Error> {
+	// 	Ok(())
+	// }
 
-	}
-
-	fn claim_request(
-		lab_id: Self::LabId,
-		service_id: Self::ServiceId,
-		testing_price: Self::Balance,
-		qc_price: Self::Balance,
-    ) -> Result<Self::ServiceOffer, Self::Error> {
-
-	}
-
-	fn process_request(
-		requester_id: Self::RequesterId,
-		lab_id: Self::LabId,
-		request_id: Self::RequestId,
-		order_id: Self::OrderId,
-		dna_sample_tracking_id: Self::DNASampleTrackingId,
-    ) -> Result<Self::ServiceInvoice, Self::Error>{
-
-	}
+	// fn process_request(
+	// 	requester_id: Self::RequesterId,
+	// 	lab_id: Self::LabId,
+	// 	request_id: Self::RequestId,
+	// 	order_id: Self::OrderId,
+	// 	dna_sample_tracking_id: Self::DNASampleTrackingId,
+    // ) -> Result<Self::ServiceInvoice, Self::Error>{
+	// 	Ok(())
+	// }
 }
