@@ -1,5 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub mod weights;
 pub mod interface;
 use interface::OrderInterface;
 
@@ -7,6 +8,7 @@ use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
 use frame_support::traits::Currency;
 pub use pallet::*;
+pub use weights::WeightInfo;
 pub use scale_info::TypeInfo;
 use sp_std::prelude::*;
 use traits_genetic_testing::{DnaSampleTracking, GeneticTestingProvider};
@@ -104,6 +106,7 @@ pub mod pallet {
         type Services: ServicesProvider<Self, BalanceOf<Self>>;
         type GeneticTesting: GeneticTestingProvider<Self>;
         type Currency: Currency<<Self as frame_system::Config>::AccountId>;
+        type OrdersWeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -224,7 +227,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::OrdersWeightInfo::create_order())]
         pub fn create_order(
             origin: OriginFor<T>,
             service_id: T::Hash,
@@ -247,7 +250,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::OrdersWeightInfo::cancel_order())]
         pub fn cancel_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -260,7 +263,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::OrdersWeightInfo::set_order_paid())]
         pub fn set_order_paid(
             origin: OriginFor<T>,
             order_id: T::Hash,
@@ -276,7 +279,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::OrdersWeightInfo::fulfill_order())]
         pub fn fulfill_order(
             origin: OriginFor<T>,
             order_id: T::Hash,
@@ -292,7 +295,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::OrdersWeightInfo::set_order_refunded())]
         pub fn set_order_refunded(
             origin: OriginFor<T>,
             order_id: T::Hash,
