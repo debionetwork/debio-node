@@ -47,10 +47,9 @@ Purge the development chain's state:
 
 ```bash
 ./target/debug/debio \
+purge-chain \
 --base-path .local \
---dev \
---alice \
-purge-chain
+--dev
 ```
 
 Start the development chain with detailed logging:
