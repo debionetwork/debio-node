@@ -91,14 +91,12 @@ pub fn get_properties(symbol: &str, decimals: u32, ss58format: u32) -> Propertie
 
 /// Helper function to generate appchain config
 pub fn appchain_config(
-	id: &str,
 	relay_contract: &str,
 	asset_id_by_name: &str,
 	premined_amount: Balance,
 	era_payout: Balance,
-) -> (String, String, String, Balance, Balance) {
+) -> (String, String, Balance, Balance) {
 	(
-		id.to_string(),
 		relay_contract.to_string(),
 		asset_id_by_name.to_string(),
 		premined_amount,
@@ -139,10 +137,8 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 				],
 				// Appchain config
 				appchain_config(
-					// Appchain Id
-					"",
 					// Appchain Relay Contract
-					"octopus-anchor.testnet",
+					"",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
@@ -233,10 +229,8 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 				],
 				// Appchain config
 				appchain_config(
-					// Appchain Id
-					"",
 					// Appchain Relay Contract
-					"octopus-anchor.testnet",
+					"",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
@@ -327,10 +321,8 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 				],
 				// Appchain config
 				appchain_config(
-					// Appchain Id
-					"",
 					// Appchain Relay Contract
-					"octopus-anchor.testnet",
+					"",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
@@ -395,10 +387,8 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				],
 				// Appchain config
 				appchain_config(
-					// Appchain Id
-					"",
 					// Appchain Relay Contract
-					"octopus-anchor.testnet",
+					"",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
@@ -460,10 +450,8 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				],
 				// Appchain config
 				appchain_config(
-					// Appchain Id
-					"",
 					// Appchain Relay Contract
-					"octopus-anchor.testnet",
+					"",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
@@ -501,7 +489,7 @@ fn genesis(
 	root_key: AccountId,
 	initial_authorities: Vec<(AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId)>,
 	endowed_accounts: Vec<AccountId>,
-	appchain_config: (String, String, String, Balance, Balance),
+	appchain_config: (String, String, Balance, Balance),
 	orders_escrow_key: AccountId,
     rewarder_key: AccountId,
 	verifier_key: AccountId,
@@ -543,13 +531,12 @@ fn genesis(
 		},
 		assets: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
-			appchain_id: appchain_config.0,
-			anchor_contract: appchain_config.1,
-			asset_id_by_name: vec![(appchain_config.2, 0)],
-			premined_amount: appchain_config.3,
+			anchor_contract: appchain_config.0,
+			asset_id_by_name: vec![(appchain_config.1, 0)],
+			premined_amount: appchain_config.2,
 			validators: initial_authorities.iter().map(|x| (x.0.clone(), STASH)).collect(),
 		},
-		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.4, ..Default::default() },
+		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
 		orders: OrdersConfig {
 			escrow_key: orders_escrow_key,
 		},
