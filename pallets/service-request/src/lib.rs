@@ -7,8 +7,9 @@ use frame_support::{
 	pallet_prelude::*,
 	scale_info::TypeInfo,
 	sp_std::prelude::*,
-	sp_runtime::{RuntimeDebug, traits::Hash},
-	traits::{Currency}
+	sp_runtime::{RuntimeDebug, traits::{AccountIdConversion, Hash, Zero}},
+	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	PalletId,
 };
 use frame_system::pallet_prelude::*;
 
@@ -79,14 +80,6 @@ impl<AccountId, Balance, Hash, Moment> Request<AccountId, Balance, Hash, Moment>
             exists,
         }
     }
-
-    pub fn get_id(&self) -> &Hash {
-        &self.hash
-    }
-
-    pub fn get_unstacked_at(&self) -> &Moment {
-        &self.unstaked_at
-    }
 }
 
 #[derive(Clone, Decode, Encode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
@@ -115,6 +108,8 @@ pub struct ServiceInvoice<AccountId, Balance, Hash> {
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
+
+	pub const PALLET_ID: PalletId = PalletId(*b"reqsrvc!");
 
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
@@ -155,6 +150,8 @@ pub mod pallet {
 
 	#[pallet::error]
 	pub enum Error<T> {
+		BadSignatur,
+		NotValidAmount,
 		NotFound,
 	}
 
@@ -166,35 +163,8 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::storage]
-	#[pallet::getter(fn requests)]
-	pub type Requests<T> = StorageMap<_, Blake2_128Concat, RequesterIdOf<T>, RequestOf<T>, ValueQuery>;
-
-	#[pallet::storage]
 	#[pallet::getter(fn request_by_id)]
-	pub type RequestById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, RequestOf<T>, ValueQuery>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn requests_by_lab_id)]
-	pub type RequestsByLabId<T> = StorageMap<_, Blake2_128Concat, LabIdOf<T>, RequestOf<T>, ValueQuery>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn requests_by_country)]
-	pub type RequestsByCountry<T> = StorageMap<_, Blake2_128Concat, CountryOf, RequestOf<T>, ValueQuery>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn requests_by_region)]
-	pub type RequestsByRegion<T> = StorageNMap<_, (
-		NMapKey<Blake2_128Concat, CountryOf>,
-		NMapKey<Blake2_128Concat, RegionOf>,
-	), RequestOf<T>, ValueQuery>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn requests_by_city)]
-	pub type RequestsByCity<T> = StorageNMap<_, (
-		NMapKey<Blake2_128Concat, CountryOf>,
-		NMapKey<Blake2_128Concat, RegionOf>,
-		NMapKey<Blake2_128Concat, CityOf>,
-	), RequestOf<T>, ValueQuery>;
+	pub type RequestById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, RequestOf<T>>;
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
@@ -229,7 +199,9 @@ pub mod pallet {
 
 /// Pallet Methods
 impl<T: Config> Pallet<T> {
-
+	pub fn staking_account_id(service_request_id: ServiceIdOf<T>) -> AccountIdOf<T> {
+		PALLET_ID.into_sub_account(service_request_id)
+	}
 }
 
 /// Service Request Interface Implementation
@@ -277,6 +249,10 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 		service_category: Self::ServiceCategory,
 		staking_amount: Self::Balance,
     ) -> Result<Self::Request, Self::Error> {
+		if staking_amount.is_zero() {
+            return Err(Error::<T>::NotValidAmount);
+        }
+
 		let now = pallet_timestamp::Pallet::<T>::get();
 		let service_request_id = Self::generate_service_request_id(
 			requester_id.clone(),
@@ -286,21 +262,33 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 			service_category.clone()
 		);
 
-		let request = Request::new(
-			service_request_id.clone(),
-			requester_id.clone(),
-			None,
-			country.clone(),
-			region.clone(),
-			city.clone(),
-			service_category.clone(),
+		match CurrencyOf::<T>::withdraw(
+			&requester_id,
 			staking_amount.clone(),
-			now,
-			true
-		);
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		) {
+			Ok(imb) => {
+				CurrencyOf::<T>::resolve_creating(&Self::staking_account_id(service_request_id), imb);
 
-		Requests::<T>::insert(requester_id.clone(), request.clone());
-		Ok(request.clone())
+				let request = Request::new(
+					service_request_id.clone(),
+					requester_id.clone(),
+					None,
+					country.clone(),
+					region.clone(),
+					city.clone(),
+					service_category.clone(),
+					staking_amount.clone(),
+					now.clone(),
+					true
+				);
+
+				RequestById::<T>::insert(service_request_id.clone(), request.clone());
+				Ok(request.clone())
+			},
+			_ => Err(Error::<T>::BadSignatur),
+		}
 	}
 
 	// fn unstake(

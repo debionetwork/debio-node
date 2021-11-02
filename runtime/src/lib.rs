@@ -360,7 +360,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-	pub const ExistentialDeposit: Balance = currency::DBIO;
+	pub const ExistentialDeposit: Balance = 0;
 	// For weight estimation, we assume that the most locks on an individual account will be 50.
 	// This number may need to be adjusted in the future if this assumption no longer holds true.
 	pub const MaxLocks: u32 = 50;
@@ -641,6 +641,11 @@ impl services::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl service_request::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+}
+
 impl orders::Config for Runtime {
     type Event = Event;
     type Services = Services;
@@ -711,6 +716,7 @@ construct_runtime!(
 		// Include the custom logic from the template pallet in the runtime.
 		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
+		ServiceRequest: service_request::{Pallet, Call, Storage, Event<T>},
         Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
