@@ -653,6 +653,7 @@ impl genetic_testing::Config for Runtime {
 impl user_profile::Config for Runtime {
     type Event = Event;
     type EthereumAddress = EthereumAddress;
+	type WeightInfo = ();
 }
 
 impl electronic_medical_record::Config for Runtime {
@@ -973,6 +974,12 @@ impl_runtime_apis! {
 			use frame_benchmarking::{list_benchmark, Benchmarking, BenchmarkList};
 			use frame_support::traits::StorageInfoTrait;
 			use frame_system_benchmarking::Pallet as SystemBench;
+			use services_benchmarking::Pallet as ServicesBench;
+			use certifications_benchmarking::Pallet as CertificationsBench;
+			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
+			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use orders_benchmarking::Pallet as OrdersBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
 
