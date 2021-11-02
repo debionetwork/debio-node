@@ -1,9 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// https://substrate.dev/docs/en/knowledgebase/runtime/frame
-pub use pallet::*;
 pub use scale_info::TypeInfo;
 
 #[cfg(test)]
@@ -11,6 +7,14 @@ mod mock;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+
+pub mod weights;
+
+/// Edit this file to define custom logic or remove it if it is not needed.
+/// Learn more about FRAME and the core library of Substrate FRAME pallets:
+/// https://substrate.dev/docs/en/knowledgebase/runtime/frame
+pub use pallet::*;
+pub use weights::WeightInfo;
 
 pub mod interface;
 pub use crate::interface::LabInterface;
@@ -205,6 +209,7 @@ pub mod pallet {
 			+ TypeInfo
             + sp_std::fmt::Debug;
         type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
+        type WeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -318,7 +323,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::register_lab())]
         pub fn register_lab(
             origin: OriginFor<T>,
             lab_info: LabInfo<HashOf<T>>,
@@ -334,7 +339,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::update_lab())]
         pub fn update_lab(
             origin: OriginFor<T>,
             lab_info: LabInfo<HashOf<T>>,
@@ -350,7 +355,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::update_lab_verification_status())]
         pub fn update_lab_verification_status(
             origin: OriginFor<T>,
             account_id: T::AccountId,
@@ -367,7 +372,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::deregister_lab())]
         pub fn deregister_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             // Check if user is a lab

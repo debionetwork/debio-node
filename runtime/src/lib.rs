@@ -606,6 +606,7 @@ impl labs::Config for Runtime {
     type Certifications = Certifications;
     type EthereumAddress = EthereumAddress;
     type UserProfile = UserProfile;
+	type WeightInfo = ();
 }
 
 impl rewards::Config for Runtime {
