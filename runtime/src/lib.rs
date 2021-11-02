@@ -671,6 +671,7 @@ impl certifications::Config for Runtime {
 impl doctor_certifications::Config for Runtime {
     type Event = Event;
 	type DoctorCertificationOwner = Doctors;
+	type WeightInfo = ();
 }
 
 impl hospital_certifications::Config for Runtime {
