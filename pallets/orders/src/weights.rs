@@ -33,7 +33,7 @@
 use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
-/// Weight functions needed for user_profile.
+/// Weight functions needed for orders.
 pub trait WeightInfo {
 	fn create_order() -> Weight;
 	fn cancel_order() -> Weight;
