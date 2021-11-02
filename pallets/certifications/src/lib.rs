@@ -2,7 +2,14 @@
 
 use frame_support::codec::{Decode, Encode};
 use frame_support::pallet_prelude::*;
+
+pub mod weights;
+
+/// Edit this file to define custom logic or remove it if it is not needed.
+/// Learn more about FRAME and the core library of Substrate FRAME pallets:
+/// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
+
 pub use scale_info::TypeInfo;
 
 use traits_certifications::{
@@ -59,6 +66,7 @@ where
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use crate::interface::CertificationInterface;
     use crate::{Certification, CertificationInfo, CertificationOwner};
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
@@ -69,6 +77,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type CertificationOwner: CertificationOwner<Self>;
+        type WeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -129,7 +138,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::create_certification())]
         pub fn create_certification(
             origin: OriginFor<T>,
             certification_info: CertificationInfoOf,
@@ -148,7 +157,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::update_certification())]
         pub fn update_certification(
             origin: OriginFor<T>,
             certification_id: HashOf<T>,
@@ -168,7 +177,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::delete_certification())]
         pub fn delete_certification(
             origin: OriginFor<T>,
             certification_id: T::Hash,

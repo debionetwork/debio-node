@@ -665,6 +665,7 @@ impl electronic_medical_record::Config for Runtime {
 impl certifications::Config for Runtime {
     type Event = Event;
 	type CertificationOwner = Labs;
+	type WeightInfo = ();
 }
 
 impl doctor_certifications::Config for Runtime {
