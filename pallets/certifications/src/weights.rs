@@ -30,12 +30,19 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::Weight};
+use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
+/// Weight functions needed for certifications.
+pub trait WeightInfo {
+	fn create_certification() -> Weight;
+	fn update_certification() -> Weight;
+	fn delete_certification() -> Weight;
+}
+
 /// Weight functions for certifications.
-pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> certifications::WeightInfo for WeightInfo<T> {
+pub struct DeBioWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for DeBioWeight<T> {
 	fn create_certification() -> Weight {
 		(74_749_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(3 as Weight))
@@ -50,5 +57,24 @@ impl<T: frame_system::Config> certifications::WeightInfo for WeightInfo<T> {
 		(155_487_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+	}
+}
+
+// For backwards compatibility and tests
+impl WeightInfo for () {
+	fn create_certification() -> Weight {
+		(74_749_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+	}
+	fn update_certification() -> Weight {
+		(80_144_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+	}
+	fn delete_certification() -> Weight {
+		(155_487_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
 }
