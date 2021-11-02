@@ -164,7 +164,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::create_service())]
         pub fn create_service(
             origin: OriginFor<T>,
             service_info: ServiceInfoOf<T>,
@@ -181,7 +181,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::update_service())]
         pub fn update_service(
             origin: OriginFor<T>,
             service_id: HashOf<T>,
@@ -197,7 +197,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::WeightInfo::delete_service())]
         pub fn delete_service(
             origin: OriginFor<T>,
             service_id: T::Hash,
