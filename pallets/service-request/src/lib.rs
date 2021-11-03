@@ -29,10 +29,11 @@ pub use interface::SeviceRequestInterface;
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum RequestStatus {
 	Open,
-	Processed,
-	Claimed,
 	WaitingForUnstaked,
 	Unstaked,
+	Claimed,
+	Processed,
+	Finalized,
 }
 impl Default for RequestStatus {
 	fn default() -> Self {
@@ -52,7 +53,6 @@ pub struct Request<AccountId, Balance, Hash> {
 	pub staking_amount: Balance,
 	pub status: RequestStatus,
 	pub unstaked_at: u128,
-	pub exists: bool,
 }
 impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 	pub fn new(
@@ -65,7 +65,6 @@ impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 		service_category: Vec<u8>,
 		staking_amount: Balance,
 		unstaked_at: u128,
-		exists: bool,
 	) -> Self {
 		Self {
 			hash,
@@ -78,7 +77,6 @@ impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 			staking_amount,
             status: RequestStatus::default(),
             unstaked_at,
-            exists,
         }
     }
 }
@@ -90,7 +88,6 @@ pub struct ServiceOffer<AccountId, Balance, Hash> {
 	pub service_id: Hash,
 	pub testing_price: Balance,
 	pub qc_price: Balance,
-	pub exists: bool,
 }
 impl<AccountId, Balance, Hash> ServiceOffer<AccountId, Balance, Hash> {
 	pub fn new(
@@ -99,9 +96,8 @@ impl<AccountId, Balance, Hash> ServiceOffer<AccountId, Balance, Hash> {
 		service_id: Hash,
 		testing_price: Balance,
 		qc_price: Balance,
-		exists: bool,
 	) -> Self {
-		Self { request_hash, lab_address, service_id, testing_price, qc_price, exists }
+		Self { request_hash, lab_address, service_id, testing_price, qc_price }
 	}
 }
 
@@ -153,6 +149,7 @@ pub mod pallet {
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
 	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
+	pub type AdminOf<T> = AccountIdOf<T>;
 	pub type RequestOf<T> = Request<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 	pub type ServiceOfferOf<T> = ServiceOffer<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 	pub type ServiceInvoiceOf<T> = ServiceInvoice<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
@@ -205,24 +202,31 @@ pub mod pallet {
 		ServiceRequestWaitingForClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
 		ServiceRequestClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
 		ServiceRequestProcessed(AccountIdOf<T>, ServiceInvoiceOf<T>),
-		ExcessAmountRefunded(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
+		ServiceRequestFinalized(AccountIdOf<T>, ServiceInvoiceOf<T>),
+		StakingAmountRefunded(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
+		StakingAmountExcessRefunded(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
+		StakingAmountIncreased(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-		BadSignatur,
+		BadSignature,
+		UnAuthorized,
 		NotValidAmount,
-		NotFound,
 		RequestNotFound,
-		RequestNotExist,
-		RequestAlreadyClaimed,
+		RequestUnableToUnstake,
+		RequestUnableToRetrieveUnstake,
+		RequestUnableToProccess,
+		RequestUnableToFinalize,
+		RequestWaitingForUnstaked,
 		RequestAlreadyUnstaked,
 		RequestAlreadyInList,
+		RequestAlreadyClaimed,
+		RequestAlreadyProccessed,
+		RequestAlreadyFinalized,
 		ServiceOfferNotFound,
-		Unauthorized,
-		LabNotExist,
-		NoOffer,
-		WaitingForUnstaked,
+		ServiceInvoiceNotFound,
+		LabNotFound,
 	}
 
 	#[pallet::hooks]
@@ -261,6 +265,10 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn service_offer_by_id)]
 	pub type ServiceOfferById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceOfferOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn service_invoice_by_id)]
+	pub type ServiceInvoiceById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceInvoiceOf<T>>;
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
@@ -313,13 +321,12 @@ pub mod pallet {
 		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
 		pub fn retrieve_unstaked_amount(
 			origin: OriginFor<T>,
-			requester_id: RequesterIdOf<T>,
 			request_id: HashOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::retrieve_unstaked_amount(
-				requester_id.clone(),
+				who.clone(),
 				request_id.clone(),
 			) {
 				Ok(request) => {
@@ -366,6 +373,7 @@ pub mod pallet {
 			request_id: HashOf<T>,
 			order_id: HashOf<T>,
 			dna_sample_tracking_id: HashOf<T>,
+			additional_staking_amount: BalanceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -375,9 +383,31 @@ pub mod pallet {
 				request_id.clone(),
 				order_id.clone(),
 				dna_sample_tracking_id.clone(),
+				additional_staking_amount.clone(),
 			) {
 				Ok(service_invoice) => {
 					Self::deposit_event(Event::ServiceRequestProcessed(who.clone(), service_invoice));
+					Ok(().into())
+				}
+				Err(error) => Err(error)?,
+			}
+		}
+
+		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		pub fn finalize_request(
+			origin: OriginFor<T>,
+			request_id: HashOf<T>,
+			test_result_success: bool,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as SeviceRequestInterface<T>>::finalize_request(
+				who.clone(),
+				request_id.clone(),
+				test_result_success.clone(),
+			) {
+				Ok(service_invoice) => {
+					Self::deposit_event(Event::ServiceRequestFinalized(who.clone(), service_invoice));
 					Ok(().into())
 				}
 				Err(error) => Err(error)?,
@@ -388,8 +418,8 @@ pub mod pallet {
 
 /// Pallet Methods
 impl<T: Config> Pallet<T> {
-	pub fn staking_account_id(service_request_id: ServiceIdOf<T>) -> AccountIdOf<T> {
-		PALLET_ID.into_sub_account(service_request_id)
+	pub fn staking_account_id(request_id: ServiceIdOf<T>) -> AccountIdOf<T> {
+		PALLET_ID.into_sub_account(request_id)
 	}
 }
 
@@ -398,6 +428,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type Balance = BalanceOf<T>;
 	type Request = RequestOf<T>;
+	type Admin = AdminOf<T>;
 	type ServiceOffer = ServiceOfferOf<T>;
 	type ServiceInvoice = ServiceInvoiceOf<T>;
 	type RequestId = RequestIdOf<T>;
@@ -411,7 +442,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type OrderId = OrderIdOf<T>;
 	type DNASampleTrackingId = DNASampleTrackingIdOf<T>;
 
-	fn generate_service_request_id(
+	fn generate_request_id(
 		requester_id: Self::RequesterId,
 		country: Self::Country,
 		region: Self::Region,
@@ -443,7 +474,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
         }
 
 		let now: u128 = T::TimeProvider::now().as_millis();
-		let service_request_id = Self::generate_service_request_id(
+		let request_id = Self::generate_request_id(
 			requester_id.clone(),
 			country.clone(),
 			region.clone(),
@@ -458,10 +489,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			ExistenceRequirement::KeepAlive,
 		) {
 			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&Self::staking_account_id(service_request_id), imb);
+				CurrencyOf::<T>::resolve_creating(&Self::staking_account_id(request_id), imb);
 
 				let request = Request::new(
-					service_request_id.clone(),
+					request_id.clone(),
 					requester_id.clone(),
 					None,
 					country.clone(),
@@ -470,10 +501,9 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					service_category.clone(),
 					staking_amount.clone(),
 					now,
-					true
 				);
 
-				RequestById::<T>::insert(service_request_id.clone(), request.clone());
+				RequestById::<T>::insert(request_id.clone(), request.clone());
 
 				let service_count = ServiceCountRequest::<T>::get((
 					country.clone(),
@@ -489,7 +519,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 				Ok(request.clone())
 			},
-			_ => Err(Error::<T>::BadSignatur),
+			_ => Err(Error::<T>::BadSignature),
 		}
 	}
 
@@ -505,16 +535,17 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let mut request = request.unwrap();
 
-		if request.exists == false {
-			return Err(Error::<T>::RequestNotExist);
+		if request.requester_address != requester_id {
+			return Err(Error::<T>::UnAuthorized);
 		}
 
-		if request.requester_address != requester_id {
-			return Err(Error::<T>::Unauthorized);
+		if request.status != RequestStatus::Open {
+			return Err(Error::<T>::RequestUnableToUnstake);
 		}
 
 		request.status = RequestStatus::WaitingForUnstaked;
-		request.unstaked_at = T::TimeProvider::now().as_millis();
+		let now: u128 = T::TimeProvider::now().as_millis();
+		request.unstaked_at = now;
 
 		RequestById::<T>::insert(request_id, request.clone());
 
@@ -522,9 +553,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	}
 
 	fn retrieve_unstaked_amount(
-		requester_id: Self::RequesterId,
+		admin: Self::Admin,
 		request_id: Self::RequestId,
 	) -> Result<Self::Request, Self::Error> {
+		if admin.clone() != AdminKey::<T>::get() {
+            return Err(Error::<T>::UnAuthorized);
+        }
+
 		let request = RequestById::<T>::get(request_id.clone());
 
 		if request.is_none() {
@@ -533,20 +568,19 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let mut request = request.unwrap();
 
-		if request.exists == false {
-			return Err(Error::<T>::RequestNotExist);
+		if request.status != RequestStatus::WaitingForUnstaked {
+			return Err(Error::<T>::RequestUnableToRetrieveUnstake);
 		}
 
-		if request.requester_address != requester_id {
-			return Err(Error::<T>::Unauthorized);
-		}
+		let requester_id = request.requester_address.clone();
 
 		let now: u128 = T::TimeProvider::now().as_millis();
-		let six_days: u128 = 3600 as u128 * 144 as u128 * 1000 as u128;
 		let unstaked_at: u128 = request.unstaked_at;
+		// TODO: move to constant runtime config
+		let six_days: u128 = 3600 as u128 * 144 as u128 * 1000 as u128;
 
 		if (now - unstaked_at) == six_days {
-			return Err(Error::<T>::WaitingForUnstaked);
+			return Err(Error::<T>::RequestWaitingForUnstaked);
 		}
 
 		match CurrencyOf::<T>::withdraw(
@@ -558,13 +592,17 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			Ok(imb) => {
 				CurrencyOf::<T>::resolve_creating(&requester_id, imb);
 
+				Self::deposit_event(Event::StakingAmountRefunded(
+					requester_id.clone(), request_id.clone(), request.staking_amount.clone()
+				));
+
 				request.status = RequestStatus::Unstaked;
 
 				RequestById::<T>::insert(request_id, request.clone());
 
 				Ok(request)
 			},
-			_ => Err(Error::<T>::BadSignatur),
+			_ => Err(Error::<T>::BadSignature),
 		}
 	}
 
@@ -583,10 +621,6 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let mut request = request.unwrap();
 
-		if request.exists == false {
-			return Err(Error::<T>::RequestNotExist);
-		}
-
 		if request.status == RequestStatus::Claimed {
 			return Err(Error::<T>::RequestAlreadyClaimed);
 		}
@@ -594,8 +628,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let lab_status = T::Labs::lab_verification_status(&lab_id);
 
 		if lab_status.is_none() {
-			return Err(Error::<T>::LabNotExist);
+			return Err(Error::<T>::LabNotFound);
 		}
+
+		let lab_status = lab_status.unwrap();
 
 		let service_offer = ServiceOffer::new(
 			request_id.clone(),
@@ -603,10 +639,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			service_id,
 			testing_price,
 			qc_price,
-			true,
 		);
-
-		let lab_status = lab_status.unwrap();
 
 		if lab_status.is_verified() {
 			request.status = RequestStatus::Claimed;
@@ -621,6 +654,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			if found.is_some() {
 				return Err(Error::<T>::RequestAlreadyInList);
 			}
+
 			request_ids.push(request_id.clone());
 
 			RequestsByLabId::<T>::insert(lab_id.clone(), request_ids);
@@ -635,6 +669,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		request_id: Self::RequestId,
 		order_id: Self::OrderId,
 		dna_sample_tracking_id: Self::DNASampleTrackingId,
+		additional_staking_amount: Self::Balance,
 	) -> Result<Self::ServiceInvoice, Self::Error> {
 		let request = RequestById::<T>::get(request_id.clone());
 
@@ -645,15 +680,20 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let mut request = request.unwrap();
 
 		if requester_id != request.requester_address {
-			return Err(Error::<T>::Unauthorized);
+			return Err(Error::<T>::UnAuthorized);
 		}
 
-		if request.status == RequestStatus::Unstaked {
+		if request.lab_address.is_none() {
+			return Err(Error::<T>::LabNotFound);
+		}
+
+		if request.status == RequestStatus::WaitingForUnstaked
+			|| request.status == RequestStatus::Unstaked {
 			return Err(Error::<T>::RequestAlreadyUnstaked);
 		}
 
-		if request.exists == false {
-			return Err(Error::<T>::NoOffer);
+		if request.status != RequestStatus::Claimed {
+			return Err(Error::<T>::RequestUnableToProccess);
 		}
 
 		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
@@ -673,7 +713,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		if pay_amount.clone() > total_price.clone() {
 			excess = pay_amount.clone() - total_price.clone();
-			final_pay_amount = pay_amount.clone() - excess.clone();
+			final_pay_amount = total_price.clone();
 		}
 
 		if !excess.is_zero() {
@@ -683,14 +723,40 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				WithdrawReasons::TRANSFER,
 				ExistenceRequirement::KeepAlive,
 			) {
-				Ok(_imb) => {
-					Self::deposit_event(Event::ExcessAmountRefunded(
+				Ok(imb) => {
+					CurrencyOf::<T>::resolve_creating(&requester_id, imb);
+
+					Self::deposit_event(Event::StakingAmountExcessRefunded(
 						requester_id.clone(), request_id.clone(), excess.clone()
 					));
 				},
 				_ => {
-					return Err(Error::<T>::BadSignatur)
+					return Err(Error::<T>::BadSignature)
 				},
+			}
+		} else {
+			final_pay_amount = request.staking_amount + additional_staking_amount;
+
+			if final_pay_amount.clone() != total_price.clone() {
+				return Err(Error::<T>::NotValidAmount)
+			} else {
+				match CurrencyOf::<T>::withdraw(
+					&requester_id,
+					additional_staking_amount.clone(),
+					WithdrawReasons::TRANSFER,
+					ExistenceRequirement::KeepAlive,
+				) {
+					Ok(imb) => {
+						CurrencyOf::<T>::resolve_creating(&Self::staking_account_id(request_id), imb);
+
+						Self::deposit_event(Event::StakingAmountIncreased(
+							requester_id.clone(), request_id.clone(), additional_staking_amount.clone()
+						));
+					},
+					_ => {
+						return Err(Error::<T>::BadSignature)
+					},
+				}
 			}
 		}
 
@@ -706,9 +772,77 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			final_pay_amount.clone(),
 		);
 
+		ServiceInvoiceById::<T>::insert(request_id.clone(), service_invoice.clone());
+
 		request.status = RequestStatus::Processed;
 		RequestById::<T>::insert(request_id.clone(), request);
 
-		Ok(service_invoice)
+		Ok(service_invoice.clone())
+	}
+
+	fn finalize_request(
+		admin: Self::Admin,
+		request_id: Self::RequestId,
+		test_result_success: bool,
+	) -> Result<Self::ServiceInvoice, Self::Error> {
+		if admin.clone() != AdminKey::<T>::get() {
+            return Err(Error::<T>::UnAuthorized);
+        }
+
+		let request = RequestById::<T>::get(request_id.clone());
+
+		if request.is_none() {
+			return Err(Error::<T>::RequestNotFound);
+		}
+
+		let mut request = request.unwrap();
+
+		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
+
+		if service_offer.is_none() {
+			return Err(Error::<T>::ServiceOfferNotFound);
+		}
+
+		let _service_offer = service_offer.unwrap();
+
+		let service_invoice = ServiceInvoiceById::<T>::get(request_id.clone());
+
+		if service_invoice.is_none() {
+			return Err(Error::<T>::ServiceInvoiceNotFound);
+		}
+
+		let service_invoice = service_invoice.unwrap();
+
+		let requester_id = service_invoice.customer_address.clone();
+		let lab_id = service_invoice.seller_address.clone();
+
+		if request.status != RequestStatus::Processed {
+			return Err(Error::<T>::RequestUnableToFinalize);
+		}
+
+		let mut target_id = lab_id.clone();
+
+		if !test_result_success.clone() {
+			target_id = requester_id.clone();
+		}
+
+		match CurrencyOf::<T>::withdraw(
+			&Self::staking_account_id(request_id.clone()),
+			service_invoice.pay_amount.clone(),
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		) {
+			Ok(imb) => {
+				CurrencyOf::<T>::resolve_creating(&target_id, imb);
+			},
+			_ => {
+				return Err(Error::<T>::BadSignature)
+			},
+		}
+
+		request.status = RequestStatus::Finalized;
+		RequestById::<T>::insert(request_id.clone(), request.clone());
+
+		Ok(service_invoice.clone())
 	}
 }

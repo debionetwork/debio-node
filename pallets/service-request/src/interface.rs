@@ -1,6 +1,7 @@
 pub trait SeviceRequestInterface<T: frame_system::Config> {
 	type Error;
 	type Balance;
+	type Admin;
 	type Request;
 	type ServiceOffer;
 	type ServiceInvoice;
@@ -15,7 +16,7 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 	type OrderId;
 	type DNASampleTrackingId;
 
-	fn generate_service_request_id(
+	fn generate_request_id(
 		requester_id: Self::RequesterId,
 		country: Self::Country,
 		region: Self::Region,
@@ -38,7 +39,7 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 	) -> Result<Self::Request, Self::Error>;
 
 	fn retrieve_unstaked_amount(
-		requester_id: Self::RequesterId,
+		admin: Self::Admin,
 		request_id: Self::RequestId,
 	) -> Result<Self::Request, Self::Error>;
 
@@ -56,5 +57,12 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		request_id: Self::RequestId,
 		order_id: Self::OrderId,
 		dna_sample_tracking_id: Self::DNASampleTrackingId,
+		additional_staking_amount: Self::Balance,
+	) -> Result<Self::ServiceInvoice, Self::Error>;
+
+	fn finalize_request(
+		admin: Self::Admin,
+		request_id: Self::RequestId,
+		test_result_success: bool,
 	) -> Result<Self::ServiceInvoice, Self::Error>;
 }
