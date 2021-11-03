@@ -11,8 +11,8 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
-use labs::{LabInterface, LabVerificationStatus};
 pub use pallet::*;
+use labs::interface::{LabInterface, LabVerificationStatusTrait};
 use traits_services::{ServiceOwner, ServiceOwnerInfo};
 
 #[cfg(test)]
@@ -499,11 +499,11 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 			return Err(Error::<T>::RequestAlreadyClaimed);
 		}
 
-		// let lab_status = T::Labs::lab_verification_status(&lab_id);
+		let lab_status = T::Labs::lab_verification_status(&lab_id);
 
-		// if lab_status.is_none() {
-		// 	return Err(Error::<T>::LabNotExist);
-		// }
+		if lab_status.is_none() {
+			return Err(Error::<T>::LabNotExist);
+		}
 
 		let service_offer = ServiceOffer::new(
 			request_id.clone(),
@@ -514,26 +514,26 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 			true,
 		);
 
-		// let lab_status = lab_status.unwrap();
+		let lab_status = lab_status.unwrap();
 
-		// // TODO: validation if lab verification status is verified
-		// if lab_status == LabVerificationStatus::Verified {
-		// 	request.status = RequestStatus::Claimed;
-		// 	request.lab_address = Some(lab_id);
+		// TODO: validation if lab verification status is verified
+		if lab_status.is_verified() {
+			request.status = RequestStatus::Claimed;
+			request.lab_address = Some(lab_id);
 
-		// 	RequestById::<T>::insert(request_id, request.clone());
-		// 	ServiceOfferById::<T>::insert(request_id, service_offer.clone());
-		// } else {
-		// 	let mut request_ids = RequestsByLabId::<T>::get(lab_id.clone());
-		// 	let found = request_ids.iter().find(|x| x == &&request_id);
+			RequestById::<T>::insert(request_id, request.clone());
+			ServiceOfferById::<T>::insert(request_id, service_offer.clone());
+		} else {
+			let mut request_ids = RequestsByLabId::<T>::get(lab_id.clone());
+			let found = request_ids.iter().find(|x| x == &&request_id);
 
-		// 	if found.is_some() {
-		// 		return Err(Error::<T>::RequestAlreadyInList);
-		// 	}
-		// 	request_ids.push(request_id.clone());
+			if found.is_some() {
+				return Err(Error::<T>::RequestAlreadyInList);
+			}
+			request_ids.push(request_id.clone());
 
-		// 	RequestsByLabId::<T>::insert(lab_id.clone(), request_ids);
-		// }
+			RequestsByLabId::<T>::insert(lab_id.clone(), request_ids);
+		}
 
 		Ok(service_offer)
 	}
