@@ -23,6 +23,7 @@ pub struct ServiceInfo<Balance> {
     pub expected_duration: ExpectedDuration,
     pub category: Vec<u8>,
     pub description: Vec<u8>, // TODO: limit the length
+    pub dna_collection_process : Vec<u8>,
     pub test_result_sample: Vec<u8>,
     pub long_description: Option<Vec<u8>>,
     pub image: Option<Vec<u8>>,

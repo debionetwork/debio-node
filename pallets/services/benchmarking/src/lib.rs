@@ -68,6 +68,7 @@ benchmarks! {
 			category: "DeBio category".as_bytes().to_vec(),
 			description: "This is my description".as_bytes().to_vec(),
 			test_result_sample: "Test result sample".as_bytes().to_vec(),
+			dna_collection_process : "Dna Collection Process".as_bytes().to_vec(),
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
@@ -104,6 +105,7 @@ benchmarks! {
 			category: "DeBio category".as_bytes().to_vec(),
 			description: "This is my description".as_bytes().to_vec(),
 			test_result_sample: "Test result sample".as_bytes().to_vec(),
+			dna_collection_process : "Dna Collection Process".as_bytes().to_vec(),
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
@@ -121,6 +123,7 @@ benchmarks! {
 			category: "DeBio category 2".as_bytes().to_vec(),
 			description: "This is my description 2".as_bytes().to_vec(),
 			test_result_sample: "Test result sample 2".as_bytes().to_vec(),
+			dna_collection_process : "Dna Collection Process 2".as_bytes().to_vec(),
 			long_description: Some("This is my long description 2".as_bytes().to_vec()),
 			image: Some("This is my image 2".as_bytes().to_vec()),
 		};
@@ -157,6 +160,7 @@ benchmarks! {
 			category: "DeBio category".as_bytes().to_vec(),
 			description: "This is my description".as_bytes().to_vec(),
 			test_result_sample: "Test result sample".as_bytes().to_vec(),
+			dna_collection_process : "Dna Collection Process".as_bytes().to_vec(),
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
