@@ -7,7 +7,7 @@ use frame_support::{
 	scale_info::TypeInfo,
 	sp_std::prelude::*,
 	sp_runtime::{RuntimeDebug, traits::{AccountIdConversion, Hash, Zero}},
-	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	traits::{Currency, ExistenceRequirement, UnixTime, WithdrawReasons},
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
@@ -42,7 +42,7 @@ impl Default for RequestStatus {
 }
 
 #[derive(Clone, Decode, Default, Encode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
-pub struct Request<AccountId, Balance, Hash, Moment> {
+pub struct Request<AccountId, Balance, Hash> {
 	pub hash: Hash,
 	pub requester_address: AccountId,
 	pub lab_address: Option<AccountId>,
@@ -52,10 +52,10 @@ pub struct Request<AccountId, Balance, Hash, Moment> {
 	pub service_category: Vec<u8>,
 	pub staking_amount: Balance,
 	pub status: RequestStatus,
-	pub unstaked_at: Moment,
+	pub unstaked_at: u128,
 	pub exists: bool,
 }
-impl<AccountId, Balance, Hash, Moment> Request<AccountId, Balance, Hash, Moment> {
+impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 	pub fn new(
 		hash: Hash,
 		requester_address: AccountId,
@@ -65,7 +65,7 @@ impl<AccountId, Balance, Hash, Moment> Request<AccountId, Balance, Hash, Moment>
 		city: Vec<u8>,
 		service_category: Vec<u8>,
 		staking_amount: Balance,
-		unstaked_at: Moment,
+		unstaked_at: u128,
 		exists: bool,
 	) -> Self {
 		Self {
@@ -118,6 +118,31 @@ pub struct ServiceInvoice<AccountId, Balance, Hash> {
 	pub qc_price: Balance,
 	pub pay_amount: Balance,
 }
+impl<AccountId, Balance, Hash> ServiceInvoice<AccountId, Balance, Hash> {
+	pub fn new(
+		request_hash: Hash,
+		order_id: Hash,
+		service_id: Hash,
+		customer_address: AccountId,
+		seller_address: AccountId,
+		dna_sample_tracking_id: Hash,
+		testing_price: Balance,
+		qc_price: Balance,
+		pay_amount: Balance,
+	) -> Self {
+		Self {
+			request_hash,
+			order_id,
+			service_id,
+			customer_address,
+			seller_address,
+			dna_sample_tracking_id,
+			testing_price,
+			qc_price,
+			pay_amount,
+		}
+	}
+}
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -129,8 +154,7 @@ pub mod pallet {
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
 	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
-	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
-	pub type RequestOf<T> = Request<AccountIdOf<T>, BalanceOf<T>, HashOf<T>, MomentOf<T>>;
+	pub type RequestOf<T> = Request<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 	pub type ServiceOfferOf<T> = ServiceOffer<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 	pub type ServiceInvoiceOf<T> = ServiceInvoice<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 	pub type RequestIdOf<T> = HashOf<T>;
@@ -145,8 +169,9 @@ pub mod pallet {
 	pub type DNASampleTrackingIdOf<T> = HashOf<T>;
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config + pallet_timestamp::Config {
+	pub trait Config: frame_system::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type Labs: LabInterface<Self>;
 	}
@@ -178,7 +203,7 @@ pub mod pallet {
 		ServiceRequestCreated(AccountIdOf<T>, RequestOf<T>),
 		ServiceRequestWaitingForUnstaked(AccountIdOf<T>, RequestOf<T>),
 		ServiceRequestUnstaked(AccountIdOf<T>, RequestOf<T>),
-		UnstakedAmountRetrieved(AccountIdOf<T>, RequestOf<T>),
+		ServiceRequestWaitingForClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
 		ServiceRequestClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
 		ServiceRequestProcessed(AccountIdOf<T>, ServiceInvoiceOf<T>),
 		ExcessAmountRefunded(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
@@ -194,9 +219,11 @@ pub mod pallet {
 		RequestAlreadyClaimed,
 		RequestAlreadyUnstaked,
 		RequestAlreadyInList,
+		ServiceOfferNotFound,
 		Unauthorized,
 		LabNotExist,
 		NoOffer,
+		WaitingForUnstaked,
 	}
 
 	#[pallet::hooks]
@@ -241,10 +268,10 @@ pub mod pallet {
 		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
 		pub fn create_request(
 			origin: OriginFor<T>,
-			country: Vec<u8>,
-			region: Vec<u8>,
-			city: Vec<u8>,
-			service_category: Vec<u8>,
+			country: CountryOf,
+			region: RegionOf,
+			city: CityOf,
+			service_category: ServiceCategoryOf,
 			staking_amount: BalanceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
@@ -258,6 +285,45 @@ pub mod pallet {
 				staking_amount.clone(),
 			) {
 				Ok(request) => {
+					Self::deposit_event(Event::ServiceRequestCreated(who.clone(), request));
+					Ok(().into())
+				}
+				Err(error) => Err(error)?,
+			}
+		}
+
+		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		pub fn unstake(
+			origin: OriginFor<T>,
+			request_id: HashOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as SeviceRequestInterface<T>>::unstake(
+				who.clone(),
+				request_id.clone(),
+			) {
+				Ok(request) => {
+					Self::deposit_event(Event::ServiceRequestWaitingForUnstaked(who.clone(), request));
+					Ok(().into())
+				}
+				Err(error) => Err(error)?,
+			}
+		}
+
+		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		pub fn retrieve_unstaked_amount(
+			origin: OriginFor<T>,
+			requester_id: RequesterIdOf<T>,
+			request_id: HashOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as SeviceRequestInterface<T>>::retrieve_unstaked_amount(
+				requester_id.clone(),
+				request_id.clone(),
+			) {
+				Ok(request) => {
 					Self::deposit_event(Event::ServiceRequestUnstaked(who.clone(), request));
 					Ok(().into())
 				}
@@ -268,8 +334,8 @@ pub mod pallet {
 		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
 		pub fn claim_request(
 			origin: OriginFor<T>,
-			request_id: T::Hash,
-			service_id: T::Hash,
+			request_id: HashOf<T>,
+			service_id: HashOf<T>,
 			testing_price: BalanceOf<T>,
 			qc_price: BalanceOf<T>,
 		) -> DispatchResultWithPostInfo {
@@ -282,8 +348,12 @@ pub mod pallet {
 				testing_price,
 				qc_price,
 			) {
-				Ok(service_offer) => {
-					Self::deposit_event(Event::ServiceRequestClaimed(who.clone(), service_offer));
+				Ok((request, service_offer)) => {
+					if request.status == RequestStatus::Claimed {
+						Self::deposit_event(Event::ServiceRequestClaimed(who.clone(), service_offer));
+					} else {
+						Self::deposit_event(Event::ServiceRequestWaitingForClaimed(who.clone(), service_offer));
+					}
 					Ok(().into())
 				}
 				Err(error) => Err(error)?,
@@ -291,12 +361,24 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
-		pub fn unstake(origin: OriginFor<T>, request_id: T::Hash) -> DispatchResultWithPostInfo {
+		pub fn process_request(
+			origin: OriginFor<T>,
+			lab_id: LabIdOf<T>,
+			request_id: HashOf<T>,
+			order_id: HashOf<T>,
+			dna_sample_tracking_id: HashOf<T>,
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as SeviceRequestInterface<T>>::unstake(who.clone(), request_id.clone()) {
-				Ok(request) => {
-					Self::deposit_event(Event::ServiceRequestCreated(who.clone(), request));
+			match <Self as SeviceRequestInterface<T>>::process_request(
+				who.clone(),
+				lab_id.clone(),
+				request_id.clone(),
+				order_id.clone(),
+				dna_sample_tracking_id.clone(),
+			) {
+				Ok(service_invoice) => {
+					Self::deposit_event(Event::ServiceRequestProcessed(who.clone(), service_invoice));
 					Ok(().into())
 				}
 				Err(error) => Err(error)?,
@@ -313,7 +395,7 @@ impl<T: Config> Pallet<T> {
 }
 
 /// Service Request Interface Implementation
-impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<T> {
+impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type Balance = BalanceOf<T>;
 	type Request = RequestOf<T>;
@@ -361,7 +443,7 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
             return Err(Error::<T>::NotValidAmount);
         }
 
-		let now = pallet_timestamp::Pallet::<T>::get();
+		let now: u128 = T::TimeProvider::now().as_millis();
 		let service_request_id = Self::generate_service_request_id(
 			requester_id.clone(),
 			country.clone(),
@@ -388,7 +470,7 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 					city.clone(),
 					service_category.clone(),
 					staking_amount.clone(),
-					now.clone(),
+					now,
 					true
 				);
 
@@ -432,49 +514,60 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 			return Err(Error::<T>::Unauthorized);
 		}
 
-		request.status = RequestStatus::Unstaked;
-		request.unstaked_at = pallet_timestamp::Pallet::<T>::get();
+		request.status = RequestStatus::WaitingForUnstaked;
+		request.unstaked_at = T::TimeProvider::now().as_millis();
 
 		RequestById::<T>::insert(request_id, request.clone());
 
 		Ok(request)
 	}
 
-	// fn retrieve_unstaked_amount(
-	// 	requester_id: Self::RequesterId,
-	// 	request_id: Self::RequestId,
-	// ) -> Result<Self::Request, Self::Error> {
-	// 	let request = RequestById::<T>::get(request_id.clone());
+	fn retrieve_unstaked_amount(
+		requester_id: Self::RequesterId,
+		request_id: Self::RequestId,
+	) -> Result<Self::Request, Self::Error> {
+		let request = RequestById::<T>::get(request_id.clone());
 
-	// 	if request.is_none() {
-	// 		return Err(Error::<T>::RequestNotFound);
-	// 	}
+		if request.is_none() {
+			return Err(Error::<T>::RequestNotFound);
+		}
 
-	// 	let request = request.unwrap();
+		let mut request = request.unwrap();
 
-	// 	if request.exists == false {
-	// 		return Err(Error::<T>::RequestNotExist);
-	// 	}
+		if request.exists == false {
+			return Err(Error::<T>::RequestNotExist);
+		}
 
-	// 	if request.requester_address != requester_id {
-	// 		return Err(Error::<T>::Unauthorized);
-	// 	}
+		if request.requester_address != requester_id {
+			return Err(Error::<T>::Unauthorized);
+		}
 
-	// 	let now: u128 = pallet_timestamp::Pallet::<T>::get().into() as u128;
-	// 	let six_days = 3600 * 144 * 1000;
-	// 	let unstaked_at = request.unstaked_at.unique_saturated_into();
+		let now: u128 = T::TimeProvider::now().as_millis();
+		let six_days: u128 = 3600 as u128 * 144 as u128 * 1000 as u128;
+		let unstaked_at: u128 = request.unstaked_at;
 
-	// 	if (now - request.unstaked_at.unique_saturated_into()) == six_days {
-	// 		// TODO: change error event
-	// 		return Err(Error::<T>::NotFound);
-	// 	}
+		if (now - unstaked_at) == six_days {
+			return Err(Error::<T>::WaitingForUnstaked);
+		}
 
-	// 	// TODO: transfer to requester_id
+		match CurrencyOf::<T>::withdraw(
+			&Self::staking_account_id(request_id),
+			request.staking_amount.clone(),
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		) {
+			Ok(imb) => {
+				CurrencyOf::<T>::resolve_creating(&requester_id, imb);
 
-	// 	RequestById::<T>::insert(request_id, request.clone());
+				request.status = RequestStatus::Unstaked;
 
-	// 	Ok(request)
-	// }
+				RequestById::<T>::insert(request_id, request.clone());
+
+				Ok(request)
+			},
+			_ => Err(Error::<T>::BadSignatur),
+		}
+	}
 
 	fn claim_request(
 		lab_id: Self::LabId,
@@ -482,7 +575,7 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 		service_id: Self::ServiceId,
 		testing_price: Self::Balance,
 		qc_price: Self::Balance,
-	) -> Result<Self::ServiceOffer, Self::Error> {
+	) -> Result<(Self::Request, Self::ServiceOffer), Self::Error> {
 		let request = RequestById::<T>::get(request_id.clone());
 
 		if request.is_none() {
@@ -516,7 +609,6 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 
 		let lab_status = lab_status.unwrap();
 
-		// TODO: validation if lab verification status is verified
 		if lab_status.is_verified() {
 			request.status = RequestStatus::Claimed;
 			request.lab_address = Some(lab_id);
@@ -535,45 +627,89 @@ impl<T: Config + pallet_timestamp::Config> SeviceRequestInterface<T> for Pallet<
 			RequestsByLabId::<T>::insert(lab_id.clone(), request_ids);
 		}
 
-		Ok(service_offer)
+		Ok((request, service_offer))
 	}
 
-	// fn process_request(
-	// 	requester_id: Self::RequesterId,
-	// 	lab_id: Self::LabId,
-	// 	request_id: Self::RequestId,
-	// 	order_id: Self::OrderId,
-	// 	dna_sample_tracking_id: Self::DNASampleTrackingId,
-	// ) -> Result<Self::ServiceInvoice, Self::Error> {
-	// 	let request = RequestById::<T>::get(request_id.clone());
+	fn process_request(
+		requester_id: Self::RequesterId,
+		lab_id: Self::LabId,
+		request_id: Self::RequestId,
+		order_id: Self::OrderId,
+		dna_sample_tracking_id: Self::DNASampleTrackingId,
+	) -> Result<Self::ServiceInvoice, Self::Error> {
+		let request = RequestById::<T>::get(request_id.clone());
 
-	// 	if request.is_none() {
-	// 		return Err(Error::<T>::RequestNotFound);
-	// 	}
+		if request.is_none() {
+			return Err(Error::<T>::RequestNotFound);
+		}
 
-	// 	let request = request.unwrap();
+		let mut request = request.unwrap();
 
-	// 	if requester_id != request.requester_address {
-	// 		return Err(Error::<T>::Unauthorized);
-	// 	}
+		if requester_id != request.requester_address {
+			return Err(Error::<T>::Unauthorized);
+		}
 
-	// 	if request.status == RequestStatus::Unstaked {
-	// 		return Err(Error::<T>::RequestAlreadyUnstaked);
-	// 	}
+		if request.status == RequestStatus::Unstaked {
+			return Err(Error::<T>::RequestAlreadyUnstaked);
+		}
 
-	// 	if request.status == false {
-	// 		return Err(Error::<T>::NoOffer);
-	// 	}
+		if request.exists == false {
+			return Err(Error::<T>::NoOffer);
+		}
 
-	// 	let pay_amount = request.staking_amount;
-	// 	let testing_price = request.testing_price;
-	// 	let qc_price = request.qc_price;
+		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
 
-	// 	// Refund excess payment
-	// 	let total_price = testing_price + qc_price;
+		if service_offer.is_none() {
+			return Err(Error::<T>::ServiceOfferNotFound);
+		}
 
-	// 	// TODO: transfer
+		let service_offer = service_offer.unwrap();
 
-	// 	Ok(())
-	// }
+		let pay_amount = request.staking_amount;
+		let testing_price = service_offer.testing_price;
+		let qc_price = service_offer.qc_price;
+		let total_price = testing_price.clone() + qc_price.clone();
+		let mut excess = Zero::zero();
+		let mut final_pay_amount = pay_amount.clone();
+
+		if pay_amount.clone() > total_price.clone() {
+			excess = pay_amount.clone() - total_price.clone();
+			final_pay_amount = pay_amount.clone() - excess.clone();
+		}
+
+		if !excess.is_zero() {
+			match CurrencyOf::<T>::withdraw(
+				&Self::staking_account_id(request_id),
+				request.staking_amount.clone(),
+				WithdrawReasons::TRANSFER,
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(imb) => {
+					Self::deposit_event(Event::ExcessAmountRefunded(
+						requester_id.clone(), request_id.clone(), excess.clone()
+					));
+				},
+				_ => {
+					return Err(Error::<T>::BadSignatur)
+				},
+			}
+		}
+
+		let service_invoice = ServiceInvoice::new(
+			request_id.clone(),
+			order_id.clone(),
+			service_offer.service_id.clone(),
+			requester_id.clone(),
+			lab_id.clone(),
+			dna_sample_tracking_id.clone(),
+			testing_price.clone(),
+			qc_price.clone(),
+			final_pay_amount.clone(),
+		);
+
+		request.status = RequestStatus::Processed;
+		RequestById::<T>::insert(request_id.clone(), request);
+
+		Ok(service_invoice)
+	}
 }

@@ -643,6 +643,7 @@ impl services::Config for Runtime {
 
 impl service_request::Config for Runtime {
     type Event = Event;
+	type TimeProvider = pallet_timestamp::Pallet<Runtime>;
     type Currency = Balances;
 	type Labs = Labs;
 }
