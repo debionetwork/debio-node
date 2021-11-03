@@ -630,6 +630,7 @@ impl doctors::Config for Runtime {
     type DoctorCertifications = DoctorCertifications;
     type EthereumAddress = EthereumAddress;
     type UserProfile = UserProfile;
+	type WeightInfo = ();
 }
 
 impl services::Config for Runtime {
