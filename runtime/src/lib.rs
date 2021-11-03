@@ -716,7 +716,7 @@ construct_runtime!(
 		// Include the custom logic from the template pallet in the runtime.
 		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
-		ServiceRequest: service_request::{Pallet, Call, Storage, Event<T>},
+		ServiceRequest: service_request::{Pallet, Call, Storage, Config<T>, Event<T>},
         Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
