@@ -644,6 +644,7 @@ impl services::Config for Runtime {
 impl service_request::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
+	type Labs = Labs;
 }
 
 impl orders::Config for Runtime {
