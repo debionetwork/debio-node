@@ -28,9 +28,7 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
 
 ## Substrate Pallets Dependencies
-pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 labs = {path = '../labs', default-features = false}
-traits-services = { path = '../../traits/services', default-features = false }
 
 [features]
 default = ['std']
@@ -46,8 +44,6 @@ std = [
     'frame-support/std',
     'frame-system/std',
 	'frame-benchmarking/std',
-
-	'pallet-timestamp/std',
 ]
 runtime-benchmarks = ['frame-benchmarking']
 try-runtime = ['frame-support/try-runtime']

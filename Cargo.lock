@@ -6738,14 +6738,12 @@ dependencies = [
  "frame-support",
  "frame-system",
  "labs",
- "pallet-timestamp",
  "parity-scale-codec",
  "scale-info",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-services",
 ]
 
 [[package]]
