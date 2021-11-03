@@ -19,13 +19,46 @@ impl Default for LabVerificationStatus {
     }
 }
 
+pub trait LabVerificationStatusTrait {
+    fn is_verified(&self) -> bool;
+    fn is_unverified(&self) -> bool;
+    fn is_rejected(&self) -> bool;
+    fn is_revoked(&self) -> bool;
+}
+impl LabVerificationStatusTrait for LabVerificationStatus {
+    fn is_verified(&self) -> bool {
+        match *self {
+            LabVerificationStatus::Verified => true,
+            _ => false
+        }
+    }
+    fn is_unverified(&self) -> bool {
+        match *self {
+            LabVerificationStatus::Unverified => true,
+            _ => false
+        }
+    }
+    fn is_rejected(&self) -> bool {
+        match *self {
+            LabVerificationStatus::Rejected => true,
+            _ => false
+        }
+    }
+    fn is_revoked(&self) -> bool {
+        match *self {
+            LabVerificationStatus::Revoked => true,
+            _ => false
+        }
+    }
+}
+
 /// Interface for Lab Pallet
 /// Defines the functionalities of Lab Pallet
 pub trait LabInterface<T: frame_system::Config> {
     type Error;
     type LabInfo;
     type Lab;
-    type LabVerificationStatus;
+    type LabVerificationStatus: LabVerificationStatusTrait;
 
     /// Get lab by associated account_id
     fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab>;
