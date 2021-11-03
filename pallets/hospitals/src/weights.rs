@@ -30,12 +30,19 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::Weight};
+use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
+/// Weight functions needed for hospitals.
+pub trait WeightInfo {
+	fn register_hospital() -> Weight;
+	fn update_hospital() -> Weight;
+	fn deregister_hospital() -> Weight;
+}
+
 /// Weight functions for hospitals.
-pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> hospitals::WeightInfo for WeightInfo<T> {
+pub struct DeBioWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for DeBioWeight<T> {
 	fn register_hospital() -> Weight {
 		(114_619_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
@@ -50,5 +57,24 @@ impl<T: frame_system::Config> hospitals::WeightInfo for WeightInfo<T> {
 		(123_568_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+	}
+}
+
+// For backwards compatibility and tests
+impl WeightInfo for () {
+	fn register_hospital() -> Weight {
+		(114_619_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+	}
+	fn update_hospital() -> Weight {
+		(169_194_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(5 as Weight))
+	}
+	fn deregister_hospital() -> Weight {
+		(123_568_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
 }

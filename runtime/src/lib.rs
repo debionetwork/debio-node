@@ -622,6 +622,7 @@ impl hospitals::Config for Runtime {
     type HospitalCertifications = HospitalCertifications;
     type EthereumAddress = EthereumAddress;
     type UserProfile = UserProfile;
+	type WeightInfo = ();
 }
 
 impl doctors::Config for Runtime {
