@@ -13,7 +13,6 @@ use frame_support::{
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
 use labs::interface::{LabInterface, LabVerificationStatusTrait};
-use traits_services::{ServiceOwner, ServiceOwnerInfo};
 
 #[cfg(test)]
 mod mock;
@@ -684,7 +683,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				WithdrawReasons::TRANSFER,
 				ExistenceRequirement::KeepAlive,
 			) {
-				Ok(imb) => {
+				Ok(_imb) => {
 					Self::deposit_event(Event::ExcessAmountRefunded(
 						requester_id.clone(), request_id.clone(), excess.clone()
 					));
