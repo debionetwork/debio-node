@@ -660,6 +660,7 @@ impl user_profile::Config for Runtime {
 impl electronic_medical_record::Config for Runtime {
     type Event = Event;
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
+	type ElectronicMedicalRecordWeightInfo = ();
 }
 
 impl certifications::Config for Runtime {
