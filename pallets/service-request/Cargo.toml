@@ -29,6 +29,8 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 
 ## Substrate Pallets Dependencies
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+labs = {path = '../labs', default-features = false}
+traits-services = { path = '../../traits/services', default-features = false }
 
 [features]
 default = ['std']
