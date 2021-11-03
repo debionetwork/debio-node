@@ -18,24 +18,11 @@ pub use weights::WeightInfo;
 
 pub mod interface;
 pub use crate::interface::LabInterface;
+pub use crate::interface::LabVerificationStatus;
 use frame_support::pallet_prelude::*;
 use traits_certifications::CertificationOwnerInfo;
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
-
-// LabVerificationStatus
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub enum LabVerificationStatus {
-    Unverified,
-    Verified,
-    Rejected,
-    Revoked
-}
-impl Default for LabVerificationStatus {
-    fn default() -> Self {
-        Self::Unverified
-    }
-}
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
@@ -110,7 +97,7 @@ where
     pub fn get_account_id(&self) -> &AccountId {
         &self.account_id
     }
-
+    
     pub fn add_service(&mut self, service_id: Hash) -> () {
         &self.services.push(service_id);
     }
@@ -496,6 +483,11 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 
     fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab> {
         Self::lab_by_account_id(account_id)
+    }
+
+    fn lab_verification_status(account_id: &T::AccountId) -> Option<Self::LabVerificationStatus> {
+        let lab = Self::lab_by_account_id(account_id).unwrap();
+        Some(lab.verification_status)
     }
 }
 

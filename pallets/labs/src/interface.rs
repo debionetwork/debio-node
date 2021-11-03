@@ -1,4 +1,23 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
+pub use scale_info::TypeInfo;
+
 use sp_std::prelude::*;
+use frame_support::pallet_prelude::*;
+
+// LabVerificationStatus
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub enum LabVerificationStatus {
+    Unverified,
+    Verified,
+    Rejected,
+    Revoked
+}
+impl Default for LabVerificationStatus {
+    fn default() -> Self {
+        Self::Unverified
+    }
+}
 
 /// Interface for Lab Pallet
 /// Defines the functionalities of Lab Pallet
@@ -10,6 +29,10 @@ pub trait LabInterface<T: frame_system::Config> {
 
     /// Get lab by associated account_id
     fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab>;
+    /// Get lab verification status
+    fn lab_verification_status(
+        account_id: &T::AccountId
+    ) -> Option<Self::LabVerificationStatus>;
     /// Get the account_ids of labs in a location
     fn labs_by_country_region_city(
         country_region_code: &Vec<u8>,
