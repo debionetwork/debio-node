@@ -168,6 +168,7 @@ jobs:
           key: ${{ steps.secrets.outputs.SSH_KEY }}
           port: ${{ steps.secrets.outputs.SSH_PORT }}
           script: |
+            ./connect.sh
             helm repo add debio https://charts.debio.network
             helm repo update
             helm upgrade debio-node debio/debio-node \
