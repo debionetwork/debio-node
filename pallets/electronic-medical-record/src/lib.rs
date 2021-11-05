@@ -13,6 +13,7 @@ mod benchmarking;
 
 use traits_electronic_medical_record::{
     ElectronicMedicalRecordFile as ElectronicMedicalRecordFileT,
+    ElectronicMedicalRecordFileByElectronicMedicalRecord,
     ElectronicMedicalRecordFilesProvider,
 };
 
@@ -146,7 +147,7 @@ pub mod pallet {
     use crate::weights::WeightInfo;
     use crate::interface::ElectronicMedicalRecordInterface;
     use crate::{
-        ElectronicMedicalRecord, ElectronicMedicalRecordFile,
+        ElectronicMedicalRecord, ElectronicMedicalRecordFile, ElectronicMedicalRecordFileByElectronicMedicalRecord
     };
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
@@ -155,7 +156,7 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        type ElectronicMedicalRecord: ElectronicMedicalRecordFileOwner<Self>;
+        type ElectronicMedicalRecord: ElectronicMedicalRecordFileByElectronicMedicalRecord<Self>;
         type ElectronicMedicalRecordWeightInfo: WeightInfo;
     }
 
@@ -202,11 +203,6 @@ pub mod pallet {
     #[pallet::getter(fn electronic_medical_record_count_by_owner)]
     pub type ElectronicMedicalRecordCountByOwner<T> =
         StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
-
-    #[pallet::storage]
-    #[pallet::getter(fn electronic_medical_record_file_by_electronic_medical_record_id)]
-    pub type ElectronicMedicalRecordFileByElectronicMedicalRecordId<T> = 
-        StorageMap<_, Blake2_128Concat, HashOf<T>, ElectronicMedicalRecordFileOf<T>>;
 
     #[pallet::storage]
     #[pallet::getter(fn electronic_medical_record_file_count_by_electronic_medical_record)]
@@ -473,6 +469,9 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             &electronic_medical_record_id,
         );
 
+        // Associate created electronic_medical_record_file to the electronic_medical_record
+        T::ElectronicMedicalRecord::associate(electronic_medical_record_id, &electronic_medical_record_file_id);
+
         Ok(electronic_medical_record_file)
     }
 
@@ -493,9 +492,16 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         if electronic_medical_record.owner_id != owner_id.clone() {
             return Err(Error::<T>::NotElectronicMedicalRecordOwner)?;
         }
+
         // Remove electronic_medical_record_file from storage
         let electronic_medical_record_file =
             ElectronicMedicalRecordFileById::<T>::take(electronic_medical_record_file_id).unwrap();
+
+        // disassociate electronic_medical_record_file reference from the electronic_medical_record
+        T::ElectronicMedicalRecord::disassociate(
+            &electronic_medical_record_file.electronic_medical_record_id,
+            &electronic_medical_record_file.id,
+        );
             
         // Decrement counts
         Self::sub_electronic_medical_record_file_count();
@@ -670,5 +676,31 @@ where
 {
     fn get_electronic_medical_record_id(&self) -> &T::Hash {
         &self.get_id()
+    }
+}
+
+impl<T: Config> ElectronicMedicalRecordFileByElectronicMedicalRecord<T> for Pallet<T> {
+    type ElectronicMedicalRecord = ElectronicMedicalRecord<T::AccountId, T::Hash>;
+
+    fn associate(electronic_medical_record_id: &T::Hash, electronic_medical_record_file_id: &T::Hash) -> () {
+        <ElectronicMedicalRecordById<T>>::mutate(electronic_medical_record_id, |electronic_medical_record| {
+            match electronic_medical_record {
+                None => (), // If electronic_medical_record does not exist, do nothing
+                Some(electronic_medical_record) => {
+                    electronic_medical_record.add_file(*electronic_medical_record_file_id);
+                }
+            }
+        });
+    }
+
+    fn disassociate(electronic_medical_record_id: &T::Hash, electronic_medical_record_file_id: &T::Hash) -> () {
+        ElectronicMedicalRecordById::<T>::mutate(electronic_medical_record_id, |electronic_medical_record| {
+            match electronic_medical_record {
+                None => (),
+                Some(electronic_medical_record) => {
+                    electronic_medical_record.remove_file(*electronic_medical_record_file_id);
+                }
+            }
+        });
     }
 }

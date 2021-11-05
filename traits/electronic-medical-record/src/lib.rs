@@ -31,7 +31,6 @@ pub trait ElectronicMedicalRecordFileOwnerInfo<T: Config> {
 pub trait ElectronicMedicalRecordFileByElectronicMedicalRecord<T: Config> {
     type ElectronicMedicalRecord: ElectronicMedicalRecordFileOwnerInfo<T> + sp_std::fmt::Debug;
 
-    fn get_electronic_medical_record_id(electronic_medical_record_id: &T::Hash) -> Option<Self::ElectronicMedicalRecord>;
     fn associate(electronic_medical_record_id: &T::Hash, electronic_medical_record_file_id: &T::Hash) -> ();
     fn disassociate(electronic_medical_record_id: &T::Hash, electronic_medical_record_file_id: &T::Hash) -> ();
 }
