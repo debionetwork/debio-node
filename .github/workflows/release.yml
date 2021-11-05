@@ -28,6 +28,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     needs: compute-build-info
+    if: "!contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -63,6 +64,7 @@ jobs:
   build-and-publish-docker-image:
     runs-on: ubuntu-20.04
     needs: [compute-build-info, build]
+    if: "!contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -119,9 +121,9 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   deploy-pre-release:
-    if: "github.event.release.prerelease"
     runs-on: ubuntu-20.04
     needs: [compute-build-info, build-and-publish-docker-image]
+    if: "github.event.release.prerelease && !contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

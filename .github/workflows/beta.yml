@@ -234,3 +234,29 @@ jobs:
               --set-string volume.storageClassName=premium-rwo \
               --set-string volume.dataSize=50Gi
             kubectl rollout status statefulset/debio-node-full1
+
+  publish-draft-beta-release:
+    runs-on: self-hosted
+
+    needs: [deploy]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          configuration: '.github/workflows/rcb_config.json'
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          draft: true
+          prerelease: true
