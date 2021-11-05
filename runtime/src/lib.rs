@@ -655,6 +655,7 @@ impl orders::Config for Runtime {
     type Services = Services;
     type GeneticTesting = GeneticTesting;
     type Currency = Balances;
+	type OrdersWeightInfo = ();
 }
 
 impl genetic_testing::Config for Runtime {
