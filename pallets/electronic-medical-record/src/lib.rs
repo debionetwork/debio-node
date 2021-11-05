@@ -16,6 +16,7 @@ use traits_electronic_medical_record::{
     ElectronicMedicalRecordFilesProvider,
 };
 
+pub mod weights;
 pub mod interface;
 pub use interface::ElectronicMedicalRecordInterface;
 use sp_std::prelude::*;
@@ -135,6 +136,7 @@ where
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use crate::interface::ElectronicMedicalRecordInterface;
     use crate::{
         ElectronicMedicalRecord, ElectronicMedicalRecordFile, ElectronicMedicalRecordFileOwner,
@@ -147,6 +149,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config + pallet_timestamp::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         type ElectronicMedicalRecord: ElectronicMedicalRecordFileOwner<Self>;
+        type ElectronicMedicalRecordWeightInfo: WeightInfo;
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -223,7 +226,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::add_electronic_medical_record())]
         pub fn add_electronic_medical_record(
             origin: OriginFor<T>,
             title: Vec<u8>,
@@ -244,7 +247,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::remove_electronic_medical_record())]
         pub fn remove_electronic_medical_record(
             origin: OriginFor<T>,
         ) -> DispatchResultWithPostInfo {
@@ -263,7 +266,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::add_electronic_medical_record_file())]
         pub fn add_electronic_medical_record_file(
             origin: OriginFor<T>,
             mut title: Vec<u8>,
@@ -289,7 +292,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::remove_electronic_medical_record_file())]
         pub fn remove_electronic_medical_record_file(
             origin: OriginFor<T>,
             electronic_medical_record_file_id: HashOf<T>,
