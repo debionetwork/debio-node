@@ -153,7 +153,7 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
             return Err(Error::<T>::Unauthorized);
         }
 
-        let imbalance = T::Currency::slash_reserved(to_punish, collateral).0;
+        let imbalance = T::Currency::slash(to_punish, collateral).0;
         T::Slash::on_unbalanced(imbalance);
 
         Ok(().into())
