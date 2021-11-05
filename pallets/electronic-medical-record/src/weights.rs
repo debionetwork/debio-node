@@ -30,12 +30,20 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::Weight};
+use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
+/// Weight functions needed for electronic_medical_record.
+pub trait WeightInfo {
+	fn add_electronic_medical_record() -> Weight;
+	fn remove_electronic_medical_record() -> Weight;
+	fn add_electronic_medical_record_file() -> Weight;
+	fn remove_electronic_medical_record_file() -> Weight;
+}
+
 /// Weight functions for electronic_medical_record.
-pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> electronic_medical_record::WeightInfo for WeightInfo<T> {
+pub struct DeBioWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for DeBioWeight<T> {
 	fn add_electronic_medical_record() -> Weight {
 		(15_569_000 as Weight)
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
@@ -54,5 +62,28 @@ impl<T: frame_system::Config> electronic_medical_record::WeightInfo for WeightIn
 		(40_359_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+	}
+}
+
+// For backwards compatibility and tests
+impl WeightInfo for () {
+	fn add_electronic_medical_record() -> Weight {
+		(15_569_000 as Weight)
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+	}
+	fn remove_electronic_medical_record() -> Weight {
+		(21_093_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+	}
+	fn add_electronic_medical_record_file() -> Weight {
+		(41_256_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+	}
+	fn remove_electronic_medical_record_file() -> Weight {
+		(40_359_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
 }
