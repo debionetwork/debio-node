@@ -23,8 +23,13 @@ benchmarks! {
             "DeBio EMR".as_bytes().to_vec(),
             "DeBio EMR Category".as_bytes().to_vec()
         );
+
+        let _emr_ids = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(
+            caller.clone()
+        ).unwrap();
 	}: remove_electronic_medical_record(
-        RawOrigin::Signed(caller)
+        RawOrigin::Signed(caller),
+        _emr_ids[0]
     )
     
 	add_electronic_medical_record_file {
@@ -36,8 +41,12 @@ benchmarks! {
             "DeBio EMR".as_bytes().to_vec(),
             "DeBio EMR Category".as_bytes().to_vec()
         );
+
+        let _emr_ids = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(caller.clone())
+            .unwrap();
 	}: add_electronic_medical_record_file(
         RawOrigin::Signed(caller),
+        _emr_ids[0],
         "DeBio EMR Document Title".as_bytes().to_vec(),
         "DeBio EMR Description".as_bytes().to_vec(),
         "DeBio EMR Link".as_bytes().to_vec()
@@ -53,18 +62,22 @@ benchmarks! {
             "DeBio EMR Category".as_bytes().to_vec(),
         );
 
+        let _emr_ids = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(caller.clone())
+            .unwrap();
+
 		let _add_electronic_medical_record_file = ElectronicMedicalRecord::<T>::add_electronic_medical_record_file(
             caller_origin.clone(),
+            _emr_ids[0],
             "DeBio EMR Document Title".as_bytes().to_vec(),
             "DeBio EMR Description".as_bytes().to_vec(),
             "DeBio EMR Link".as_bytes().to_vec(),
         );
 
-        let _emr_info = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(caller.clone())
+        let _emr = ElectronicMedicalRecord::<T>::electronic_medical_record_by_id(_emr_ids[0])
             .unwrap();
 	}: remove_electronic_medical_record_file(
         RawOrigin::Signed(caller), 
-        _emr_info.files[0]
+        _emr.files[0]
     )
 }
 

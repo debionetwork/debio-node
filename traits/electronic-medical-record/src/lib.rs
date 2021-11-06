@@ -7,7 +7,7 @@ use pallet_timestamp::Config as TimeConfig;
 pub trait ElectronicMedicalRecordFile<T: Config + TimeConfig> {
     fn get_id(&self) -> &T::Hash;
     fn get_uploaded_at(&self) -> &T::Moment;
-    fn get_owner_id(&self) -> &T::AccountId;
+    fn get_electronic_medical_record_id(&self) -> &T::Hash;
 }
 
 pub trait ElectronicMedicalRecordFilesProvider<T: Config + TimeConfig> {
@@ -25,13 +25,12 @@ pub trait ElectronicMedicalRecordFilesProvider<T: Config + TimeConfig> {
 }
 
 pub trait ElectronicMedicalRecordFileOwnerInfo<T: Config> {
-    fn get_owner_id(&self) -> &T::AccountId;
+    fn get_electronic_medical_record_id(&self) -> &T::Hash;
 }
 
-pub trait ElectronicMedicalRecordFileOwner<T: Config> {
-    type Owner: ElectronicMedicalRecordFileOwnerInfo<T> + sp_std::fmt::Debug;
+pub trait ElectronicMedicalRecordFileByElectronicMedicalRecord<T: Config> {
+    type ElectronicMedicalRecord: ElectronicMedicalRecordFileOwnerInfo<T> + sp_std::fmt::Debug;
 
-    fn get_owner(id: &T::AccountId) -> Option<Self::Owner>;
-    fn associate(owner_id: &T::AccountId, electronic_medical_record_file_id: &T::Hash) -> ();
-    fn disassociate(owner_id: &T::AccountId, electronic_medical_record_file_id: &T::Hash) -> ();
+    fn associate(electronic_medical_record_id: &T::Hash, electronic_medical_record_file_id: &T::Hash) -> ();
+    fn disassociate(electronic_medical_record_id: &T::Hash, electronic_medical_record_file_id: &T::Hash) -> ();
 }
