@@ -82,21 +82,21 @@ pub type Hash = sp_core::H256;
 // Weights used in the runtime.
 mod weights;
 
-/// DBIO, the native token, uses 18 decimals of precision.
+/// The native token, uses 18 decimals of precision.
 pub mod currency {
     use super::Balance;
 
-    pub const DBIO: Balance = 1_000_000_000_000_000_000;
-    pub const KILODBIO: Balance = DBIO * 1_000;
-    pub const MILLIDBIO: Balance = DBIO / 1_000;
-    pub const MICRODBIO: Balance = MILLIDBIO / 1_000;
-    pub const NANODBIO: Balance = MICRODBIO / 1_000;
+	pub const UNITS: Balance = 1_000_000_000_000_000_000;
+	pub const DOLLARS: Balance = UNITS;
+	pub const CENTS: Balance = DOLLARS / 100;
+	pub const MILLICENTS: Balance = CENTS / 1_000;
 
-    pub const BYTE_FEE: Balance = 100 * MICRODBIO;
+	pub const EXISTENSIAL_DEPOSIT: Balance = CENTS;
+	pub const BYTE_FEE: Balance = 10 * MILLICENTS;
 
-    pub const fn deposit(items: u32, bytes: u32) -> Balance {
-        (items as Balance) * DBIO + (bytes as Balance) * BYTE_FEE
-    }
+	pub const fn deposit(items: u32, bytes: u32) -> Balance {
+		(items as Balance) * CENTS + (bytes as Balance) * BYTE_FEE
+	}
 }
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
@@ -363,7 +363,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-	pub const ExistentialDeposit: Balance = 0;
+	pub const ExistentialDeposit: Balance = currency::EXISTENSIAL_DEPOSIT;
 	// For weight estimation, we assume that the most locks on an individual account will be 50.
 	// This number may need to be adjusted in the future if this assumption no longer holds true.
 	pub const MaxLocks: u32 = 50;
@@ -512,11 +512,11 @@ impl pallet_mmr::Config for Runtime {
 }
 
 parameter_types! {
-	pub const AssetDeposit: Balance = 100 * currency::DBIO;
-	pub const ApprovalDeposit: Balance = 1 * currency::DBIO;
+	pub const AssetDeposit: Balance = 100 * currency::DOLLARS;
+	pub const ApprovalDeposit: Balance = 1 * currency::DOLLARS;
 	pub const StringLimit: u32 = 50;
-	pub const MetadataDepositBase: Balance = 10 * currency::DBIO;
-	pub const MetadataDepositPerByte: Balance = 1 * currency::DBIO;
+	pub const MetadataDepositBase: Balance = 10 * currency::DOLLARS;
+	pub const MetadataDepositPerByte: Balance = 1 * currency::DOLLARS;
 }
 
 impl pallet_assets::Config for Runtime {
