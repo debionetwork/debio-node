@@ -18,9 +18,6 @@ use sp_runtime::traits::{IdentifyAccount, Verify};
 
 use hex_literal::hex;
 
-// The URL for the telemetry server.
-// const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
-
 /// Node `ChainSpec` extensions.
 ///
 /// Additional parameters for some Substrate core modules,
@@ -69,7 +66,8 @@ where
 /// Helper function to generate stash, controller and session key from seed
 pub fn authority_keys_from_seed(
 	seed: &str,
-) -> (AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId) {
+	stash_amount: Balance,
+) -> (AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId, Balance) {
 	(
 		get_account_id_from_seed::<sr25519::Public>(seed),
 		get_from_seed::<BabeId>(seed),
@@ -77,6 +75,7 @@ pub fn authority_keys_from_seed(
 		get_from_seed::<ImOnlineId>(seed),
 		get_from_seed::<BeefyId>(seed),
 		get_from_seed::<OctopusId>(seed),
+		stash_amount,
 	)
 }
 
@@ -97,12 +96,57 @@ pub fn appchain_config(
 	premined_amount: Balance,
 	era_payout: Balance,
 ) -> (String, String, Balance, Balance) {
-	(
-		relay_contract.to_string(),
-		asset_id_by_name.to_string(),
-		premined_amount,
-		era_payout,
-	)
+	(relay_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
+}
+
+pub fn mainnet_config() -> Result<ChainSpec, String> {
+	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
+	let properties = get_properties("DBIO", 18, 42);
+
+	Ok(ChainSpec::from_genesis(
+		// Name
+		"DeBio",
+		// ID
+		"debio",
+		ChainType::Live,
+		move || {
+			genesis(
+				// WASM Binary
+				wasm_binary,
+				// Sudo account
+				// 5FR73HBVwSpPjnPsBZPDVyuHQS1KE8jvSL3pSud6F6HZcuBA
+				hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"].into(),
+				// Initial PoA authorities
+				vec![],
+				// Pre-funded accounts
+				vec![],
+				// Appchain config
+				appchain_config(
+					// Appchain Relay Contract
+					"",
+					// Appchain Asset Id by Name
+					"usdc.testnet",
+					// Premined Amount
+					87_500_000 * DBIO,
+					// Era Payout
+					6_849 * DBIO,
+				),
+				// API admin account
+				// 5FpcRYvUMB3bNRdbj5YDwKeGHKVeWmdjnzY45RdTJSoSGcKN
+				hex!["a63135764844b7b889f0447cc5127c4aa1b78fb998878549bf66ed7b0ee49753"].into(),
+			)
+		},
+		// Bootnodes
+		vec![],
+		// Telemetry
+		None,
+		// Protocol ID
+		Some("debio"),
+		// Properties
+		Some(properties),
+		// Extensions
+		Default::default(),
+	))
 }
 
 pub fn testnet_config() -> Result<ChainSpec, String> {
@@ -187,6 +231,8 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["03ef93c4f8f2b34f0945ac57f666555f9a6a211cbb7f21118dfc8049100347162d"].unchecked_into(),
 						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
 						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].unchecked_into(),
+						// Stash amount
+						100 * DBIO,
 					),
 					(
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
@@ -201,16 +247,33 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["029c1ead8e295430573bb984b8b38c9479b7a9a236725d7c2090182fd38bf4d9b5"].unchecked_into(),
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
 						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].unchecked_into(),
+						// Stash amount
+						100 * DBIO,
 					),
 				],
 				// Pre-funded accounts
 				vec![
-					// Sudo account
-					// 5CB5udaxY6zFqApVHWPQTGTW5FszotkXKAUD48fvi5Y7FSR2
-					hex!["04ddb3f730857ed801327da2242dff4d4d85e25b33c43db6f328d55904247f40"].into(),
-					// API admin account
-					// 5ELYNFhFz9tauMxfjgTGhd6sRbnndddEXqh3UxWsPi6Rjajg
-					hex!["648c728f7fcf0ae26a44410cf0ba4ea15b27b3169a4f809a14097680b8d0bc53"].into(),
+					(
+						// Sudo account
+						// 5CB5udaxY6zFqApVHWPQTGTW5FszotkXKAUD48fvi5Y7FSR2
+						hex!["04ddb3f730857ed801327da2242dff4d4d85e25b33c43db6f328d55904247f40"].into(),
+						// Balance amount
+						12_498_000 * DBIO,
+					),
+					(
+						// Valiadator 1 account
+						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
+						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].into(),
+						// Balance amount
+						1_000 * DBIO,
+					),
+					(
+						// Valiadator 2 account
+						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
+						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].into(),
+						// Balance amount
+						1_000 * DBIO,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -273,6 +336,8 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["0209f537ca85f50055cf9553d72c8a594516a915b6c040109ed5450da0185c3ff1"].unchecked_into(),
 						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
 						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].unchecked_into(),
+						// Stash amount
+						100 * DBIO,
 					),
 					(
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
@@ -287,16 +352,33 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["020281390b3b2a5f25dcda82477a2da7a00a2570724b24d60e82446a63f81db4c7"].unchecked_into(),
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
 						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].unchecked_into(),
+						// Stash amount
+						100 * DBIO,
 					),
 				],
 				// Pre-funded accounts
 				vec![
-					// Sudo account
-					// 5G3nLeySH5sFzD9WPKt2kB3KNVnazsZykaFfotouvjf1RZWY
-					hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"].into(),
-					// API admin account
-					// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
-					hex!["02c2cffef38fbf56b32d6a49eeeecc0e3345a1e0549cd8817d52f6cf2e414152"].into(),
+					(
+						// Sudo account
+						// 5G3nLeySH5sFzD9WPKt2kB3KNVnazsZykaFfotouvjf1RZWY
+						hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"].into(),
+						// Balance amount
+						12_498_000 * DBIO,
+					),
+					(
+						// Valiadator 1 account
+						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
+						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].into(),
+						// Balance amount
+						1_000 * DBIO,
+					),
+					(
+						// Valiadator 2 account
+						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
+						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].into(),
+						// Balance amount
+						1_000 * DBIO,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -346,20 +428,27 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				// Initial PoA authorities
 				vec![
-					authority_keys_from_seed("Alice"),
-					authority_keys_from_seed("Bob"),
+					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					authority_keys_from_seed("Alice", 100 * DBIO),
+					// 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
+					authority_keys_from_seed("Bob", 100 * DBIO),
 				],
 				// Pre-funded accounts
 				vec![
-					// Sudo account and API admin account
-					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					// Additionals
-					get_account_id_from_seed::<sr25519::Public>("Bob"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie"),
-					get_account_id_from_seed::<sr25519::Public>("Dave"),
-					get_account_id_from_seed::<sr25519::Public>("Eve"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+					(
+						// Sudo account, Validator, 1and API admin account
+						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						// Balance amount
+						12_499_000 * DBIO,
+					),
+					(
+						// Validator 2
+						// 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
+						get_account_id_from_seed::<sr25519::Public>("Bob"),
+						// Balance amount
+						1_000 * DBIO,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -408,18 +497,19 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				// Initial PoA authorities
-				vec![authority_keys_from_seed("Alice")],
+				vec![
+					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					authority_keys_from_seed("Alice", 100 * DBIO),
+				],
 				// Pre-funded accounts
 				vec![
-					// Sudo account and API admin account
-					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					// Additionals
-					get_account_id_from_seed::<sr25519::Public>("Bob"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie"),
-					get_account_id_from_seed::<sr25519::Public>("Dave"),
-					get_account_id_from_seed::<sr25519::Public>("Eve"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+					(
+						// Sudo account and API admin account
+						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						// Balance amount
+						12_500_000 * DBIO,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -454,28 +544,36 @@ pub fn development_config() -> Result<ChainSpec, String> {
 fn genesis(
 	wasm_binary: &[u8],
 	root_key: AccountId,
-	initial_authorities: Vec<(AccountId, BabeId, GrandpaId, ImOnlineId, BeefyId, OctopusId)>,
-	endowed_accounts: Vec<AccountId>,
+	initial_authorities: Vec<(
+		AccountId,
+		BabeId,
+		GrandpaId,
+		ImOnlineId,
+		BeefyId,
+		OctopusId,
+		Balance,
+	)>,
+	endowed_accounts: Vec<(AccountId, Balance)>,
 	appchain_config: (String, String, Balance, Balance),
 	api_admin_key: AccountId,
 ) -> GenesisConfig {
-	const ENDOWMENT: Balance = 1_000_000 * DBIO;
-	const STASH: Balance = 100 * DBIO;
-
 	GenesisConfig {
 		system: SystemConfig {
-			// Add Wasm runtime to storage.
 			code: wasm_binary.to_vec(),
 			changes_trie_config: Default::default(),
 		},
-		balances: BalancesConfig {
-			balances: endowed_accounts.iter().cloned().map(|x| (x, ENDOWMENT)).collect(),
-		},
 		sudo: SudoConfig { key: root_key },
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
+		babe: BabeConfig {
+			authorities: Default::default(),
+			epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG),
+		},
 		grandpa: Default::default(),
 		im_online: Default::default(),
 		beefy: Default::default(),
+		assets: Default::default(),
+		balances: BalancesConfig {
+			balances: endowed_accounts.iter().map(|x| (x.0.clone(), x.1)).collect(),
+		},
 		session: SessionConfig {
 			keys: initial_authorities
 				.iter()
@@ -494,25 +592,16 @@ fn genesis(
 				})
 				.collect(),
 		},
-		assets: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
 			anchor_contract: appchain_config.0,
 			asset_id_by_name: vec![(appchain_config.1, 0)],
 			premined_amount: appchain_config.2,
-			validators: initial_authorities.iter().map(|x| (x.0.clone(), STASH)).collect(),
+			validators: initial_authorities.iter().map(|x| (x.0.clone(), x.6)).collect(),
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
-		orders: OrdersConfig {
-			escrow_key: api_admin_key.clone(),
-		},
-        rewards: RewardsConfig {
-            rewarder_key: api_admin_key.clone(),
-        },
-        labs: LabsConfig {
-            lab_verifier_key: api_admin_key.clone(),
-        },
-		service_request: ServiceRequestConfig {
-            admin_key: api_admin_key.clone(),
-        },
+		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
+        rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
+        labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
+		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
 	}
 }
