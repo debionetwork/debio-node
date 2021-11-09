@@ -1,5 +1,5 @@
 use debio_runtime::{
-	currency::DBIO, opaque::Block, opaque::SessionKeys, AccountId, Balance, Signature,
+	currency::UNITS as DBIO, opaque::Block, opaque::SessionKeys, AccountId, Balance, Signature,
 	WASM_BINARY, BABE_GENESIS_EPOCH_CONFIG,
 	GenesisConfig, BabeConfig, BalancesConfig,
 	OctopusAppchainConfig, OctopusLposConfig, SessionConfig, SudoConfig, SystemConfig,
