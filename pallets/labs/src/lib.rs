@@ -97,7 +97,7 @@ where
     pub fn get_account_id(&self) -> &AccountId {
         &self.account_id
     }
-    
+
     pub fn add_service(&mut self, service_id: Hash) -> () {
         &self.services.push(service_id);
     }
@@ -486,8 +486,14 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
     }
 
     fn lab_verification_status(account_id: &T::AccountId) -> Option<Self::LabVerificationStatus> {
-        let lab = Self::lab_by_account_id(account_id).unwrap();
-        Some(lab.verification_status)
+		let lab = Self::lab_by_account_id(account_id);
+
+		if lab.is_none() {
+			return None;
+		}
+
+		let lab = lab.unwrap();
+		Some(lab.verification_status)
     }
 }
 
