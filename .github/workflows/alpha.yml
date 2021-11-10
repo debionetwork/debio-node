@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      ## if DEV_DEPLOY exist (number) == true
+      ## if STG_DEPLOY exist (number) == true
       - name: Get Status Deploy
         id: deployment-info
         env:
