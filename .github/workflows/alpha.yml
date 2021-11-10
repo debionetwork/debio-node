@@ -26,6 +26,26 @@ jobs:
           echo $version
           echo "::set-output name=latest_tag::$version"
 
+  deployment-info:
+    runs-on: ubuntu-20.04
+
+    outputs:
+      deploy: ${{ steps.deployment-info.outputs.deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      ## if DEV_DEPLOY exist (number) == true
+      - name: Get Status Deploy
+        id: deployment-info
+        env:
+          DEPLOY: ${{ secrets.STG_DEPLOY }}
+        shell: bash
+        run: |
+          echo "deploy: ${{ env.DEPLOY != '' }}"
+          echo "::set-output name=deploy::${{ env.DEPLOY != '' }}"
+
   build:
     runs-on: ubuntu-20.04
     needs: compute-build-info
@@ -61,9 +81,35 @@ jobs:
       - name: Generate sha256 hash
         run: sha256sum chain-spec.json> SHA256SUMS
 
+  publish-draft-alpha-release:
+    runs-on: ubuntu-20.04
+
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          configuration: '.github/workflows/rcb_config.json'
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          draft: true
+          prerelease: true
+
   build-and-publish-docker-image:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, build]
+    needs: [compute-build-info, publish-draft-alpha-release]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -121,7 +167,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, build-and-publish-docker-image]
+    needs: [compute-build-info, build-and-publish-docker-image, deployment-info]
+    if: needs.deployment-info.outputs.deploy == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -234,29 +281,3 @@ jobs:
               --set-string volume.storageClassName=premium-rwo \
               --set-string volume.dataSize=50Gi
             kubectl rollout status statefulset/debio-node-full1
-
-  publish-draft-alpha-release:
-    runs-on: self-hosted
-
-    needs: [deploy]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Build changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          configuration: '.github/workflows/rcb_config.json'
-
-      - name: Create draft release
-        uses: softprops/action-gh-release@v1
-        with:
-          body: ${{ steps.build_changelog.outputs.changelog }}
-          draft: true
-          prerelease: true

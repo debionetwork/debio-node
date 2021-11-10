@@ -26,6 +26,26 @@ jobs:
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
           echo "::set-output name=date::$(date +'%Y%m%d')"
 
+  deployment-info:
+    runs-on: ubuntu-20.04
+
+    outputs:
+      deploy: ${{ steps.deployment-info.outputs.deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      ## if DEV_DEPLOY exist (number) == true
+      - name: Get Status Deploy
+        id: deployment-info
+        env:
+          DEPLOY: ${{ secrets.DEV_DEPLOY }}
+        shell: bash
+        run: |
+          echo "deploy: ${{ env.DEPLOY != '' }}"
+          echo "::set-output name=deploy::${{ env.DEPLOY != '' }}"
+
   build:
     runs-on: ubuntu-20.04
     needs: compute-build-info
@@ -121,7 +141,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, build-and-publish-docker-image]
+    needs: [compute-build-info, build-and-publish-docker-image, deployment-info]
+    if: needs.deployment-info.outputs.deploy == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
