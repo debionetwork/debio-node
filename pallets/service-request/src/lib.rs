@@ -52,31 +52,29 @@ pub struct Request<AccountId, Balance, Hash> {
 	pub service_category: Vec<u8>,
 	pub staking_amount: Balance,
 	pub status: RequestStatus,
-	pub unstaked_at: u128,
+	pub unstaked_at: Option<u128>,
 }
 impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 	pub fn new(
 		hash: Hash,
 		requester_address: AccountId,
-		lab_address: Option<AccountId>,
 		country: Vec<u8>,
 		region: Vec<u8>,
 		city: Vec<u8>,
 		service_category: Vec<u8>,
 		staking_amount: Balance,
-		unstaked_at: u128,
 	) -> Self {
 		Self {
 			hash,
 			requester_address,
-			lab_address,
+			lab_address: None,
 			country,
 			region,
 			city,
 			service_category,
 			staking_amount,
             status: RequestStatus::default(),
-            unstaked_at,
+            unstaked_at: None,
         }
     }
 }
@@ -240,14 +238,17 @@ pub mod pallet {
     #[pallet::getter(fn admin_key)]
     pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
+	/// Get Request by RequestId
 	#[pallet::storage]
 	#[pallet::getter(fn request_by_id)]
 	pub type RequestById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, RequestOf<T>>;
 
+	/// Get RequestIds by LabId
 	#[pallet::storage]
 	#[pallet::getter(fn requests_by_lab_id)]
 	pub type RequestsByLabId<T> = StorageMap<_, Blake2_128Concat, LabIdOf<T>, Vec<RequestIdOf<T>>, ValueQuery>;
 
+	/// Get  ServiceCountRequest by Country, Region, City, ServiceCategoryOf
 	#[pallet::storage]
 	#[pallet::getter(fn service_count_request)]
 	pub type ServiceCountRequest<T> = StorageNMap<
@@ -262,10 +263,12 @@ pub mod pallet {
 		ValueQuery,
 	>;
 
+	/// Get ServiceOffer by RequestId
 	#[pallet::storage]
 	#[pallet::getter(fn service_offer_by_id)]
 	pub type ServiceOfferById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceOfferOf<T>>;
 
+	/// Get ServiceInvoice by RequestId
 	#[pallet::storage]
 	#[pallet::getter(fn service_invoice_by_id)]
 	pub type ServiceInvoiceById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceInvoiceOf<T>>;
@@ -473,7 +476,6 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
             return Err(Error::<T>::NotValidAmount);
         }
 
-		let now: u128 = T::TimeProvider::now().as_millis();
 		let request_id = Self::generate_request_id(
 			requester_id.clone(),
 			country.clone(),
@@ -494,13 +496,11 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				let request = Request::new(
 					request_id.clone(),
 					requester_id.clone(),
-					None,
 					country.clone(),
 					region.clone(),
 					city.clone(),
 					service_category.clone(),
 					staking_amount.clone(),
-					now,
 				);
 
 				RequestById::<T>::insert(request_id.clone(), request.clone());
@@ -545,7 +545,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		request.status = RequestStatus::WaitingForUnstaked;
 		let now: u128 = T::TimeProvider::now().as_millis();
-		request.unstaked_at = now;
+		request.unstaked_at = Some(now);
 
 		RequestById::<T>::insert(request_id, request.clone());
 
@@ -575,7 +575,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let requester_id = request.requester_address.clone();
 
 		let now: u128 = T::TimeProvider::now().as_millis();
-		let unstaked_at: u128 = request.unstaked_at;
+		let unstaked_at: u128 = request.unstaked_at.unwrap();
 		// TODO: move to constant runtime config
 		let six_days: u128 = 3600 as u128 * 144 as u128 * 1000 as u128;
 
