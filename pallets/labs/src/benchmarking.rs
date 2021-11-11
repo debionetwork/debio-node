@@ -7,6 +7,7 @@ use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_call
 use frame_system::RawOrigin;
 
 use frame_support::sp_runtime::traits::Hash;
+use traits_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	register_lab {
@@ -14,9 +15,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -38,9 +39,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -77,9 +78,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -102,9 +103,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),

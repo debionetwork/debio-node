@@ -36,6 +36,7 @@ services = { path = '../../services', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 orders = { path = '../../orders', default-features = false }
 
+traits-area-code = { path = '../../../traits/area-code', default-features = false }
 traits-services = { path = '../../../traits/services', default-features = false }
 traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
 traits-order = { path = '../../../traits/order', default-features = false }
@@ -63,6 +64,7 @@ std = [
     'user-profile/std',
     'orders/std',
 
+    'traits-area-code/std',
     'traits-services/std',
     'traits-user-profile/std',
     'traits-order/std',

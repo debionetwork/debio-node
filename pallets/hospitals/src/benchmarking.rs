@@ -5,15 +5,16 @@ use crate::Pallet as Hospitals;
 use crate::HospitalInfo;
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
+use traits_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	register_hospital {
 		let hospital = HospitalInfo {
             name: "DeBio Hospital".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
@@ -32,9 +33,9 @@ benchmarks! {
 		let old_hospital = HospitalInfo {
             name: "DeBio Hospital".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
@@ -65,9 +66,9 @@ benchmarks! {
 		let hospital = HospitalInfo {
             name: "DeBio Hospital".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),

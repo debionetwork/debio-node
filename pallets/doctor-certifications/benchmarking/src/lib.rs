@@ -26,6 +26,7 @@ pub trait Config:
 {}
 
 use doctor_certifications::Call;
+use traits_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	create_certification {
@@ -35,9 +36,9 @@ benchmarks! {
 		let doctor = DoctorInfo {
             name: "DeBio Doctor".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
@@ -62,9 +63,9 @@ benchmarks! {
 		let doctor = DoctorInfo {
             name: "DeBio Doctor".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
@@ -101,9 +102,9 @@ benchmarks! {
 		let doctor = DoctorInfo {
             name: "DeBio Doctor".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
