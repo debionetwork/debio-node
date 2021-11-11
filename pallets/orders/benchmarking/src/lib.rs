@@ -24,7 +24,15 @@ use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
 #[allow(unused)]
 use orders::Pallet as Orders;
 use orders::{
-	Config as OrdersConfig
+	Config as OrdersConfig,
+	EscrowKey
+};
+
+#[allow(unused)]
+use genetic_testing::Pallet as GeneticTesting;
+use genetic_testing::{
+	DnaSampleStatus, DnaTestResultSubmission,
+	Config as GeneticTestingConfig
 };
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
@@ -37,16 +45,16 @@ pub trait Config:
 	+ LabsConfig
 	+ UserProfileConfig
 	+ OrdersConfig
+	+ GeneticTestingConfig
 {}
 
 use orders::Call;
-use sp_core::Decode;
 use frame_support::sp_runtime::traits::Hash;
 use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	create_order {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
@@ -93,7 +101,7 @@ benchmarks! {
 	)
 	
 	cancel_order {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
@@ -150,7 +158,7 @@ benchmarks! {
 	)
 	
 	set_order_paid {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
@@ -207,7 +215,7 @@ benchmarks! {
 	)
 	
 	fulfill_order {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
@@ -262,6 +270,24 @@ benchmarks! {
 		let _set_order_paid = Orders::<T>::set_order_paid(
 			caller_origin.clone(), 
 			_order.id.clone()
+		);
+
+		let _dna_test_result = DnaTestResultSubmission {
+			comments: Some("DNA Test Result comments".as_bytes().to_vec()),
+			result_link: Some("DNA Test Result result_link".as_bytes().to_vec()),
+			report_link: Some("DNA Test Result report_link".as_bytes().to_vec())
+		};
+
+		let _submit_test_result = GeneticTesting::<T>::submit_test_result(
+			caller_origin.clone(),
+			_order.dna_sample_tracking_id.clone(),
+			_dna_test_result
+		);
+
+		let _ = GeneticTesting::<T>::process_dna_sample(
+			caller_origin.clone(),
+			_order.dna_sample_tracking_id,
+			DnaSampleStatus::ResultReady
 		);
 	}: fulfill_order(
 		RawOrigin::Signed(caller), 
@@ -269,7 +295,7 @@ benchmarks! {
 	)
 	
 	set_order_refunded {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
@@ -324,6 +350,13 @@ benchmarks! {
 		let _set_order_paid = Orders::<T>::set_order_paid(
 			caller_origin.clone(), 
 			_order.id.clone()
+		);
+
+		let _ = GeneticTesting::<T>::reject_dna_sample(
+			caller_origin.clone(),
+			_order.dna_sample_tracking_id,
+			"Rejected title".as_bytes().to_vec(),
+			"Rejected description".as_bytes().to_vec()
 		);
 	}: set_order_refunded(
 		RawOrigin::Signed(caller), 

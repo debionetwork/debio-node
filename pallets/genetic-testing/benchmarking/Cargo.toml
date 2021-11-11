@@ -70,4 +70,5 @@ std = [
     'traits-services/std',
     'traits-user-profile/std',
     'traits-order/std',
+    'traits-genetic-testing/std',
 ]

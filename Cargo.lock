@@ -845,7 +845,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-certifications",
 ]
 
@@ -1535,7 +1534,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-doctor-certifications",
 ]
 
@@ -2246,7 +2244,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-genetic-testing",
  "traits-order",
  "traits-services",
@@ -2485,7 +2482,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-hospital-certifications",
 ]
 
@@ -4227,6 +4223,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "hex-literal",
  "labs",
  "orders",
@@ -4239,7 +4236,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
+ "traits-genetic-testing",
  "traits-order",
  "traits-services",
  "traits-user-profile",
@@ -6806,7 +6803,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-services",
  "user-profile",
 ]
