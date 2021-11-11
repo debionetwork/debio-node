@@ -99,17 +99,17 @@ where
     }
 
     pub fn add_service(&mut self, service_id: Hash) -> () {
-        &self.services.push(service_id);
+        self.services.push(service_id);
     }
 
     pub fn remove_service(&mut self, service_id: Hash) -> () {
         if let Some(pos) = &self.services.iter().position(|x| *x == service_id) {
-            &self.services.remove(*pos);
+            self.services.remove(*pos);
         }
     }
 
     pub fn add_certification(&mut self, certification_id: Hash) -> () {
-        &self.certifications.push(certification_id);
+        self.certifications.push(certification_id);
     }
 
     pub fn remove_certification(&mut self, certification_id: Hash) -> () {
@@ -118,7 +118,7 @@ where
             .iter()
             .position(|x| *x == certification_id)
         {
-            &self.certifications.remove(*pos);
+            self.certifications.remove(*pos);
         }
     }
 }
