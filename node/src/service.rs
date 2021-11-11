@@ -20,7 +20,6 @@
 
 //! Service implementation. Specialized wrapper over substrate service.
 
-use frame_system_rpc_runtime_api::AccountNonceApi;
 use debio_runtime::{opaque::Block, RuntimeApi};
 use sc_client_api::{ExecutorProvider, RemoteBackend};
 use sc_consensus_babe::{self, SlotProportion};
