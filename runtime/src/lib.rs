@@ -619,6 +619,7 @@ impl rewards::Config for Runtime {
     type Currency = Balances;
     type Reward = ();
     type Slash = ();
+	type WeightInfo = ();
 }
 
 impl hospitals::Config for Runtime {

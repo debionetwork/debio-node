@@ -19,6 +19,9 @@ mod benchmarking;
 
 use sp_std::prelude::*;
 
+pub mod weights;
+pub use weights::WeightInfo;
+
 #[frame_support::pallet]
 pub mod pallet {
     use crate::*;
@@ -34,6 +37,7 @@ pub mod pallet {
         type Reward: OnUnbalanced<PositiveImbalanceOf<Self>>;
         /// Handler for the unbalanced decrement when slashing (burning collateral)
         type Slash: OnUnbalanced<NegativeImbalanceOf<Self>>;
+        type WeightInfo: WeightInfo;
     }
     // -----------------------------------------
 
@@ -120,7 +124,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(20_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::reward_funds())]
         pub fn reward_funds(
             origin: OriginFor<T>,
             to_reward: T::AccountId,
