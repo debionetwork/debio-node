@@ -617,8 +617,6 @@ impl labs::Config for Runtime {
 impl rewards::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-    type Reward = ();
-    type Slash = ();
 }
 
 impl hospitals::Config for Runtime {
