@@ -2,8 +2,6 @@
 
 use sp_std::prelude::*;
 
-use codec::EncodeLike;
-
 use frame_support::{
 	codec::{Encode, Decode},
 	scale_info::TypeInfo,
@@ -13,8 +11,6 @@ use frame_support::{
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct DnaSampleTrackingId([u8; 21]);
-impl EncodeLike<DnaSampleTrackingId> for [u8; 21] {}
-impl EncodeLike<DnaSampleTrackingId> for &[u8; 21] {}
 impl DnaSampleTrackingId {
     pub fn from_vec(_vec_id: Vec<u8>) -> Self {
         let _array = _vec_id.try_into()
