@@ -163,13 +163,23 @@ pub mod helpers {
     }
 }
 
+use codec::EncodeLike;
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct CountryRegionCode([u8; 7]); // country_code-region_code -> XX-YYYY
+impl EncodeLike<CountryRegionCode> for Vec<u8> {}
+impl EncodeLike<CountryRegionCode> for &Vec<u8> {}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct CityCode([u8; 7]); // city_code -> ZZZZ
+impl EncodeLike<CityCode> for Vec<u8> {}
+impl EncodeLike<CityCode> for &Vec<u8> {}
+
 #[frame_support::pallet]
 pub mod pallet {
     use crate::interface::LabInterface;
-    use crate::Lab;
-    use crate::LabInfo;
+    use crate::{Lab, LabInfo};
     use crate::*;
-    use codec::EncodeLike;
     use frame_support::traits::Currency;
     use frame_support::dispatch::DispatchResultWithPostInfo;
     use frame_system::pallet_prelude::*;
@@ -212,8 +222,6 @@ pub mod pallet {
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
     pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>>;
-    pub type CountryRegionCode = Vec<u8>; // country_code-region_code -> XX-YYYY
-    pub type CityCode = Vec<u8>; // city_code -> ZZZZ
     pub type CurrencyOf<T> = <T as self::Config>::Currency;
     pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 
