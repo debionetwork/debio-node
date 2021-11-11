@@ -40,9 +40,7 @@ jobs:
           body: ${{ steps.build_changelog.outputs.changelog }}
           draft: true
           files: |
-            ./target/release/wbuild/debio-runtime/debio_runtime.wasm
-            ./target/release/wbuild/debio-runtime/debio_runtime.compact.wasm
             ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
             ./target/release/debio
-            ./chain-spec.json
-            ./SHA256SUMS   
+            ./release/chain-spec.json
+            ./release/SHA256SUMS   
