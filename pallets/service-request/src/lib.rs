@@ -719,7 +719,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		if !excess.is_zero() {
 			match CurrencyOf::<T>::withdraw(
 				&Self::staking_account_id(request_id),
-				request.staking_amount.clone(),
+				excess.clone(),
 				WithdrawReasons::TRANSFER,
 				ExistenceRequirement::KeepAlive,
 			) {
