@@ -106,7 +106,7 @@ pub struct ServiceInvoice<AccountId, Balance, Hash> {
 	pub service_id: Hash,
 	pub customer_address: AccountId,
 	pub seller_address: AccountId,
-	pub dna_sample_tracking_id: Hash,
+	pub dna_sample_tracking_id: Vec<u8>,
 	pub testing_price: Balance,
 	pub qc_price: Balance,
 	pub pay_amount: Balance,
@@ -118,7 +118,7 @@ impl<AccountId, Balance, Hash> ServiceInvoice<AccountId, Balance, Hash> {
 		service_id: Hash,
 		customer_address: AccountId,
 		seller_address: AccountId,
-		dna_sample_tracking_id: Hash,
+		dna_sample_tracking_id: Vec<u8>,
 		testing_price: Balance,
 		qc_price: Balance,
 		pay_amount: Balance,
@@ -160,7 +160,7 @@ pub mod pallet {
 	pub type ServiceCategoryOf = Vec<u8>;
 	pub type ServiceIdOf<T> = HashOf<T>;
 	pub type OrderIdOf<T> = HashOf<T>;
-	pub type DNASampleTrackingIdOf<T> = HashOf<T>;
+	pub type DNASampleTrackingIdOf = Vec<u8>;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -375,7 +375,7 @@ pub mod pallet {
 			lab_id: LabIdOf<T>,
 			request_id: HashOf<T>,
 			order_id: HashOf<T>,
-			dna_sample_tracking_id: HashOf<T>,
+			dna_sample_tracking_id: DNASampleTrackingIdOf,
 			additional_staking_amount: BalanceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
@@ -443,7 +443,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type ServiceCategory = ServiceCategoryOf;
 	type ServiceId = ServiceIdOf<T>;
 	type OrderId = OrderIdOf<T>;
-	type DNASampleTrackingId = DNASampleTrackingIdOf<T>;
+	type DNASampleTrackingId = DNASampleTrackingIdOf;
 
 	fn generate_request_id(
 		requester_id: Self::RequesterId,
