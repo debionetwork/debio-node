@@ -159,7 +159,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, deployment-info, publish-draft-beta-release]
+    needs: [compute-build-info, publish-draft-beta-release]
     env:
       DEPLOY: ${{ secrets.PREPROD_DEPLOY }}
     steps:
