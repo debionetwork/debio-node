@@ -1,8 +1,10 @@
 use super::*;
 
 #[allow(unused)]
-use crate::Pallet as Labs;
-use crate::{LabInfo, LabVerificationStatus};
+use crate::{
+	Pallet as Labs,
+    LabInfo, LabVerificationStatus, LabVerifierKey
+};
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 
@@ -71,7 +73,7 @@ benchmarks! {
     )
     
 	update_lab_verification_status {
-		let caller: T::AccountId = whitelisted_caller();
+		let caller: T::AccountId = LabVerifierKey::<T>::get();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_lab = LabInfo {
