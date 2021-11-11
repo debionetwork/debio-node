@@ -43,4 +43,4 @@ jobs:
             ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
             ./target/release/debio
             ./release/chain-spec.json
-            ./release/SHA256SUMS   
+            ./release/SHA256SUMS
