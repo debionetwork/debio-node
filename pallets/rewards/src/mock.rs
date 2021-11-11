@@ -67,21 +67,15 @@ pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig {
-			system: frame_system::Config {
-				// Add Wasm runtime to storage.
-				code: wasm_binary.to_vec(),
-				changes_trie_config: Default::default(),
-			},
-			balances: pallet_balances::Config {
-				balances: vec![],
-			},
-			rewards: RewardsConfig {
-				rewarder_key: hex_literal::hex!["d86cd72037edd033b21e5a54fb8ecb687effe90e0af2d12c1c23acba2021ac56"].into(),
-			},
-		};
-		
-		storage.build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+		let mut storage = system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
+		storage.extend(
+			GenesisConfig::<Runtime> {
+				rewards: RewardsConfig {
+					rewarder_key: hex_literal::hex!["d86cd72037edd033b21e5a54fb8ecb687effe90e0af2d12c1c23acba2021ac56"].into(),
+				},
+			}.build_storage()
+				.unwrap()
+		);
+		storage.into()
 	}
 }
