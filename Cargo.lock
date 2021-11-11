@@ -839,6 +839,7 @@ dependencies = [
  "labs",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "sp-core",
  "sp-io",
@@ -1528,6 +1529,7 @@ dependencies = [
  "frame-system",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "sp-core",
  "sp-io",
@@ -1545,13 +1547,13 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives-area-code",
  "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-doctor-certifications",
  "traits-user-profile",
 ]
@@ -2237,6 +2239,7 @@ dependencies = [
  "orders",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "services",
  "sp-core",
@@ -2476,6 +2479,7 @@ dependencies = [
  "hospitals",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "sp-core",
  "sp-io",
@@ -2493,13 +2497,13 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives-area-code",
  "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-hospital-certifications",
  "traits-user-profile",
 ]
@@ -2995,13 +2999,13 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives-area-code",
  "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-area-code",
  "traits-certifications",
  "traits-services",
  "traits-user-profile",
@@ -4228,6 +4232,7 @@ dependencies = [
  "orders",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "services",
  "sp-core",
@@ -5052,6 +5057,17 @@ dependencies = [
  "impl-serde",
  "scale-info",
  "uint",
+]
+
+[[package]]
+name = "primitives-area-code"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
 ]
 
 [[package]]
@@ -6783,6 +6799,7 @@ dependencies = [
  "labs",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "services",
  "sp-core",
@@ -8096,17 +8113,6 @@ dependencies = [
  "tracing-core",
  "tracing-log",
  "tracing-serde",
-]
-
-[[package]]
-name = "traits-area-code"
-version = "0.1.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-std",
 ]
 
 [[package]]

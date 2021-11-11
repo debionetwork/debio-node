@@ -5,7 +5,7 @@ use crate::Pallet as Hospitals;
 use crate::HospitalInfo;
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
-use traits_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	register_hospital {
@@ -46,9 +46,9 @@ benchmarks! {
         let new_hospital = HospitalInfo {
             name: "DeBio Hospital 2".as_bytes().to_vec(),
             email: "DeBio Email 2".as_bytes().to_vec(),
-            country: "DeBio Country 2".as_bytes().to_vec(),
-            region: "DeBio Region 2".as_bytes().to_vec(),
-            city: "DeBio City 2".as_bytes().to_vec(),
+            country: CountryCode::from_vec("C2".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBI2".as_bytes().to_vec()),
+            city: CityCode::from_vec("C2C2".as_bytes().to_vec()),
             address: "DeBio Address 2".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude 2".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude 2".as_bytes().to_vec()),

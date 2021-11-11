@@ -20,7 +20,7 @@ pub use crate::interface::HospitalInterface;
 use frame_support::pallet_prelude::*;
 use traits_hospital_certifications::HospitalCertificationOwnerInfo;
 use traits_user_profile::UserProfileProvider;
-use traits_area_code::{AreaCode, CountryCode, RegionCode, CityCode, CountryRegionCode};
+use primitives_area_code::{AreaCode, CountryCode, RegionCode, CityCode, CountryRegionCode};
 
 // HospitalInfo Struct
 // Used as parameter of dispatchable calls

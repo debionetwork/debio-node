@@ -1,5 +1,5 @@
 [package]
-name = "traits-area-code"
+name = "primitives-area-code"
 version = "0.1.0"
 authors = ["Agustinus Theodorus <agustinustheoo@gmail.com>"]
 edition = "2018"

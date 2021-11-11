@@ -52,7 +52,7 @@ impl LabVerificationStatusTrait for LabVerificationStatus {
     }
 }
 
-use traits_area_code::{CountryRegionCode, CityCode};
+use primitives_area_code::{CountryRegionCode, CityCode};
 
 /// Interface for Lab Pallet
 /// Defines the functionalities of Lab Pallet

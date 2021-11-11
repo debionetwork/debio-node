@@ -50,7 +50,7 @@ pub trait Config:
 use genetic_testing::Call;
 use sp_core::Decode;
 use frame_support::sp_runtime::traits::Hash;
-use traits_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	reject_dna_sample {

@@ -25,7 +25,7 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
-traits-area-code = { path = '../../traits/area-code', default-features = false }
+primitives-area-code = { path = '../../primitives/area-code', default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 traits-hospital-certifications = { path = '../../traits/hospital-certifications', default-features = false }
 
@@ -43,7 +43,7 @@ std = [
     'frame-system/std',
     'sp-std/std',
     'sp-io/std',
-    'traits-area-code/std',
+    'primitives-area-code/std',
     'traits-user-profile/std',
     'traits-hospital-certifications/std',
 ]

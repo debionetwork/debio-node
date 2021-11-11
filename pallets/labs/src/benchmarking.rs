@@ -7,7 +7,7 @@ use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_call
 use frame_system::RawOrigin;
 
 use frame_support::sp_runtime::traits::Hash;
-use traits_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	register_lab {
@@ -55,9 +55,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab 2".as_bytes().to_vec(),
             email: "DeBio Email 2".as_bytes().to_vec(),
-            country: "DeBio Country 2".as_bytes().to_vec(),
-            region: "DeBio Region 2".as_bytes().to_vec(),
-            city: "DeBio City 2".as_bytes().to_vec(),
+            country: CountryCode::from_vec("C2".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBI2".as_bytes().to_vec()),
+            city: CityCode::from_vec("C2C2".as_bytes().to_vec()),
             address: "DeBio Address 2".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),

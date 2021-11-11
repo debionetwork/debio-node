@@ -26,7 +26,7 @@ pub trait Config:
 {}
 
 use hospital_certifications::Call;
-use traits_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	create_certification {

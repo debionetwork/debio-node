@@ -42,7 +42,7 @@ pub trait Config:
 use orders::Call;
 use sp_core::Decode;
 use frame_support::sp_runtime::traits::Hash;
-use traits_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	create_order {

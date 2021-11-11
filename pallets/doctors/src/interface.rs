@@ -1,5 +1,5 @@
 use sp_std::prelude::*;
-use traits_area_code::{CountryRegionCode, CityCode};
+use primitives_area_code::{CountryRegionCode, CityCode};
 
 /// Interface for Doctor Pallet
 /// Defines the functionalities of Doctor Pallet

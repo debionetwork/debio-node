@@ -34,7 +34,7 @@ labs = { path = '../../labs', default-features = false }
 services = { path = '../../services', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
-traits-area-code = { path = '../../../traits/area-code', default-features = false }
+primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-services = { path = '../../../traits/services', default-features = false }
 
 [dev-dependencies]
@@ -59,6 +59,6 @@ std = [
     'services/std',
     'user-profile/std',
 
-    'traits-area-code/std',
+    'primitives-area-code/std',
     'traits-services/std',
 ]

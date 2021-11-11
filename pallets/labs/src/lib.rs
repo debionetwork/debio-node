@@ -23,7 +23,7 @@ use frame_support::pallet_prelude::*;
 use traits_certifications::CertificationOwnerInfo;
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
-use traits_area_code::{AreaCode, CountryCode, RegionCode, CityCode, CountryRegionCode};
+use primitives_area_code::{AreaCode, CountryCode, RegionCode, CityCode, CountryRegionCode};
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
