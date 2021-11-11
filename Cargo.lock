@@ -1549,6 +1549,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-area-code",
  "traits-doctor-certifications",
  "traits-user-profile",
 ]
@@ -2494,6 +2495,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-area-code",
  "traits-hospital-certifications",
  "traits-user-profile",
 ]
@@ -2995,6 +2997,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-area-code",
  "traits-certifications",
  "traits-services",
  "traits-user-profile",
@@ -8087,6 +8090,17 @@ dependencies = [
  "tracing-core",
  "tracing-log",
  "tracing-serde",
+]
+
+[[package]]
+name = "traits-area-code"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
 ]
 
 [[package]]

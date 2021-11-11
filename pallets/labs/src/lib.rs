@@ -23,6 +23,7 @@ use frame_support::pallet_prelude::*;
 use traits_certifications::CertificationOwnerInfo;
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
+use traits_area_code::{AreaCode, CountryCode, RegionCode, CityCode, CountryRegionCode};
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
@@ -34,9 +35,9 @@ where
     pub box_public_key: Hash,
     pub name: Vec<u8>,
     pub email: Vec<u8>,
-    pub country: Vec<u8>,
-    pub region: Vec<u8>,
-    pub city: Vec<u8>,
+    pub country: CountryCode,
+    pub region: RegionCode,
+    pub city: CityCode,
     pub address: Vec<u8>,
     pub phone_number: Vec<u8>,
     pub website: Vec<u8>,
@@ -77,20 +78,20 @@ where
         self.info = info;
     }
 
-    fn get_country(&self) -> &Vec<u8> {
+    fn get_country(&self) -> &CountryCode {
         &self.info.country
     }
 
-    fn get_region(&self) -> &Vec<u8> {
+    fn get_region(&self) -> &RegionCode {
         &self.info.region
     }
 
-    fn get_city(&self) -> &Vec<u8> {
+    fn get_city(&self) -> &CityCode {
         &self.info.city
     }
 
     // Returns CountryCode-RegionCode -> XX-YYY
-    fn get_country_region(&self) -> Vec<u8> {
+    fn get_country_region(&self) -> CountryRegionCode {
         helpers::build_country_region_code(&self.get_country(), &self.get_region())
     }
 
@@ -147,39 +148,34 @@ pub mod helpers {
     use crate::*;
 
     /// Concatenate CountryCode with RegionCode with a '-'
-    pub fn build_country_region_code(country_code: &Vec<u8>, region_code: &Vec<u8>) -> Vec<u8> {
+    pub fn build_country_region_code(country_code: &CountryCode, region_code: &RegionCode) -> CountryRegionCode {
         // container
         let mut country_region_code = Vec::new();
-        let mut country_code = country_code.clone();
+        let mut country_code = country_code.clone()
+            .to_vec();
+            
         // dash character as u8
-        let mut dash = ['-'].iter().map(|c| *c as u8).collect::<Vec<u8>>();
-        let mut region_code = region_code.clone();
+        let mut dash = ['-'].iter()
+            .map(|c| *c as u8)
+            .collect::<Vec<u8>>();
+
+        let mut region_code = region_code.clone()
+            .to_vec();
 
         country_region_code.append(&mut country_code);
         country_region_code.append(&mut dash);
         country_region_code.append(&mut region_code);
 
-        country_region_code
+        CountryRegionCode::from_vec(country_region_code)
     }
 }
-
-use codec::EncodeLike;
-
-#[derive(Encode, Decode, TypeInfo)]
-pub struct CountryRegionCode([u8; 7]); // country_code-region_code -> XX-YYYY
-impl EncodeLike<CountryRegionCode> for Vec<u8> {}
-impl EncodeLike<CountryRegionCode> for &Vec<u8> {}
-
-#[derive(Encode, Decode, TypeInfo)]
-pub struct CityCode([u8; 7]); // city_code -> ZZZZ
-impl EncodeLike<CityCode> for Vec<u8> {}
-impl EncodeLike<CityCode> for &Vec<u8> {}
 
 #[frame_support::pallet]
 pub mod pallet {
     use crate::interface::LabInterface;
     use crate::{Lab, LabInfo};
     use crate::*;
+    use codec::EncodeLike;
     use frame_support::traits::Currency;
     use frame_support::dispatch::DispatchResultWithPostInfo;
     use frame_system::pallet_prelude::*;
@@ -483,8 +479,8 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
     }
 
     fn labs_by_country_region_city(
-        country_region_code: &Vec<u8>,
-        city_code: &Vec<u8>,
+        country_region_code: &CountryRegionCode,
+        city_code: &CityCode,
     ) -> Option<Vec<T::AccountId>> {
         Self::labs_by_country_region_city(country_region_code, city_code)
     }

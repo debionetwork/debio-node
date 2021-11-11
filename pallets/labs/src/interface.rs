@@ -52,6 +52,8 @@ impl LabVerificationStatusTrait for LabVerificationStatus {
     }
 }
 
+use traits_area_code::{CountryRegionCode, CityCode};
+
 /// Interface for Lab Pallet
 /// Defines the functionalities of Lab Pallet
 pub trait LabInterface<T: frame_system::Config> {
@@ -68,8 +70,8 @@ pub trait LabInterface<T: frame_system::Config> {
     ) -> Option<Self::LabVerificationStatus>;
     /// Get the account_ids of labs in a location
     fn labs_by_country_region_city(
-        country_region_code: &Vec<u8>,
-        city_code: &Vec<u8>,
+        country_region_code: &CountryRegionCode,
+        city_code: &CityCode,
     ) -> Option<Vec<T::AccountId>>;
 
     /// Store A lab with its information
