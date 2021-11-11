@@ -62,12 +62,12 @@ where
     }
 
     pub fn add_file(&mut self, emr_files_id: Hash) -> () {
-        &self.files.push(emr_files_id);
+        self.files.push(emr_files_id);
     }
 
     pub fn remove_file(&mut self, emr_files_id: Hash) -> () {
         if let Some(pos) = &self.files.iter().position(|x| *x == emr_files_id) {
-            &self.files.remove(*pos);
+            self.files.remove(*pos);
         }
     }
 }
@@ -484,7 +484,6 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         if electronic_medical_record_file == None {
             return Err(Error::<T>::ElectronicMedicalRecordDoesNotExist)?;
         }
-        let electronic_medical_record_file = electronic_medical_record_file.unwrap();
 
         let electronic_medical_record =
             ElectronicMedicalRecordById::<T>::get(electronic_medical_record_file_id).unwrap();
