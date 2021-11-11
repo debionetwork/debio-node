@@ -121,7 +121,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, build-and-publish-docker-image, deployment-info]
+    needs: [compute-build-info, build-and-publish-docker-image]
     env:
       DEPLOY: ${{ secrets.DEV_DEPLOY }}
     steps:
