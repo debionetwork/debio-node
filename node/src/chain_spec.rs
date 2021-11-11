@@ -1,11 +1,11 @@
-use debio_runtime::{
-	currency::UNITS as DBIO, opaque::Block, opaque::SessionKeys, AccountId, Balance, Signature,
-	WASM_BINARY, BABE_GENESIS_EPOCH_CONFIG,
-	GenesisConfig, BabeConfig, BalancesConfig,
-	OctopusAppchainConfig, OctopusLposConfig, SessionConfig, SudoConfig, SystemConfig,
-	OrdersConfig, RewardsConfig, LabsConfig, ServiceRequestConfig,
-};
 use beefy_primitives::crypto::AuthorityId as BeefyId;
+use debio_runtime::{
+	currency::UNITS as DBIO,
+	opaque::{Block, SessionKeys},
+	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, LabsConfig,
+	OctopusAppchainConfig, OctopusLposConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig,
+	SessionConfig, Signature, SudoConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
+};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_octopus_appchain::AuthorityId as OctopusId;
 use sc_chain_spec::ChainSpecExtension;
@@ -220,33 +220,45 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 				vec![
 					(
 						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
-						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].into(),
+						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
+							.into(),
 						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
-						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].unchecked_into(),
+						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
+							.unchecked_into(),
 						// 5F3w32CUTSdx6tVtKqtmX5ySxv2EWtf5ALozHXdm1sRmDRyn
-						hex!["841dd15656fe6f518d7f834be42c8ebac03856b973fe0cfe884d3bf63f54044e"].unchecked_into(),
+						hex!["841dd15656fe6f518d7f834be42c8ebac03856b973fe0cfe884d3bf63f54044e"]
+							.unchecked_into(),
 						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
-						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].unchecked_into(),
+						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
+							.unchecked_into(),
 						// KWE8SLkhBFQDYC6mp9BXGFvtHHoXWgVspsnrHhXXwGxdd52J1
-						hex!["03ef93c4f8f2b34f0945ac57f666555f9a6a211cbb7f21118dfc8049100347162d"].unchecked_into(),
+						hex!["03ef93c4f8f2b34f0945ac57f666555f9a6a211cbb7f21118dfc8049100347162d"]
+							.unchecked_into(),
 						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
-						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].unchecked_into(),
+						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
+							.unchecked_into(),
 						// Stash amount
 						100 * DBIO,
 					),
 					(
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
-						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].into(),
+						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
+							.into(),
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
-						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].unchecked_into(),
+						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
+							.unchecked_into(),
 						// 5Ca1whan2BfjBU4JYkcK2HwkkJxcgUvgkXHd1q3sn1kMM2iX
-						hex!["165b008e2e3181f869893b237406e847daa043d90bf80e62bb8a8442281afac0"].unchecked_into(),
+						hex!["165b008e2e3181f869893b237406e847daa043d90bf80e62bb8a8442281afac0"]
+							.unchecked_into(),
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
-						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].unchecked_into(),
+						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
+							.unchecked_into(),
 						// KW6TMKohWcZBna5xBkcthEuGX1p5R7gn6z8eqCMBDjEWBLUbA
-						hex!["029c1ead8e295430573bb984b8b38c9479b7a9a236725d7c2090182fd38bf4d9b5"].unchecked_into(),
+						hex!["029c1ead8e295430573bb984b8b38c9479b7a9a236725d7c2090182fd38bf4d9b5"]
+							.unchecked_into(),
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
-						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].unchecked_into(),
+						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
+							.unchecked_into(),
 						// Stash amount
 						100 * DBIO,
 					),
@@ -256,21 +268,24 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 					(
 						// Sudo account
 						// 5CB5udaxY6zFqApVHWPQTGTW5FszotkXKAUD48fvi5Y7FSR2
-						hex!["04ddb3f730857ed801327da2242dff4d4d85e25b33c43db6f328d55904247f40"].into(),
+						hex!["04ddb3f730857ed801327da2242dff4d4d85e25b33c43db6f328d55904247f40"]
+							.into(),
 						// Balance amount
 						12_498_000 * DBIO,
 					),
 					(
 						// Valiadator 1 account
 						// 5DWyDncRWXBuQHwJkwndcxD8EpiNjC5aUpkvQvH5pKWW31kS
-						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"].into(),
+						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
+							.into(),
 						// Balance amount
 						1_000 * DBIO,
 					),
 					(
 						// Valiadator 2 account
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
-						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"].into(),
+						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
+							.into(),
 						// Balance amount
 						1_000 * DBIO,
 					),
@@ -325,33 +340,45 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 				vec![
 					(
 						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].into(),
+						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
+							.into(),
 						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].unchecked_into(),
+						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
+							.unchecked_into(),
 						// 5DZQ8hkpX2STvCDKxnisDS4M3wKr8T4irH7Kb6pi1opYWicR
-						hex!["421eaffb5d5601b080f546fa8be621d26085a2743b4d935d2b8dd83c2cecaa39"].unchecked_into(),
+						hex!["421eaffb5d5601b080f546fa8be621d26085a2743b4d935d2b8dd83c2cecaa39"]
+							.unchecked_into(),
 						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].unchecked_into(),
+						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
+							.unchecked_into(),
 						// KW39i1yj3MYMcCaF5QZUbk8FBPbEzbrn1E6A3Xdmw4beErUGT
-						hex!["0209f537ca85f50055cf9553d72c8a594516a915b6c040109ed5450da0185c3ff1"].unchecked_into(),
+						hex!["0209f537ca85f50055cf9553d72c8a594516a915b6c040109ed5450da0185c3ff1"]
+							.unchecked_into(),
 						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].unchecked_into(),
+						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
+							.unchecked_into(),
 						// Stash amount
 						100 * DBIO,
 					),
 					(
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].into(),
+						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
+							.into(),
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].unchecked_into(),
+						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
+							.unchecked_into(),
 						// 5CetaryC3UwJEwSJvo8GzLVM4kxejioSfjmoZyAX4TKPSNuq
-						hex!["1a1274a58903a684d89cd926735137961a795d798b250926f7c8867b487549d8"].unchecked_into(),
+						hex!["1a1274a58903a684d89cd926735137961a795d798b250926f7c8867b487549d8"]
+							.unchecked_into(),
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].unchecked_into(),
+						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
+							.unchecked_into(),
 						// KW2ywDzHXAmvvcCZu14szXHdsXka9Xuez4Q1RPuXMkw2VTZYk
-						hex!["020281390b3b2a5f25dcda82477a2da7a00a2570724b24d60e82446a63f81db4c7"].unchecked_into(),
+						hex!["020281390b3b2a5f25dcda82477a2da7a00a2570724b24d60e82446a63f81db4c7"]
+							.unchecked_into(),
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].unchecked_into(),
+						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
+							.unchecked_into(),
 						// Stash amount
 						100 * DBIO,
 					),
@@ -361,21 +388,24 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 					(
 						// Sudo account
 						// 5G3nLeySH5sFzD9WPKt2kB3KNVnazsZykaFfotouvjf1RZWY
-						hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"].into(),
+						hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"]
+							.into(),
 						// Balance amount
 						12_498_000 * DBIO,
 					),
 					(
 						// Valiadator 1 account
 						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"].into(),
+						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
+							.into(),
 						// Balance amount
 						1_000 * DBIO,
 					),
 					(
 						// Valiadator 2 account
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"].into(),
+						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
+							.into(),
 						// Balance amount
 						1_000 * DBIO,
 					),
@@ -502,15 +532,13 @@ pub fn development_config() -> Result<ChainSpec, String> {
 					authority_keys_from_seed("Alice", 100 * DBIO),
 				],
 				// Pre-funded accounts
-				vec![
-					(
-						// Sudo account and API admin account
-						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
-						// Balance amount
-						12_500_000 * DBIO,
-					),
-				],
+				vec![(
+					// Sudo account and API admin account
+					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					// Balance amount
+					12_500_000 * DBIO,
+				)],
 				// Appchain config
 				appchain_config(
 					// Appchain Relay Contract
@@ -600,8 +628,8 @@ fn genesis(
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
 		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
-        rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
-        labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
+		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
+		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
 	}
 }
