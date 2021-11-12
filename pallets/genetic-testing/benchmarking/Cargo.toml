@@ -36,6 +36,8 @@ user-profile = { path = '../../user-profile', default-features = false }
 orders = { path = '../../orders', default-features = false }
 genetic-testing = { path = '../../genetic-testing', default-features = false }
 
+
+primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-services = { path = '../../../traits/services', default-features = false }
 traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
 traits-order = { path = '../../../traits/order', default-features = false }
@@ -64,6 +66,7 @@ std = [
     'user-profile/std',
     'genetic-testing/std',
 
+    'primitives-area-code/std',
     'traits-services/std',
     'traits-user-profile/std',
     'traits-order/std',

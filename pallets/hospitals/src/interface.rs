@@ -1,4 +1,5 @@
 use sp_std::prelude::*;
+use primitives_area_code::{CountryRegionCode, CityCode};
 
 /// Interface for Hospital Pallet
 /// Defines the functionalities of Hospital Pallet
@@ -11,8 +12,8 @@ pub trait HospitalInterface<T: frame_system::Config> {
     fn hospital_by_account_id(account_id: &T::AccountId) -> Option<Self::Hospital>;
     /// Get the account_ids of hospitals in a location
     fn hospitals_by_country_region_city(
-        country_region_code: &Vec<u8>,
-        city_code: &Vec<u8>,
+        country_region_code: &CountryRegionCode,
+        city_code: &CityCode,
     ) -> Option<Vec<T::AccountId>>;
 
     /// Store A hospital with its information

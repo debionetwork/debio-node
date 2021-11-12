@@ -5,15 +5,16 @@ use crate::Pallet as Doctors;
 use crate::DoctorInfo;
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	register_doctor {
 		let doctor = DoctorInfo {
             name: "DeBio Doctor".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
@@ -32,9 +33,9 @@ benchmarks! {
 		let old_doctor = DoctorInfo {
             name: "DeBio Doctor".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
@@ -45,9 +46,9 @@ benchmarks! {
         let new_doctor = DoctorInfo {
             name: "DeBio Doctor 2".as_bytes().to_vec(),
             email: "DeBio Email 2".as_bytes().to_vec(),
-            country: "DeBio Country 2".as_bytes().to_vec(),
-            region: "DeBio Region 2".as_bytes().to_vec(),
-            city: "DeBio City 2".as_bytes().to_vec(),
+            country: CountryCode::from_vec("C2".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBI2".as_bytes().to_vec()),
+            city: CityCode::from_vec("C2C2".as_bytes().to_vec()),
             address: "DeBio Address 2".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude 2".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude 2".as_bytes().to_vec()),
@@ -65,9 +66,9 @@ benchmarks! {
 		let doctor = DoctorInfo {
             name: "DeBio Doctor".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             latitude: Some("DeBio Latitude".as_bytes().to_vec()),
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
