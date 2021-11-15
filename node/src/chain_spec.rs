@@ -91,12 +91,12 @@ pub fn get_properties(symbol: &str, decimals: u32, ss58format: u32) -> Propertie
 
 /// Helper function to generate appchain config
 pub fn appchain_config(
-	relay_contract: &str,
+	anchor_contract: &str,
 	asset_id_by_name: &str,
 	premined_amount: Balance,
 	era_payout: Balance,
 ) -> (String, String, Balance, Balance) {
-	(relay_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
+	(anchor_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
 }
 
 pub fn mainnet_config() -> Result<ChainSpec, String> {
