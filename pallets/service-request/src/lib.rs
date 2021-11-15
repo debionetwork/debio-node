@@ -273,6 +273,11 @@ pub mod pallet {
 	#[pallet::getter(fn service_invoice_by_id)]
 	pub type ServiceInvoiceById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceInvoiceOf<T>>;
 
+	/// Get ServiceInvoice By OrderId
+	#[pallet::storage]
+	#[pallet::getter(fn service_invoice_by_order_id)]
+	pub type ServiceInvoiceByOrderId<T> = StorageMap<_, Blake2_128Concat, OrderIdOf<T>, ServiceInvoiceOf<T>>;
+
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
@@ -773,6 +778,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		);
 
 		ServiceInvoiceById::<T>::insert(request_id.clone(), service_invoice.clone());
+		ServiceInvoiceByOrderId::<T>::insert(order_id.clone(), service_invoice.clone());
 
 		request.status = RequestStatus::Processed;
 		RequestById::<T>::insert(request_id.clone(), request);
@@ -797,6 +803,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let mut request = request.unwrap();
 
+		if request.status != RequestStatus::Processed {
+			return Err(Error::<T>::RequestUnableToFinalize);
+		}
+
 		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
 
 		if service_offer.is_none() {
@@ -816,24 +826,38 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let requester_id = service_invoice.customer_address.clone();
 		let lab_id = service_invoice.seller_address.clone();
 
-		if request.status != RequestStatus::Processed {
-			return Err(Error::<T>::RequestUnableToFinalize);
-		}
-
-		let mut target_id = lab_id.clone();
+		let mut pay_amount = service_invoice.pay_amount;
 
 		if !test_result_success.clone() {
-			target_id = requester_id.clone();
+			pay_amount = service_invoice.qc_price;
+
+			let testing_price = service_invoice.testing_price;
+
+			// Transfer testing price back to customer
+			match CurrencyOf::<T>::withdraw(
+				&Self::staking_account_id(request_id.clone()),
+				testing_price,
+				WithdrawReasons::TRANSFER,
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(imb) => {
+					CurrencyOf::<T>::resolve_creating(&requester_id.clone(), imb);
+				},
+				_ => {
+					return Err(Error::<T>::BadSignature)
+				},
+			}
 		}
 
+		// Transfer to lab_id
 		match CurrencyOf::<T>::withdraw(
 			&Self::staking_account_id(request_id.clone()),
-			service_invoice.pay_amount.clone(),
+			pay_amount,
 			WithdrawReasons::TRANSFER,
 			ExistenceRequirement::KeepAlive,
 		) {
 			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&target_id, imb);
+				CurrencyOf::<T>::resolve_creating(&lab_id.clone(), imb);
 			},
 			_ => {
 				return Err(Error::<T>::BadSignature)
