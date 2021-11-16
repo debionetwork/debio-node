@@ -168,31 +168,6 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 				hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"].into(),
 				// Initial PoA authorities
 				vec![
-					// Start of DeBio Validators
-					(
-						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
-						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
-							.into(),
-						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
-						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
-							.unchecked_into(),
-						// 5Eaa7zZwPLuL2EvCQSMdCBTS35a6F5pquTTrfMbcpiotcfkJ
-						hex!["6f3fc9bf0f3f803ae0e88a47c099c7d1ccc33db9a1868524ed4d44ec3812c137"]
-							.unchecked_into(),
-						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
-						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
-							.unchecked_into(),
-						// KWDUUoQEW5SvJMTicQZAdFxY77oA4NAsZJttFg2HVVowDs9Gx
-						hex!["03d2a0b9273b1d7a77c1b5eb40d3ce5532f3928643b120a3f09733d8318e9f29c7"]
-							.unchecked_into(),
-						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
-						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
-							.unchecked_into(),
-						// Stash amount
-						100 * DBIO,
-					),
-					// End of DeBio Validators
-					// Start of Octopus Foundation Validators
 					(
 						// 5FRzbdg5WEQQPu34pdowRehCfA4rgZuDQE4bQEbcWGnthegY
 						hex!["94f135526ec5fe830e0cbc6fd58683cb2d9ee06522cd9a2c0481268c5c73674f"]
@@ -281,29 +256,17 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						// Stash amount
 						100 * DBIO,
 					),
-					// End of Octopus Foundation Validators
 				],
 				// Pre-funded accounts
 				vec![
-					// Start of DeBio
 					(
-						// DeBio Sudo account
+						// Sudo account
 						// 5FR73HBVwSpPjnPsBZPDVyuHQS1KE8jvSL3pSud6F6HZcuBA
 						hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"]
 							.into(),
 						// Balance amount
 						10 * DBIO,
-					),
-					(
-						// DeBio Valiadator 1 account
-						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
-						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
-							.into(),
-						// Balance amount
-						10 * DBIO,
-					),
-					// End of DeBio
-					// Start of Octopus Foundation
+					)
 					(
 						// Octopus Foundation Valiadator 1 account
 						// 5FRzbdg5WEQQPu34pdowRehCfA4rgZuDQE4bQEbcWGnthegY
@@ -336,7 +299,6 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						// Balance amount
 						10 * DBIO,
 					),
-					// End of Octopus Foundation Validators
 				],
 				// Appchain config
 				appchain_config(
