@@ -167,13 +167,181 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 				// 5FR73HBVwSpPjnPsBZPDVyuHQS1KE8jvSL3pSud6F6HZcuBA
 				hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"].into(),
 				// Initial PoA authorities
-				vec![],
+				vec![
+					// Start of DeBio Validators
+					(
+						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
+						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
+							.into(),
+						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
+						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
+							.unchecked_into(),
+						// 5Eaa7zZwPLuL2EvCQSMdCBTS35a6F5pquTTrfMbcpiotcfkJ
+						hex!["6f3fc9bf0f3f803ae0e88a47c099c7d1ccc33db9a1868524ed4d44ec3812c137"]
+							.unchecked_into(),
+						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
+						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
+							.unchecked_into(),
+						// KWDUUoQEW5SvJMTicQZAdFxY77oA4NAsZJttFg2HVVowDs9Gx
+						hex!["03d2a0b9273b1d7a77c1b5eb40d3ce5532f3928643b120a3f09733d8318e9f29c7"]
+							.unchecked_into(),
+						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
+						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					// End of DeBio Validators
+					// Start of Octopus Foundation Validators
+					(
+						// 5FRzbdg5WEQQPu34pdowRehCfA4rgZuDQE4bQEbcWGnthegY
+						hex!["94f135526ec5fe830e0cbc6fd58683cb2d9ee06522cd9a2c0481268c5c73674f"]
+							.into(),
+						// 5GQqSQ3R8DxUJTpRPPCJZv4foEYrLpDn3858oYSivB21XXB8
+						hex!["c04b5d176ccb7ff1bf8014baae55614ae998c4d9c476598a95869216dfd3c356"]
+							.unchecked_into(),
+						// 5GEGWDRGKRJyjj7rvt8RWU7AcjgVz7TwXPnebTqr8FQugir6
+						hex!["b83c0b10820f068051e62f1362b681f1539567f6225f55925bd5d7b53fa0e6d0"]
+							.unchecked_into(),
+						// 5GYqx4xhtHDNk4Lnq3SDVpCUakayFGaEgNNyhtky4FaRMZ8Q
+						hex!["c6670c893b8bc9f9b883d40d0ea1a8dbce71ce3de8d57cf467f1026cb927384c"]
+							.unchecked_into(),
+						// KWDm4WP68DG4Kg3ADTmZQmPWuWp74xf7C25ydqrhxtwk6m9h1
+						hex!["03df461db93e4434e2f629134b171d3b2e075ad629839f1c697b547750f1e07248"]
+							.unchecked_into(),
+						// 5FZuGnwJVzhHDfqz9GYXuopc86xqqJk2oQ98UBRqmVcXvjJd
+						hex!["0x9af93f1d2cf773015a1baee1028edb612a25f56fde130f5da2ac488c2884e619"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					(
+						// 5GVtTAfgTZrRf4gs2fDmGMPrCUWZx4eD7gzYvoCSxCuke67t
+						hex!["c425bbf59c7bf49e4fcc6547539d84ba8ecd2fb171f5b83cde3571d45d0c8224"]
+							.into(),
+						// 5DJ474dCD9qGx8r8tCXkJUchwS6dEFAvBzLizoXyVsXpHCuE
+						hex!["366a95cd6d3a75b2e7094b3cfc0ef40d3d5ad37e9394667a57ec2270899f9074"]
+							.unchecked_into(),
+						// 5DBw1qYaGN8DoD6y2uYizf12qFHRsB2u5fonhaW4tNVsrzgb
+						hex!["31bf3ecf6785449ee1fa52cebc512e3638399e889c1a72640d836378d3b99889"]
+							.unchecked_into(),
+						// 5DCQDScgxoSqEqqXHqoDGGCeoPhJuuCaxuUBKo2oqjGNWnUE
+						hex!["321acf19ab3edaaf90601c4fff9e8ad0e9e63dc19fb39915ff0776e10c5d4e62"]
+							.unchecked_into(),
+						// KW54T4BS4gQaa5vZX9ykSkBr9bY4MdTSzMaWnUPijwRUUEh8p
+						hex!["025e6b175317ab988d6d18f8e083e9b3bcf3de711798228044274c8d8ff85f0f10"]
+							.unchecked_into(),
+						// 5D7J3Gnjyt1hzRRX1n2g89tpjhhYspvtgLxMVLdVv8DV44NL
+						hex!["2e35cb3f34b1e1d456981f4cc39a57b35a5287146925a9a95b66feec76b3e339"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					(
+						// 5Gs3JPQknr3LbPuP5kuva2XxijodjU1sAAWncES719ZfuhCq
+						hex!["d447acbfe7761c0cfba8341e616275caca6401637308ee123b77082a40095331"]
+							.into(),
+						// 5Dyr6DRdQrDGe1cidZ4qnv5k8sAVyLkzqyVH9xDU1t7HGgyg
+						hex!["54c3f4dd996025cf3a0f793ce058a0c614541ef6fccb939d3483fff21065b374"]
+							.unchecked_into(),
+						// 5DDUj1ez9MWqGo32KXNLCFYgBTqNvKzbKQ2FJVAK5KWYBZ5d
+						hex!["32ed3c5d8a3ee2589b9ea0a53593a606d866385e73aa2d1f6cfe0f1fdf06702f"]
+							.unchecked_into(),
+						// 5H9YaNETz66q5oXc9D1Z2RTSCvXhdqfgfDMdZpGd34hqWFSk
+						hex!["e0de26c436aeb19b1b66a22976914134df559f66583962c0a78367e4e095d341"]
+							.unchecked_into(),
+						// KW7xD3xSTGLeNgi42SJ9MfSsv3u1rv8zBCdtGcm8vG8VkZFr2
+						hex!["02de5d2d86fffbdb27187a58354d130aa6ff876ee5a2114f2c42b8b147d3753272"]
+							.unchecked_into(),
+						// 5E2Lp4CRph6cYTmq1P8sUyQPP22P3FzFT5FegwovLgwc2bYF
+						hex!["56ab21d481aeb3f93b756bbd78b0e38c4db567b1663b75c7d672bd3f7eaefb5d"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					(
+						// 5DXNnoH2EMDQ1kk2JM7ZEutZFqZD8m6A6E5wZKfJVXjoJEez
+						hex!["4093acd03283fa2d53d3b684b2a7ce3118ceb047b869f6c000d041578420de22"]
+							.into(),
+						// 5HTtvH6s59JKYyuSoc9CUV6V9WRZWVv6HsC4Xo4yXrZtQ9zX
+						hex!["eedd0ce50d355a9590ba7b3ac0f4116e00bfe5ed1684d7eef630371dbd018110"]
+							.unchecked_into(),
+						// 5GFmQyUvApYnZRYqRwTosBQXrQrRwE42SFrV7KQ2UFBDx2dg
+						hex!["b9609b704d6f8b242c51ee79b4b23c7c09350bda96c0d01e6c214d26a778e8f4"]
+							.unchecked_into(),
+						// 5FH4WtPN93KETuHWRn4q7oikRjPozP4cXtreXVia1oQ3eaQf
+						hex!["8e21307acc160a81d92addae65e26b0bb047a016bd881eb234b6db693b09a074"]
+							.unchecked_into(),
+						// KWALuXvqYgmoPymKwg8v5qNSckbeFLGEXGjq2LeS2LMjo7vFM
+						hex!["03482551b40c34c48a8d84ba1b0a3f48eb230cf923b1c21dafbc1d7295212e4a88"]
+							.unchecked_into(),
+						// 5FJAQA33PTTwr6VNGKecxJjyiL6jN5oPHG77WRdinj97LEPb
+						hex!["8ef83df12c339f41551d44a83bf82c6dfbf944bb2c6caa8b4761600b09dc324a"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					// End of Octopus Foundation Validators
+				],
 				// Pre-funded accounts
-				vec![],
+				vec![
+					// Start of DeBio
+					(
+						// DeBio Sudo account
+						// 5FR73HBVwSpPjnPsBZPDVyuHQS1KE8jvSL3pSud6F6HZcuBA
+						hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					(
+						// DeBio Valiadator 1 account
+						// 5FnYK1fi1Ym8RBt9HtnHF1R2wgsvswunPyMSd1D6KrFCLDQ8
+						hex!["a49cdf91743af1e9a57a4f86b9918911d2dd826fbc015c3d1861dac692e4d77a"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					// End of DeBio
+					// Start of Octopus Foundation
+					(
+						// Octopus Foundation Valiadator 1 account
+						// 5FRzbdg5WEQQPu34pdowRehCfA4rgZuDQE4bQEbcWGnthegY
+						hex!["94f135526ec5fe830e0cbc6fd58683cb2d9ee06522cd9a2c0481268c5c73674f"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					(
+						// Octopus Foundation Valiadator 2 account
+						// 5GVtTAfgTZrRf4gs2fDmGMPrCUWZx4eD7gzYvoCSxCuke67t
+						hex!["c425bbf59c7bf49e4fcc6547539d84ba8ecd2fb171f5b83cde3571d45d0c8224"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					(
+						// Octopus Foundation Valiadator 3 account
+						// 5Gs3JPQknr3LbPuP5kuva2XxijodjU1sAAWncES719ZfuhCq
+						hex!["d447acbfe7761c0cfba8341e616275caca6401637308ee123b77082a40095331"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					(
+						// Octopus Foundation Valiadator 4 account
+						// 5DXNnoH2EMDQ1kk2JM7ZEutZFqZD8m6A6E5wZKfJVXjoJEez
+						hex!["4093acd03283fa2d53d3b684b2a7ce3118ceb047b869f6c000d041578420de22"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					// End of Octopus Foundation Validators
+				],
 				// Appchain config
 				appchain_config(
 					// Appchain Relay Contract
-					"",
+					"debionetwork.registry.test_oct.testnet",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
