@@ -266,7 +266,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 							.into(),
 						// Balance amount
 						10 * DBIO,
-					)
+					),
 					(
 						// Octopus Foundation Valiadator 1 account
 						// 5FRzbdg5WEQQPu34pdowRehCfA4rgZuDQE4bQEbcWGnthegY
