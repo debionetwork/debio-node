@@ -210,7 +210,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["03df461db93e4434e2f629134b171d3b2e075ad629839f1c697b547750f1e07248"]
 							.unchecked_into(),
 						// 5FZuGnwJVzhHDfqz9GYXuopc86xqqJk2oQ98UBRqmVcXvjJd
-						hex!["0x9af93f1d2cf773015a1baee1028edb612a25f56fde130f5da2ac488c2884e619"]
+						hex!["9af93f1d2cf773015a1baee1028edb612a25f56fde130f5da2ac488c2884e619"]
 							.unchecked_into(),
 						// Stash amount
 						100 * DBIO,
