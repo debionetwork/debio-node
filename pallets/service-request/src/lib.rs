@@ -168,7 +168,7 @@ pub mod pallet {
 	pub type DNASampleTrackingIdOf = Vec<u8>;
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + labs::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
@@ -242,6 +242,11 @@ pub mod pallet {
 	#[pallet::storage]
     #[pallet::getter(fn admin_key)]
     pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	/// Get Request by Account Id
+	#[pallet::storage]
+	#[pallet::getter(fn request_by_account_id)]
+	pub type RequestByAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<RequestIdOf<T>>, ValueQuery>;
 
 	/// Get Request by RequestId
 	#[pallet::storage]
@@ -516,6 +521,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					now,
 				);
 
+				let mut request_ids = RequestByAccountId::<T>::get(requester_id.clone());
+				request_ids.push(request_id.clone());
+
+				RequestByAccountId::<T>::insert(requester_id.clone(), request_ids);
 				RequestById::<T>::insert(request_id.clone(), request.clone());
 
 				let service_count = ServiceCountRequest::<T>::get((
