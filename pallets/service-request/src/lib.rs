@@ -52,6 +52,8 @@ pub struct Request<AccountId, Balance, Hash> {
 	pub service_category: Vec<u8>,
 	pub staking_amount: Balance,
 	pub status: RequestStatus,
+	pub created_at: u128,
+	pub updated_at: Option<u128>,
 	pub unstaked_at: Option<u128>,
 }
 impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
@@ -63,6 +65,7 @@ impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 		city: Vec<u8>,
 		service_category: Vec<u8>,
 		staking_amount: Balance,
+		created_at: u128,
 	) -> Self {
 		Self {
 			hash,
@@ -74,6 +77,8 @@ impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 			service_category,
 			staking_amount,
             status: RequestStatus::default(),
+			created_at,
+			updated_at: None,
             unstaked_at: None,
         }
     }
@@ -489,6 +494,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			service_category.clone(),
 		);
 
+		let now = T::TimeProvider::now().as_millis();
+
 		match CurrencyOf::<T>::withdraw(
 			&requester_id,
 			staking_amount.clone(),
@@ -506,6 +513,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					city.clone(),
 					service_category.clone(),
 					staking_amount.clone(),
+					now,
 				);
 
 				RequestById::<T>::insert(request_id.clone(), request.clone());
@@ -646,9 +654,12 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			qc_price,
 		);
 
+		let now = T::TimeProvider::now().as_millis();
+
 		if lab_status.is_verified() {
 			request.status = RequestStatus::Claimed;
 			request.lab_address = Some(lab_id);
+			request.updated_at = Some(now);
 
 			RequestById::<T>::insert(request_id, request.clone());
 			ServiceOfferById::<T>::insert(request_id, service_offer.clone());
@@ -777,10 +788,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			final_pay_amount.clone(),
 		);
 
+		let now = T::TimeProvider::now().as_millis();
+
 		ServiceInvoiceById::<T>::insert(request_id.clone(), service_invoice.clone());
 		ServiceInvoiceByOrderId::<T>::insert(order_id.clone(), service_invoice.clone());
 
 		request.status = RequestStatus::Processed;
+		request.updated_at = Some(now);
 		RequestById::<T>::insert(request_id.clone(), request);
 
 		Ok(service_invoice.clone())
@@ -864,7 +878,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			},
 		}
 
+		let now = T::TimeProvider::now().as_millis();
+
 		request.status = RequestStatus::Finalized;
+		request.updated_at = Some(now);
 		RequestById::<T>::insert(request_id.clone(), request.clone());
 
 		Ok(service_invoice.clone())
