@@ -119,7 +119,7 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
-  publish-draft-alpha-release:
+  publish-draft-release:
     runs-on: ubuntu-20.04
     needs: build-and-publish-docker-image
     steps:
@@ -159,7 +159,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, publish-draft-beta-release]
+    needs: [compute-build-info, publish-draft-release]
     env:
       DEPLOY: ${{ secrets.STG_DEPLOY }}
     steps:
