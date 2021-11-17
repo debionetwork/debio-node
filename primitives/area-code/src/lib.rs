@@ -32,14 +32,14 @@ impl AreaCode for CountryCode {
     }
 }
 
-// RegionCode -> YYYY
+// RegionCode -> YY
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct RegionCode([u8; 4]); 
+pub struct RegionCode([u8; 2]); 
 
 impl RegionCode {
     pub fn from_vec(_vec_id: Vec<u8>) -> Self {
         let _array = _vec_id.try_into()
-            .unwrap_or_else(|_vec_id: Vec<u8>| panic!("Expected a Vec of length {} but it was {}", 4, _vec_id.len()));
+            .unwrap_or_else(|_vec_id: Vec<u8>| panic!("Expected a Vec of length {} but it was {}", 2, _vec_id.len()));
         
         Self(_array)
     }
