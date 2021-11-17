@@ -29,6 +29,8 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 
 # Local Dependencies
 labs = { path = '../labs', default-features = false }
+hex-literal = '0.3.3'
+primitives-area-code = { path = '../../primitives/area-code', default-features = false }
 
 [features]
 default = ['std']
@@ -44,6 +46,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
 	'frame-benchmarking/std',
+	'primitives-area-code/std'
 ]
 runtime-benchmarks = ['frame-benchmarking']
 try-runtime = ['frame-support/try-runtime']
