@@ -70,14 +70,14 @@ impl AreaCode for CityCode {
     }
 }
 
-// CountryCode-RegionCode -> XX-YYYY
+// CountryCode-RegionCode -> XX-YY
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct CountryRegionCode([u8; 7]); 
+pub struct CountryRegionCode([u8; 5]); 
 
 impl CountryRegionCode {
     pub fn from_vec(_vec_id: Vec<u8>) -> Self {
         let _array = _vec_id.try_into()
-            .unwrap_or_else(|_vec_id: Vec<u8>| panic!("Expected a Vec of length {} but it was {}", 7, _vec_id.len()));
+            .unwrap_or_else(|_vec_id: Vec<u8>| panic!("Expected a Vec of length {} but it was {}", 5, _vec_id.len()));
         
         Self(_array)
     }
