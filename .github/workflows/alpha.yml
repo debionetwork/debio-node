@@ -51,15 +51,17 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
+            ./chain-spec.json
+            ./SHA256SUMS
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Cargo build
         run: cargo build --release
       - name: Generate the chainspec file
-        run: ./target/release/debio build-spec --disable-default-bootnode --chain stg-testnet > ./release/chain-spec.json
+        run: ./target/release/debio build-spec --disable-default-bootnode --chain stg-testnet > chain-spec.json
       - name: Generate sha256 hash
-        run: sha256sum ./release/chain-spec.json> ./release/SHA256SUMS
+        run: sha256sum chain-spec.json> SHA256SUMS
 
   build-and-publish-docker-image:
     runs-on: ubuntu-20.04
@@ -93,6 +95,8 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
+            ./chain-spec.json
+            ./SHA256SUMS
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -142,6 +146,8 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
+            ./chain-spec.json
+            ./SHA256SUMS
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -154,8 +160,8 @@ jobs:
           files: |
             ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
             ./target/release/debio
-            ./release/chain-spec.json
-            ./release/SHA256SUMS
+            ./chain-spec.json
+            ./SHA256SUMS
 
   deploy:
     runs-on: ubuntu-20.04
