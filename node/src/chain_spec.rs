@@ -99,6 +99,10 @@ pub fn appchain_config(
 	(anchor_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
 }
 
+pub fn octopus_testnet_config() -> Result<ChainSpec, String> {
+	ChainSpec::from_json_bytes(&include_bytes!("../../resources/testnet.json")[..])
+}
+
 pub fn mainnet_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
