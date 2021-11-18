@@ -233,6 +233,7 @@ pub mod pallet {
             service_id: T::Hash,
             price_index: u32,
             customer_box_public_key: T::Hash,
+            service_flow: ServiceFlow
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -241,6 +242,7 @@ pub mod pallet {
                 &service_id,
                 price_index,
                 &customer_box_public_key,
+                service_flow
             ) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderCreated(order.clone()));
@@ -322,6 +324,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         service_id: &T::Hash,
         price_index: u32,
         customer_box_public_key: &T::Hash,
+        service_flow: ServiceFlow
     ) -> Result<Self::Order, Self::Error> {
         let service = T::Services::service_by_id(service_id);
         if service.is_none() {
@@ -361,7 +364,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             seller_id.clone(),
             dna_sample.get_tracking_id().clone(),
             currency.clone(),
-            service.get_service_flow().clone(),
+            service_flow.clone(),
             prices.clone(),
             additional_prices.clone(),
             now,

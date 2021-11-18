@@ -9,6 +9,7 @@ use services::{
 };
 
 use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
+use traits_services::types::ServiceFlow::{RequestTest, StakingRequestService};
 
 #[allow(unused)]
 use labs::Pallet as Labs;
@@ -98,7 +99,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -157,7 +159,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -215,7 +218,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			StakingRequestService
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())

@@ -20,6 +20,7 @@ use user_profile::Pallet as UserProfile;
 use user_profile::Config as UserProfileConfig;
 
 use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
+use traits_services::types::ServiceFlow::{RequestTest, StakingRequestService};
 
 #[allow(unused)]
 use orders::Pallet as Orders;
@@ -97,7 +98,8 @@ benchmarks! {
 		RawOrigin::Signed(caller), 
 		_lab.services[0],
 		0,
-		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+		StakingRequestService
 	)
 	
 	cancel_order {
@@ -145,7 +147,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -202,7 +205,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			StakingRequestService
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -259,7 +263,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -339,7 +344,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			StakingRequestService
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
