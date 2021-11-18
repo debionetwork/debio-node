@@ -51,15 +51,17 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ./chain-spec.json
+            ./SHA256SUMS
+          key: ${{ runner.os }}-cargo-main
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Cargo build
         run: cargo build --release
       - name: Generate the chainspec file
-        run: ./target/release/debio build-spec --disable-default-bootnode --chain dev-testnet > ./target/chain-spec.json
+        run: ./target/release/debio build-spec --disable-default-bootnode --chain dev-testnet > chain-spec.json
       - name: Generate sha256 hash
-        run: sha256sum /target/chain-spec.json> /target/SHA256SUMS
+        run: sha256sum chain-spec.json> SHA256SUMS
 
   build-and-publish-docker-image:
     runs-on: ubuntu-20.04
@@ -93,7 +95,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ./chain-spec.json
+            ./SHA256SUMS
+          key: ${{ runner.os }}-cargo-main
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Copy binnary file

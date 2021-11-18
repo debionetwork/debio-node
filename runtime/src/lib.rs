@@ -39,7 +39,7 @@ use pallet_transaction_payment::CurrencyAdapter;
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
-use beefy_primitives::crypto::AuthorityId as BeefyId;
+use beefy_primitives::{crypto::AuthorityId as BeefyId, mmr::MmrLeafVersion};
 use codec::{Encode, Decode};
 use frame_support::{weights::DispatchClass, PalletId};
 use frame_system::{
@@ -91,7 +91,7 @@ pub mod currency {
 	pub const CENTS: Balance = DOLLARS / 100;
 	pub const MILLICENTS: Balance = CENTS / 1_000;
 
-	pub const EXISTENSIAL_DEPOSIT: Balance = CENTS;
+	pub const EXISTENSIAL_DEPOSIT: Balance = 0 * DOLLARS;
 	pub const BYTE_FEE: Balance = 10 * MILLICENTS;
 
 	pub const fn deposit(items: u32, bytes: u32) -> Balance {
@@ -506,7 +506,7 @@ impl pallet_mmr::Config for Runtime {
 	const INDEXING_PREFIX: &'static [u8] = b"mmr";
 	type Hashing = Keccak256;
 	type Hash = <Keccak256 as traits::Hash>::Output;
-	type LeafData = frame_system::Pallet<Self>;
+	type LeafData = pallet_beefy_mmr::Pallet<Runtime>;
 	type OnNewRoot = pallet_beefy_mmr::DepositBeefyDigest<Runtime>;
 	type WeightInfo = ();
 }
@@ -539,6 +539,29 @@ impl pallet_beefy::Config for Runtime {
 	type BeefyId = BeefyId;
 }
 
+parameter_types! {
+	/// Version of the produced MMR leaf.
+	///
+	/// The version consists of two parts;
+	/// - `major` (3 bits)
+	/// - `minor` (5 bits)
+	///
+	/// `major` should be updated only if decoding the previous MMR Leaf format from the payload
+	/// is not possible (i.e. backward incompatible change).
+	/// `minor` should be updated if fields are added to the previous MMR Leaf, which given SCALE
+	/// encoding does not prevent old leafs from being decoded.
+	///
+	/// Hence we expect `major` to be changed really rarely (think never).
+	/// See [`MmrLeafVersion`] type documentation for more details.
+	pub LeafVersion: MmrLeafVersion = MmrLeafVersion::new(0, 0);
+}
+
+impl pallet_beefy_mmr::Config for Runtime {
+	type LeafVersion = LeafVersion;
+	type BeefyAuthorityToMerkleLeaf = pallet_beefy_mmr::BeefyEcdsaToEthereum;
+	type ParachainHeads = ();
+}
+
 pub struct OctopusAppCrypto;
 
 impl frame_system::offchain::AppCrypto<<Signature as Verify>::Signer, Signature>
@@ -551,8 +574,8 @@ impl frame_system::offchain::AppCrypto<<Signature as Verify>::Signer, Signature>
 
 parameter_types! {
 	pub const OctopusAppchainPalletId: PalletId = PalletId(*b"py/octps");
-	pub const GracePeriod: u32 = 5;
-	pub const UnsignedPriority: u64 = 1 << 20;
+	pub const GracePeriod: u32 = 10;
+	pub const UnsignedPriority: u64 = 1 << 21;
 	pub const RequestEventLimit: u32 = 10;
 }
 
@@ -585,15 +608,21 @@ impl pallet_octopus_lpos::Config for Runtime {
 	type BondingDuration = BondingDuration;
 	type BlocksPerEra = BlocksPerEra;
 	type SessionInterface = Self;
+	type AppchainInterface = OctopusAppchain;
 	type UpwardMessagesInterface = OctopusUpwardMessages;
 	type PalletId = OctopusAppchainPalletId;
 	type ValidatorsProvider = OctopusAppchain;
 	type WeightInfo = pallet_octopus_lpos::weights::SubstrateWeight<Runtime>;
 }
 
+parameter_types! {
+	pub const UpwardMessagesLimit: u32 = 10;
+}
+
 impl pallet_octopus_upward_messages::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
+	type UpwardMessagesLimit = UpwardMessagesLimit;
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -720,6 +749,7 @@ construct_runtime!(
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
 		Mmr: pallet_mmr::{Pallet, Storage},
 		Beefy: pallet_beefy::{Pallet, Config<T>, Storage},
+		MmrLeaf: pallet_beefy_mmr::{Pallet, Storage},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template pallet in the runtime.
 		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},
@@ -1024,6 +1054,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, doctor_certifications, DoctorCertificationsBench::<Runtime>);
 			list_benchmark!(list, extra, user_profile, UserProfile);
 			list_benchmark!(list, extra, rewards, Rewards);
+			list_benchmark!(list, extra, service_request, ServiceRequest);
 			list_benchmark!(list, extra, genetic_testing, GeneticTestingBench::<Runtime>);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
@@ -1091,6 +1122,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, user_profile, UserProfile);
 			add_benchmark!(params, batches, rewards, Rewards);
 			add_benchmark!(params, batches, genetic_testing, GeneticTestingBench::<Runtime>);
+			add_benchmark!(params, batches, service_request, ServiceRequest);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)

@@ -51,7 +51,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ./chain-spec.json
+            ./SHA256SUMS
+          key: ${{ runner.os }}-cargo-release
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Cargo build
@@ -93,7 +95,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ./chain-spec.json
+            ./SHA256SUMS
+          key: ${{ runner.os }}-cargo-release
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Copy binnary file

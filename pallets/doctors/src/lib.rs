@@ -20,6 +20,7 @@ pub use crate::interface::DoctorInterface;
 use frame_support::pallet_prelude::*;
 use traits_doctor_certifications::DoctorCertificationOwnerInfo;
 use traits_user_profile::UserProfileProvider;
+use primitives_area_code::{CountryCode, RegionCode, CityCode, CountryRegionCode};
 
 // DoctorInfo Struct
 // Used as parameter of dispatchable calls
@@ -27,9 +28,9 @@ use traits_user_profile::UserProfileProvider;
 pub struct DoctorInfo {
     pub name: Vec<u8>,
     pub email: Vec<u8>,
-    pub country: Vec<u8>,
-    pub region: Vec<u8>,
-    pub city: Vec<u8>,
+    pub country: CountryCode,
+    pub region: RegionCode,
+    pub city: CityCode,
     pub address: Vec<u8>,
     pub latitude: Option<Vec<u8>>,
     pub longitude: Option<Vec<u8>>,
@@ -64,21 +65,21 @@ where
         self.info = info;
     }
 
-    fn get_country(&self) -> &Vec<u8> {
+    fn get_country(&self) -> &CountryCode {
         &self.info.country
     }
 
-    fn get_region(&self) -> &Vec<u8> {
+    fn get_region(&self) -> &RegionCode {
         &self.info.region
     }
 
-    fn get_city(&self) -> &Vec<u8> {
+    fn get_city(&self) -> &CityCode {
         &self.info.city
     }
 
     // Returns CountryCode-RegionCode -> XX-YYY
-    fn get_country_region(&self) -> Vec<u8> {
-        helpers::build_country_region_code(&self.get_country(), &self.get_region())
+    fn get_country_region(&self) -> CountryRegionCode {
+        CountryRegionCode::build_country_region_code(&self.get_country(), &self.get_region())
     }
 
     pub fn get_account_id(&self) -> &AccountId {
@@ -86,7 +87,7 @@ where
     }
 
     pub fn add_certification(&mut self, certification_id: Hash) -> () {
-        &self.certifications.push(certification_id);
+        self.certifications.push(certification_id);
     }
 
     pub fn remove_certification(&mut self, certification_id: Hash) -> () {
@@ -95,7 +96,7 @@ where
             .iter()
             .position(|x| *x == certification_id)
         {
-            &self.certifications.remove(*pos);
+            self.certifications.remove(*pos);
         }
     }
 }
@@ -107,26 +108,6 @@ where
 {
     fn get_owner_id(&self) -> &AccountId {
         &self.get_account_id()
-    }
-}
-
-pub mod helpers {
-    use crate::*;
-
-    /// Concatenate CountryCode with RegionCode with a '-'
-    pub fn build_country_region_code(country_code: &Vec<u8>, region_code: &Vec<u8>) -> Vec<u8> {
-        // container
-        let mut country_region_code = Vec::new();
-        let mut country_code = country_code.clone();
-        // dash character as u8
-        let mut dash = ['-'].iter().map(|c| *c as u8).collect::<Vec<u8>>();
-        let mut region_code = region_code.clone();
-
-        country_region_code.append(&mut country_code);
-        country_region_code.append(&mut dash);
-        country_region_code.append(&mut region_code);
-
-        country_region_code
     }
 }
 
@@ -179,8 +160,6 @@ pub mod pallet {
     pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
     pub type HashOf<T> = <T as frame_system::Config>::Hash;
     pub type DoctorOf<T> = Doctor<AccountIdOf<T>, HashOf<T>>;
-    pub type CountryRegionCode = Vec<u8>; // country_code-region_code -> XX-YYYY
-    pub type CityCode = Vec<u8>; // city_code -> ZZZZ
 
     // ----- Storage ------------------
     /// Get Doctor by account id
@@ -368,8 +347,8 @@ impl<T: Config> DoctorInterface<T> for Pallet<T> {
     }
 
     fn doctors_by_country_region_city(
-        country_region_code: &Vec<u8>,
-        city_code: &Vec<u8>,
+        country_region_code: &CountryRegionCode,
+        city_code: &CityCode,
     ) -> Option<Vec<T::AccountId>> {
         Self::doctors_by_country_region_city(country_region_code, city_code)
     }

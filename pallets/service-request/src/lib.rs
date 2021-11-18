@@ -52,6 +52,8 @@ pub struct Request<AccountId, Balance, Hash> {
 	pub service_category: Vec<u8>,
 	pub staking_amount: Balance,
 	pub status: RequestStatus,
+	pub created_at: u128,
+	pub updated_at: Option<u128>,
 	pub unstaked_at: Option<u128>,
 }
 impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
@@ -63,6 +65,7 @@ impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 		city: Vec<u8>,
 		service_category: Vec<u8>,
 		staking_amount: Balance,
+		created_at: u128,
 	) -> Self {
 		Self {
 			hash,
@@ -74,6 +77,8 @@ impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 			service_category,
 			staking_amount,
             status: RequestStatus::default(),
+			created_at,
+			updated_at: None,
             unstaked_at: None,
         }
     }
@@ -163,7 +168,7 @@ pub mod pallet {
 	pub type DNASampleTrackingIdOf = Vec<u8>;
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + labs::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
@@ -238,6 +243,11 @@ pub mod pallet {
     #[pallet::getter(fn admin_key)]
     pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
+	/// Get Request by Account Id
+	#[pallet::storage]
+	#[pallet::getter(fn request_by_account_id)]
+	pub type RequestByAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<RequestIdOf<T>>, ValueQuery>;
+
 	/// Get Request by RequestId
 	#[pallet::storage]
 	#[pallet::getter(fn request_by_id)]
@@ -272,6 +282,11 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn service_invoice_by_id)]
 	pub type ServiceInvoiceById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceInvoiceOf<T>>;
+
+	/// Get ServiceInvoice By OrderId
+	#[pallet::storage]
+	#[pallet::getter(fn service_invoice_by_order_id)]
+	pub type ServiceInvoiceByOrderId<T> = StorageMap<_, Blake2_128Concat, OrderIdOf<T>, ServiceInvoiceOf<T>>;
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
@@ -484,6 +499,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			service_category.clone(),
 		);
 
+		let now = T::TimeProvider::now().as_millis();
+
 		match CurrencyOf::<T>::withdraw(
 			&requester_id,
 			staking_amount.clone(),
@@ -501,8 +518,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					city.clone(),
 					service_category.clone(),
 					staking_amount.clone(),
+					now,
 				);
 
+				let mut request_ids = RequestByAccountId::<T>::get(requester_id.clone());
+				request_ids.push(request_id.clone());
+
+				RequestByAccountId::<T>::insert(requester_id.clone(), request_ids);
 				RequestById::<T>::insert(request_id.clone(), request.clone());
 
 				let service_count = ServiceCountRequest::<T>::get((
@@ -641,9 +663,12 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			qc_price,
 		);
 
+		let now = T::TimeProvider::now().as_millis();
+
 		if lab_status.is_verified() {
 			request.status = RequestStatus::Claimed;
 			request.lab_address = Some(lab_id);
+			request.updated_at = Some(now);
 
 			RequestById::<T>::insert(request_id, request.clone());
 			ServiceOfferById::<T>::insert(request_id, service_offer.clone());
@@ -719,7 +744,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		if !excess.is_zero() {
 			match CurrencyOf::<T>::withdraw(
 				&Self::staking_account_id(request_id),
-				request.staking_amount.clone(),
+				excess.clone(),
 				WithdrawReasons::TRANSFER,
 				ExistenceRequirement::KeepAlive,
 			) {
@@ -772,9 +797,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			final_pay_amount.clone(),
 		);
 
+		let now = T::TimeProvider::now().as_millis();
+
 		ServiceInvoiceById::<T>::insert(request_id.clone(), service_invoice.clone());
+		ServiceInvoiceByOrderId::<T>::insert(order_id.clone(), service_invoice.clone());
 
 		request.status = RequestStatus::Processed;
+		request.updated_at = Some(now);
 		RequestById::<T>::insert(request_id.clone(), request);
 
 		Ok(service_invoice.clone())
@@ -797,6 +826,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let mut request = request.unwrap();
 
+		if request.status != RequestStatus::Processed {
+			return Err(Error::<T>::RequestUnableToFinalize);
+		}
+
 		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
 
 		if service_offer.is_none() {
@@ -816,31 +849,48 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let requester_id = service_invoice.customer_address.clone();
 		let lab_id = service_invoice.seller_address.clone();
 
-		if request.status != RequestStatus::Processed {
-			return Err(Error::<T>::RequestUnableToFinalize);
-		}
-
-		let mut target_id = lab_id.clone();
+		let mut pay_amount = service_invoice.pay_amount;
 
 		if !test_result_success.clone() {
-			target_id = requester_id.clone();
+			pay_amount = service_invoice.qc_price;
+
+			let testing_price = service_invoice.testing_price;
+
+			// Transfer testing price back to customer
+			match CurrencyOf::<T>::withdraw(
+				&Self::staking_account_id(request_id.clone()),
+				testing_price,
+				WithdrawReasons::TRANSFER,
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(imb) => {
+					CurrencyOf::<T>::resolve_creating(&requester_id.clone(), imb);
+				},
+				_ => {
+					return Err(Error::<T>::BadSignature)
+				},
+			}
 		}
 
+		// Transfer to lab_id
 		match CurrencyOf::<T>::withdraw(
 			&Self::staking_account_id(request_id.clone()),
-			service_invoice.pay_amount.clone(),
+			pay_amount,
 			WithdrawReasons::TRANSFER,
 			ExistenceRequirement::KeepAlive,
 		) {
 			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&target_id, imb);
+				CurrencyOf::<T>::resolve_creating(&lab_id.clone(), imb);
 			},
 			_ => {
 				return Err(Error::<T>::BadSignature)
 			},
 		}
 
+		let now = T::TimeProvider::now().as_millis();
+
 		request.status = RequestStatus::Finalized;
+		request.updated_at = Some(now);
 		RequestById::<T>::insert(request_id.clone(), request.clone());
 
 		Ok(service_invoice.clone())

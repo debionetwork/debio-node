@@ -62,12 +62,12 @@ where
     }
 
     pub fn add_file(&mut self, emr_files_id: Hash) -> () {
-        &self.files.push(emr_files_id);
+        self.files.push(emr_files_id);
     }
 
     pub fn remove_file(&mut self, emr_files_id: Hash) -> () {
         if let Some(pos) = &self.files.iter().position(|x| *x == emr_files_id) {
-            &self.files.remove(*pos);
+            self.files.remove(*pos);
         }
     }
 }
@@ -479,15 +479,14 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         owner_id: &T::AccountId,
         electronic_medical_record_file_id: &Self::ElectronicMedicalRecordFileId,
     ) -> Result<Self::ElectronicMedicalRecordFile, Self::Error> {
-        let electronic_medical_record_file =
+        let _emr_file =
             ElectronicMedicalRecordFileById::<T>::get(electronic_medical_record_file_id);
-        if electronic_medical_record_file == None {
+        if _emr_file == None {
             return Err(Error::<T>::ElectronicMedicalRecordDoesNotExist)?;
         }
-        let electronic_medical_record_file = electronic_medical_record_file.unwrap();
 
         let electronic_medical_record =
-            ElectronicMedicalRecordById::<T>::get(electronic_medical_record_file_id).unwrap();
+            ElectronicMedicalRecordById::<T>::get(_emr_file.unwrap().electronic_medical_record_id).unwrap();
 
         if electronic_medical_record.owner_id != owner_id.clone() {
             return Err(Error::<T>::NotElectronicMedicalRecordOwner)?;
@@ -505,7 +504,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             
         // Decrement counts
         Self::sub_electronic_medical_record_file_count();
-        Self::sub_electronic_medical_record_file_count_by_electronic_medical_record(&electronic_medical_record.id);
+        Self::sub_electronic_medical_record_file_count_by_electronic_medical_record(&electronic_medical_record_file.id);
 
         Ok(electronic_medical_record_file)
     }

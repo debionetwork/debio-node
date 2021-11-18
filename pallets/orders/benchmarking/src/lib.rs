@@ -20,11 +20,20 @@ use user_profile::Pallet as UserProfile;
 use user_profile::Config as UserProfileConfig;
 
 use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
+use traits_services::types::ServiceFlow::{RequestTest, StakingRequestService};
 
 #[allow(unused)]
 use orders::Pallet as Orders;
 use orders::{
-	Config as OrdersConfig
+	Config as OrdersConfig,
+	EscrowKey
+};
+
+#[allow(unused)]
+use genetic_testing::Pallet as GeneticTesting;
+use genetic_testing::{
+	DnaSampleStatus, DnaTestResultSubmission,
+	Config as GeneticTestingConfig
 };
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
@@ -37,24 +46,25 @@ pub trait Config:
 	+ LabsConfig
 	+ UserProfileConfig
 	+ OrdersConfig
+	+ GeneticTestingConfig
 {}
 
 use orders::Call;
-use sp_core::Decode;
 use frame_support::sp_runtime::traits::Hash;
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	create_order {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -88,20 +98,21 @@ benchmarks! {
 		RawOrigin::Signed(caller), 
 		_lab.services[0],
 		0,
-		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+		StakingRequestService
 	)
 	
 	cancel_order {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -136,7 +147,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -149,16 +161,16 @@ benchmarks! {
 	)
 	
 	set_order_paid {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -193,7 +205,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			StakingRequestService
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -206,16 +219,16 @@ benchmarks! {
 	)
 	
 	fulfill_order {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -250,7 +263,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -261,6 +275,24 @@ benchmarks! {
 		let _set_order_paid = Orders::<T>::set_order_paid(
 			caller_origin.clone(), 
 			_order.id.clone()
+		);
+
+		let _dna_test_result = DnaTestResultSubmission {
+			comments: Some("DNA Test Result comments".as_bytes().to_vec()),
+			result_link: Some("DNA Test Result result_link".as_bytes().to_vec()),
+			report_link: Some("DNA Test Result report_link".as_bytes().to_vec())
+		};
+
+		let _submit_test_result = GeneticTesting::<T>::submit_test_result(
+			caller_origin.clone(),
+			_order.dna_sample_tracking_id.clone(),
+			_dna_test_result
+		);
+
+		let _ = GeneticTesting::<T>::process_dna_sample(
+			caller_origin.clone(),
+			_order.dna_sample_tracking_id,
+			DnaSampleStatus::ResultReady
 		);
 	}: fulfill_order(
 		RawOrigin::Signed(caller), 
@@ -268,16 +300,16 @@ benchmarks! {
 	)
 	
 	set_order_refunded {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		
 		let lab = LabInfo {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -312,7 +344,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			StakingRequestService
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -323,6 +356,13 @@ benchmarks! {
 		let _set_order_paid = Orders::<T>::set_order_paid(
 			caller_origin.clone(), 
 			_order.id.clone()
+		);
+
+		let _ = GeneticTesting::<T>::reject_dna_sample(
+			caller_origin.clone(),
+			_order.dna_sample_tracking_id,
+			"Rejected title".as_bytes().to_vec(),
+			"Rejected description".as_bytes().to_vec()
 		);
 	}: set_order_refunded(
 		RawOrigin::Signed(caller), 

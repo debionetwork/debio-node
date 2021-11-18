@@ -70,7 +70,15 @@ pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+		let mut storage = system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
+		storage.extend(
+			GenesisConfig::<Runtime> {
+				rewards: LabsConfig {
+					lab_verifier_key: hex_literal::hex!["d86cd72037edd033b21e5a54fb8ecb687effe90e0af2d12c1c23acba2021ac56"].into(),
+				},
+			}.build_storage()
+				.unwrap()
+		);
+		storage.into()
 	}
 }

@@ -11,7 +11,7 @@ pub use pallet::*;
 pub use weights::WeightInfo;
 pub use scale_info::TypeInfo;
 use sp_std::prelude::*;
-use traits_genetic_testing::{DnaSampleTracking, GeneticTestingProvider};
+use traits_genetic_testing::{DnaSampleTrackingId, DnaSampleTracking, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_services::{
     types::{CurrencyType, Price, ServiceFlow},
@@ -40,7 +40,7 @@ pub struct Order<Hash, AccountId, Balance, Moment> {
     pub customer_id: AccountId,
     pub customer_box_public_key: Hash,
     pub seller_id: AccountId,
-    pub dna_sample_tracking_id: Vec<u8>,
+    pub dna_sample_tracking_id: DnaSampleTrackingId,
     pub currency: CurrencyType,
     pub prices: Vec<Price<Balance>>,
     pub additional_prices: Vec<Price<Balance>>,
@@ -56,7 +56,7 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
         customer_id: AccountId,
         customer_box_public_key: Hash,
         seller_id: AccountId,
-        dna_sample_tracking_id: Vec<u8>,
+        dna_sample_tracking_id: DnaSampleTrackingId,
         currency: CurrencyType,
         order_flow: ServiceFlow,
         prices: Vec<Price<Balance>>,
@@ -233,6 +233,7 @@ pub mod pallet {
             service_id: T::Hash,
             price_index: u32,
             customer_box_public_key: T::Hash,
+            service_flow: ServiceFlow
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -241,6 +242,7 @@ pub mod pallet {
                 &service_id,
                 price_index,
                 &customer_box_public_key,
+                service_flow
             ) {
                 Ok(order) => {
                     Self::deposit_event(Event::<T>::OrderCreated(order.clone()));
@@ -322,6 +324,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
         service_id: &T::Hash,
         price_index: u32,
         customer_box_public_key: &T::Hash,
+        service_flow: ServiceFlow
     ) -> Result<Self::Order, Self::Error> {
         let service = T::Services::service_by_id(service_id);
         if service.is_none() {
@@ -361,7 +364,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
             seller_id.clone(),
             dna_sample.get_tracking_id().clone(),
             currency.clone(),
-            service.get_service_flow().clone(),
+            service_flow.clone(),
             prices.clone(),
             additional_prices.clone(),
             now,

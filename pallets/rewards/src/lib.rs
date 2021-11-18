@@ -19,6 +19,9 @@ mod benchmarking;
 
 use sp_std::prelude::*;
 
+pub mod weights;
+pub use weights::WeightInfo;
+
 #[frame_support::pallet]
 pub mod pallet {
     use crate::*;
@@ -30,6 +33,7 @@ pub mod pallet {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// Currency type for this pallet.
         type Currency: Currency<Self::AccountId> + ReservableCurrency<Self::AccountId>;
+        type WeightInfo: WeightInfo;
     }
     // -----------------------------------------
 

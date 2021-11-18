@@ -32,6 +32,8 @@ sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'po
 
 doctors = { path = '../../doctors', default-features = false }
 doctor-certifications = { path = '../../doctor-certifications', default-features = false }
+
+primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-doctor-certifications = { path = '../../../traits/doctor-certifications', default-features = false }
 
 [dev-dependencies]
@@ -55,5 +57,6 @@ std = [
     'doctors/std',
     'doctor-certifications/std',
 
+    'primitives-area-code/std',
     'traits-doctor-certifications/std',
 ]

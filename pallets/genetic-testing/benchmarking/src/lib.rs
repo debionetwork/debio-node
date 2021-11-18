@@ -9,6 +9,7 @@ use services::{
 };
 
 use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
+use traits_services::types::ServiceFlow::{RequestTest, StakingRequestService};
 
 #[allow(unused)]
 use labs::Pallet as Labs;
@@ -50,6 +51,7 @@ pub trait Config:
 use genetic_testing::Call;
 use sp_core::Decode;
 use frame_support::sp_runtime::traits::Hash;
+use primitives_area_code::{CountryCode, RegionCode, CityCode};
 
 benchmarks! {
 	reject_dna_sample {
@@ -60,9 +62,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -97,7 +99,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -119,9 +122,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -156,7 +159,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			RequestTest
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -177,9 +181,9 @@ benchmarks! {
             box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
             name: "DeBio Lab".as_bytes().to_vec(),
             email: "DeBio Email".as_bytes().to_vec(),
-            country: "DeBio Country".as_bytes().to_vec(),
-            region: "DeBio Region".as_bytes().to_vec(),
-            city: "DeBio City".as_bytes().to_vec(),
+            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+            city: CityCode::from_vec("City".as_bytes().to_vec()),
             address: "DeBio Address".as_bytes().to_vec(),
             phone_number: "+6281394653625".as_bytes().to_vec(),
             website: "DeBio Website".as_bytes().to_vec(),
@@ -214,7 +218,8 @@ benchmarks! {
 			caller_origin.clone(), 
 			_lab.services[0],
 			0,
-			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			StakingRequestService
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())

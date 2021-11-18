@@ -28,6 +28,7 @@ frame_support::construct_runtime!(
 		Services: services::{Pallet, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
+		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -99,10 +100,16 @@ impl user_profile::Config for Runtime {
     type EthereumAddress = EthereumAddress;
 }
 
+impl genetic_testing::Config for Test {
+    type Event = Event;
+    type Orders = Orders;
+    type RandomnessSource = RandomnessCollectiveFlip;
+}
+
 impl orders::Config for Test {
     type Event = Event;
     type Services = Services;
-    type GeneticTesting = ();
+    type GeneticTesting = GeneticTesting;
     type Currency = Balances;
 }
 
@@ -110,21 +117,15 @@ pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig {
-			system: frame_system::Config {
-				// Add Wasm runtime to storage.
-				code: wasm_binary.to_vec(),
-				changes_trie_config: Default::default(),
-			},
-			balances: pallet_balances::Config {
-				balances: vec![],
-			},
-			orders: OrdersConfig {
-				escrow_key: T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default(),
-			},
-		};
-		
-		storage.build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+		let mut storage = system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
+		storage.extend(
+			GenesisConfig::<Runtime> {
+				orders: OrdersConfig {
+					escrow_key: hex!["18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b"].into(),
+				},
+			}.build_storage()
+				.unwrap()
+		);
+		storage.into()
 	}
 }

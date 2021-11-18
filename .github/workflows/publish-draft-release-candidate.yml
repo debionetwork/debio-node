@@ -31,7 +31,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ./chain-spec.json
+            ./SHA256SUMS
+          key: ${{ runner.os }}-cargo-beta
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Create draft release
@@ -43,5 +45,5 @@ jobs:
           files: |
             ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
             ./target/release/debio
-            ./release/chain-spec.json
-            ./release/SHA256SUMS
+            ./chain-spec.json
+            ./SHA256SUMS
