@@ -33,7 +33,7 @@ jobs:
             target/
             ./chain-spec.json
             ./SHA256SUMS
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-beta
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Create draft release
