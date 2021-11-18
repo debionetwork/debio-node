@@ -20,7 +20,7 @@ pub use crate::interface::HospitalInterface;
 use frame_support::pallet_prelude::*;
 use traits_hospital_certifications::HospitalCertificationOwnerInfo;
 use traits_user_profile::UserProfileProvider;
-use primitives_area_code::{AreaCode, CountryCode, RegionCode, CityCode, CountryRegionCode};
+use primitives_area_code::{CountryCode, RegionCode, CityCode, CountryRegionCode};
 
 // HospitalInfo Struct
 // Used as parameter of dispatchable calls
@@ -79,7 +79,7 @@ where
 
     // Returns CountryCode-RegionCode -> XX-YYY
     fn get_country_region(&self) -> CountryRegionCode {
-        helpers::build_country_region_code(&self.get_country(), &self.get_region())
+        CountryRegionCode::build_country_region_code(&self.get_country(), &self.get_region())
     }
 
     pub fn get_account_id(&self) -> &AccountId {
@@ -108,32 +108,6 @@ where
 {
     fn get_owner_id(&self) -> &AccountId {
         &self.get_account_id()
-    }
-}
-
-pub mod helpers {
-    use crate::*;
-
-    /// Concatenate CountryCode with RegionCode with a '-'
-    pub fn build_country_region_code(country_code: &CountryCode, region_code: &RegionCode) -> CountryRegionCode {
-        // container
-        let mut country_region_code = Vec::new();
-        let mut country_code = country_code.clone()
-            .to_vec();
-            
-        // dash character as u8
-        let mut dash = ['-'].iter()
-            .map(|c| *c as u8)
-            .collect::<Vec<u8>>();
-
-        let mut region_code = region_code.clone()
-            .to_vec();
-
-        country_region_code.append(&mut country_code);
-        country_region_code.append(&mut dash);
-        country_region_code.append(&mut region_code);
-
-        CountryRegionCode::from_vec(country_region_code)
     }
 }
 
