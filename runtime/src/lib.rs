@@ -646,6 +646,7 @@ impl labs::Config for Runtime {
 impl rewards::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
+	type WeightInfo = ();
 }
 
 impl hospitals::Config for Runtime {

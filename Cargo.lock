@@ -1296,6 +1296,7 @@ dependencies = [
  "debio-runtime",
  "frame-benchmarking",
  "frame-benchmarking-cli",
+ "frame-support",
  "frame-system",
  "frame-system-rpc-runtime-api",
  "hex-literal",

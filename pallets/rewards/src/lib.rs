@@ -5,7 +5,7 @@ use interface::RewardInterface;
 
 use frame_support::pallet_prelude::*;
 use frame_support::{
-    traits::{Currency, ExistenceRequirement::KeepAlive, OnUnbalanced, ReservableCurrency},
+    traits::{Currency, ExistenceRequirement::KeepAlive, ReservableCurrency},
 };
 
 pub use pallet::*;
@@ -21,6 +21,10 @@ use sp_std::prelude::*;
 
 pub mod weights;
 pub use weights::WeightInfo;
+
+use frame_support::PalletId;
+use sp_runtime::traits::AccountIdConversion;
+const PALLET_ID: PalletId = PalletId(*b"Rewards!");
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -105,7 +109,7 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as RewardInterface<T>>::reward_funds(&who, &to_reward, reward) {
+            match <Self as RewardInterface<T>>::reward_funds(&who, &Self::account_id(), &to_reward, reward) {
                 Ok(_) => {
                     let now = <frame_system::Pallet<T>>::block_number();
                     Self::deposit_event(Event::<T>::RewardFunds(to_reward, reward, now));
@@ -117,12 +121,25 @@ pub mod pallet {
     }
 }
 
+impl<T: Config> Pallet<T> {
+	/// The account ID that holds the funds
+	pub fn account_id() -> T::AccountId {
+		PALLET_ID.into_account()
+	}
+
+	/// The rewards balance
+	fn get_reward_balance() -> BalanceOf<T> {
+		T::Currency::free_balance(&Self::account_id())
+	}
+}
+
 impl<T: Config> RewardInterface<T> for Pallet<T> {
     type Error = Error<T>;
     type Balance = BalanceOf<T>;
 
     fn reward_funds(
         rewarder_account_id: &T::AccountId,
+        pallet_id: &T::AccountId,
         to_reward: &T::AccountId,
         reward: Self::Balance,
     ) -> Result<(), Self::Error> {
@@ -130,7 +147,7 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
             return Err(Error::<T>::Unauthorized);
         }
 
-        let _ = T::Currency::transfer(rewarder_account_id, to_reward, reward, KeepAlive);
+        let _ = T::Currency::transfer(pallet_id, to_reward, reward, KeepAlive);
 
         Ok(().into())
     }
