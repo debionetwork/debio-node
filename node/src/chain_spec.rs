@@ -678,10 +678,9 @@ pub fn development_config() -> Result<ChainSpec, String> {
 						12_500_000 * DBIO,
 					),
 					(
-						// Sudo account and API admin account
-						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+						// Pallet ID Account
 						PalletId(*b"Rewards!").into_account(),
-						// Balance amount
+						// Pallet ID rewards amount
 						2_500 * DBIO,
 					)
 				],
