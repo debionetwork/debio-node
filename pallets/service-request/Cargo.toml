@@ -12,6 +12,7 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
 # External Dependencies
+hex-literal = '0.3.3'
 codec = { package = 'parity-scale-codec', version = '2.0.0', default-features = false, features = ['derive'] }
 scale-info = { version = '1.0', default-features = false, features = ['derive'] }
 
@@ -27,9 +28,15 @@ frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 
 frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
 
+## Substrate Pallet Dependencies
+pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-timestamp = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+
 # Local Dependencies
 labs = { path = '../labs', default-features = false }
-hex-literal = '0.3.3'
+services = { path = '../services', default-features = false }
+certifications = { path = '../certifications', default-features = false }
+user-profile = { path = '../user-profile', default-features = false }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
 
 [features]
@@ -46,7 +53,15 @@ std = [
     'frame-support/std',
     'frame-system/std',
 	'frame-benchmarking/std',
-	'primitives-area-code/std'
+	'primitives-area-code/std',
+
+	'pallet-balances/std',
+	'pallet-timestamp/std',
+
+	'labs/std',
+	'services/std',
+	'certifications/std',
+	'user-profile/std'
 ]
 runtime-benchmarks = ['frame-benchmarking']
 try-runtime = ['frame-support/try-runtime']
