@@ -2,7 +2,9 @@
 DeBio blockchain runtime uses the following custom pallets to handle its business logic
 
 ## Labs Pallet
-The Labs pallet handles the logic for registration, deregistration, and updating information of `Lab` accounts. This pallet exposes the following extrinsic calls:
+The Labs pallet handles the logic for registration, deregistration, and updating information of `Lab` accounts.
+
+This pallet exposes the following extrinsic calls:
 ### Register Lab
 ```rust
 pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo
@@ -21,7 +23,8 @@ pub fn update_lab_verification_status(origin: OriginFor<T>, account_id: T::Accou
 ```
 
 ## Certifications Pallet
-The Certifications pallet handles the logic for creating, updating, and deleting `Lab`'s certifications.  
+The Certifications pallet handles the logic for creating, updating, and deleting `Lab`'s certifications.
+
 This pallet exposes the following extrinsic calls:
 ### Create Lab Certification
 ```rust
@@ -85,7 +88,7 @@ pub fn set_order_refunded(origin: OriginFor<T>, order_id: T::Hash) -> DispatchRe
 ```
 
 ## Genetic Testing Pallet
-This pallet handles the logic of tracking `DnaSample` and storing `DnaTestResult` on the blockchain.
+This pallet handles the logic of tracking `DnaSample` and storing `DnaTestResult` on the blockchain. 
 
 `DnaSample`s are sent by customers to a `Lab` to be processed. The result is then submitted to DeBio blockchain as `DnaTestResult`.
 
@@ -113,6 +116,39 @@ pub fn submit_independent_test_result(origin: OriginFor<T>, submission: DnaTestR
 pub fn submit_data_bounty_details(origin: OriginFor<T>, data_hash: T::Hash, order_id: T::Hash) -> DispatchResultWithPostInfo
 ```
 
+## Doctors Pallet
+The Doctors pallet handles the logic for registration, deregistration, and updating information of `Doctor` accounts.
+
+This pallet exposes the following extrinsic calls:
+### Register Doctor
+```rust
+pub fn register_doctor(origin: OriginFor<T>, doctor_info: DoctorInfo) -> DispatchResultWithPostInfo
+```
+### Deregister Doctor
+```rust
+pub fn deregister_doctor(origin: OriginFor<T>) -> DispatchResultWithPostInfo
+```
+### Update Doctor
+```rust
+pub fn update_doctor(origin: OriginFor<T>, doctor_info: DoctorInfo) -> DispatchResultWithPostInfo
+```
+
+## Doctor Certifications Pallet
+The Doctor Certifications pallet handles the logic for creating, updating, and deleting `Doctor`'s certifications.
+
+This pallet exposes the following extrinsic calls:
+### Create Doctor Certification
+```rust
+pub fn create_certification(origin: OriginFor<T>, certification_info: DoctorCertificationInfoOf) -> DispatchResultWithPostInfo
+```
+### Update Doctor Certification
+```rust
+pub fn update_certification(origin: OriginFor<T>, certification_id: HashOf<T>, certification_info: DoctorCertificationInfoOf) -> DispatchResultWithPostInfo
+```
+### Delete Doctor Certification
+```rust
+pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> DispatchResultWithPostInfo
+```
 
 ## Electronic Medical Record Pallet
 This pallet handles the logic of tracking and storing the `ElectronicMedicalRecord` on the blockchain. 
