@@ -119,7 +119,6 @@ pub mod pallet {
     #[pallet::error]
     pub enum Error<T> {
 		Unauthorized,
-        Error,
     }
 
     #[pallet::call]
