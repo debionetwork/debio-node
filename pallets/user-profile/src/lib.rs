@@ -3,6 +3,9 @@
 #[cfg(test)]
 mod mock;
 
+#[cfg(test)]
+mod tests;
+
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
@@ -49,9 +52,30 @@ pub mod pallet {
             + Default
 			+ TypeInfo
             + sp_std::fmt::Debug;
-            
+
         /// Weight information for extrinsics in this pallet.
         type WeightInfo: WeightInfo;
+    }
+
+	#[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub admin_key: T::AccountId,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self {
+                admin_key: Default::default(),
+            }
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            AdminKey::<T>::put(&self.admin_key);
+        }
     }
 
     // ----- This is template code, every pallet needs this ---
@@ -68,6 +92,10 @@ pub mod pallet {
     pub type EthereumAddressOf<T> = <T as Config>::EthereumAddress;
 
     // ----- Storage ------------------
+	#[pallet::storage]
+    #[pallet::getter(fn admin_key)]
+    pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
     #[pallet::storage]
     #[pallet::getter(fn eth_address_by_account_id)]
     pub type EthAddressByAccountId<T> =
@@ -90,6 +118,7 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
+		Unauthorized,
         Error,
     }
 
@@ -113,12 +142,14 @@ pub mod pallet {
         }
 
         #[pallet::weight(0)]
-        pub fn sudo_set_eth_address(
+        pub fn admin_set_eth_address(
             origin: OriginFor<T>,
             account_id: AccountIdOf<T>,
             eth_address: EthereumAddressOf<T>,
         ) -> DispatchResultWithPostInfo {
-            ensure_root(origin)?;
+            let admin = ensure_signed(origin)?;
+
+			ensure!(admin == AdminKey::<T>::get(), Error::<T>::Unauthorized);
 
             <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
                 &account_id,
