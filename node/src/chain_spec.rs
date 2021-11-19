@@ -2,7 +2,7 @@ use beefy_primitives::crypto::AuthorityId as BeefyId;
 use debio_runtime::{
 	currency::UNITS as DBIO,
 	opaque::{Block, SessionKeys},
-	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, LabsConfig,
+	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, LabsConfig, UserProfileConfig,
 	OctopusAppchainConfig, OctopusLposConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig,
 	SessionConfig, Signature, SudoConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
@@ -776,5 +776,6 @@ fn genesis(
 		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
 		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
+		user_profile: UserProfileConfig { admin_key: api_admin_key.clone() }
 	}
 }
