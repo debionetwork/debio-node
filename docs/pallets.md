@@ -150,6 +150,40 @@ pub fn update_certification(origin: OriginFor<T>, certification_id: HashOf<T>, c
 pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> DispatchResultWithPostInfo
 ```
 
+## Hospitals Pallet
+The Hospitals pallet handles the logic for registration, deregistration, and updating information of `Hospital` accounts.
+
+This pallet exposes the following extrinsic calls:
+### Register Hospital
+```rust
+pub fn register_hospital(origin: OriginFor<T>, hospital_info: HospitalInfo) -> DispatchResultWithPostInfo
+```
+### Deregister Hospital
+```rust
+pub fn deregister_hospital(origin: OriginFor<T>) -> DispatchResultWithPostInfo
+```
+### Update Hospital
+```rust
+pub fn update_hospital(origin: OriginFor<T>, hospital_info: HospitalInfo) -> DispatchResultWithPostInfo
+```
+
+## Hospital Certifications Pallet
+The Hospital Certifications pallet handles the logic for creating, updating, and deleting `Hospital`'s certifications.
+
+This pallet exposes the following extrinsic calls:
+### Create Hospital Certification
+```rust
+pub fn create_certification(origin: OriginFor<T>, certification_info: HospitalCertificationInfoOf) -> DispatchResultWithPostInfo
+```
+### Update Hospital Certification
+```rust
+pub fn update_certification(origin: OriginFor<T>, certification_id: HashOf<T>, certification_info: HospitalCertificationInfoOf) -> DispatchResultWithPostInfo
+```
+### Delete Hospital Certification
+```rust
+pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> DispatchResultWithPostInfo
+```
+
 ## Electronic Medical Record Pallet
 This pallet handles the logic of tracking and storing the `ElectronicMedicalRecord` on the blockchain. 
 
