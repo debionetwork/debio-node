@@ -11,7 +11,7 @@ pub trait OrderInterface<T: frame_system::Config> {
         service_id: &T::Hash,
         price_index: u32,
         customer_box_public_key: &T::Hash,
-        service_flow: ServiceFlow
+        order_flow: ServiceFlow
     ) -> Result<Self::Order, Self::Error>;
     fn cancel_order(
         customer_id: &T::AccountId,

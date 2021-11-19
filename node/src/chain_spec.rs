@@ -18,6 +18,9 @@ use sp_runtime::traits::{IdentifyAccount, Verify};
 
 use hex_literal::hex;
 
+use frame_support::PalletId;
+use sp_runtime::traits::AccountIdConversion;
+
 /// Node `ChainSpec` extensions.
 ///
 /// Additional parameters for some Substrate core modules,
@@ -666,13 +669,21 @@ pub fn development_config() -> Result<ChainSpec, String> {
 					authority_keys_from_seed("Alice", 100 * DBIO),
 				],
 				// Pre-funded accounts
-				vec![(
-					// Sudo account and API admin account
-					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					// Balance amount
-					12_500_000 * DBIO,
-				)],
+				vec![
+					(
+						// Sudo account and API admin account
+						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						// Balance amount
+						12_497_500 * DBIO,
+					),
+					(
+						// Pallet ID Account
+						PalletId(*b"Rewards!").into_account(),
+						// Pallet ID rewards amount
+						2_500 * DBIO,
+					)
+				],
 				// Appchain config
 				appchain_config(
 					// Appchain Relay Contract
