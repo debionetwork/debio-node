@@ -136,7 +136,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					6_849 * DBIO,
+					4_657 * DBIO,
 				),
 				// API admin account
 				// 5FpcRYvUMB3bNRdbj5YDwKeGHKVeWmdjnzY45RdTJSoSGcKN
@@ -316,7 +316,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					6_849 * DBIO,
+					4_657 * DBIO,
 				),
 				// API admin account
 				// 5FpcRYvUMB3bNRdbj5YDwKeGHKVeWmdjnzY45RdTJSoSGcKN
@@ -436,7 +436,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					6_849 * DBIO,
+					4_657 * DBIO,
 				),
 				// API admin account
 				// 5ELYNFhFz9tauMxfjgTGhd6sRbnndddEXqh3UxWsPi6Rjajg
@@ -556,7 +556,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					6_849 * DBIO,
+					4_657 * DBIO,
 				),
 				// API admin account
 				// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
@@ -626,7 +626,7 @@ pub fn local_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					6_849 * DBIO,
+					4_657 * DBIO,
 				),
 				// API admin account
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
@@ -693,7 +693,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					6_849 * DBIO,
+					4_657 * DBIO,
 				),
 				// API admin account
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
