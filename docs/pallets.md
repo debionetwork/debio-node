@@ -37,7 +37,7 @@ pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> 
 ```
 
 ## Services Pallet
-This handles the logic for managing a `Lab`'s services. A user can only create a `Service` if his/her account is registered as a `Lab` and has set their Eth address using the `set_eth_address` extrinsic in the User Profile pallet.
+This handles the logic for managing a `Lab`'s services. A user can only create a `Service` if his/her account is registered as a `Lab` and has set their Ethereum address using the `set_eth_address` extrinsic in the `UserProfile` pallet.
 The extrinsic calls exposed are:
 ### Create Service
 ```rust
@@ -54,62 +54,107 @@ pub fn delete_service(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResu
 
 ## Orders Pallet
 This pallet handles the business logic of orders. An `Order` is associated with a `Service` and a `DnaSample`.  
+
 An `Order` is fulfilled if the associated `DnaSample` is successfully processed.  
 An `Order` payment can be refunded if the physical `DnaSample` is rejected upon receipt, it has not been processed for 7 days, or if the sample processing has failed.
 
-Currently DeBio uses the ethereum network for payments in USDT. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
+Currently DeBio uses the ethereum network for payments in DAI. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
 
-Before a user can create an order, he/she is required to set an eth address in the User Profile Pallet
+Before a user can create an order, he/she is required to set their Ethereum address using the `set_eth_address` extrinsic in the `UserProfile` pallet.
 
 This pallet exposes the following extrinsics:
 ### Create Order
 ```rust
-pub fn create_order(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResultWithPostInfo
+pub fn create_order(origin: OriginFor<T>, service_id: T::Hash, price_index: u32, customer_box_public_key: T::Hash, order_flow: ServiceFlow) -> DispatchResultWithPostInfo
 ```
 ### Set Order Paid
 ```rust
 pub fn set_order_paid(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo
 ```
+### Cancel Order
+```rust
+pub fn cancel_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo
+```
 ### Fulfill Order
 ```rust
 pub fn fulfill_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo
 ```
-### Refund Order
+### Set Order is Refunded
 ```rust
-pub fn refund_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo
+pub fn set_order_refunded(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo
 ```
 
 ## Genetic Testing Pallet
 This pallet handles the logic of tracking `DnaSample` and storing `DnaTestResult` on the blockchain.
+
 `DnaSample`s are sent by customers to a `Lab` to be processed. The result is then submitted to DeBio blockchain as `DnaTestResult`.
+
 Users can also submit `DnaTestResult` that are processed off chain.
 
 The following extrinsic calls are exposed:
-### Receive DNA Sample
-```rust
-pub fn receive_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo
-```
 ### Reject DNA Sample
 ```rust
-pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo
+pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, rejected_title: Vec<u8>, rejected_description: Vec<u8>) -> DispatchResultWithPostInfo
 ```
 ### Process DNA Sample 
 ```rust
-pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>) -> DispatchResultWithPostInfo
+pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, status: DnaSampleStatus) -> DispatchResultWithPostInfo
 ```
 ### Submit Test Result
 ```rust
-pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, is_success: bool, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo
+pub fn submit_test_result(origin: OriginFor<T>, tracking_id: Vec<u8>, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo
 ```
 ### Submit Independent Test Result
 ```rust
 pub fn submit_independent_test_result(origin: OriginFor<T>, submission: DnaTestResultSubmission) -> DispatchResultWithPostInfo
 ```
+### Submit Data Bounty Details
+```rust
+pub fn submit_data_bounty_details(origin: OriginFor<T>, data_hash: T::Hash, order_id: T::Hash) -> DispatchResultWithPostInfo
+```
+
+
+## Electronic Medical Record Pallet
+This pallet handles the logic of tracking and storing the `ElectronicMedicalRecord` on the blockchain. 
+
+One account can have multiple `ElectronicMedicalRecord`s, and one `ElectronicMedicalRecord` contains multiple `ElectronicMedicalRecordFile`s. 
+
+Each `ElectronicMedicalRecord` will be mapped to an account, and each `ElectronicMedicalRecordFile` will be mapped to an `ElectronicMedicalRecord`.
+
+The following extrinsic calls are exposed:
+### Add a new Electronic Medical Record to Account
+```rust
+pub fn add_electronic_medical_record(origin: OriginFor<T>, title: Vec<u8>, category: Vec<u8>) -> DispatchResultWithPostInfo
+```
+### Remove an Electronic Medical Record from an Account
+```rust
+pub fn remove_electronic_medical_record(origin: OriginFor<T>, electronic_medical_record_id: HashOf<T>) -> DispatchResultWithPostInfo
+```
+### Attach a new file to an existing Electronic Medical Record
+```rust
+pub fn add_electronic_medical_record_file(origin: OriginFor<T>, electronic_medical_record_id: HashOf<T>, mut title: Vec<u8>, mut description: Vec<u8>, mut record_link: Vec<u8>) -> DispatchResultWithPostInfo
+```
+### Remove file attached to an existing Electronic Medical Record
+```rust
+pub fn remove_electronic_medical_record_file(origin: OriginFor<T>, electronic_medical_record_file_id: HashOf<T>) -> DispatchResultWithPostInfo
+```
 
 ## User Profile Pallet
 Currently this pallet only stores a user's Ethereum address that is used to make and receive payments
 
-### Set USDT Address
+### Set DAI Address
 ```rust
-pub fn set_eth_address(origin: OriginFor<T>, eth_address: EthereumAddress) -> DispatchResultWithPostInfo
+pub fn set_eth_address(origin: OriginFor<T>, eth_address: EthereumAddressOf<T>) -> DispatchResultWithPostInfo
+```
+### Set DAI Address using Sudo Account
+```rust
+pub fn sudo_set_eth_address(origin: OriginFor<T>, account_id: AccountIdOf<T>, eth_address: EthereumAddressOf<T>) -> DispatchResultWithPostInfo
+```
+
+## Rewards Pallet
+The rewards pallet is only used to send rewards using the designated accounts from the rewards escrow in the pallet.
+
+### Send Rewards using Authorized Account
+```rust
+pub fn reward_funds(origin: OriginFor<T>, to_reward: T::AccountId, reward: BalanceOf<T>) -> DispatchResultWithPostInfo
 ```
