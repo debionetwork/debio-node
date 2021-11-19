@@ -2,8 +2,7 @@
 DeBio blockchain runtime uses the following custom pallets to handle its business logic
 
 ## Labs Pallet
-The Labs pallet handles the logic for registration, deregistration, and updating information of `Lab` accounts.  
-This pallet exposes the following extrinsic calls:
+The Labs pallet handles the logic for registration, deregistration, and updating information of `Lab` accounts. This pallet exposes the following extrinsic calls:
 ### Register Lab
 ```rust
 pub fn register_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo
@@ -16,13 +15,33 @@ pub fn deregister_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo
 ```rust
 pub fn update_lab(origin: OriginFor<T>, lab_info: LabInfo) -> DispatchResultWithPostInfo
 ```
+### Update Lab Verification Status
+```rust
+pub fn update_lab_verification_status(origin: OriginFor<T>, account_id: T::AccountId, lab_verification_status: LabVerificationStatus) -> DispatchResultWithPostInfo
+```
+
+## Certifications Pallet
+The Certifications pallet handles the logic for creating, updating, and deleting `Lab`'s certifications.  
+This pallet exposes the following extrinsic calls:
+### Create Lab Certification
+```rust
+pub fn create_certification(origin: OriginFor<T>, certification_info: CertificationInfoOf) -> DispatchResultWithPostInfo
+```
+### Update Lab Certification
+```rust
+pub fn update_certification(origin: OriginFor<T>, certification_id: HashOf<T>, certification_info: CertificationInfoOf) -> DispatchResultWithPostInfo
+```
+### Delete Lab Certification
+```rust
+pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> DispatchResultWithPostInfo
+```
 
 ## Services Pallet
-This handles the logic for managing a `Lab`'s services. A user can only create a `Service` if his/her account is registered as a `Lab` and has set an eth address in the User Profile pallet for making and receiving payments
+This handles the logic for managing a `Lab`'s services. A user can only create a `Service` if his/her account is registered as a `Lab` and has set their Eth address using the `set_eth_address` extrinsic in the User Profile pallet.
 The extrinsic calls exposed are:
 ### Create Service
 ```rust
-pub fn create_service(origin: OriginFor<T>, service_info: ServiceInfoOf<T>) -> DispatchResultWithPostInfo
+pub fn create_service(origin: OriginFor<T>, service_info: ServiceInfoOf<T>, service_flow: ServiceFlow) -> DispatchResultWithPostInfo
 ```
 ### Update Service 
 ```rust
