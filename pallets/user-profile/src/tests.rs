@@ -60,3 +60,22 @@ fn cant_set_eth_address_when_not_admin() {
 		);
 	})
 }
+
+#[test]
+fn call_event_should_work() {
+	ExternalityBuilder::build().execute_with(|| {
+		System::set_block_number(1);
+		AdminKey::<Test>::put(1);
+
+		assert_ok!(UserProfile::admin_set_eth_address(
+			Origin::signed(1),
+			2,
+			EthereumAddress([b'X';20])
+		));
+
+		System::assert_last_event(Event::UserProfile(crate::Event::EthAddressSet(
+			EthereumAddress([b'X';20]),
+			2
+		)));
+	})
+}
