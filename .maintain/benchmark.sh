@@ -19,7 +19,8 @@ for entry in `ls pallets`; do
     --repeat=10 \
     --heap-pages=4096 \
     --raw \
-    --output="./runtime/src/weights/${PALLET/-/_}.rs"
+    --output="./pallets/${PALLET}/src/weights.rs" \
+    --template="./.maintain/pallet-weight-template.hbs"
 
   popd
 done
