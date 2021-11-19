@@ -675,7 +675,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						// Balance amount
-						12_500_000 * DBIO,
+						12_497_500 * DBIO,
 					),
 					(
 						// Pallet ID Account
