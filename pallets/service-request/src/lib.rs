@@ -217,6 +217,7 @@ pub mod pallet {
 		UnAuthorized,
 		NotValidAmount,
 		RequestNotFound,
+		RequestUnableToClaimed,
 		RequestUnableToUnstake,
 		RequestUnableToRetrieveUnstake,
 		RequestUnableToProccess,
@@ -643,8 +644,17 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let mut request = request.unwrap();
 
+		if request.status == RequestStatus::WaitingForUnstaked
+			|| request.status == RequestStatus::Unstaked {
+			return Err(Error::<T>::RequestAlreadyUnstaked);
+		}
+
 		if request.status == RequestStatus::Claimed {
 			return Err(Error::<T>::RequestAlreadyClaimed);
+		}
+
+		if request.status != RequestStatus::Open {
+			return Err(Error::<T>::RequestUnableToClaimed);
 		}
 
 		let lab_status = T::Labs::lab_verification_status(&lab_id);
@@ -708,27 +718,24 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			return Err(Error::<T>::UnAuthorized);
 		}
 
-		if request.lab_address.is_none() {
-			return Err(Error::<T>::LabNotFound);
-		}
-
 		if request.status == RequestStatus::WaitingForUnstaked
 			|| request.status == RequestStatus::Unstaked {
 			return Err(Error::<T>::RequestAlreadyUnstaked);
+		}
+
+		if request.lab_address.is_none() {
+			return Err(Error::<T>::LabNotFound);
 		}
 
 		if request.status != RequestStatus::Claimed {
 			return Err(Error::<T>::RequestUnableToProccess);
 		}
 
-		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
-
-		if service_offer.is_none() {
-			return Err(Error::<T>::ServiceOfferNotFound);
+		if request.lab_address.clone().unwrap() != lab_id.clone() {
+			return Err(Error::<T>::LabNotFound);
 		}
 
-		let service_offer = service_offer.unwrap();
-
+		let service_offer = ServiceOfferById::<T>::get(request_id.clone()).unwrap();
 		let pay_amount = request.staking_amount;
 		let testing_price = service_offer.testing_price;
 		let qc_price = service_offer.qc_price;
@@ -818,26 +825,6 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
             return Err(Error::<T>::UnAuthorized);
         }
 
-		let request = RequestById::<T>::get(request_id.clone());
-
-		if request.is_none() {
-			return Err(Error::<T>::RequestNotFound);
-		}
-
-		let mut request = request.unwrap();
-
-		if request.status != RequestStatus::Processed {
-			return Err(Error::<T>::RequestUnableToFinalize);
-		}
-
-		let service_offer = ServiceOfferById::<T>::get(request_id.clone());
-
-		if service_offer.is_none() {
-			return Err(Error::<T>::ServiceOfferNotFound);
-		}
-
-		let _service_offer = service_offer.unwrap();
-
 		let service_invoice = ServiceInvoiceById::<T>::get(request_id.clone());
 
 		if service_invoice.is_none() {
@@ -845,6 +832,12 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		}
 
 		let service_invoice = service_invoice.unwrap();
+
+		let mut request = RequestById::<T>::get(request_id.clone()).unwrap();
+
+		if request.status != RequestStatus::Processed {
+			return Err(Error::<T>::RequestUnableToFinalize);
+		}
 
 		let requester_id = service_invoice.customer_address.clone();
 		let lab_id = service_invoice.seller_address.clone();
