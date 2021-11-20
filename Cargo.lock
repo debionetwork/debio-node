@@ -6725,18 +6725,23 @@ dependencies = [
 name = "service-request"
 version = "0.1.0"
 dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "hex-literal",
  "labs",
+ "pallet-balances",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
+ "services",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "user-profile",
 ]
 
 [[package]]
