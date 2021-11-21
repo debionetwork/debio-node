@@ -883,6 +883,23 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let now = T::TimeProvider::now().as_millis();
 
+		// Removed from customer request list
+		let mut request_ids = RequestByAccountId::<T>::get(requester_id.clone());
+		request_ids.retain(|&x| x != request_id.clone());
+		RequestByAccountId::<T>::insert(requester_id.clone(), request_ids);
+
+		// Update service count request
+		let service_count_request = ServiceCountRequest::<T>::get((
+			&request.country,
+			&request.region,
+			&request.city,
+			&request.service_category,
+		));
+		ServiceCountRequest::<T>::insert(
+			(&request.country, &request.region, &request.city, &request.service_category),
+			service_count_request.wrapping_sub(1),
+		);
+
 		request.status = RequestStatus::Finalized;
 		request.updated_at = Some(now);
 		RequestById::<T>::insert(request_id, request);
