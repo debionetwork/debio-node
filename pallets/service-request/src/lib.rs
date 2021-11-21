@@ -885,8 +885,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		// Removed from customer request list
 		let mut request_ids = RequestByAccountId::<T>::get(requester_id.clone());
-		request_ids.retain(|&x| x != request_id.clone());
-		RequestByAccountId::<T>::insert(requester_id.clone(), request_ids);
+		request_ids.retain(|&x| x != request_id);
+		RequestByAccountId::<T>::insert(requester_id, request_ids);
 
 		// Update service count request
 		let service_count_request = ServiceCountRequest::<T>::get((
