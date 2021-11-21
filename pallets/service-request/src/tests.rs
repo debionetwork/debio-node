@@ -1,9 +1,11 @@
-use crate::{mock::*, Error};
-use frame_support::{assert_noop, assert_ok, sp_runtime::traits::{Keccak256, Hash}};
+use crate::{mock::*, AdminKey, Error, Request, RequestStatus, ServiceInvoice, ServiceOffer};
+use frame_support::{
+	assert_noop, assert_ok,
+	sp_runtime::traits::{Hash, Keccak256},
+};
 use frame_system::RawOrigin;
-use crate::{AdminKey, Request, RequestStatus, ServiceOffer, ServiceInvoice};
-use labs::{LabVerifierKey, LabInfo, LabVerificationStatus};
-use primitives_area_code::{CountryCode, RegionCode, CityCode};
+use labs::{LabInfo, LabVerificationStatus, LabVerifierKey};
+use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 #[test]
 fn create_request_works() {
@@ -23,7 +25,7 @@ fn create_request_works() {
 		assert_eq!(
 			ServiceRequest::request_by_id(hash),
 			Some(Request {
-				hash: hash,
+				hash,
 				requester_address: 1,
 				lab_address: None,
 				country: String::from("Indonesia").into_bytes(),
@@ -38,10 +40,7 @@ fn create_request_works() {
 			})
 		);
 
-		assert_eq!(
-			Balances::free_balance(1),
-			90
-		);
+		assert_eq!(Balances::free_balance(1), 90);
 	})
 }
 
@@ -66,7 +65,9 @@ fn claim_request_works_when_lab_is_verified() {
 		assert_ok!(Labs::register_lab(
 			Origin::signed(2),
 			LabInfo {
-				box_public_key: Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
+				),
 				name: "DeBio Lab".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
 				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
@@ -91,16 +92,16 @@ fn claim_request_works_when_lab_is_verified() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
 		));
 
 		assert_eq!(
-			ServiceRequest::request_by_id(request_id.clone()),
+			ServiceRequest::request_by_id(request_id),
 			Some(Request {
-				hash: request_id.clone(),
+				hash: request_id,
 				requester_address: 1,
 				lab_address: Some(2),
 				country: String::from("Indonesia").into_bytes(),
@@ -116,9 +117,9 @@ fn claim_request_works_when_lab_is_verified() {
 		);
 
 		assert_eq!(
-			ServiceRequest::service_offer_by_id(request_id.clone()),
+			ServiceRequest::service_offer_by_id(request_id),
 			Some(ServiceOffer {
-				request_hash: request_id.clone(),
+				request_hash: request_id,
 				lab_address: 2,
 				service_id: Keccak256::hash("service_id".as_bytes()),
 				testing_price: 1,
@@ -166,16 +167,16 @@ fn claim_request_works_when_lab_is_unverified() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
 		));
 
 		assert_eq!(
-			ServiceRequest::request_by_id(request_id.clone()),
+			ServiceRequest::request_by_id(request_id),
 			Some(Request {
-				hash: request_id.clone(),
+				hash: request_id,
 				requester_address: 1,
 				lab_address: None,
 				country: String::from("Indonesia").into_bytes(),
@@ -190,15 +191,9 @@ fn claim_request_works_when_lab_is_unverified() {
 			})
 		);
 
-		assert_eq!(
-			ServiceRequest::service_offer_by_id(request_id.clone()),
-			None
-		);
+		assert_eq!(ServiceRequest::service_offer_by_id(request_id), None);
 
-		assert_eq!(
-			ServiceRequest::requests_by_lab_id(2),
-			vec![request_id.clone()]
-		)
+		assert_eq!(ServiceRequest::requests_by_lab_id(2), vec![request_id])
 	})
 }
 
@@ -248,7 +243,7 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -257,16 +252,16 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			0
 		));
 
 		assert_eq!(
-			ServiceRequest::request_by_id(request_id.clone()),
+			ServiceRequest::request_by_id(request_id),
 			Some(Request {
-				hash: request_id.clone(),
+				hash: request_id,
 				requester_address: 1,
 				lab_address: Some(2),
 				country: String::from("Indonesia").into_bytes(),
@@ -282,9 +277,9 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 		);
 
 		assert_eq!(
-			ServiceRequest::service_invoice_by_id(request_id.clone()),
+			ServiceRequest::service_invoice_by_id(request_id),
 			Some(ServiceInvoice {
-				request_hash: request_id.clone(),
+				request_hash: request_id,
 				order_id: Keccak256::hash("order_id".as_bytes()),
 				service_id: Keccak256::hash("service_id".as_bytes()),
 				customer_address: 1,
@@ -299,7 +294,7 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 		assert_eq!(
 			ServiceRequest::service_invoice_by_order_id(Keccak256::hash("order_id".as_bytes())),
 			Some(ServiceInvoice {
-				request_hash: request_id.clone(),
+				request_hash: request_id,
 				order_id: Keccak256::hash("order_id".as_bytes()),
 				service_id: Keccak256::hash("service_id".as_bytes()),
 				customer_address: 1,
@@ -311,10 +306,7 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 			})
 		);
 
-		assert_eq!(
-			Balances::free_balance(1),
-			98
-		);
+		assert_eq!(Balances::free_balance(1), 98);
 	})
 }
 
@@ -364,7 +356,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -373,16 +365,16 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			1
 		));
 
 		assert_eq!(
-			ServiceRequest::request_by_id(request_id.clone()),
+			ServiceRequest::request_by_id(request_id),
 			Some(Request {
-				hash: request_id.clone(),
+				hash: request_id,
 				requester_address: 1,
 				lab_address: Some(2),
 				country: String::from("Indonesia").into_bytes(),
@@ -398,9 +390,9 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 		);
 
 		assert_eq!(
-			ServiceRequest::service_invoice_by_id(request_id.clone()),
+			ServiceRequest::service_invoice_by_id(request_id),
 			Some(ServiceInvoice {
-				request_hash: request_id.clone(),
+				request_hash: request_id,
 				order_id: Keccak256::hash("order_id".as_bytes()),
 				service_id: Keccak256::hash("service_id".as_bytes()),
 				customer_address: 1,
@@ -415,7 +407,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 		assert_eq!(
 			ServiceRequest::service_invoice_by_order_id(Keccak256::hash("order_id".as_bytes())),
 			Some(ServiceInvoice {
-				request_hash: request_id.clone(),
+				request_hash: request_id,
 				order_id: Keccak256::hash("order_id".as_bytes()),
 				service_id: Keccak256::hash("service_id".as_bytes()),
 				customer_address: 1,
@@ -427,10 +419,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 			})
 		);
 
-		assert_eq!(
-			Balances::free_balance(1),
-			98
-		);
+		assert_eq!(Balances::free_balance(1), 98);
 	})
 }
 
@@ -481,7 +470,7 @@ fn finalize_request_works_when_test_result_success() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -490,7 +479,7 @@ fn finalize_request_works_when_test_result_success() {
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			0
@@ -498,16 +487,12 @@ fn finalize_request_works_when_test_result_success() {
 
 		AdminKey::<Test>::put(3);
 
-		assert_ok!(ServiceRequest::finalize_request(
-			Origin::signed(3),
-			request_id.clone(),
-			true,
-		));
+		assert_ok!(ServiceRequest::finalize_request(Origin::signed(3), request_id, true,));
 
 		assert_eq!(
-			ServiceRequest::request_by_id(request_id.clone()),
+			ServiceRequest::request_by_id(request_id),
 			Some(Request {
-				hash: request_id.clone(),
+				hash: request_id,
 				requester_address: 1,
 				lab_address: Some(2),
 				country: String::from("Indonesia").into_bytes(),
@@ -522,15 +507,9 @@ fn finalize_request_works_when_test_result_success() {
 			})
 		);
 
-		assert_eq!(
-			Balances::free_balance(1),
-			98
-		);
+		assert_eq!(Balances::free_balance(1), 98);
 
-		assert_eq!(
-			Balances::free_balance(2),
-			102
-		);
+		assert_eq!(Balances::free_balance(2), 102);
 	})
 }
 
@@ -581,7 +560,7 @@ fn finalize_request_works_when_test_result_not_success() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -590,7 +569,7 @@ fn finalize_request_works_when_test_result_not_success() {
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			0
@@ -598,16 +577,12 @@ fn finalize_request_works_when_test_result_not_success() {
 
 		AdminKey::<Test>::put(3);
 
-		assert_ok!(ServiceRequest::finalize_request(
-			Origin::signed(3),
-			request_id.clone(),
-			false,
-		));
+		assert_ok!(ServiceRequest::finalize_request(Origin::signed(3), request_id, false,));
 
 		assert_eq!(
-			ServiceRequest::request_by_id(request_id.clone()),
+			ServiceRequest::request_by_id(request_id),
 			Some(Request {
-				hash: request_id.clone(),
+				hash: request_id,
 				requester_address: 1,
 				lab_address: Some(2),
 				country: String::from("Indonesia").into_bytes(),
@@ -622,15 +597,9 @@ fn finalize_request_works_when_test_result_not_success() {
 			})
 		);
 
-		assert_eq!(
-			Balances::free_balance(1),
-			99
-		);
+		assert_eq!(Balances::free_balance(1), 99);
 
-		assert_eq!(
-			Balances::free_balance(2),
-			101
-		);
+		assert_eq!(Balances::free_balance(2), 101);
 	})
 }
 
@@ -720,7 +689,9 @@ fn cant_claim_request_when_already_claimed() {
 		assert_ok!(Labs::register_lab(
 			Origin::signed(2),
 			LabInfo {
-				box_public_key: Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
+				),
 				name: "DeBio Lab".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
 				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
@@ -745,7 +716,7 @@ fn cant_claim_request_when_already_claimed() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -754,7 +725,7 @@ fn cant_claim_request_when_already_claimed() {
 		assert_noop!(
 			ServiceRequest::claim_request(
 				Origin::signed(3),
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("service_id".as_bytes()),
 				1,
 				1
@@ -784,7 +755,7 @@ fn cant_claim_process_request_when_lab_not_exists() {
 		assert_noop!(
 			ServiceRequest::claim_request(
 				Origin::signed(3),
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("service_id".as_bytes()),
 				1,
 				1
@@ -796,7 +767,7 @@ fn cant_claim_process_request_when_lab_not_exists() {
 			ServiceRequest::process_request(
 				Origin::signed(1),
 				4,
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 				String::from("dna_sample").into_bytes(),
 				0
@@ -856,7 +827,7 @@ fn cant_claim_process_request_when_lab_not_exists() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(3),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -866,7 +837,7 @@ fn cant_claim_process_request_when_lab_not_exists() {
 			ServiceRequest::process_request(
 				Origin::signed(1),
 				4,
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 				String::from("dna_sample").into_bytes(),
 				0
@@ -914,7 +885,7 @@ fn cant_put_in_claim_list_when_already_exists() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -923,7 +894,7 @@ fn cant_put_in_claim_list_when_already_exists() {
 		assert_noop!(
 			ServiceRequest::claim_request(
 				Origin::signed(2),
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("service_id".as_bytes()),
 				1,
 				1
@@ -979,7 +950,7 @@ fn cant_process_request_when_unathorized_customer() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -989,7 +960,7 @@ fn cant_process_request_when_unathorized_customer() {
 			ServiceRequest::process_request(
 				Origin::signed(4),
 				2,
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 				String::from("dnasample").into_bytes(),
 				0
@@ -1020,7 +991,9 @@ fn can_process_request_when_already_unstaked() {
 		assert_ok!(Labs::register_lab(
 			Origin::signed(2),
 			LabInfo {
-				box_public_key: Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
+				),
 				name: "DeBio Lab".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
 				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
@@ -1035,16 +1008,13 @@ fn can_process_request_when_already_unstaked() {
 			}
 		));
 
-		assert_ok!(ServiceRequest::unstake(
-			Origin::signed(1),
-			request_id.clone(),
-		));
+		assert_ok!(ServiceRequest::unstake(Origin::signed(1), request_id,));
 
 		assert_noop!(
 			ServiceRequest::process_request(
 				Origin::signed(1),
 				2,
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 				String::from("dna_sample").into_bytes(),
 				0
@@ -1101,7 +1071,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -1110,7 +1080,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			0
@@ -1120,7 +1090,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 			ServiceRequest::process_request(
 				Origin::signed(1),
 				2,
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 				String::from("dnasample").into_bytes(),
 				0
@@ -1130,17 +1100,13 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 
 		AdminKey::<Test>::put(3);
 
-		assert_ok!(ServiceRequest::finalize_request(
-			Origin::signed(3),
-			request_id.clone(),
-			true,
-		));
+		assert_ok!(ServiceRequest::finalize_request(Origin::signed(3), request_id, true,));
 
 		assert_noop!(
 			ServiceRequest::process_request(
 				Origin::signed(1),
 				2,
-				request_id.clone(),
+				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 				String::from("dnasample").into_bytes(),
 				0
@@ -1227,7 +1193,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
@@ -1236,7 +1202,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			0
@@ -1244,18 +1210,10 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 
 		AdminKey::<Test>::put(3);
 
-		assert_ok!(ServiceRequest::finalize_request(
-			Origin::signed(3),
-			request_id.clone(),
-			true,
-		));
+		assert_ok!(ServiceRequest::finalize_request(Origin::signed(3), request_id, true,));
 
 		assert_noop!(
-			ServiceRequest::finalize_request(
-				Origin::signed(3),
-				request_id.clone(),
-				true,
-			),
+			ServiceRequest::finalize_request(Origin::signed(3), request_id, true,),
 			Error::<Test>::RequestUnableToFinalize
 		);
 	})
@@ -1280,20 +1238,23 @@ fn call_event_should_work() {
 
 		let request_id = ServiceRequest::request_by_account_id(1)[0];
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestCreated(1, Request {
-			hash: request_id.clone(),
-			requester_address: 1,
-			lab_address: None,
-			country: String::from("Indonesia").into_bytes(),
-			region: String::from("West Java").into_bytes(),
-			city: String::from("Bogor").into_bytes(),
-			service_category: String::from("Vaksin").into_bytes(),
-			staking_amount: 10,
-			status: RequestStatus::Open,
-			created_at: 0,
-			updated_at: None,
-			unstaked_at: None,
-		})));
+		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestCreated(
+			1,
+			Request {
+				hash: request_id,
+				requester_address: 1,
+				lab_address: None,
+				country: String::from("Indonesia").into_bytes(),
+				region: String::from("West Java").into_bytes(),
+				city: String::from("Bogor").into_bytes(),
+				service_category: String::from("Vaksin").into_bytes(),
+				staking_amount: 10,
+				status: RequestStatus::Open,
+				created_at: 0,
+				updated_at: None,
+				unstaked_at: None,
+			},
+		)));
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
@@ -1316,19 +1277,24 @@ fn call_event_should_work() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
 		));
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestWaitingForClaimed(2, ServiceOffer {
-			request_hash: request_id.clone(),
-			lab_address: 2,
-			service_id: Keccak256::hash("service_id".as_bytes()),
-			testing_price: 1,
-			qc_price: 1
-		})));
+		System::assert_last_event(Event::ServiceRequest(
+			crate::Event::ServiceRequestWaitingForClaimed(
+				2,
+				ServiceOffer {
+					request_hash: request_id,
+					lab_address: 2,
+					service_id: Keccak256::hash("service_id".as_bytes()),
+					testing_price: 1,
+					qc_price: 1,
+				},
+			),
+		));
 
 		LabVerifierKey::<Test>::put(3);
 
@@ -1340,59 +1306,64 @@ fn call_event_should_work() {
 
 		assert_ok!(ServiceRequest::claim_request(
 			Origin::signed(2),
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("service_id".as_bytes()),
 			1,
 			1
 		));
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestClaimed(2, ServiceOffer {
-			request_hash: request_id.clone(),
-			lab_address: 2,
-			service_id: Keccak256::hash("service_id".as_bytes()),
-			testing_price: 1,
-			qc_price: 1
-		})));
+		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestClaimed(
+			2,
+			ServiceOffer {
+				request_hash: request_id,
+				lab_address: 2,
+				service_id: Keccak256::hash("service_id".as_bytes()),
+				testing_price: 1,
+				qc_price: 1,
+			},
+		)));
 
 		assert_ok!(ServiceRequest::process_request(
 			Origin::signed(1),
 			2,
-			request_id.clone(),
+			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
 			0
 		));
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestProcessed(1, ServiceInvoice {
-			request_hash: request_id.clone(),
-			order_id: Keccak256::hash("order_id".as_bytes()),
-			service_id: Keccak256::hash("service_id".as_bytes()),
-			customer_address: 1,
-			seller_address: 2,
-			dna_sample_tracking_id: String::from("dnasample").into_bytes(),
-			testing_price: 1,
-			qc_price: 1,
-			pay_amount: 2
-		})));
+		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestProcessed(
+			1,
+			ServiceInvoice {
+				request_hash: request_id,
+				order_id: Keccak256::hash("order_id".as_bytes()),
+				service_id: Keccak256::hash("service_id".as_bytes()),
+				customer_address: 1,
+				seller_address: 2,
+				dna_sample_tracking_id: String::from("dnasample").into_bytes(),
+				testing_price: 1,
+				qc_price: 1,
+				pay_amount: 2,
+			},
+		)));
 
 		AdminKey::<Test>::put(3);
 
-		assert_ok!(ServiceRequest::finalize_request(
-			Origin::signed(3),
-			request_id.clone(),
-			true,
-		));
+		assert_ok!(ServiceRequest::finalize_request(Origin::signed(3), request_id, true,));
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestFinalized(3, ServiceInvoice {
-			request_hash: request_id.clone(),
-			order_id: Keccak256::hash("order_id".as_bytes()),
-			service_id: Keccak256::hash("service_id".as_bytes()),
-			customer_address: 1,
-			seller_address: 2,
-			dna_sample_tracking_id: String::from("dnasample").into_bytes(),
-			testing_price: 1,
-			qc_price: 1,
-			pay_amount: 2
-		})));
+		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestFinalized(
+			3,
+			ServiceInvoice {
+				request_hash: request_id,
+				order_id: Keccak256::hash("order_id".as_bytes()),
+				service_id: Keccak256::hash("service_id".as_bytes()),
+				customer_address: 1,
+				seller_address: 2,
+				dna_sample_tracking_id: String::from("dnasample").into_bytes(),
+				testing_price: 1,
+				qc_price: 1,
+				pay_amount: 2,
+			},
+		)));
 	})
 }
