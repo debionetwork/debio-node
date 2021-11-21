@@ -40,6 +40,16 @@ fn create_request_works() {
 			})
 		);
 
+		assert_eq!(
+			ServiceRequest::service_count_request((
+				String::from("Indonesia").into_bytes(),
+				String::from("West Java").into_bytes(),
+				String::from("Bogor").into_bytes(),
+				String::from("Vaksin").into_bytes(),
+			)),
+			1
+		);
+
 		assert_eq!(Balances::free_balance(1), 90);
 	})
 }
@@ -505,6 +515,16 @@ fn finalize_request_works_when_test_result_success() {
 				updated_at: Some(0),
 				unstaked_at: None,
 			})
+		);
+
+		assert_eq!(
+			ServiceRequest::service_count_request((
+				String::from("Indonesia").into_bytes(),
+				String::from("West Java").into_bytes(),
+				String::from("Bogor").into_bytes(),
+				String::from("Vaksin").into_bytes(),
+			)),
+			0
 		);
 
 		assert_eq!(Balances::free_balance(1), 98);
