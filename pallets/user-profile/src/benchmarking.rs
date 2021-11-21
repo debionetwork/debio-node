@@ -7,12 +7,12 @@ use frame_system::RawOrigin;
 
 benchmarks! {
 	set_eth_address {
-        let eth_address = T::EthereumAddress::default();
+		let eth_address = T::EthereumAddress::default();
 		let caller: T::AccountId = whitelisted_caller();
 	}: set_eth_address(
-        RawOrigin::Signed(caller),
-        eth_address
-    )
+		RawOrigin::Signed(caller),
+		eth_address
+	)
 }
 
 impl_benchmark_test_suite! {

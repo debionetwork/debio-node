@@ -1,13 +1,13 @@
 use crate as user_profile;
 use frame_support::parameter_types;
 use frame_system as system;
-use sp_core::{H256, Encode, Decode, RuntimeDebug};
+use scale_info::TypeInfo;
+use sp_core::{Decode, Encode, RuntimeDebug, H256};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
-use scale_info::TypeInfo;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -61,8 +61,8 @@ impl system::Config for Test {
 }
 
 impl user_profile::Config for Test {
-    type Event = Event;
-    type EthereumAddress = EthereumAddress;
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
 	type WeightInfo = ();
 }
 
