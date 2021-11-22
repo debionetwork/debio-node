@@ -16,7 +16,7 @@ RUN apt-get update && \
     chown -R debio:debio /data && \
     ln -s /data /home/debio/.local/share/debio
 # Add binnary to docker image
-COPY ./debio /usr/local/bin
+COPY --chown=debio ./debio /usr/local/bin
 # Set to a non-root built-in user
 USER debio
 # Set environment variable
