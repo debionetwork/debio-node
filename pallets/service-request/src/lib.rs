@@ -59,6 +59,7 @@ pub struct Request<AccountId, Balance, Hash> {
 	pub updated_at: Option<u128>,
 	pub unstaked_at: Option<u128>,
 }
+#[allow(clippy::too_many_arguments)]
 impl<AccountId, Balance, Hash> Request<AccountId, Balance, Hash> {
 	pub fn new(
 		hash: Hash,
@@ -119,6 +120,7 @@ pub struct ServiceInvoice<AccountId, Balance, Hash> {
 	pub qc_price: Balance,
 	pub pay_amount: Balance,
 }
+#[allow(clippy::too_many_arguments)]
 impl<AccountId, Balance, Hash> ServiceInvoice<AccountId, Balance, Hash> {
 	pub fn new(
 		request_hash: Hash,
