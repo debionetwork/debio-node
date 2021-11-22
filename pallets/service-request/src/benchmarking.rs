@@ -2,18 +2,14 @@ use super::*;
 
 #[allow(unused)]
 use crate::{
-	Pallet as ServiceRequest,
-	AdminKey,
-	Config as ServiceRequestConfig,
-	RequestByAccountId,
+	AdminKey, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId,
 };
-use labs::{LabInfo, LabVerifierKey, LabVerificationStatus};
-use frame_benchmarking::{benchmarks, whitelisted_caller, impl_benchmark_test_suite, account};
-use frame_support::sp_runtime::{SaturatedConversion, traits::Hash};
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_support::sp_runtime::{traits::Hash, SaturatedConversion};
 use frame_system::RawOrigin;
-use labs::Pallet as PalletLab;
+use labs::{LabInfo, LabVerificationStatus, LabVerifierKey, Pallet as PalletLab};
 
-use primitives_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 const SEED: u32 = 0;
 
@@ -43,17 +39,17 @@ benchmarks! {
 		// Set lab info
 		let lab = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DB".as_bytes().to_vec()),
-            city: CityCode::from_vec("CITY".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DB".as_bytes().to_vec()),
+			city: CityCode::from_vec("CITY".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 
 		// register lab

@@ -32,158 +32,156 @@ use traits_user_profile::UserProfileProvider;
 
 #[frame_support::pallet]
 pub mod pallet {
-    use crate::*;
-    pub use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
-    pub use frame_system::pallet_prelude::*;
-    pub use sp_std::prelude::*;
+	use crate::*;
+	pub use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+	pub use frame_system::pallet_prelude::*;
+	pub use sp_std::prelude::*;
 
-    #[pallet::config]
-    /// Configure the pallet by specifying the parameters and types on which it depends.
-    pub trait Config: frame_system::Config {
-        /// Because this pallet emits events, it depends on the runtime's definition of an event.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        type EthereumAddress: Clone
-            + Copy
-            + PartialEq
-            + Eq
-            + Encode
-            + EncodeLike
-            + Decode
-            + Default
+	#[pallet::config]
+	/// Configure the pallet by specifying the parameters and types on which it depends.
+	pub trait Config: frame_system::Config {
+		/// Because this pallet emits events, it depends on the runtime's definition of an event.
+		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type EthereumAddress: Clone
+			+ Copy
+			+ PartialEq
+			+ Eq
+			+ Encode
+			+ EncodeLike
+			+ Decode
+			+ Default
 			+ TypeInfo
-            + sp_std::fmt::Debug;
+			+ sp_std::fmt::Debug;
 
-        /// Weight information for extrinsics in this pallet.
-        type WeightInfo: WeightInfo;
-    }
+		/// Weight information for extrinsics in this pallet.
+		type WeightInfo: WeightInfo;
+	}
 
 	#[pallet::genesis_config]
-    pub struct GenesisConfig<T: Config> {
-        pub admin_key: T::AccountId,
-    }
+	pub struct GenesisConfig<T: Config> {
+		pub admin_key: T::AccountId,
+	}
 
-    #[cfg(feature = "std")]
-    impl<T: Config> Default for GenesisConfig<T> {
-        fn default() -> Self {
-            Self {
-                admin_key: Default::default(),
-            }
-        }
-    }
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { admin_key: Default::default() }
+		}
+	}
 
-    #[pallet::genesis_build]
-    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-        fn build(&self) {
-            AdminKey::<T>::put(&self.admin_key);
-        }
-    }
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+			AdminKey::<T>::put(&self.admin_key);
+		}
+	}
 
-    // ----- This is template code, every pallet needs this ---
-    #[pallet::pallet]
-    #[pallet::generate_store(pub(super) trait Store)]
-    pub struct Pallet<T>(PhantomData<T>);
+	// ----- This is template code, every pallet needs this ---
+	#[pallet::pallet]
+	#[pallet::generate_store(pub(super) trait Store)]
+	pub struct Pallet<T>(PhantomData<T>);
 
-    #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
-    // --------------------------------------------------------
+	#[pallet::hooks]
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	// --------------------------------------------------------
 
-    // ---- Types ----------------------
-    pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
-    pub type EthereumAddressOf<T> = <T as Config>::EthereumAddress;
+	// ---- Types ----------------------
+	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+	pub type EthereumAddressOf<T> = <T as Config>::EthereumAddress;
 
-    // ----- Storage ------------------
+	// ----- Storage ------------------
 	#[pallet::storage]
-    #[pallet::getter(fn admin_key)]
-    pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	#[pallet::getter(fn admin_key)]
+	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
-    #[pallet::storage]
-    #[pallet::getter(fn eth_address_by_account_id)]
-    pub type EthAddressByAccountId<T> =
-        StorageMap<_, Blake2_128Concat, AccountIdOf<T>, EthereumAddressOf<T>>;
+	#[pallet::storage]
+	#[pallet::getter(fn eth_address_by_account_id)]
+	pub type EthAddressByAccountId<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, EthereumAddressOf<T>>;
 
-    #[pallet::storage]
-    #[pallet::getter(fn account_id_by_eth_address)]
-    pub type AccountIdByEthAddress<T> =
-        StorageMap<_, Blake2_128Concat, EthereumAddressOf<T>, AccountIdOf<T>>;
-    // -----------------------------------
+	#[pallet::storage]
+	#[pallet::getter(fn account_id_by_eth_address)]
+	pub type AccountIdByEthAddress<T> =
+		StorageMap<_, Blake2_128Concat, EthereumAddressOf<T>, AccountIdOf<T>>;
+	// -----------------------------------
 
-    #[pallet::event]
-    #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    pub enum Event<T: Config> {
-        /// User AccountId registered as lab
-        /// parameters. [Lab, who]
-        EthAddressSet(EthereumAddressOf<T>, AccountIdOf<T>),
-    }
+	#[pallet::event]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
+	pub enum Event<T: Config> {
+		/// User AccountId registered as lab
+		/// parameters. [Lab, who]
+		EthAddressSet(EthereumAddressOf<T>, AccountIdOf<T>),
+	}
 
-    // Errors inform users that something went wrong.
-    #[pallet::error]
-    pub enum Error<T> {
+	// Errors inform users that something went wrong.
+	#[pallet::error]
+	pub enum Error<T> {
 		Unauthorized,
-    }
+	}
 
-    #[pallet::call]
-    impl<T: Config> Pallet<T> {
-        #[pallet::weight(T::WeightInfo::set_eth_address())]
-        pub fn set_eth_address(
-            origin: OriginFor<T>,
-            eth_address: EthereumAddressOf<T>,
-        ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+	#[pallet::call]
+	impl<T: Config> Pallet<T> {
+		#[pallet::weight(T::WeightInfo::set_eth_address())]
+		pub fn set_eth_address(
+			origin: OriginFor<T>,
+			eth_address: EthereumAddressOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
 
-            <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
-                &who,
-                &eth_address,
-            );
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
+				&who,
+				&eth_address,
+			);
 
-            Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who));
+			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who));
 
-            Ok(().into())
-        }
+			Ok(().into())
+		}
 
-        #[pallet::weight(0)]
-        pub fn admin_set_eth_address(
-            origin: OriginFor<T>,
-            account_id: AccountIdOf<T>,
-            eth_address: EthereumAddressOf<T>,
-        ) -> DispatchResultWithPostInfo {
-            let admin = ensure_signed(origin)?;
+		#[pallet::weight(0)]
+		pub fn admin_set_eth_address(
+			origin: OriginFor<T>,
+			account_id: AccountIdOf<T>,
+			eth_address: EthereumAddressOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let admin = ensure_signed(origin)?;
 
 			ensure!(admin == AdminKey::<T>::get(), Error::<T>::Unauthorized);
 
-            <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
-                &account_id,
-                &eth_address,
-            );
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
+				&account_id,
+				&eth_address,
+			);
 
-            Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id));
+			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id));
 
-            Ok(().into())
-        }
-    }
+			Ok(().into())
+		}
+	}
 }
 
 impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
-    fn set_eth_address_by_account_id(
-        account_id: &T::AccountId,
-        eth_address: &EthereumAddressOf<T>,
-    ) -> () {
-        EthAddressByAccountId::<T>::insert(account_id, eth_address);
-        AccountIdByEthAddress::<T>::insert(eth_address, account_id);
-    }
+	fn set_eth_address_by_account_id(
+		account_id: &T::AccountId,
+		eth_address: &EthereumAddressOf<T>,
+	) {
+		EthAddressByAccountId::<T>::insert(account_id, eth_address);
+		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
+	}
 
-    fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
-        EthAddressByAccountId::<T>::get(account_id)
-    }
+	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
+		EthAddressByAccountId::<T>::get(account_id)
+	}
 
-    fn get_account_id_by_eth_address(eth_address: &EthereumAddressOf<T>) -> Option<AccountIdOf<T>> {
-        AccountIdByEthAddress::<T>::get(eth_address)
-    }
+	fn get_account_id_by_eth_address(eth_address: &EthereumAddressOf<T>) -> Option<AccountIdOf<T>> {
+		AccountIdByEthAddress::<T>::get(eth_address)
+	}
 }
 
 impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>> for Pallet<T> {
-    fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
-        <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::get_eth_address_by_account_id(
-            account_id,
-        )
-    }
+	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
+		<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::get_eth_address_by_account_id(
+			account_id,
+		)
+	}
 }

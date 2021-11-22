@@ -1,14 +1,14 @@
 use crate as service_request;
-use frame_support::{parameter_types};
-use sp_core::{H256, Encode, Decode, RuntimeDebug};
-use sp_io::TestExternalities;
+use frame_support::parameter_types;
 use frame_system as system;
-use sp_runtime::{
-	testing::Header,
-	traits::{IdentityLookup, BlakeTwo256},
-};
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
+use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_io::TestExternalities;
+use sp_runtime::{
+	testing::Header,
+	traits::{BlakeTwo256, IdentityLookup},
+};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -119,11 +119,10 @@ impl certifications::Config for Test {
 pub struct EthereumAddress(pub [u8; 20]);
 
 impl user_profile::Config for Test {
-    type Event = Event;
-    type EthereumAddress = EthereumAddress;
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
 	type WeightInfo = ();
 }
-
 
 pub type Moment = u64;
 pub const MILLISECS_PER_BLOCK: Moment = 6000;
@@ -162,13 +161,9 @@ impl ExternalityBuilder {
 	pub fn build(&self) -> TestExternalities {
 		self.set_associated_consts();
 		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		pallet_balances::GenesisConfig::<Test> {
-			balances: {
-				vec![]
-			},
-		}
-		.assimilate_storage(&mut storage)
-		.unwrap();
+		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
+			.assimilate_storage(&mut storage)
+			.unwrap();
 		let mut ext = sp_io::TestExternalities::new(storage);
 		ext.execute_with(|| System::set_block_number(1));
 		ext
