@@ -46,7 +46,7 @@ The extrinsic calls exposed are:
 ```rust
 pub fn create_service(origin: OriginFor<T>, service_info: ServiceInfoOf<T>, service_flow: ServiceFlow) -> DispatchResultWithPostInfo
 ```
-### Update Service 
+### Update Service
 ```rust
 pub fn update_service(origin: OriginFor<T>, service_id: HashOf<T>, service_info: ServiceInfoOf<T>) -> DispatchResultWithPostInfo
 ```
@@ -56,12 +56,12 @@ pub fn delete_service(origin: OriginFor<T>, service_id: T::Hash) -> DispatchResu
 ```
 
 ## Orders Pallet
-This pallet handles the business logic of orders. An `Order` is associated with a `Service` and a `DnaSample`.  
+This pallet handles the business logic of orders. An `Order` is associated with a `Service` and a `DnaSample`.
 
-An `Order` is fulfilled if the associated `DnaSample` is successfully processed.  
+An `Order` is fulfilled if the associated `DnaSample` is successfully processed.
 An `Order` payment can be refunded if the physical `DnaSample` is rejected upon receipt, it has not been processed for 7 days, or if the sample processing has failed.
 
-Currently DeBio uses the ethereum network for payments in DAI. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid. 
+Currently DeBio uses the ethereum network for payments in DAI. We use an escrow bridge that listens for payments to a smart contract deployed on the ethereum network and triggers an extrinsic call in DeBio that updates the status of the `Order` to paid.
 
 Before a user can create an order, he/she is required to set their Ethereum address using the `set_eth_address` extrinsic in the `UserProfile` pallet.
 
@@ -88,7 +88,7 @@ pub fn set_order_refunded(origin: OriginFor<T>, order_id: T::Hash) -> DispatchRe
 ```
 
 ## Genetic Testing Pallet
-This pallet handles the logic of tracking `DnaSample` and storing `DnaTestResult` on the blockchain. 
+This pallet handles the logic of tracking `DnaSample` and storing `DnaTestResult` on the blockchain.
 
 `DnaSample`s are sent by customers to a `Lab` to be processed. The result is then submitted to DeBio blockchain as `DnaTestResult`.
 
@@ -99,7 +99,7 @@ The following extrinsic calls are exposed:
 ```rust
 pub fn reject_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, rejected_title: Vec<u8>, rejected_description: Vec<u8>) -> DispatchResultWithPostInfo
 ```
-### Process DNA Sample 
+### Process DNA Sample
 ```rust
 pub fn process_dna_sample(origin: OriginFor<T>, tracking_id: Vec<u8>, status: DnaSampleStatus) -> DispatchResultWithPostInfo
 ```
@@ -185,9 +185,9 @@ pub fn delete_certification(origin: OriginFor<T>, certification_id: T::Hash) -> 
 ```
 
 ## Electronic Medical Record Pallet
-This pallet handles the logic of tracking and storing the `ElectronicMedicalRecord` on the blockchain. 
+This pallet handles the logic of tracking and storing the `ElectronicMedicalRecord` on the blockchain.
 
-One account can have multiple `ElectronicMedicalRecord`s, and one `ElectronicMedicalRecord` contains multiple `ElectronicMedicalRecordFile`s. 
+One account can have multiple `ElectronicMedicalRecord`s, and one `ElectronicMedicalRecord` contains multiple `ElectronicMedicalRecordFile`s.
 
 Each `ElectronicMedicalRecord` will be mapped to an account, and each `ElectronicMedicalRecordFile` will be mapped to an `ElectronicMedicalRecord`.
 
@@ -207,6 +207,56 @@ pub fn add_electronic_medical_record_file(origin: OriginFor<T>, electronic_medic
 ### Remove file attached to an existing Electronic Medical Record
 ```rust
 pub fn remove_electronic_medical_record_file(origin: OriginFor<T>, electronic_medical_record_file_id: HashOf<T>) -> DispatchResultWithPostInfo
+```
+
+## Service Request Pallet
+The Service Request pallet handles the logic for creating, claiming, processing, and finalizing Request.
+
+This pallet exposes the following extrinsic calls:
+
+The following extrinsic calls are exposed:
+### Create Request
+```rust
+pub fn create_request(
+			origin: OriginFor<T>,
+			country: CountryOf,
+			region: RegionOf,
+			city: CityOf,
+			service_category: ServiceCategoryOf,
+			staking_amount: BalanceOf<T>,
+		) -> DispatchResultWithPostInfo
+```
+
+### Claim Request
+```rust
+pub fn claim_request(
+  origin: OriginFor<T>,
+  request_id: HashOf<T>,
+  service_id: HashOf<T>,
+  testing_price: BalanceOf<T>,
+  qc_price: BalanceOf<T>,
+) -> DispatchResultWithPostInfo
+```
+
+### Process Request
+```rust
+pub fn process_request(
+  origin: OriginFor<T>,
+  lab_id: LabIdOf<T>,
+  request_id: HashOf<T>,
+  order_id: HashOf<T>,
+  dna_sample_tracking_id: DNASampleTrackingIdOf,
+  additional_staking_amount: BalanceOf<T>,
+) -> DispatchResultWithPostInfo
+```
+
+### Finalize Request
+```rust
+pub fn finalize_request(
+  origin: OriginFor<T>,
+  request_id: HashOf<T>,
+  test_result_success: bool,
+) -> DispatchResultWithPostInfo
 ```
 
 ## User Profile Pallet
