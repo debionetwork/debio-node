@@ -23,8 +23,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configuration: '.github/workflows/rcb_config.json'
-      - name: Re-use cache rust or cargo project
+      - name: Cache rust or cargo project
         uses: actions/cache@v2
+        continue-on-error: false
         with:
           path: |
             ~/.cargo/registry/index/
@@ -33,7 +34,7 @@ jobs:
             target/
             ./chain-spec.json
             ./SHA256SUMS
-          key: ${{ runner.os }}-cargo-beta
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Create draft release
