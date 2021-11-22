@@ -29,11 +29,28 @@ jobs:
     runs-on: ubuntu-20.04
     needs: compute-build-info
     if: "!contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
+    env:
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      RUSTV: stable
+      SCCACHE_CACHE_SIZE: 2G
+      SCCACHE_DIR: /home/runner/.cache/sccache
+      # SCCACHE_RECACHE: 1 # Uncomment this to clear cache, then comment it back out
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Install sccache
+        env:
+          LINK: https://github.com/mozilla/sccache/releases/download
+          SCCACHE_VERSION: 0.2.13
+        run: |
+          SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
+          mkdir -p $HOME/.local/bin
+          curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
+          mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -45,6 +62,7 @@ jobs:
           default: true
       - name: Cache rust or cargo project
         uses: actions/cache@v2
+        continue-on-error: false
         with:
           path: |
             ~/.cargo/registry/index/
@@ -53,11 +71,30 @@ jobs:
             target/
             ./chain-spec.json
             ./SHA256SUMS
-          key: ${{ runner.os }}-cargo-release
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+      - name: Save sccache
+        uses: actions/cache@v2
+        continue-on-error: false
+        with:
+          path: /home/runner/.cache/sccache
+          key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-sccache-
+      - name: Start sccache server
+        run: sccache --start-server
       - name: Cargo build
         run: cargo build --release
+      - name: Print sccache stats
+        run: sccache --show-stats
+      - name: Stop sccache server
+        run: sccache --stop-server || true
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: debio
+          path: ./target/release/debio
       - name: Generate the chainspec file
         run: ./target/release/debio build-spec --disable-default-bootnode --chain dev-testnet > chain-spec.json
       - name: Generate sha256 hash
@@ -87,21 +124,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Re-use cache rust or cargo project
-        uses: actions/cache@v2
+      - name: Download binary
+        uses: actions/download-artifact@v2
         with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/
-            target/
-            ./chain-spec.json
-            ./SHA256SUMS
-          key: ${{ runner.os }}-cargo-release
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-      - name: Copy binnary file
-        run: cp target/release/debio .
+          name: debio
       - name: Build and push pre-release
         if: "!contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
         uses: docker/build-push-action@v2
