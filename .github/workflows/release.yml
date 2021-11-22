@@ -124,10 +124,22 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Download binary
-        uses: actions/download-artifact@v2
+      - name: Re-use cache rust or cargo project
+        uses: actions/cache@v2
+        continue-on-error: false
         with:
-          name: debio
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/
+            target/
+            ./chain-spec.json
+            ./SHA256SUMS
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Copy binnary file
+        run: cp target/release/debio .
       - name: Build and push pre-release
         if: "!contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
         uses: docker/build-push-action@v2
