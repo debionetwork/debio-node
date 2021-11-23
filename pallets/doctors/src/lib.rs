@@ -12,6 +12,9 @@ pub use scale_info::TypeInfo;
 #[cfg(test)]
 mod mock;
 
+#[cfg(test)]
+mod tests;
+
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
@@ -307,6 +310,7 @@ impl<T: Config> DoctorInterface<T> for Pallet<T> {
             return Err(Error::<T>::DoctorDoesNotExist)?;
         }
         let mut doctor = doctor.unwrap();
+		let mut is_location_changed = false;
 
         // If location is updated, remove the doctor from the old location
         // Also update certification locations
@@ -316,13 +320,19 @@ impl<T: Config> DoctorInterface<T> for Pallet<T> {
         {
             Self::remove_doctor_id_from_location(&doctor);
             Self::sub_doctor_count_by_location(&doctor);
+
+			is_location_changed = true;
         }
 
         doctor.update_info(doctor_info.clone());
 
+		if is_location_changed {
+			// insert new location
+			Self::insert_doctor_id_to_location(&doctor);
+			Self::add_doctor_count_by_location(&doctor);
+		}
+
         Doctors::<T>::insert(account_id, &doctor);
-        Self::insert_doctor_id_to_location(&doctor);
-        Self::add_doctor_count_by_location(&doctor);
 
         Ok(doctor)
     }
@@ -366,8 +376,7 @@ impl<T: Config> Pallet<T> {
 
         match DoctorsByCountryRegionCity::<T>::get(&country_region_code, city_code) {
             None => {
-                let mut doctors = Vec::new();
-                doctors.push(doctor_account_id.clone());
+                let doctors = vec![doctor_account_id.clone()];
                 DoctorsByCountryRegionCity::<T>::insert(&country_region_code, city_code, doctors);
             }
             Some(mut doctors) => {
