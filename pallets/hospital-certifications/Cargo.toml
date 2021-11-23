@@ -25,8 +25,6 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
-hospitals = { path = '../hospitals', default-features = false }
-
 traits-hospital-certifications = { path = '../../traits/hospital-certifications', default-features = false }
 
 [dev-dependencies]
@@ -43,7 +41,6 @@ std = [
     'frame-system/std',
     'sp-io/std',
     'traits-hospital-certifications/std',
-    'hospitals/std',
 ]
 runtime-benchmarks = []
 try-runtime = ["frame-support/try-runtime"]
