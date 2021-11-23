@@ -817,7 +817,6 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "labs",
  "parity-scale-codec",
  "scale-info",
  "serde",
@@ -2997,13 +2996,16 @@ dependencies = [
 name = "labs"
 version = "0.1.0"
 dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-balances",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
  "serde",
+ "services",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -3011,6 +3013,7 @@ dependencies = [
  "traits-certifications",
  "traits-services",
  "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
@@ -6750,7 +6753,6 @@ version = "0.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
- "labs",
  "parity-scale-codec",
  "scale-info",
  "serde",
