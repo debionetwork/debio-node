@@ -1503,7 +1503,6 @@ dependencies = [
 name = "doctor-certifications"
 version = "0.1.0"
 dependencies = [
- "doctors",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
@@ -1540,9 +1539,11 @@ dependencies = [
 name = "doctors"
 version = "0.1.0"
 dependencies = [
+ "doctor-certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-balances",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
@@ -1553,6 +1554,7 @@ dependencies = [
  "sp-std",
  "traits-doctor-certifications",
  "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
