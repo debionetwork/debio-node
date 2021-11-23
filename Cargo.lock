@@ -2458,7 +2458,6 @@ version = "0.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
- "hospitals",
  "parity-scale-codec",
  "scale-info",
  "serde",
@@ -2496,6 +2495,8 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "hospital-certifications",
+ "pallet-balances",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
@@ -2506,6 +2507,7 @@ dependencies = [
  "sp-std",
  "traits-hospital-certifications",
  "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
