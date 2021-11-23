@@ -31,6 +31,14 @@ traits-services = { path = '../../traits/services', default-features = false }
 traits-certifications = { path = '../../traits/certifications', default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 
+## Substrate Pallet Dependencies
+pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+
+# Local Dependencies
+services = { path = '../services', default-features = false }
+certifications = { path = '../certifications', default-features = false }
+user-profile = { path = '../user-profile', default-features = false }
+
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
 sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -48,7 +56,14 @@ std = [
     'traits-services/std',
     'traits-certifications/std',
     'traits-user-profile/std',
+
+	'services/std',
+	'certifications/std',
+	'user-profile/std',
+
+	'pallet-balances/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'
 ]
+try-runtime = ['frame-support/try-runtime']
