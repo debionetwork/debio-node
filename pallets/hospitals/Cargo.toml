@@ -29,6 +29,13 @@ primitives-area-code = { path = '../../primitives/area-code', default-features =
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 traits-hospital-certifications = { path = '../../traits/hospital-certifications', default-features = false }
 
+## Substrate Pallet Dependencies
+pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+
+# Local Dependencies
+hospital-certifications = { path = '../hospital-certifications', default-features = false }
+user-profile = { path = '../user-profile', default-features = false }
+
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -46,7 +53,13 @@ std = [
     'primitives-area-code/std',
     'traits-user-profile/std',
     'traits-hospital-certifications/std',
+
+	'pallet-balances/std',
+
+	'hospital-certifications/std',
+	'user-profile/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'
 ]
+try-runtime = ['frame-support/try-runtime']
