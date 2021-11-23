@@ -2,13 +2,13 @@ use crate as doctors;
 use frame_support::parameter_types;
 use frame_system as system;
 use pallet_balances::AccountData;
+use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
-use scale_info::TypeInfo;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -66,11 +66,11 @@ impl system::Config for Test {
 }
 
 impl doctors::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
-    type DoctorCertifications = DoctorCertifications;
-    type EthereumAddress = EthereumAddress;
-    type UserProfile = UserProfile;
+	type Event = Event;
+	type Currency = Balances;
+	type DoctorCertifications = DoctorCertifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
 
