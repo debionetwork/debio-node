@@ -43,7 +43,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Timestamp Now (r:1 w:0)
 	// Storage: Orders Orders (r:1 w:1)
 	fn reject_dna_sample() -> Weight {
-		(236_000_000 as Weight)
+		(112_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(3 as Weight))
 			.saturating_add(T::DbWeight::get().writes(2 as Weight))
 	}
@@ -60,7 +60,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
 	fn submit_test_result() -> Weight {
-		(97_000_000 as Weight)
+		(96_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -70,7 +70,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	fn submit_independent_test_result() -> Weight {
-		(94_000_000 as Weight)
+		(95_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(5 as Weight))
 			.saturating_add(T::DbWeight::get().writes(2 as Weight))
 	}
@@ -88,7 +88,7 @@ impl WeightInfo for () {
 	// Storage: Timestamp Now (r:1 w:0)
 	// Storage: Orders Orders (r:1 w:1)
 	fn reject_dna_sample() -> Weight {
-		(236_000_000 as Weight)
+		(112_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
 	}
@@ -105,7 +105,7 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
 	fn submit_test_result() -> Weight {
-		(97_000_000 as Weight)
+		(96_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
@@ -115,7 +115,7 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	fn submit_independent_test_result() -> Weight {
-		(94_000_000 as Weight)
+		(95_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
 	}

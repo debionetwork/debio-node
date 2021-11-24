@@ -42,13 +42,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(152_000_000 as Weight)
+		(106_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(3 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
 	// Storage: DoctorCertifications DoctorCertifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(63_000_000 as Weight)
+		(66_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(113_000_000 as Weight)
+		(120_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -70,13 +70,13 @@ impl WeightInfo for () {
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(152_000_000 as Weight)
+		(106_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
 	// Storage: DoctorCertifications DoctorCertifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(63_000_000 as Weight)
+		(66_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(113_000_000 as Weight)
+		(120_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}

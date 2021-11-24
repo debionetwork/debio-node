@@ -43,7 +43,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Labs LabCount (r:1 w:1)
 	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
 	fn register_lab() -> Weight {
-		(126_000_000 as Weight)
+		(131_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -51,14 +51,14 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Labs LabsByCountryRegionCity (r:2 w:2)
 	// Storage: Labs LabCountByCountryRegionCity (r:2 w:2)
 	fn update_lab() -> Weight {
-		(257_000_000 as Weight)
+		(133_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(5 as Weight))
 			.saturating_add(T::DbWeight::get().writes(5 as Weight))
 	}
 	// Storage: Labs LabVerifierKey (r:1 w:0)
 	// Storage: Labs Labs (r:1 w:1)
 	fn update_lab_verification_status() -> Weight {
-		(142_000_000 as Weight)
+		(64_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(2 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
@@ -67,7 +67,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
 	// Storage: Labs LabCount (r:1 w:1)
 	fn deregister_lab() -> Weight {
-		(207_000_000 as Weight)
+		(109_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -80,7 +80,7 @@ impl WeightInfo for () {
 	// Storage: Labs LabCount (r:1 w:1)
 	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
 	fn register_lab() -> Weight {
-		(126_000_000 as Weight)
+		(131_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
@@ -88,14 +88,14 @@ impl WeightInfo for () {
 	// Storage: Labs LabsByCountryRegionCity (r:2 w:2)
 	// Storage: Labs LabCountByCountryRegionCity (r:2 w:2)
 	fn update_lab() -> Weight {
-		(257_000_000 as Weight)
+		(133_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(5 as Weight))
 	}
 	// Storage: Labs LabVerifierKey (r:1 w:0)
 	// Storage: Labs Labs (r:1 w:1)
 	fn update_lab_verification_status() -> Weight {
-		(142_000_000 as Weight)
+		(64_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(2 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
 	}
@@ -104,7 +104,7 @@ impl WeightInfo for () {
 	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
 	// Storage: Labs LabCount (r:1 w:1)
 	fn deregister_lab() -> Weight {
-		(207_000_000 as Weight)
+		(109_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
