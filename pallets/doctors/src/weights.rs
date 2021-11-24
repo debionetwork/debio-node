@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -42,7 +42,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	fn register_doctor() -> Weight {
-		(100_000_000 as Weight)
+		(98_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -50,7 +50,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2)
 	fn update_doctor() -> Weight {
-		(143_000_000 as Weight)
+		(139_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(5 as Weight))
 			.saturating_add(T::DbWeight::get().writes(5 as Weight))
 	}
@@ -59,7 +59,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	fn deregister_doctor() -> Weight {
-		(114_000_000 as Weight)
+		(113_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -72,7 +72,7 @@ impl WeightInfo for () {
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	fn register_doctor() -> Weight {
-		(100_000_000 as Weight)
+		(98_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
@@ -80,7 +80,7 @@ impl WeightInfo for () {
 	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2)
 	fn update_doctor() -> Weight {
-		(143_000_000 as Weight)
+		(139_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(5 as Weight))
 	}
@@ -89,7 +89,7 @@ impl WeightInfo for () {
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	fn deregister_doctor() -> Weight {
-		(114_000_000 as Weight)
+		(113_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}

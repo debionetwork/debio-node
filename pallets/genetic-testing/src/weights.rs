@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -70,7 +70,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	fn submit_independent_test_result() -> Weight {
-		(95_000_000 as Weight)
+		(97_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(5 as Weight))
 			.saturating_add(T::DbWeight::get().writes(2 as Weight))
 	}
@@ -115,7 +115,7 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	fn submit_independent_test_result() -> Weight {
-		(95_000_000 as Weight)
+		(97_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
 	}

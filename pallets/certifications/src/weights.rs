@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -48,7 +48,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	}
 	// Storage: Certifications Certifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(61_000_000 as Weight)
+		(62_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications CertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(112_000_000 as Weight)
+		(111_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -76,7 +76,7 @@ impl WeightInfo for () {
 	}
 	// Storage: Certifications Certifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(61_000_000 as Weight)
+		(62_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications CertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(112_000_000 as Weight)
+		(111_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
