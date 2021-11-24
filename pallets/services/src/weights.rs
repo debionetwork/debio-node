@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -43,13 +43,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services Services (r:0 w:1)
 	fn create_service() -> Weight {
-		(111_000_000 as Weight)
+		(108_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
 	// Storage: Services Services (r:1 w:1)
 	fn update_service() -> Weight {
-		(67_000_000 as Weight)
+		(65_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
@@ -58,7 +58,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services ServicesCountByOwner (r:1 w:1)
 	fn delete_service() -> Weight {
-		(117_000_000 as Weight)
+		(115_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -72,13 +72,13 @@ impl WeightInfo for () {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services Services (r:0 w:1)
 	fn create_service() -> Weight {
-		(111_000_000 as Weight)
+		(108_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
 	// Storage: Services Services (r:1 w:1)
 	fn update_service() -> Weight {
-		(67_000_000 as Weight)
+		(65_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
 	}
@@ -87,7 +87,7 @@ impl WeightInfo for () {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services ServicesCountByOwner (r:1 w:1)
 	fn delete_service() -> Weight {
-		(117_000_000 as Weight)
+		(115_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
