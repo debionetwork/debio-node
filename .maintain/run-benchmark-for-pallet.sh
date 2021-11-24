@@ -9,7 +9,7 @@ for entry in `ls pallets`; do
 
   PALLET=$entry
 
-  ./target/release/debio benchmark \
+  cargo +nightly run --release --locked --features=runtime-benchmarks -- benchmark \
     --chain=dev \
     --execution=wasm \
     --wasm-execution=compiled \
