@@ -38,7 +38,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
 	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
 	fn set_eth_address() -> Weight {
-		(43_000_000 as Weight)
+		(42_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().writes(2 as Weight))
 	}
 }
@@ -48,7 +48,7 @@ impl WeightInfo for () {
 	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
 	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
 	fn set_eth_address() -> Weight {
-		(43_000_000 as Weight)
+		(42_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
 	}
 }

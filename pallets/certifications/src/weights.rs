@@ -42,7 +42,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications Certifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(97_000_000 as Weight)
+		(98_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(3 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications CertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(115_000_000 as Weight)
+		(112_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
 	}
@@ -70,7 +70,7 @@ impl WeightInfo for () {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications Certifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(97_000_000 as Weight)
+		(98_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications CertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(115_000_000 as Weight)
+		(112_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
 	}

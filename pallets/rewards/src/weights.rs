@@ -37,7 +37,7 @@ pub struct SubstrateWeight<T>(PhantomData<T>);
 impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Rewards RewarderKey (r:1 w:0)
 	fn reward_funds() -> Weight {
-		(43_000_000 as Weight)
+		(42_000_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
 	}
 }
@@ -46,7 +46,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 impl WeightInfo for () {
 	// Storage: Rewards RewarderKey (r:1 w:0)
 	fn reward_funds() -> Weight {
-		(43_000_000 as Weight)
+		(42_000_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
 	}
 }
