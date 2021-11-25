@@ -85,7 +85,7 @@ jobs:
       - name: Start sccache server
         run: sccache --start-server
       - name: Cargo build
-        run: cargo build --release
+        run: cargo build --release --locked
       - name: Print sccache stats
         run: sccache --show-stats
       - name: Stop sccache server

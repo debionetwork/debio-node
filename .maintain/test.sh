@@ -16,5 +16,9 @@ echo "Check Lint"
 cargo +nightly clippy --all -- -D warnings
 echo "Check Format"
 cargo +nightly fmt --all -- --check
+echo "Check Runtime"
+cargo +nightly build --release --locked
+echo "Check Benchmark"
+cargo +nightly --release --features=runtime-benchmarks --locked
 
 popd
