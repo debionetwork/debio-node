@@ -9,7 +9,7 @@ PROJECT_ROOT=`git rev-parse --show-toplevel`
 cd $PROJECT_ROOT
 
 # shellcheck disable=SC2086
-cargo +nightly run --release --locked --features=runtime-benchmarks -- benchmark \
+cargo +nightly run --release --features=runtime-benchmarks --locked -- benchmark \
     --chain dev \
     --list |\
   tail -n+2 |\
