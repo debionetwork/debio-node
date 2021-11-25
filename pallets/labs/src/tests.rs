@@ -300,7 +300,7 @@ fn deregister_lab_works() {
 		assert_eq!(Labs::lab_by_account_id(1), None);
 
 		assert_eq!(
-			Labs::labs_by_country_region_city(&country_region_code, &city_code,),
+			Labs::labs_by_country_region_city(&country_region_code, &city_code),
 			Some(Vec::new())
 		);
 
