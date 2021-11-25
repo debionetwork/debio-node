@@ -19,12 +19,13 @@
 // --output=./pallets/hospitals/src/weights.rs
 // --template=./.maintain/pallet-weight-template.hbs
 
-
-#![cfg_attr(rustfmt, rustfmt_skip)]
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
+use frame_support::{
+	traits::Get,
+	weights::{constants::RocksDbWeight, Weight},
+};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for hospitals.
@@ -42,26 +43,26 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	fn register_hospital() -> Weight {
-		(96_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		96_000_000_u64
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: Hospitals Hospitals (r:1 w:1)
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:2 w:2)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:2 w:2)
 	fn update_hospital() -> Weight {
-		(132_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(5 as Weight))
-			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+		132_000_000_u64
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
 	// Storage: Hospitals Hospitals (r:1 w:1)
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	fn deregister_hospital() -> Weight {
-		(107_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		107_000_000_u64
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
@@ -72,25 +73,25 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	fn register_hospital() -> Weight {
-		(96_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		96_000_000_u64
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: Hospitals Hospitals (r:1 w:1)
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:2 w:2)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:2 w:2)
 	fn update_hospital() -> Weight {
-		(132_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(5 as Weight))
+		132_000_000_u64
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
 	}
 	// Storage: Hospitals Hospitals (r:1 w:1)
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	fn deregister_hospital() -> Weight {
-		(107_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		107_000_000_u64
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 }
