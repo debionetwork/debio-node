@@ -25,7 +25,7 @@ jobs:
           echo $version
           echo "::set-output name=latest_tag::$version"
 
-  build:
+  build-and-publish:
     runs-on: ubuntu-20.04
     needs: compute-build-info
     if: "!contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
@@ -99,15 +99,7 @@ jobs:
         run: ./target/release/debio build-spec --disable-default-bootnode --chain dev-testnet > chain-spec.json
       - name: Generate sha256 hash
         run: sha256sum chain-spec.json> SHA256SUMS
-
-  build-and-publish-docker-image:
-    runs-on: ubuntu-20.04
-    needs: [compute-build-info, build]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      ## build and publish docker image
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -124,20 +116,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Re-use cache rust or cargo project
-        uses: actions/cache@v2
-        continue-on-error: false
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/
-            target/
-            ./chain-spec.json
-            ./SHA256SUMS
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
       - name: Copy binnary file
         run: cp target/release/debio .
       - name: Build and push pre-release
@@ -176,7 +154,7 @@ jobs:
 
   deploy-pre-release:
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, build-and-publish-docker-image]
+    needs: [compute-build-info, build-and-publish]
     env:
       DEPLOY: ${{ secrets.DEV_DEPLOY }}
     if: "github.event.release.prerelease && !contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
