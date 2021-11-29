@@ -1,8 +1,6 @@
-use crate::{mock::*, Error, Doctor, DoctorInfo};
-use frame_support::{
-	assert_noop, assert_ok,
-};
-use primitives_area_code::{CityCode, CountryCode, RegionCode, CountryRegionCode};
+use crate::{mock::*, Doctor, DoctorInfo, Error};
+use frame_support::{assert_noop, assert_ok};
+use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode};
 
 #[test]
 fn register_doctor_works() {
@@ -64,10 +62,7 @@ fn register_doctor_works() {
 			Some(vec![1, 2])
 		);
 
-		assert_eq!(
-			Doctors::doctor_count(),
-			Some(2),
-		);
+		assert_eq!(Doctors::doctor_count(), Some(2),);
 
 		assert_eq!(
 			Doctors::doctor_count_by_country_region_city(&country_region_code, &city_code),
@@ -131,22 +126,20 @@ fn update_doctor_works() {
 		let old_country_region_code = CountryRegionCode::from_vec("DC-DBIO".as_bytes().to_vec());
 		let old_city_code = CityCode::from_vec("City".as_bytes().to_vec());
 
-		assert_ok!(
-			Doctors::update_doctor(
-				Origin::signed(1),
-				DoctorInfo {
-					name: "Abdul Hakim".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("ID".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
-			)
-		);
+		assert_ok!(Doctors::update_doctor(
+			Origin::signed(1),
+			DoctorInfo {
+				name: "Abdul Hakim".as_bytes().to_vec(),
+				email: "DeBio Email".as_bytes().to_vec(),
+				country: CountryCode::from_vec("ID".as_bytes().to_vec()),
+				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+				city: CityCode::from_vec("City".as_bytes().to_vec()),
+				address: "DeBio Address".as_bytes().to_vec(),
+				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			}
+		));
 
 		assert_eq!(
 			Doctors::doctors_by_country_region_city(&old_country_region_code, &old_city_code),
@@ -191,14 +184,9 @@ fn deregister_doctor_works() {
 			}
 		));
 
-		assert_ok!(Doctors::deregister_doctor(
-			Origin::signed(1),
-		));
+		assert_ok!(Doctors::deregister_doctor(Origin::signed(1),));
 
-		assert_eq!(
-			Doctors::doctor_by_account_id(1),
-			None
-		);
+		assert_eq!(Doctors::doctor_by_account_id(1), None);
 
 		let country_region_code = CountryRegionCode::from_vec("DC-DBIO".as_bytes().to_vec());
 		let city_code = CityCode::from_vec("City".as_bytes().to_vec());
@@ -208,10 +196,7 @@ fn deregister_doctor_works() {
 			Some(Vec::new())
 		);
 
-		assert_eq!(
-			Doctors::doctor_count(),
-			Some(0),
-		);
+		assert_eq!(Doctors::doctor_count(), Some(0),);
 
 		assert_eq!(
 			Doctors::doctor_count_by_country_region_city(&country_region_code, &city_code),
@@ -320,27 +305,25 @@ fn call_event_should_work() {
 					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
 					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
+				},
 			},
-			1
+			1,
 		)));
 
-		assert_ok!(
-			Doctors::update_doctor(
-				Origin::signed(1),
-				DoctorInfo {
-					name: "Abdul Hakim".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("ID".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
-			)
-		);
+		assert_ok!(Doctors::update_doctor(
+			Origin::signed(1),
+			DoctorInfo {
+				name: "Abdul Hakim".as_bytes().to_vec(),
+				email: "DeBio Email".as_bytes().to_vec(),
+				country: CountryCode::from_vec("ID".as_bytes().to_vec()),
+				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+				city: CityCode::from_vec("City".as_bytes().to_vec()),
+				address: "DeBio Address".as_bytes().to_vec(),
+				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			}
+		));
 
 		System::assert_last_event(Event::Doctors(crate::Event::DoctorUpdated(
 			Doctor {
@@ -356,9 +339,9 @@ fn call_event_should_work() {
 					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
 					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
+				},
 			},
-			1
+			1,
 		)));
 
 		assert_ok!(Doctors::deregister_doctor(Origin::signed(1)));
@@ -377,9 +360,9 @@ fn call_event_should_work() {
 					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
 					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
+				},
 			},
-			1
+			1,
 		)));
 	})
 }
