@@ -1,18 +1,22 @@
 use crate as hospitals;
 use frame_support::parameter_types;
 use frame_system as system;
+use pallet_balances::AccountData;
+use scale_info::TypeInfo;
+use sp_core::{Decode, Encode, RuntimeDebug, H256};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{AccountIdLookup, BlakeTwo256, IdentifyAccount, Verify},
-    MultiSignature
+	traits::{BlakeTwo256, IdentityLookup},
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-pub type Signature = MultiSignature;
-pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+pub type AccountId = u64;
+
+#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
+pub struct EthereumAddress(pub [u8; 20]);
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -22,6 +26,9 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
+		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>}
 	}
 );
 
@@ -31,12 +38,12 @@ parameter_types! {
 }
 
 impl system::Config for Test {
-	type BaseCallFilter = ();
+	type BaseCallFilter = frame_support::traits::Everything;
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
 	type Call = Call;
-	type Lookup = AccountIdLookup<AccountId, ()>;
+	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
@@ -50,18 +57,51 @@ impl system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
 }
 
-impl hospitals::Config for Runtime {
-    type Event = Event;
-    type Currency = ();
-    type HospitalCertifications = ();
-    type EthereumAddress = ();
-    type UserProfile = ();
+impl hospitals::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type HospitalCertifications = HospitalCertifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
+	type WeightInfo = ();
+}
+
+type Balance = u64;
+
+parameter_types! {
+	pub static ExistentialDeposit: Balance = 0;
+}
+
+impl pallet_balances::Config for Test {
+	type MaxLocks = ();
+	type MaxReserves = ();
+	type ReserveIdentifier = [u8; 8];
+	/// The type for recording an account's balance.
+	type Balance = Balance;
+	/// The ubiquitous event type.
+	type Event = Event;
+	type DustRemoval = ();
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
+	type WeightInfo = ();
+}
+
+impl user_profile::Config for Test {
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
+	type WeightInfo = ();
+}
+
+impl hospital_certifications::Config for Test {
+	type Event = Event;
+	type HospitalCertificationOwner = Hospitals;
+	type WeightInfo = ();
 }
 
 pub struct ExternalityBuilder;
