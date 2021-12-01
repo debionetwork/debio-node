@@ -50,6 +50,10 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn admin_key)]
     pub type RewarderKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+    
+    #[pallet::storage]
+    #[pallet::getter(fn pallet_id)]
+    pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
     // -----------------------------------------
 
     // ----- Genesis Configs ------------------
@@ -67,10 +71,18 @@ pub mod pallet {
         }
     }
 
+    #[cfg(feature = "std")]
+    impl<T: Config> GenesisConfig<T> {
+        pub fn account_id() -> T::AccountId {
+            PALLET_ID.into_account()
+        }
+    }
+
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
             RewarderKey::<T>::put(&self.rewarder_key);
+            PalletAccount::<T>::put(&Self::account_id());
         }
     }
     // ----------------------------------------
@@ -101,7 +113,7 @@ pub mod pallet {
     // Pallet run from this pallet::call
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(20_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::reward_funds())]
         pub fn reward_funds(
             origin: OriginFor<T>,
             to_reward: T::AccountId,
@@ -125,11 +137,6 @@ impl<T: Config> Pallet<T> {
 	/// The account ID that holds the funds
 	pub fn account_id() -> T::AccountId {
 		PALLET_ID.into_account()
-	}
-
-	/// The rewards balance
-	fn get_reward_balance() -> BalanceOf<T> {
-		T::Currency::free_balance(&Self::account_id())
 	}
 }
 

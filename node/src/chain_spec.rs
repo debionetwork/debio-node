@@ -775,6 +775,7 @@ pub fn local_config() -> Result<ChainSpec, String> {
 pub fn development_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
+	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -807,7 +808,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 						// Pallet ID Account
 						PalletId(*b"Rewards!").into_account(),
 						// Pallet ID rewards amount
-						2_500 * DBIO,
+						total_reward_balance,
 					)
 				],
 				// Appchain config
