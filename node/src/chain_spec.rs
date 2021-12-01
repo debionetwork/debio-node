@@ -102,6 +102,10 @@ pub fn appchain_config(
 	(anchor_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
 }
 
+pub fn octopus_mainnet_config() -> Result<ChainSpec, String> {
+	ChainSpec::from_json_bytes(&include_bytes!("../../resources/mainnet.json")[..])
+}
+
 pub fn octopus_testnet_config() -> Result<ChainSpec, String> {
 	ChainSpec::from_json_bytes(&include_bytes!("../../resources/testnet.json")[..])
 }
@@ -121,16 +125,138 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 				// WASM Binary
 				wasm_binary,
 				// Sudo account
-				// 5FR73HBVwSpPjnPsBZPDVyuHQS1KE8jvSL3pSud6F6HZcuBA
-				hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"].into(),
+				// 5Eqe2cvQPYJRbpQ3BGgVYYZn43zyGJatXNfCw36hZaiNU3LC
+				hex!["7abd9f5aa885700a6a7c91fb5d6409a0c697cce3018c0191c398f3e15c64847e"].into(),
 				// Initial PoA authorities
-				vec![],
+				vec![
+					(
+						// 5Eqe2cvQPYJRbpQ3BGgVYYZn43zyGJatXNfCw36hZaiNU3LC
+						hex!["7abd9f5aa885700a6a7c91fb5d6409a0c697cce3018c0191c398f3e15c64847e"]
+							.into(),
+						// 5Giq6cT3PREcXj2U3d9JNqcq6B9V6LvEmDsyK2kLJvyzmCS8
+						hex!["ce04a1ee223de8cbc6245da685d1148daa7bf3fe634168a8eb4553cbc5ff943a"]
+							.unchecked_into(),
+						// 5HB3gUbYrKQEFseuR8Ky65NxxHvn7vS34tabe2nCoZZ8d8sV
+						hex!["e2035fc7e3d8e0b65dec0c79886428b42707451735b49f96f05431f92e826ce1"]
+							.unchecked_into(),
+						// 5CXv6qkhma5V1U5tQw3xr5xaBywCbVqBTtQjW5fn1FmiA6Yn
+						hex!["14c0d8168ae31b1aa2bb410834b495a15d49e352dd2f7d98b64cbbbc423f7934"]
+							.unchecked_into(),
+						// KW7ZQom54xAXrm6ywL3Up6XTvViKVE7ZjMe4rTcUu4oYV2JvZ
+						hex!["02ccfa1aef0c9f012f055e216ae7546556cadd09896215edbf837b07cb6362b1f8"]
+							.unchecked_into(),
+						// 5CiN6MhnULuztDnFiCx4XBWDsEWVSgu3cukBF9Q7SRWRCXXj
+						hex!["1cb8cb3b111f12e7b30330641094ea13a2f32800416922abbf9f4de182aab07e"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					(
+						// 5DwE8Hedc1WkgbmWQSv4CrHurDPRyR85BVmhC1fNhLfGtbsB
+						hex!["52c466320e6f6f9a37d24250b04ae4bc0b15f5416dd01d580d25355958230a39"]
+							.into(),
+						// 5CqZgRLiyJMqhK7W53r4aQ2rzWZ1jarHr1HFd43oX6KCFhY4
+						hex!["2236849aeeefef86ef93f73db747ce312608cae2bba80ca2ed720f9db3113773"]
+							.unchecked_into(),
+						// 5EJ7JGhKyRcZLJsQbT2gdFcNk2Lkiyo2FgPHWVVhRZS4jcfs
+						hex!["62b1916ab9f422ba36c3d962f964d8fa6ea6d99331c08b953c2723b4e0ec5986"]
+							.unchecked_into(),
+						// 5FULzzASLz6SbLEaxvDefwuqvvb8w6XzTqEJ2DMSNopDAZy4
+						hex!["96bc616963a5d997aa14d4bb57c9ba3c956709b3a4c78bf5847437defcc1884d"]
+							.unchecked_into(),
+						// KW9z6vxHeTgBbBKJaCoDBQC7Wb43CgUEZQ3mzPe5pobB4N3Yc
+						hex!["0338478804f8f14bcaab2b7c3ec85481ac4c59994ff5f92125901465b6b7c177e0"]
+							.unchecked_into(),
+						// 5CvXhikX2VJ7DLaf9Nto7fJWZ3PyP3orPyjHF1CH5fBX6ACZ
+						hex!["2600167ed0dad19e81de33ebba35ba8945e4fd0ef4da40fbc760294391332132"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					(
+						// 5EfNPLqe76zfPQtLemkqCjMYYAjPCmdGW3jJfd4P7sfoMC8r
+						hex!["72e882a7bc0a3d545fbc7189694fd752351e58cd934ee931d0ead5c605fd0003"]
+							.into(),
+						// 5HEZ8CGV2uNyrtQGz3Y6ZHpVR7QwLArSKZnraLq6yWUeVjRg
+						hex!["e4b039cac52f2a2d3326b15473eca58022be2a50c5a7ccad159a75a6f2ad9c4d"]
+							.unchecked_into(),
+						// 5CJU2aPav9MSfKNHBzhMasC5hTNkEhGNiZkXTu9eH9JX2JGQ
+						hex!["0a7ee1eba7f93ad5eabfee8b2e56b8933022acd51b27d6b7d1309b142e6d562a"]
+							.unchecked_into(),
+						// 5HGWB6TtjsGmKuokpB2NwyH2FSFX9uWSXsG6VFDESJjX5M79
+						hex!["e62cc9355c8362a41263bbca72f6373b8248f419085d2447aa7aee53d3f05b6a"]
+							.unchecked_into(),
+						// KW7PS5VWU3CFHvc4P8yuz3FrnFn9MAY9AEorwE2RJhs3E5NLc
+						hex!["02c55dee371aa4ad6c2eb7b030354d38e2be227f8f221c440a83b2b0a71d42f8f9"]
+							.unchecked_into(),
+						// 5H3DcYd1BBHU2vKMS5oFiW3sxJFeXKFYTgK3aqtMVQvfLNGN
+						hex!["dc0ad884f6fa637f99a93665f27c022b2c6efad1c42ea3bb15f1d0edc3c24164"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+					(
+						// 5HbEiquaeAfPSAj5X8MsUSAByD3Pq6zHKXzGscXyrM1mZKGG
+						hex!["f4766e38cb1ee4f254f1f6c2f536914f9fed811cd6de21621ef1aa06ab23ea41"]
+							.into(),
+						// 5F9PNKLau1G817Y8nKAVKJFvyna8g71rJbegXgAcWzixxZqH
+						hex!["8846b03e6c2c53eec0288e00c1f0d5b8b87e0f34dd7495e355b922c8ff41d630"]
+							.unchecked_into(),
+						// 5HgHkNZhiuFnu8KH5WetSm21q2wVq1NxHTT3AdjPfDoTG3xp
+						hex!["f850d85ea2c7f440f04361a614f42ddf93d82490c5a9bb9e10efd966d1aaea1e"]
+							.unchecked_into(),
+						// 5DfhkVDwi3zcbDQajpfZXJkfPVdhR5VpMi1r89bW88fAWpfT
+						hex!["46ed76be7187614a109d45a8528a6e0c6e4f7c05c1f035b6a49764374bedd40b"]
+							.unchecked_into(),
+						// KWDwYPXkvLXeZBpuVdnjmPPH7Zjxz3BsfeuCDoB1xA1gtEwcc
+						hex!["03e7446dcfb7d23bbb4a98a7fe93ea9e4be5ae1734e3d7d96645c9432db5dedb37"]
+							.unchecked_into(),
+						// 5Dm2RRgAyoxeFPpDj1D6LgtVEpLEW1S26nRkFZBkQi5j67Hq
+						hex!["4afc8b54d1dae1f069fc4a976dc9d11c1f71ca3ef8d878a216fdd6a695705b55"]
+							.unchecked_into(),
+						// Stash amount
+						100 * DBIO,
+					),
+				],
 				// Pre-funded accounts
-				vec![],
+				vec![
+					(
+						// Octopus Foundation Valiadator 1 account
+						// 5Eqe2cvQPYJRbpQ3BGgVYYZn43zyGJatXNfCw36hZaiNU3LC
+						hex!["7abd9f5aa885700a6a7c91fb5d6409a0c697cce3018c0191c398f3e15c64847e"]
+							.into(),
+						// Balance amount
+						510 * DBIO,
+					),
+					(
+						// Octopus Foundation Valiadator 2 account
+						// 5DwE8Hedc1WkgbmWQSv4CrHurDPRyR85BVmhC1fNhLfGtbsB
+						hex!["52c466320e6f6f9a37d24250b04ae4bc0b15f5416dd01d580d25355958230a39"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					(
+						// Octopus Foundation Valiadator 3 account
+						// 5EfNPLqe76zfPQtLemkqCjMYYAjPCmdGW3jJfd4P7sfoMC8r
+						hex!["72e882a7bc0a3d545fbc7189694fd752351e58cd934ee931d0ead5c605fd0003"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+					(
+						// Octopus Foundation Valiadator 4 account
+						// 5HbEiquaeAfPSAj5X8MsUSAByD3Pq6zHKXzGscXyrM1mZKGG
+						hex!["f4766e38cb1ee4f254f1f6c2f536914f9fed811cd6de21621ef1aa06ab23ea41"]
+							.into(),
+						// Balance amount
+						10 * DBIO,
+					),
+				],
 				// Appchain config
 				appchain_config(
 					// Appchain Relay Contract
-					"",
+					"debionetwork.octopus-registry.near",
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
@@ -139,8 +265,8 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 					4_657 * DBIO,
 				),
 				// API admin account
-				// 5FpcRYvUMB3bNRdbj5YDwKeGHKVeWmdjnzY45RdTJSoSGcKN
-				hex!["a63135764844b7b889f0447cc5127c4aa1b78fb998878549bf66ed7b0ee49753"].into(),
+				// 5EU2uVTEVWkAsLj7fTkkxk72BBDk1bJPDSrPK4Xh1EfEWprA
+				hex!["6a433c17606024462262cfa318b4f45f929b5d807e91ab1793b03172a4e8005b"].into(),
 			)
 		},
 		// Bootnodes
@@ -272,7 +398,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						510 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 1 account
