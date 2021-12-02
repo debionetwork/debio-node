@@ -150,7 +150,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["1cb8cb3b111f12e7b30330641094ea13a2f32800416922abbf9f4de182aab07e"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5DwE8Hedc1WkgbmWQSv4CrHurDPRyR85BVmhC1fNhLfGtbsB
@@ -172,7 +172,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["2600167ed0dad19e81de33ebba35ba8945e4fd0ef4da40fbc760294391332132"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5EfNPLqe76zfPQtLemkqCjMYYAjPCmdGW3jJfd4P7sfoMC8r
@@ -194,7 +194,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["dc0ad884f6fa637f99a93665f27c022b2c6efad1c42ea3bb15f1d0edc3c24164"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5HbEiquaeAfPSAj5X8MsUSAByD3Pq6zHKXzGscXyrM1mZKGG
@@ -216,7 +216,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["4afc8b54d1dae1f069fc4a976dc9d11c1f71ca3ef8d878a216fdd6a695705b55"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 				],
 				// Pre-funded accounts
@@ -227,7 +227,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["7abd9f5aa885700a6a7c91fb5d6409a0c697cce3018c0191c398f3e15c64847e"]
 							.into(),
 						// Balance amount
-						510 * DBIO,
+						20_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 2 account
@@ -235,7 +235,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["52c466320e6f6f9a37d24250b04ae4bc0b15f5416dd01d580d25355958230a39"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 3 account
@@ -243,7 +243,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["72e882a7bc0a3d545fbc7189694fd752351e58cd934ee931d0ead5c605fd0003"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 4 account
@@ -251,7 +251,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						hex!["f4766e38cb1ee4f254f1f6c2f536914f9fed811cd6de21621ef1aa06ab23ea41"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Pallet ID Account
@@ -267,9 +267,9 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 					// Appchain Asset Id by Name
 					"usdc.testnet",
 					// Premined Amount
-					87_500_000 * DBIO,
+					75_000_000 * DBIO,
 					// Era Payout
-					4_657 * DBIO,
+					13_699 * DBIO,
 				),
 				// API admin account
 				// 5EU2uVTEVWkAsLj7fTkkxk72BBDk1bJPDSrPK4Xh1EfEWprA
@@ -329,7 +329,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["9af93f1d2cf773015a1baee1028edb612a25f56fde130f5da2ac488c2884e619"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5GVtTAfgTZrRf4gs2fDmGMPrCUWZx4eD7gzYvoCSxCuke67t
@@ -351,7 +351,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["2e35cb3f34b1e1d456981f4cc39a57b35a5287146925a9a95b66feec76b3e339"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5Gs3JPQknr3LbPuP5kuva2XxijodjU1sAAWncES719ZfuhCq
@@ -373,7 +373,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["56ab21d481aeb3f93b756bbd78b0e38c4db567b1663b75c7d672bd3f7eaefb5d"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5DXNnoH2EMDQ1kk2JM7ZEutZFqZD8m6A6E5wZKfJVXjoJEez
@@ -395,7 +395,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["8ef83df12c339f41551d44a83bf82c6dfbf944bb2c6caa8b4761600b09dc324a"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 				],
 				// Pre-funded accounts
@@ -406,7 +406,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["9443a63297b9f5b4e2569ee17225011db11a537066bce62d018acbcfda88f947"]
 							.into(),
 						// Balance amount
-						510 * DBIO,
+						20_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 1 account
@@ -414,7 +414,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["94f135526ec5fe830e0cbc6fd58683cb2d9ee06522cd9a2c0481268c5c73674f"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 2 account
@@ -422,7 +422,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["c425bbf59c7bf49e4fcc6547539d84ba8ecd2fb171f5b83cde3571d45d0c8224"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 3 account
@@ -430,7 +430,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["d447acbfe7761c0cfba8341e616275caca6401637308ee123b77082a40095331"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Octopus Foundation Valiadator 4 account
@@ -438,7 +438,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						hex!["4093acd03283fa2d53d3b684b2a7ce3118ceb047b869f6c000d041578420de22"]
 							.into(),
 						// Balance amount
-						10 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Pallet ID Account
@@ -456,7 +456,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 					// Premined Amount
 					87_500_000 * DBIO,
 					// Era Payout
-					4_657 * DBIO,
+					6_849 * DBIO,
 				),
 				// API admin account
 				// 5FpcRYvUMB3bNRdbj5YDwKeGHKVeWmdjnzY45RdTJSoSGcKN
@@ -516,7 +516,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
@@ -538,7 +538,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 				],
 				// Pre-funded accounts
@@ -549,7 +549,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["04ddb3f730857ed801327da2242dff4d4d85e25b33c43db6f328d55904247f40"]
 							.into(),
 						// Balance amount
-						12_498_000 * DBIO,
+						12_480_000 * DBIO,
 					),
 					(
 						// Valiadator 1 account
@@ -557,7 +557,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
 							.into(),
 						// Balance amount
-						1_000 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Valiadator 2 account
@@ -565,7 +565,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
 							.into(),
 						// Balance amount
-						1_000 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Pallet ID Account
@@ -643,7 +643,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
@@ -665,7 +665,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
 							.unchecked_into(),
 						// Stash amount
-						100 * DBIO,
+						10_000 * DBIO,
 					),
 				],
 				// Pre-funded accounts
@@ -676,7 +676,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"]
 							.into(),
 						// Balance amount
-						12_498_000 * DBIO,
+						12_480_000 * DBIO,
 					),
 					(
 						// Valiadator 1 account
@@ -684,7 +684,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
 							.into(),
 						// Balance amount
-						1_000 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Valiadator 2 account
@@ -692,7 +692,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
 							.into(),
 						// Balance amount
-						1_000 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Pallet ID Account
@@ -751,9 +751,9 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				// Initial PoA authorities
 				vec![
 					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					authority_keys_from_seed("Alice", 100 * DBIO),
+					authority_keys_from_seed("Alice", 10_000 * DBIO),
 					// 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
-					authority_keys_from_seed("Bob", 100 * DBIO),
+					authority_keys_from_seed("Bob", 10_000 * DBIO),
 				],
 				// Pre-funded accounts
 				vec![
@@ -762,14 +762,14 @@ pub fn local_config() -> Result<ChainSpec, String> {
 						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						// Balance amount
-						12_499_000 * DBIO,
+						12_490_000 * DBIO,
 					),
 					(
 						// Validator 2
 						// 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
 						// Balance amount
-						1_000 * DBIO,
+						10_000 * DBIO,
 					),
 					(
 						// Pallet ID Account
@@ -810,7 +810,6 @@ pub fn local_config() -> Result<ChainSpec, String> {
 pub fn development_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
-	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -828,7 +827,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				// Initial PoA authorities
 				vec![
 					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					authority_keys_from_seed("Alice", 100 * DBIO),
+					authority_keys_from_seed("Alice", 10_000 * DBIO),
 				],
 				// Pre-funded accounts
 				vec![
@@ -837,13 +836,13 @@ pub fn development_config() -> Result<ChainSpec, String> {
 						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						// Balance amount
-						12_497_500 * DBIO,
+						12_490_000 * DBIO,
 					),
 					(
-						// Pallet ID Account
+						// Reward Pallet ID Account
 						PalletId(*b"Rewards!").into_account(),
-						// Pallet ID rewards amount
-						total_reward_balance,
+						// Balance amount
+						10_000 * DBIO,
 					)
 				],
 				// Appchain config
