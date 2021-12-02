@@ -113,6 +113,7 @@ pub fn octopus_testnet_config() -> Result<ChainSpec, String> {
 pub fn mainnet_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
+	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -252,6 +253,12 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 						// Balance amount
 						10_000 * DBIO,
 					),
+					(
+						// Pallet ID Account
+						PalletId(*b"Rewards!").into_account(),
+						// Pallet ID rewards amount
+						total_reward_balance,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -285,6 +292,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 pub fn testnet_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
+	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -432,6 +440,12 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 						// Balance amount
 						10_000 * DBIO,
 					),
+					(
+						// Pallet ID Account
+						PalletId(*b"Rewards!").into_account(),
+						// Pallet ID rewards amount
+						total_reward_balance,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -465,6 +479,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
+	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -552,6 +567,12 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						// Balance amount
 						10_000 * DBIO,
 					),
+					(
+						// Pallet ID Account
+						PalletId(*b"Rewards!").into_account(),
+						// Pallet ID rewards amount
+						total_reward_balance,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -585,6 +606,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 pub fn development_testnet_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
+	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -672,6 +694,12 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						// Balance amount
 						10_000 * DBIO,
 					),
+					(
+						// Pallet ID Account
+						PalletId(*b"Rewards!").into_account(),
+						// Pallet ID rewards amount
+						total_reward_balance,
+					),
 				],
 				// Appchain config
 				appchain_config(
@@ -705,6 +733,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 pub fn local_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
+	let total_reward_balance = 25_000_000 * DBIO;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -742,6 +771,12 @@ pub fn local_config() -> Result<ChainSpec, String> {
 						// Balance amount
 						10_000 * DBIO,
 					),
+					(
+						// Pallet ID Account
+						PalletId(*b"Rewards!").into_account(),
+						// Pallet ID rewards amount
+						total_reward_balance,
+					)
 				],
 				// Appchain config
 				appchain_config(
