@@ -574,6 +574,7 @@ impl frame_system::offchain::AppCrypto<<Signature as Verify>::Signer, Signature>
 
 parameter_types! {
 	pub const OctopusAppchainPalletId: PalletId = PalletId(*b"py/octps");
+	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 	pub const GracePeriod: u32 = 10;
 	pub const UnsignedPriority: u64 = 1 << 21;
 	pub const RequestEventLimit: u32 = 10;
@@ -647,6 +648,7 @@ impl labs::Config for Runtime {
 impl rewards::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
+	type PalletId = RewardPalletId;
 	type WeightInfo = ();
 }
 
