@@ -72,6 +72,7 @@ impl ExternalityBuilder {
 			GenesisConfig::<Runtime> {
 				rewards: RewardsConfig {
 					rewarder_key: hex_literal::hex!["d86cd72037edd033b21e5a54fb8ecb687effe90e0af2d12c1c23acba2021ac56"].into(),
+					total_reward_amount: 25_000_000 * 1_000_000_000_000_000_000,
 				},
 			}.build_storage()
 				.unwrap()

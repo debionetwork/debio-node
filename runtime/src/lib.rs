@@ -86,6 +86,8 @@ mod weights;
 pub mod currency {
     use super::Balance;
 
+	pub const OCT: Balance = 1_000_000_000_000_000_000;
+
 	pub const UNITS: Balance = 1_000_000_000_000_000_000;
 	pub const DOLLARS: Balance = UNITS;
 	pub const CENTS: Balance = DOLLARS / 100;
@@ -142,7 +144,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 103,
+	spec_version: 104,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -574,7 +576,6 @@ impl frame_system::offchain::AppCrypto<<Signature as Verify>::Signer, Signature>
 
 parameter_types! {
 	pub const OctopusAppchainPalletId: PalletId = PalletId(*b"py/octps");
-	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 	pub const GracePeriod: u32 = 10;
 	pub const UnsignedPriority: u64 = 1 << 21;
 	pub const RequestEventLimit: u32 = 10;
@@ -643,6 +644,10 @@ impl labs::Config for Runtime {
     type EthereumAddress = EthereumAddress;
     type UserProfile = UserProfile;
 	type WeightInfo = ();
+}
+
+parameter_types! {
+	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 }
 
 impl rewards::Config for Runtime {
