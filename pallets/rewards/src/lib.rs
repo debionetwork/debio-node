@@ -95,6 +95,10 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
+		/// Insufficient funds.
+		InsufficientFunds,
+		/// Amount overflow.
+		AmountOverflow,
         /// Unauthorized Account
         Unauthorized,
         /// Account doesn't exist
@@ -152,6 +156,11 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
     ) -> Result<(), Self::Error> {
         if rewarder_account_id.clone() != RewarderKey::<T>::get() {
             return Err(Error::<T>::Unauthorized);
+        }
+
+		let amount = T::Currency::free_balance(pallet_id);
+        if reward > amount {
+            return Err(Error::<T>::InsufficientFunds);
         }
 
         let _ = T::Currency::transfer(pallet_id, to_reward, reward, KeepAlive);
