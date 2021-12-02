@@ -23,8 +23,7 @@ pub mod weights;
 pub use weights::WeightInfo;
 
 use frame_support::PalletId;
-use sp_runtime::traits::AccountIdConversion;
-const PALLET_ID: PalletId = PalletId(*b"Rewards!");
+use sp_runtime::traits::{AccountIdConversion, CheckedConversion};
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -36,6 +35,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config + Sized {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// Currency type for this pallet.
+        type PalletId: Get<PalletId>;
         type Currency: Currency<Self::AccountId> + ReservableCurrency<Self::AccountId>;
         type WeightInfo: WeightInfo;
     }
@@ -60,6 +60,7 @@ pub mod pallet {
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub rewarder_key: T::AccountId,
+		pub total_reward_amount: u128,
     }
 
     #[cfg(feature = "std")]
@@ -67,22 +68,23 @@ pub mod pallet {
         fn default() -> Self {
             Self {
                 rewarder_key: Default::default(),
+				total_reward_amount: 0,
             }
-        }
-    }
-
-    #[cfg(feature = "std")]
-    impl<T: Config> GenesisConfig<T> {
-        pub fn account_id() -> T::AccountId {
-            PALLET_ID.into_account()
         }
     }
 
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
+			let account_id = <Pallet<T>>::account_id();
+			let min = T::Currency::minimum_balance();
+			let amount =
+				self.total_reward_amount.checked_into().ok_or(Error::<T>::AmountOverflow).unwrap();
+			if amount >= min {
+				T::Currency::make_free_balance_be(&account_id, amount);
+            }
             RewarderKey::<T>::put(&self.rewarder_key);
-            PalletAccount::<T>::put(&Self::account_id());
+            PalletAccount::<T>::put(account_id);
         }
     }
     // ----------------------------------------
@@ -95,6 +97,8 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
+		/// Amount overflow.
+		AmountOverflow,
         /// Unauthorized Account
         Unauthorized,
         /// Account doesn't exist
@@ -136,7 +140,7 @@ pub mod pallet {
 impl<T: Config> Pallet<T> {
 	/// The account ID that holds the funds
 	pub fn account_id() -> T::AccountId {
-		PALLET_ID.into_account()
+        T::PalletId::get().into_account()
 	}
 }
 
