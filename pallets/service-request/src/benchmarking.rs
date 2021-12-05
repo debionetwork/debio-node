@@ -32,6 +32,56 @@ benchmarks! {
 		total_staked
 	)
 
+	unstake {
+		let caller: T::AccountId = whitelisted_caller();
+		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+
+		let _ = <T as pallet::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
+
+		let _new_request = ServiceRequest::<T>::create_request(
+			caller_origin,
+			"Indonesia".as_bytes().to_vec(),
+			"West Java".as_bytes().to_vec(),
+			"Bogor".as_bytes().to_vec(),
+			"Vaksin".as_bytes().to_vec(),
+			10000000000000000000u128.saturated_into()
+		);
+
+		let request_ids = RequestByAccountId::<T>::get(caller.clone());
+		let request_id = request_ids[0];
+
+
+	}: unstake(
+		RawOrigin::Signed(caller),
+		request_ids[0]
+	)
+
+	retrieve_unstaked_amount {
+		let caller: T::AccountId = AdminKey::<T>::get();
+
+		let customer: T::AccountId = account("customer", 0, SEED);
+		let customer_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
+
+		let _ = <T as pallet::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
+
+		let _new_request = ServiceRequest::<T>::create_request(
+			customer_origin.clone(),
+			"Indonesia".as_bytes().to_vec(),
+			"West Java".as_bytes().to_vec(),
+			"Bogor".as_bytes().to_vec(),
+			"Vaksin".as_bytes().to_vec(),
+			10000000000000000000u128.saturated_into()
+		);
+
+		let request_ids = RequestByAccountId::<T>::get(customer.clone());
+		let request_id = request_ids[0];
+
+		let _request_unstake = ServiceRequest::<T>::unstake(customer_origin.clone(), request_id.clone());
+	}: retrieve_unstaked_amount (
+		RawOrigin::Signed(caller),
+		request_id.clone()
+	)
+
 	claim_request {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
