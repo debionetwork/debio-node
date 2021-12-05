@@ -54,6 +54,10 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn pallet_id)]
     pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn total_reward_amount)]
+	pub type TotalRewardAmount<T> = StorageValue<_, BalanceOf<T>>;
     // -----------------------------------------
 
     // ----- Genesis Configs ------------------
@@ -85,6 +89,7 @@ pub mod pallet {
             }
             RewarderKey::<T>::put(&self.rewarder_key);
             PalletAccount::<T>::put(account_id);
+            <Pallet<T>>::set_total_reward_amount();
         }
     }
     // ----------------------------------------
@@ -144,6 +149,13 @@ impl<T: Config> Pallet<T> {
 	pub fn account_id() -> T::AccountId {
         T::PalletId::get().into_account()
 	}
+    
+	/// Set current total reward amount
+	pub fn set_total_reward_amount() {
+        let pallet_id = Self::account_id();
+		let balance = T::Currency::free_balance(&pallet_id);
+		TotalRewardAmount::<T>::put(balance);
+	}
 }
 
 impl<T: Config> RewardInterface<T> for Pallet<T> {
@@ -166,6 +178,7 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
         }
 
         let _ = T::Currency::transfer(pallet_id, to_reward, reward, KeepAlive);
+        Self::set_total_reward_amount();
 
         Ok(().into())
     }
