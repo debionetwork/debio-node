@@ -264,8 +264,6 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5EU2uVTEVWkAsLj7fTkkxk72BBDk1bJPDSrPK4Xh1EfEWprA
 				hex!["6a433c17606024462262cfa318b4f45f929b5d807e91ab1793b03172a4e8005b"].into(),
-				// Total Reward Amount
-				25_000_000 * DBIO,
 			)
 		},
 		// Bootnodes
@@ -446,8 +444,6 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5FpcRYvUMB3bNRdbj5YDwKeGHKVeWmdjnzY45RdTJSoSGcKN
 				hex!["a63135764844b7b889f0447cc5127c4aa1b78fb998878549bf66ed7b0ee49753"].into(),
-				// Total Reward Amount
-				25_000_000 * DBIO,
 			)
 		},
 		// Bootnodes
@@ -568,8 +564,6 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5ELYNFhFz9tauMxfjgTGhd6sRbnndddEXqh3UxWsPi6Rjajg
 				hex!["648c728f7fcf0ae26a44410cf0ba4ea15b27b3169a4f809a14097680b8d0bc53"].into(),
-				// Total Reward Amount
-				25_000_000 * DBIO,
 			)
 		},
 		// Bootnodes
@@ -690,8 +684,6 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
 				hex!["02c2cffef38fbf56b32d6a49eeeecc0e3345a1e0549cd8817d52f6cf2e414152"].into(),
-				// Total Reward Amount
-				25_000_000 * DBIO,
 			)
 		},
 		// Bootnodes
@@ -762,8 +754,6 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
-				// Total Reward Amount
-				25_000_000 * DBIO,
 			)
 		},
 		// Bootnodes
@@ -825,8 +815,6 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
-				// Total Reward Amount
-				25_000_000 * DBIO,
 			)
 		},
 		// Bootnodes
@@ -858,7 +846,6 @@ fn genesis(
 	endowed_accounts: Vec<(AccountId, Balance)>,
 	appchain_config: (String, String, Balance, Balance),
 	api_admin_key: AccountId,
-	total_reward_balance: Balance,
 ) -> GenesisConfig {
 	GenesisConfig {
 		system: SystemConfig {
@@ -905,7 +892,6 @@ fn genesis(
 		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
 		rewards: RewardsConfig {
 			rewarder_key: api_admin_key.clone(),
-			total_reward_amount: total_reward_balance.clone(),
 		},
 		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },

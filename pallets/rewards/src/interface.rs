@@ -3,9 +3,13 @@ pub trait RewardInterface<T: frame_system::Config> {
     type Balance;
     
     fn reward_funds(
-        escrow_account_id: &T::AccountId,
-        pallet_id: &T::AccountId,
+        rewarder_account_id: &T::AccountId,
         to_reward: &T::AccountId,
+        reward: Self::Balance,
+    ) -> Result<(), Self::Error>;
+    
+    fn add_total_reward_balance(
+        sudo_account_id: &T::AccountId,
         reward: Self::Balance,
     ) -> Result<(), Self::Error>;
 }
