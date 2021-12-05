@@ -19,6 +19,11 @@ mod benchmarking;
 
 use sp_std::prelude::*;
 
+use pallet_sudo::Pallet as Sudo;
+use pallet_sudo::{
+	Config as SudoConfig
+};
+
 pub mod weights;
 pub use weights::WeightInfo;
 
@@ -32,7 +37,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
 
     #[pallet::config]
-    pub trait Config: frame_system::Config + Sized {
+    pub trait Config: frame_system::Config + SudoConfig + Sized {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// Currency type for this pallet.
         type PalletId: Get<PalletId>;
@@ -98,6 +103,7 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         RewardFunds(T::AccountId, BalanceOf<T>, T::BlockNumber),
+        AddTotalRewardFunds(T::AccountId, BalanceOf<T>, T::BlockNumber),
     }
 
     #[pallet::error]
@@ -132,10 +138,27 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            match <Self as RewardInterface<T>>::reward_funds(&who, &Self::account_id(), &to_reward, reward) {
+            match <Self as RewardInterface<T>>::reward_funds(&who, &to_reward, reward) {
                 Ok(_) => {
                     let now = <frame_system::Pallet<T>>::block_number();
                     Self::deposit_event(Event::<T>::RewardFunds(to_reward, reward, now));
+                    Ok(().into())
+                }
+                Err(error) => Err(error)?,
+            }
+        }
+
+        #[pallet::weight(T::WeightInfo::add_total_reward_balance())]
+        pub fn add_total_reward_balance(
+            origin: OriginFor<T>,
+            reward: BalanceOf<T>,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as RewardInterface<T>>::add_total_reward_balance(&who, reward) {
+                Ok(_) => {
+                    let now = <frame_system::Pallet<T>>::block_number();
+                    Self::deposit_event(Event::<T>::AddTotalRewardFunds(Self::account_id(), reward, now));
                     Ok(().into())
                 }
                 Err(error) => Err(error)?,
@@ -152,8 +175,7 @@ impl<T: Config> Pallet<T> {
     
 	/// Set current total reward amount
 	pub fn set_total_reward_amount() {
-        let pallet_id = Self::account_id();
-		let balance = T::Currency::free_balance(&pallet_id);
+		let balance = T::Currency::free_balance(&Self::account_id());
 		TotalRewardAmount::<T>::put(balance);
 	}
 }
@@ -164,20 +186,39 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 
     fn reward_funds(
         rewarder_account_id: &T::AccountId,
-        pallet_id: &T::AccountId,
         to_reward: &T::AccountId,
         reward: Self::Balance,
     ) -> Result<(), Self::Error> {
+        let pallet_id = Self::account_id();
         if rewarder_account_id.clone() != RewarderKey::<T>::get() {
             return Err(Error::<T>::Unauthorized);
         }
 
-		let amount = T::Currency::free_balance(pallet_id);
+		let amount = T::Currency::free_balance(&pallet_id);
         if reward > amount {
             return Err(Error::<T>::InsufficientFunds);
         }
 
-        let _ = T::Currency::transfer(pallet_id, to_reward, reward, KeepAlive);
+        let _ = T::Currency::transfer(&pallet_id, to_reward, reward, KeepAlive);
+        Self::set_total_reward_amount();
+
+        Ok(().into())
+    }
+
+    fn add_total_reward_balance(
+        sudo_account_id: &T::AccountId,
+        reward: Self::Balance,
+    ) -> Result<(), Self::Error> {
+        if sudo_account_id.clone() != Sudo::<T>::key() {
+            return Err(Error::<T>::Unauthorized);
+        }
+
+		let amount = T::Currency::free_balance(sudo_account_id);
+        if reward > amount {
+            return Err(Error::<T>::InsufficientFunds);
+        }
+
+        let _ = T::Currency::transfer(sudo_account_id, &Self::account_id(), reward, KeepAlive);
         Self::set_total_reward_amount();
 
         Ok(().into())
