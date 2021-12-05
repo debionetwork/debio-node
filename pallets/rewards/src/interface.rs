@@ -7,9 +7,4 @@ pub trait RewardInterface<T: frame_system::Config> {
         to_reward: &T::AccountId,
         reward: Self::Balance,
     ) -> Result<(), Self::Error>;
-    
-    fn add_total_reward_balance(
-        sudo_account_id: &T::AccountId,
-        reward: Self::Balance,
-    ) -> Result<(), Self::Error>;
 }
