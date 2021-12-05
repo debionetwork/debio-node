@@ -38,13 +38,15 @@ pub struct SubstrateWeight<T>(PhantomData<T>);
 impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Rewards RewarderKey (r:1 w:0)
 	fn reward_funds() -> Weight {
-		(23_135_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+		(65_395_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(3 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
 	// Storage: Rewards RewarderKey (r:1 w:0)
 	fn add_total_reward_balance() -> Weight {
-		(23_135_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+		(64_022_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(2 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
 }
 
@@ -52,12 +54,14 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 impl WeightInfo for () {
 	// Storage: Rewards RewarderKey (r:1 w:0)
 	fn reward_funds() -> Weight {
-		(23_135_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
+		(65_395_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
 	}
 	// Storage: Rewards RewarderKey (r:1 w:0)
 	fn add_total_reward_balance() -> Weight {
-		(23_135_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
+		(64_022_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(2 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
 	}
 }
