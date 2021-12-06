@@ -2,7 +2,12 @@
   "name": "DeBio",
   "id": "debio",
   "chainType": "Live",
-  "bootNodes": [],
+  "bootNodes": [
+    "/ip4/35.238.0.171/tcp/30333/p2p/12D3KooWBQEEfaCGoJdE9PsNqYKwXN3wvFABBQ9vkcb1S767e9Mr",
+    "/ip4/34.69.137.62/tcp/30333/p2p/12D3KooWNg4FvDMd8gphwjraYvq9Dfa14nbvdxkzX6WuoV6KYTCG",
+    "/ip4/35.202.170.136/tcp/30333/p2p/12D3KooWS4nLFpL5LG9FoH7TdUikEs845fXzakTvG6MrAdPdeDRK",
+    "/ip4/34.123.156.49/tcp/30333/p2p/12D3KooWFkc842biBPv6LgdH29eQpwB1VRRDrj1jeJe8HjrJk8sK"
+  ],
   "telemetryEndpoints": null,
   "protocolId": "debio",
   "properties": {
