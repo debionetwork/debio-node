@@ -156,7 +156,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [compute-build-info, build-and-publish]
     env:
-      DEPLOY: ${{ secrets.DEV_DEPLOY }}
+      DEPLOY: ${{ secrets.MAINNET_DEPLOY }}
     if: "github.event.release.prerelease && !contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
     steps:
       - name: Checkout code
@@ -262,7 +262,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [compute-build-info, build-and-publish-docker-image]
     env:
-      DEPLOY: ${{ secrets.DEV_DEPLOY }}
+      DEPLOY: ${{ secrets.MAINNET_DEPLOY }}
     steps:
       - name: Checkout code
         if: "${{ env.DEPLOY == 'true' }}"
