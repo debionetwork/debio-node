@@ -133,7 +133,7 @@ jobs:
   deploy-release:
     if: "!github.event.release.prerelease"
     runs-on: ubuntu-20.04
-    needs: [compute-build-info, build-and-publish-docker-image]
+    needs: [compute-build-info]
     env:
       DEPLOY: ${{ secrets.MAINNET_DEPLOY }}
     steps:
