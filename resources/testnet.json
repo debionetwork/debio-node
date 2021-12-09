@@ -3,10 +3,10 @@
   "id": "debio_testnet",
   "chainType": "Live",
   "bootNodes": [
-    "/ip4/34.81.111.222/tcp/30333/p2p/12D3KooWAxYKgdmTczLioD1jkzMyaDuV2Q5VHBsJxPr5zEmHr8nY",
-    "/ip4/34.81.90.128/tcp/30333/p2p/12D3KooWSmLVShww4w9PVW17cCAS5C1JnXBU4NbY7FcGGjMyUGiq",
-    "/ip4/35.187.145.219/tcp/30333/p2p/12D3KooWT2umkS7F8GzUTLrfUzVBJPKn6YwCcuv6LBFQ27UPoo2Y",
-    "/ip4/35.194.246.225/tcp/30333/p2p/12D3KooWHNf9JxUZKHoF7rrsmorv86gonXSb2ZU44CbMsnBNFSAJ"
+    "/ip4/34.80.173.163/tcp/30333/p2p/12D3KooWAxYKgdmTczLioD1jkzMyaDuV2Q5VHBsJxPr5zEmHr8nY",
+    "/ip4/35.236.170.192/tcp/30333/p2p/12D3KooWSmLVShww4w9PVW17cCAS5C1JnXBU4NbY7FcGGjMyUGiq",
+    "/ip4/34.80.223.209/tcp/30333/p2p/12D3KooWT2umkS7F8GzUTLrfUzVBJPKn6YwCcuv6LBFQ27UPoo2Y",
+    "/ip4/34.80.219.126/tcp/30333/p2p/12D3KooWHNf9JxUZKHoF7rrsmorv86gonXSb2ZU44CbMsnBNFSAJ"
   ],
   "telemetryEndpoints": null,
   "protocolId": "debio-testnet",
