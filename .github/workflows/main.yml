@@ -14,6 +14,7 @@ jobs:
     outputs:
       sha_short: ${{ steps.build-info.outputs.sha_short }}
       date: ${{ steps.build-info.outputs.date }}
+      latest_tag: ${{ steps.build-info-tag.outputs.latest_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,6 +26,10 @@ jobs:
         run: |
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
           echo "::set-output name=date::$(date +'%Y%m%d')"
+
+          version=${GITHUB_REF#refs/*/}
+          echo $version
+          echo "::set-output name=latest_tag::$version"
 
   build-and-publish:
     runs-on: ubuntu-20.04
@@ -114,6 +119,7 @@ jobs:
       - name: Copy binnary file
         run: cp target/release/debio .
       - name: Build and push
+        if: ${{ github.event.ref_type == 'branch' }} && ${{ github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -122,6 +128,54 @@ jobs:
           tags: |
             ${{ github.repository }}:${{ needs.compute-build-info.outputs.sha_short }}-${{ needs.compute-build-info.outputs.date }}
             ${{ github.repository }}:latest-pre-alpha
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build and push alpha
+        if: "contains(needs.compute-build-info.outputs.latest_tag, 'alpha')"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: .maintain/docker/injected-binnary.Dockerfile
+          tags: |
+            ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
+            ${{ github.repository }}:latest-alpha
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build and push beta
+        if: "contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: .maintain/docker/injected-binnary.Dockerfile
+          tags: |
+            ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
+            ${{ github.repository }}:latest-beta
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build and push pre-release
+        if: "contains(needs.compute-build-info.outputs.latest_tag, 'rc')"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: .maintain/docker/injected-binnary.Dockerfile
+          tags: |
+            ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
+            ${{ github.repository }}:latest-rc
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build and push release
+        if: "github.event.ref_type == 'tag' && !contains(needs.compute-build-info.outputs.latest_tag, 'alpha') && !contains(needs.compute-build-info.outputs.latest_tag, 'beta') && !contains(needs.compute-build-info.outputs.latest_tag, 'rc')"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: .maintain/docker/injected-binnary.Dockerfile
+          tags: |
+            ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
+            ${{ github.repository }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       # Temp fix
