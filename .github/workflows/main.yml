@@ -190,7 +190,7 @@ jobs:
         with:
           configuration: '.github/workflows/rcb_config.json'
       - name: Create draft release
-        if: 
+        if: "contains(needs.compute-build-info.outputs.latest_tag, 'alpha') || contains(needs.compute-build-info.outputs.latest_tag, 'beta') || contains(needs.compute-build-info.outputs.latest_tag, 'rc')"        if: "contains(needs.compute-build-info.outputs.latest_tag, 'alpha') || contains(needs.compute-build-info.outputs.latest_tag, 'beta') || contains(needs.compute-build-info.outputs.latest_tag, 'rc')"
         uses: softprops/action-gh-release@v1
         with:
           body: ${{ steps.build_changelog.outputs.changelog }}

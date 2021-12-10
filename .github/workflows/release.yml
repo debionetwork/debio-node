@@ -259,7 +259,7 @@ jobs:
             kubectl rollout status statefulset/debio-node-full1
 
   deploy-release:
-    if: "!github.event.release.prerelease"
+    if: "github.event.ref_type == 'tag' && !github.event.release.prerelease"
     runs-on: ubuntu-20.04
     needs: [compute-build-info]
     env:
