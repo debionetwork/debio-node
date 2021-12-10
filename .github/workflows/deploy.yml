@@ -1,4 +1,4 @@
-name: Deplou automation
+name: Deploy automation
 
 on:
   release:
