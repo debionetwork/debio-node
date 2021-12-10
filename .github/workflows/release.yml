@@ -231,12 +231,7 @@ jobs:
               --set config.nodes[2].validator=true \
               --set-string config.nodes[2].keys.private=${{ steps.secrets.outputs.NODE_KEY_PRIVATE_VALIDATOR_1 }} \
               --set-string config.nodes[2].keys.public=${{ steps.secrets.outputs.NODE_KEY_PUBLIC_VALIDATOR_1 }} \
-              --set config.nodes[2].sessionInjectionEnabled=true \
-              --set-string config.nodes[2].sessionKeys.keySeed="${{ steps.secrets.outputs.SESSION_KEY_SEED_VALIDATOR_1 }}" \
-              --set-string config.nodes[2].sessionKeys.grandpa=${{ steps.secrets.outputs.SESSION_KEY_GRANDPA_VALIDATOR_1 }} \
-              --set-string config.nodes[2].sessionKeys.babe=${{ steps.secrets.outputs.SESSION_KEY_BABE_VALIDATOR_1 }} \
-              --set-string config.nodes[2].sessionKeys.imonline=${{ steps.secrets.outputs.SESSION_KEY_IMONLINE_VALIDATOR_1 }} \
-              --set-string config.nodes[2].sessionKeys.beefy=${{ steps.secrets.outputs.SESSION_KEY_BEEFY_VALIDATOR_1 }} \
+              --set config.nodes[2].sessionInjectionEnabled=false \
               --set services.httpRPC.enabled=true \
               --set services.websocketRPC.enabled=true \
               --set ingress.httpRPC.enabled=true \
@@ -336,12 +331,7 @@ jobs:
               --set config.nodes[2].validator=true \
               --set-string config.nodes[2].keys.private=${{ steps.secrets.outputs.NODE_KEY_PRIVATE_VALIDATOR_1 }} \
               --set-string config.nodes[2].keys.public=${{ steps.secrets.outputs.NODE_KEY_PUBLIC_VALIDATOR_1 }} \
-              --set config.nodes[2].sessionInjectionEnabled=true \
-              --set-string config.nodes[2].sessionKeys.keySeed="${{ steps.secrets.outputs.SESSION_KEY_SEED_VALIDATOR_1 }}" \
-              --set-string config.nodes[2].sessionKeys.grandpa=${{ steps.secrets.outputs.SESSION_KEY_GRANDPA_VALIDATOR_1 }} \
-              --set-string config.nodes[2].sessionKeys.babe=${{ steps.secrets.outputs.SESSION_KEY_BABE_VALIDATOR_1 }} \
-              --set-string config.nodes[2].sessionKeys.imonline=${{ steps.secrets.outputs.SESSION_KEY_IMONLINE_VALIDATOR_1 }} \
-              --set-string config.nodes[2].sessionKeys.beefy=${{ steps.secrets.outputs.SESSION_KEY_BEEFY_VALIDATOR_1 }} \
+              --set config.nodes[2].sessionInjectionEnabled=false \
               --set services.httpRPC.enabled=true \
               --set services.websocketRPC.enabled=true \
               --set ingress.httpRPC.enabled=true \
