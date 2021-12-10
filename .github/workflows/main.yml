@@ -183,6 +183,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
       # publish-draft-release
       - name: Build changelog
+        if: "startsWith(github.ref, 'refs/tags/')"
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v2
         env:
