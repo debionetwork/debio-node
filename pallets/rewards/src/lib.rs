@@ -14,6 +14,9 @@ pub use scale_info::TypeInfo;
 #[cfg(test)]
 mod mock;
 
+#[cfg(test)]
+mod tests;
+
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 

@@ -1,18 +1,19 @@
 use crate as rewards;
 use frame_support::parameter_types;
+use pallet_balances::AccountData;
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{AccountIdLookup, BlakeTwo256, IdentifyAccount, Verify},
-    MultiSignature
+	traits::{BlakeTwo256, IdentityLookup},
+	BuildStorage
 };
+use frame_support::PalletId;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-pub type Signature = MultiSignature;
-pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+pub type AccountId = u64;
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -22,7 +23,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Rewards: rewards::{Pallet, Call, Storage, Event<T>},
+		Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
 );
 
@@ -63,6 +64,7 @@ type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 }
 
 impl pallet_balances::Config for Test {
@@ -79,26 +81,28 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-impl rewards::Config for Runtime {
+impl rewards::Config for Test {
     type Event = Event;
     type Currency = Balances;
-    type Reward = ();
-    type Slash = ();
+	type PalletId = RewardPalletId;
+	type WeightInfo = ();
 }
 
 pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let mut storage = system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
-		storage.extend(
-			GenesisConfig::<Runtime> {
-				rewards: RewardsConfig {
-					rewarder_key: hex_literal::hex!["d86cd72037edd033b21e5a54fb8ecb687effe90e0af2d12c1c23acba2021ac56"].into(),
-				},
-			}.build_storage()
-				.unwrap()
-		);
-		storage.into()
+		GenesisConfig {
+			system: frame_system::GenesisConfig{
+				code: vec![],
+				changes_trie_config: Default::default(),
+			},
+			balances: pallet_balances::GenesisConfig::<Test>{
+				balances: vec![]
+			},
+			rewards: rewards::GenesisConfig::<Test>{
+				rewarder_key: 1
+			}
+		}.build_storage().unwrap().into()
 	}
 }
