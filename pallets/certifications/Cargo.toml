@@ -32,9 +32,6 @@ serde = { default-features = false, version = "1.0.119" }
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
-[workspace]
-members = ['tests']
-
 [features]
 default = ['std']
 std = [

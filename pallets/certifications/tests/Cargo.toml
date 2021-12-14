@@ -31,8 +31,11 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
+# Local Dependencies
 labs = { path = '../../labs', default-features = false }
+services = { path = '../../services', default-features = false }
 certifications = { path = '../../certifications', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-certifications = { path = '../../../traits/certifications', default-features = false }
@@ -56,7 +59,9 @@ std = [
 	'pallet-balances/std',
 
     'labs/std',
+    'services/std',
     'certifications/std',
+    'user-profile/std',
 
     'primitives-area-code/std',
     'traits-certifications/std',

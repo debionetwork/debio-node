@@ -817,8 +817,6 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "hex-literal",
- "pallet-balances",
  "parity-scale-codec",
  "scale-info",
  "serde",
@@ -847,6 +845,28 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-certifications",
+]
+
+[[package]]
+name = "certifications-tests"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "labs",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-certifications",
+ "user-profile",
 ]
 
 [[package]]
