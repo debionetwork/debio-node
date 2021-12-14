@@ -152,7 +152,7 @@ pub mod pallet {
                     ));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -175,7 +175,7 @@ pub mod pallet {
                     ));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -196,7 +196,7 @@ pub mod pallet {
                     ));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
     }
@@ -236,7 +236,7 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
         let can_create_certification =
             T::DoctorCertificationOwner::can_create_certification(owner_id);
         if !can_create_certification {
-            return Err(Error::<T>::NotAllowedToCreate)?;
+            return Err(Error::<T>::NotAllowedToCreate);
         }
 
         let owner_certification_count =
@@ -244,7 +244,7 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
         let certification_id = Self::generate_certification_id(owner_id, owner_certification_count);
 
         let certification = DoctorCertification::new(
-            certification_id.clone(),
+            certification_id,
             owner_id.clone(),
             certification_info.clone(),
         );
@@ -270,12 +270,12 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
     ) -> Result<Self::DoctorCertification, Self::Error> {
         let certification = DoctorCertifications::<T>::get(certification_id);
         if certification == None {
-            return Err(Error::<T>::DoctorCertificationDoesNotExist)?;
+            return Err(Error::<T>::DoctorCertificationDoesNotExist);
         }
         let mut certification = certification.unwrap();
 
         if certification.owner_id != owner_id.clone() {
-            return Err(Error::<T>::NotDoctorCertificationOwner)?;
+            return Err(Error::<T>::NotDoctorCertificationOwner);
         }
 
         certification.info = certification_info.clone();
@@ -295,12 +295,12 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
     ) -> Result<Self::DoctorCertification, Self::Error> {
         let certification = DoctorCertifications::<T>::get(certification_id);
         if certification == None {
-            return Err(Error::<T>::DoctorCertificationDoesNotExist)?;
+            return Err(Error::<T>::DoctorCertificationDoesNotExist);
         }
         let certification = certification.unwrap();
 
         if certification.owner_id != owner_id.clone() {
-            return Err(Error::<T>::NotDoctorCertificationOwner)?;
+            return Err(Error::<T>::NotDoctorCertificationOwner);
         }
         // Remove certification from storage
         let certification = DoctorCertifications::<T>::take(certification_id).unwrap();
@@ -318,10 +318,7 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
     fn certification_by_id(
         certification_id: &Self::DoctorCertificationId,
     ) -> Option<Self::DoctorCertification> {
-        match DoctorCertifications::<T>::get(certification_id) {
-            None => None,
-            Some(certification) => Some(certification),
-        }
+        DoctorCertifications::<T>::get(certification_id)
     }
 
     fn certification_count_by_owner(owner_id: &T::AccountId) -> u64 {
