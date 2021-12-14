@@ -1,4 +1,3 @@
-#![cfg_attr(not(feature = "std"), no_std)]
 mod mock;
 
 use crate::mock::{Test, ExternalityBuilder, Origin, Labs, Certifications};
