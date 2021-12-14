@@ -28,6 +28,6 @@ pub trait CertificationOwner<T: Config> {
 
     fn can_create_certification(id: &T::AccountId) -> bool;
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner>;
-    fn associate(owner_id: &T::AccountId, certification_id: &T::Hash) -> ();
-    fn disassociate(owner_id: &T::AccountId, certification_id: &T::Hash) -> ();
+    fn associate(owner_id: &T::AccountId, certification_id: &T::Hash);
+    fn disassociate(owner_id: &T::AccountId, certification_id: &T::Hash);
 }
