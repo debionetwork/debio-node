@@ -3,7 +3,6 @@ use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
-use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
@@ -112,8 +111,13 @@ impl user_profile::Config for Test {
 	type WeightInfo = ();
 }
 
+#[cfg(test)]
+use sp_io::TestExternalities;
+
+#[cfg(test)]
 pub struct ExternalityBuilder;
 
+#[cfg(test)]
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
 		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
