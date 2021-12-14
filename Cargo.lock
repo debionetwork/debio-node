@@ -1535,6 +1535,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "doctor-certifications-tests"
+version = "0.1.0"
+dependencies = [
+ "doctor-certifications",
+ "doctors",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-doctor-certifications",
+ "user-profile",
+]
+
+[[package]]
 name = "doctors"
 version = "0.1.0"
 dependencies = [
