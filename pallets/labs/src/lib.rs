@@ -558,8 +558,7 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
 
 	/// User can create service if he/she is a lab and has set ethereum address
 	fn can_create_service(user_id: &T::AccountId) -> bool {
-		let eth_address = T::UserProfile::get_eth_address_by_account_id(user_id);
-		Labs::<T>::contains_key(user_id) && eth_address.is_some()
+		Labs::<T>::contains_key(user_id)
 	}
 
 	fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {
