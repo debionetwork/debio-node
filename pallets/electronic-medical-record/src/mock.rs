@@ -1,19 +1,16 @@
 use crate as electronic_medical_record;
 use frame_support::parameter_types;
-use frame_system as system;
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{AccountIdLookup, BlakeTwo256, IdentifyAccount, Verify},
-    MultiSignature
+	traits::{AccountIdLookup, BlakeTwo256}
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-pub type Signature = MultiSignature;
-pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+pub type AccountId = u64;
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -23,6 +20,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 	}
 );
 
@@ -31,8 +29,8 @@ parameter_types! {
 	pub const SS58Prefix: u8 = 42;
 }
 
-impl system::Config for Test {
-	type BaseCallFilter = ();
+impl frame_system::Config for Test {
+	type BaseCallFilter = frame_support::traits::Everything;
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
@@ -57,15 +55,33 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
-impl electronic_medical_record::Config for Runtime {
+impl electronic_medical_record::Config for Test {
     type Event = Event;
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
+	type ElectronicMedicalRecordWeightInfo = ();
+}
+
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
+}
 
 pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
 		TestExternalities::from(storage)
 	}
 }
