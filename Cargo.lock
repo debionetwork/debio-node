@@ -2490,6 +2490,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "hospital-certifications-tests"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hospital-certifications",
+ "hospitals",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-hospital-certifications",
+ "user-profile",
+]
+
+[[package]]
 name = "hospitals"
 version = "0.1.0"
 dependencies = [
