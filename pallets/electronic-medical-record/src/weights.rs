@@ -43,18 +43,18 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordCount (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:0 w:1)
 	fn add_electronic_medical_record() -> Weight {
-		(46_281_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(46_281_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordByOwner (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordCount (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordCountByOwner (r:1 w:1)
 	fn remove_electronic_medical_record() -> Weight {
-		(52_921_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(52_921_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileCountByElectronicMedicalRecordId (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
@@ -62,18 +62,18 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileById (r:0 w:1)
 	fn add_electronic_medical_record_file() -> Weight {
-		(53_778_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(53_778_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileCount (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileCountByElectronicMedicalRecordId (r:1 w:1)
 	fn remove_electronic_medical_record_file() -> Weight {
-		(58_978_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(58_978_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
@@ -84,18 +84,18 @@ impl WeightInfo for () {
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordCount (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:0 w:1)
 	fn add_electronic_medical_record() -> Weight {
-		(46_281_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(46_281_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordByOwner (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordCount (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordCountByOwner (r:1 w:1)
 	fn remove_electronic_medical_record() -> Weight {
-		(52_921_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(52_921_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileCountByElectronicMedicalRecordId (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
@@ -103,17 +103,17 @@ impl WeightInfo for () {
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileById (r:0 w:1)
 	fn add_electronic_medical_record_file() -> Weight {
-		(53_778_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(53_778_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordById (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileCount (r:1 w:1)
 	// Storage: ElectronicMedicalRecord ElectronicMedicalRecordFileCountByElectronicMedicalRecordId (r:1 w:1)
 	fn remove_electronic_medical_record_file() -> Weight {
-		(58_978_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(58_978_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 }

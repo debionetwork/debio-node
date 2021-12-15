@@ -21,11 +21,12 @@ pub trait ElectronicMedicalRecordInterface<T: frame_system::Config> {
 
     fn add_electronic_medical_record(
         owner_id: &T::AccountId,
-        title: &Vec<u8>,
-        category: &Vec<u8>,
+        title: &[u8],
+        category: &[u8],
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error>;
 
     fn remove_electronic_medical_record(
+        owner_id: &T::AccountId,
         electronic_medical_record_id: &T::Hash,
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error>;
 
@@ -46,6 +47,7 @@ pub trait ElectronicMedicalRecordInterface<T: frame_system::Config> {
     ) -> Option<Self::ElectronicMedicalRecord>;
 
     fn add_electronic_medical_record_file(
+        owner_id: &T::AccountId,
         electronic_medical_record_id: &T::Hash,
         title: &mut Vec<u8>,
         description: &mut Vec<u8>,
