@@ -44,7 +44,7 @@ benchmarks! {
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
             profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_hospitals = Hospitals::<T>::register_hospital(caller_origin.clone(), hospital);
+		let _add_hospitals = Hospitals::<T>::register_hospital(caller_origin, hospital);
 
 		let certification = HospitalCertificationInfo {
 			title: "DeBio certificate".as_bytes().to_vec(),
@@ -81,7 +81,7 @@ benchmarks! {
 			description: "This is my description".as_bytes().to_vec(),
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
-		let _create_certification = HospitalCertifications::<T>::create_certification(caller_origin.clone(), old_certification);
+		let _create_certification = HospitalCertifications::<T>::create_certification(caller_origin, old_certification);
         let _hospital = Hospitals::<T>::hospital_by_account_id(caller.clone())
             .unwrap();
 
@@ -120,7 +120,7 @@ benchmarks! {
 			description: "This is my description".as_bytes().to_vec(),
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
-		let _create_certification = HospitalCertifications::<T>::create_certification(caller_origin.clone(), old_certification);
+		let _create_certification = HospitalCertifications::<T>::create_certification(caller_origin, old_certification);
         let _hospital = Hospitals::<T>::hospital_by_account_id(caller.clone())
             .unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _hospital.certifications[0])
