@@ -247,7 +247,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
         // Check if user can create_service
         let can_create_service = T::ServiceOwner::can_create_service(owner_id);
         if !can_create_service {
-            return Err(Error::<T>::NotAllowedToCreate)?;
+            return Err(Error::<T>::NotAllowedToCreate);
         }
 
         let owner_service_count = <Self as ServiceInterface<T>>::services_count_by_owner(owner_id);
