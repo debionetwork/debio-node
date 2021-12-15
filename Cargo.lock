@@ -6860,6 +6860,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "services-tests"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "labs",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-services",
+ "user-profile",
+]
+
+[[package]]
 name = "sha-1"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
