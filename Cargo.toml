@@ -5,6 +5,7 @@ panic = 'unwind'
 members = [
     'node',
     'pallets/*',
+    'pallets/*/tests',
     'runtime',
 ]
 
