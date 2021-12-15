@@ -276,7 +276,9 @@ pub mod pallet {
             electronic_medical_record_id: HashOf<T>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+            
             match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(
+                &who,
                 &electronic_medical_record_id,
             ) {
                 Ok(electronic_medical_record) => {
@@ -301,6 +303,7 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
 
             match <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record_file(
+                &who,
                 &electronic_medical_record_id,
                 &mut title,
                 &mut description,
@@ -323,6 +326,7 @@ pub mod pallet {
             electronic_medical_record_file_id: HashOf<T>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+
             match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record_file(&who, &electronic_medical_record_file_id) {
                 Ok(electronic_medical_record_file) => {
                     Self::deposit_event(Event::ElectronicMedicalRecordFileRemoved(electronic_medical_record_file, who.clone()));
@@ -404,11 +408,16 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     }
 
     fn remove_electronic_medical_record(
+        owner_id: &T::AccountId,
         electronic_medical_record_id: &T::Hash,
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
         let electronic_medical_record = ElectronicMedicalRecordById::<T>::get(electronic_medical_record_id);
         if electronic_medical_record == None {
-            return Err(Error::<T>::ElectronicMedicalRecordDoesNotExist)?;
+            return Err(Error::<T>::ElectronicMedicalRecordDoesNotExist);
+        }
+
+        if electronic_medical_record.unwrap().owner_id != owner_id.clone() {
+            return Err(Error::<T>::NotElectronicMedicalRecordOwner);
         }
 
         // Remove electronic_medical_record from storage
@@ -435,11 +444,19 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     }
 
     fn add_electronic_medical_record_file(
+        owner_id: &T::AccountId,
         electronic_medical_record_id: &T::Hash,
         title: &mut Vec<u8>,
         description: &mut Vec<u8>,
         record_link: &mut Vec<u8>,
     ) -> Result<Self::ElectronicMedicalRecordFile, Self::Error> {
+        let electronic_medical_record =
+            ElectronicMedicalRecordById::<T>::get(electronic_medical_record_id).unwrap();
+
+        if electronic_medical_record.owner_id != owner_id.clone() {
+            return Err(Error::<T>::NotElectronicMedicalRecordOwner);
+        }
+
         let owner_electronic_medical_record_file_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_file_count_by_electronic_medical_record_id(electronic_medical_record_id);
         let electronic_medical_record_file_id = Self::generate_electronic_medical_record_file_id(
             electronic_medical_record_id,
