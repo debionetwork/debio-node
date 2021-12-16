@@ -11,7 +11,14 @@ benchmarks! {
 	}: add_electronic_medical_record(
         RawOrigin::Signed(caller),
         "DeBio EMR".as_bytes().to_vec(),
-        "DeBio EMR Category".as_bytes().to_vec()
+        "DeBio EMR Category".as_bytes().to_vec(),
+        vec![
+            ElectronicMedicalRecordFileSubmission {
+                title: "DeBio EMR Document Title".as_bytes().to_vec(),
+                description: "DeBio EMR Document Description".as_bytes().to_vec(),
+                record_link: "DeBio EMR Link".as_bytes().to_vec()
+            }
+        ]
     )
 
 	remove_electronic_medical_record {
@@ -21,7 +28,14 @@ benchmarks! {
 		let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(
             caller_origin.clone(),
             "DeBio EMR".as_bytes().to_vec(),
-            "DeBio EMR Category".as_bytes().to_vec()
+            "DeBio EMR Category".as_bytes().to_vec(),
+            vec![
+                ElectronicMedicalRecordFileSubmission {
+                    title: "DeBio EMR Document Title".as_bytes().to_vec(),
+                    description: "DeBio EMR Document Description".as_bytes().to_vec(),
+                    record_link: "DeBio EMR Link".as_bytes().to_vec()
+                }
+            ]
         );
 
         let _emr_ids = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(
@@ -30,54 +44,6 @@ benchmarks! {
 	}: remove_electronic_medical_record(
         RawOrigin::Signed(caller),
         _emr_ids[0]
-    )
-    
-	add_electronic_medical_record_file {
-		let caller: T::AccountId = whitelisted_caller();
-
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(
-            caller_origin.clone(),
-            "DeBio EMR".as_bytes().to_vec(),
-            "DeBio EMR Category".as_bytes().to_vec()
-        );
-
-        let _emr_ids = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(caller.clone())
-            .unwrap();
-	}: add_electronic_medical_record_file(
-        RawOrigin::Signed(caller),
-        _emr_ids[0],
-        "DeBio EMR Document Title".as_bytes().to_vec(),
-        "DeBio EMR Description".as_bytes().to_vec(),
-        "DeBio EMR Link".as_bytes().to_vec()
-    )
-    
-	remove_electronic_medical_record_file {
-		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-
-		let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(
-            caller_origin.clone(),
-            "DeBio EMR".as_bytes().to_vec(),
-            "DeBio EMR Category".as_bytes().to_vec(),
-        );
-
-        let _emr_ids = ElectronicMedicalRecord::<T>::electronic_medical_record_by_owner_id(caller.clone())
-            .unwrap();
-
-		let _add_electronic_medical_record_file = ElectronicMedicalRecord::<T>::add_electronic_medical_record_file(
-            caller_origin.clone(),
-            _emr_ids[0],
-            "DeBio EMR Document Title".as_bytes().to_vec(),
-            "DeBio EMR Description".as_bytes().to_vec(),
-            "DeBio EMR Link".as_bytes().to_vec(),
-        );
-
-        let _emr = ElectronicMedicalRecord::<T>::electronic_medical_record_by_id(_emr_ids[0])
-            .unwrap();
-	}: remove_electronic_medical_record_file(
-        RawOrigin::Signed(caller), 
-        _emr.files[0]
     )
 }
 
