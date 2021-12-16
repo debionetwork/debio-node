@@ -1,10 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-// #[cfg(test)]
-// mod mock;
-// #[cfg(test)]
-// mod tests;
-
 pub use pallet::*;
 pub use scale_info::TypeInfo;
 
@@ -22,6 +17,109 @@ pub use sp_std::fmt::Debug;
 pub use sp_std::prelude::*;
 pub use traits_genetic_testing::{DnaSampleTrackingId, DnaSampleTracking, GeneticTestingProvider};
 pub use traits_order::{OrderEventEmitter, OrderStatusUpdater};
+
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub enum DnaSampleStatus {
+    Registered,
+    Arrived,
+    Rejected,
+    QualityControlled,
+    WetWork,
+    ResultReady,
+    SubmittedAsDataBounty
+}
+impl Default for DnaSampleStatus {
+    fn default() -> Self {
+        Self::Registered
+    }
+}
+
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub struct DnaSample<AccountId, Hash, Moment> {
+    tracking_id: DnaSampleTrackingId,
+    lab_id: AccountId,
+    owner_id: AccountId,
+    status: DnaSampleStatus,
+    order_id: Hash,
+    rejected_title: Option<Vec<u8>>,
+    rejected_description: Option<Vec<u8>>,
+    created_at: Moment,
+    updated_at: Moment,
+}
+impl<AccountId, Hash, Moment: Copy> DnaSample<AccountId, Hash, Moment> {
+    pub fn new(
+        tracking_id: DnaSampleTrackingId,
+        lab_id: AccountId,
+        owner_id: AccountId,
+        order_id: Hash,
+        created_at: Moment,
+    ) -> Self {
+        Self {
+            tracking_id,
+            lab_id,
+            owner_id,
+            status: DnaSampleStatus::default(),
+            order_id,
+            created_at: created_at,
+            updated_at: created_at,
+            rejected_title: None,
+            rejected_description: None,
+        }
+    }
+}
+impl<AccountId, Hash, Moment> DnaSampleTracking for DnaSample<AccountId, Hash, Moment> {
+    fn get_tracking_id(&self) -> &DnaSampleTrackingId {
+        &self.tracking_id
+    }
+    fn process_success(&self) -> bool {
+        self.status == DnaSampleStatus::ResultReady
+    }
+    fn is_rejected(&self) -> bool {
+        self.status == DnaSampleStatus::Rejected
+    }
+}
+
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub struct DnaTestResult<AccountId, Hash, Moment> {
+    pub tracking_id: DnaSampleTrackingId,
+    pub lab_id: Option<AccountId>, // if lab_id == None, Test result is submitted independently
+    pub owner_id: AccountId,
+    pub comments: Option<Vec<u8>>,
+    pub result_link: Option<Vec<u8>>,
+    pub report_link: Option<Vec<u8>>,
+    order_id: Option<Hash>,
+    created_at: Moment,
+    updated_at: Moment,
+}
+impl<AccountId, Hash, Moment: Copy> DnaTestResult<AccountId, Hash, Moment> {
+    pub fn new(
+        tracking_id: DnaSampleTrackingId,
+        lab_id: Option<AccountId>,
+        owner_id: AccountId,
+        submission: DnaTestResultSubmission,
+        order_id: Option<Hash>,
+        created_at: Moment,
+    ) -> Self {
+        Self {
+            tracking_id,
+            lab_id,
+            owner_id,
+            comments: submission.comments,
+            result_link: submission.result_link,
+            report_link: submission.report_link,
+            order_id,
+            created_at,
+            updated_at: created_at,
+        }
+    }
+}
+
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub struct DnaTestResultSubmission {
+    pub comments: Option<Vec<u8>>,
+    pub result_link: Option<Vec<u8>>,
+    pub report_link: Option<Vec<u8>>,
+}
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -241,109 +339,6 @@ pub mod pallet {
     }
 }
 
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub enum DnaSampleStatus {
-    Registered,
-    Arrived,
-    Rejected,
-    QualityControlled,
-    WetWork,
-    ResultReady,
-    SubmittedAsDataBounty
-}
-impl Default for DnaSampleStatus {
-    fn default() -> Self {
-        Self::Registered
-    }
-}
-
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct DnaSample<AccountId, Hash, Moment> {
-    tracking_id: DnaSampleTrackingId,
-    lab_id: AccountId,
-    owner_id: AccountId,
-    status: DnaSampleStatus,
-    order_id: Hash,
-    rejected_title: Option<Vec<u8>>,
-    rejected_description: Option<Vec<u8>>,
-    created_at: Moment,
-    updated_at: Moment,
-}
-impl<AccountId, Hash, Moment: Copy> DnaSample<AccountId, Hash, Moment> {
-    pub fn new(
-        tracking_id: DnaSampleTrackingId,
-        lab_id: AccountId,
-        owner_id: AccountId,
-        order_id: Hash,
-        created_at: Moment,
-    ) -> Self {
-        Self {
-            tracking_id,
-            lab_id,
-            owner_id,
-            status: DnaSampleStatus::default(),
-            order_id,
-            created_at: created_at,
-            updated_at: created_at,
-            rejected_title: None,
-            rejected_description: None,
-        }
-    }
-}
-impl<AccountId, Hash, Moment> DnaSampleTracking for DnaSample<AccountId, Hash, Moment> {
-    fn get_tracking_id(&self) -> &DnaSampleTrackingId {
-        &self.tracking_id
-    }
-    fn process_success(&self) -> bool {
-        self.status == DnaSampleStatus::ResultReady
-    }
-    fn is_rejected(&self) -> bool {
-        self.status == DnaSampleStatus::Rejected
-    }
-}
-
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct DnaTestResult<AccountId, Hash, Moment> {
-    tracking_id: DnaSampleTrackingId,
-    lab_id: Option<AccountId>, // if lab_id == None, Test result is submitted independently
-    owner_id: AccountId,
-    comments: Option<Vec<u8>>,
-    result_link: Option<Vec<u8>>,
-    report_link: Option<Vec<u8>>,
-    order_id: Option<Hash>,
-    created_at: Moment,
-    updated_at: Moment,
-}
-impl<AccountId, Hash, Moment: Copy> DnaTestResult<AccountId, Hash, Moment> {
-    pub fn new(
-        tracking_id: DnaSampleTrackingId,
-        lab_id: Option<AccountId>,
-        owner_id: AccountId,
-        submission: DnaTestResultSubmission,
-        order_id: Option<Hash>,
-        created_at: Moment,
-    ) -> Self {
-        Self {
-            tracking_id,
-            lab_id,
-            owner_id,
-            comments: submission.comments,
-            result_link: submission.result_link,
-            report_link: submission.report_link,
-            order_id,
-            created_at,
-            updated_at: created_at,
-        }
-    }
-}
-
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct DnaTestResultSubmission {
-    pub comments: Option<Vec<u8>>,
-    pub result_link: Option<Vec<u8>>,
-    pub report_link: Option<Vec<u8>>,
-}
-
 impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     type DnaSample = DnaSampleOf<T>;
     type DnaSampleStatus = DnaSampleStatus;
@@ -530,6 +525,22 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
     }
 
+    // Submit data bounty details
+    fn submit_data_bounty_details(
+        data_staker: &T::AccountId,
+        data_hash: &T::Hash,
+        order_id: &T::Hash,
+    ) -> Result<Self::StakedData, Self::Error> {
+        let data_staker = data_staker.clone();
+
+        let data_hash = data_hash.clone();
+
+        StakedDataByAccountId::<T>::insert(data_staker, data_hash);
+        StakedDataByOrderId::<T>::insert(order_id, data_hash);
+
+        Ok(data_hash)
+    }
+
     fn dna_sample_by_tracking_id(tracking_id: &DnaSampleTrackingId) -> Option<Self::DnaSample> {
         Self::dna_sample_by_tracking_id(tracking_id)
     }
@@ -556,22 +567,6 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     // Return dna sample tracking ids
     fn dna_test_results_by_lab_id(lab_id: &T::AccountId) -> Option<Vec<DnaSampleTrackingId>> {
         Self::dna_test_results_by_lab_id(lab_id)
-    }
-
-    // Submit data bounty details
-    fn submit_data_bounty_details(
-        data_staker: &T::AccountId,
-        data_hash: &T::Hash,
-        order_id: &T::Hash,
-    ) -> Result<Self::StakedData, Self::Error> {
-        let data_staker = data_staker.clone();
-
-        let data_hash = data_hash.clone();
-
-        StakedDataByAccountId::<T>::insert(data_staker, data_hash);
-        StakedDataByOrderId::<T>::insert(order_id, data_hash);
-
-        Ok(data_hash)
     }
 }
 

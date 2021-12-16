@@ -58,7 +58,7 @@ benchmarks! {
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
 
         let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
-		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
+		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin, eth_address);
 
 		let service_info = ServiceInfo {
 			name: "DeBio name".as_bytes().to_vec(),
@@ -110,7 +110,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), old_service_info, ServiceFlow::default());
+		let _create_service = Services::<T>::create_service(caller_origin, old_service_info, ServiceFlow::default());
 
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -165,7 +165,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), old_service_info, ServiceFlow::default());
+		let _create_service = Services::<T>::create_service(caller_origin, old_service_info, ServiceFlow::default());
 
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();

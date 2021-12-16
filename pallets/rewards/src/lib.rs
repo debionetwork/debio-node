@@ -14,6 +14,9 @@ pub use scale_info::TypeInfo;
 #[cfg(test)]
 mod mock;
 
+#[cfg(test)]
+mod tests;
+
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
@@ -131,7 +134,7 @@ pub mod pallet {
                     Self::deposit_event(Event::<T>::RewardFunds(to_reward, reward, now));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
     }
@@ -171,12 +174,12 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 			ExistenceRequirement::KeepAlive,
 		) {
 			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&to_reward, imb);
+				CurrencyOf::<T>::resolve_creating(to_reward, imb);
 				Self::set_total_reward_amount();
 			},
 			_ => return Err(Error::<T>::BadSignature),
 		}
 
-        Ok(().into())
+        Ok(())
     }
 }

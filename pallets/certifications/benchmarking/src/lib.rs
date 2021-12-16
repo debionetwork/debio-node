@@ -1,16 +1,14 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 mod mock;
 
-#[allow(unused)]
-use certifications::Pallet as Certifications;
 use certifications::{
+	Pallet as Certifications,
 	Config as CertificationsConfig,
 	CertificationInfo
 };
 
-#[allow(unused)]
-use labs::Pallet as Labs;
 use labs::{
+	Pallet as Labs,
 	Config as LabsConfig,
 	LabInfo
 };

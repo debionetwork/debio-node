@@ -80,7 +80,7 @@ where
         self.get_owner_id()
     }
     fn get_service_flow(&self) -> &ServiceFlow {
-        &self.get_service_flow()
+        self.get_service_flow()
     }
     fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>> {
         self.get_prices_by_currency()
@@ -178,7 +178,7 @@ pub mod pallet {
                     Self::deposit_event(Event::ServiceCreated(service, who.clone()));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -194,7 +194,7 @@ pub mod pallet {
                     Self::deposit_event(Event::ServiceUpdated(service, who.clone()));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -209,7 +209,7 @@ pub mod pallet {
                     Self::deposit_event(Event::ServiceDeleted(service, who.clone()));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
     }
@@ -247,7 +247,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
         // Check if user can create_service
         let can_create_service = T::ServiceOwner::can_create_service(owner_id);
         if !can_create_service {
-            return Err(Error::<T>::NotAllowedToCreate)?;
+            return Err(Error::<T>::NotAllowedToCreate);
         }
 
         let owner_service_count = <Self as ServiceInterface<T>>::services_count_by_owner(owner_id);
@@ -266,7 +266,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
             }
         }
 
-        let service = Service::new(service_id.clone(), owner_id.clone(), service_info_mut, service_flow.clone());
+        let service = Service::new(service_id, owner_id.clone(), service_info_mut, service_flow.clone());
         // Store to Services storage
         Services::<T>::insert(&service_id, &service);
 
@@ -289,12 +289,12 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     ) -> Result<Self::Service, Self::Error> {
         let service = Services::<T>::get(service_id);
         if service == None {
-            return Err(Error::<T>::ServiceDoesNotExist)?;
+            return Err(Error::<T>::ServiceDoesNotExist);
         }
         let mut service = service.unwrap();
 
         if service.owner_id != owner_id.clone() {
-            return Err(Error::<T>::NotServiceOwner)?;
+            return Err(Error::<T>::NotServiceOwner);
         }
 
         // Calculate total price
@@ -327,12 +327,12 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     ) -> Result<Self::Service, Self::Error> {
         let service = Services::<T>::get(service_id);
         if service == None {
-            return Err(Error::<T>::ServiceDoesNotExist)?;
+            return Err(Error::<T>::ServiceDoesNotExist);
         }
         let service = service.unwrap();
 
         if service.owner_id != owner_id.clone() {
-            return Err(Error::<T>::NotServiceOwner)?;
+            return Err(Error::<T>::NotServiceOwner);
         }
         // Remove service from storage
         let service = Services::<T>::take(service_id).unwrap();
@@ -348,10 +348,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
     }
 
     fn service_by_id(service_id: &Self::ServiceId) -> Option<Self::Service> {
-        match Services::<T>::get(service_id) {
-            None => None,
-            Some(service) => Some(service),
-        }
+        Services::<T>::get(service_id)
     }
 
     fn services_count_by_owner(owner_id: &T::AccountId) -> u64 {

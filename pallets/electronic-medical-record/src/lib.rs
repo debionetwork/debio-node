@@ -280,6 +280,7 @@ pub mod pallet {
             electronic_medical_record_id: HashOf<T>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+            
             match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(
                 &who,
                 &electronic_medical_record_id

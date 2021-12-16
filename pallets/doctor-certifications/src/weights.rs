@@ -42,24 +42,24 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(57_951_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(57_951_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: DoctorCertifications DoctorCertifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(37_601_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		(37_601_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: DoctorCertifications DoctorCertifications (r:1 w:1)
 	// Storage: Doctors Doctors (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(65_802_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(65_802_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
@@ -70,23 +70,23 @@ impl WeightInfo for () {
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(57_951_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(57_951_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: DoctorCertifications DoctorCertifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(37_601_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+		(37_601_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: DoctorCertifications DoctorCertifications (r:1 w:1)
 	// Storage: Doctors Doctors (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertificationsCount (r:1 w:1)
 	// Storage: DoctorCertifications DoctorCertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(65_802_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(65_802_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 }

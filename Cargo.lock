@@ -848,6 +848,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "certifications-tests"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "labs",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-certifications",
+ "user-profile",
+]
+
+[[package]]
 name = "cexpr"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1532,6 +1554,27 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-doctor-certifications",
+]
+
+[[package]]
+name = "doctor-certifications-tests"
+version = "0.1.0"
+dependencies = [
+ "doctor-certifications",
+ "doctors",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-doctor-certifications",
+ "user-profile",
 ]
 
 [[package]]
@@ -2238,6 +2281,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "genetic-testing-tests"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-testing",
+ "labs",
+ "orders",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-testing",
+ "traits-order",
+ "traits-services",
+ "traits-user-profile",
+ "user-profile",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2487,6 +2560,27 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-hospital-certifications",
+]
+
+[[package]]
+name = "hospital-certifications-tests"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hospital-certifications",
+ "hospitals",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-hospital-certifications",
+ "user-profile",
 ]
 
 [[package]]
@@ -6791,6 +6885,28 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-services",
+ "user-profile",
+]
+
+[[package]]
+name = "services-tests"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "labs",
+ "pallet-balances",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
  "traits-services",
  "user-profile",
 ]

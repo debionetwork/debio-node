@@ -1,26 +1,25 @@
 [package]
-name = 'rewards'
-version = '0.1.0'
-edition = '2018'
-license = 'AGPL-3.0'
-authors = ['Debio Dev Team <https://github/debionetwork>']
-description = 'rewards pallet'
-homepage = 'https://debio.network'
-repository = 'https://github.com/debionetwork/debio-node'
+name = "services-tests"
+version = "0.1.0"
+authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
+edition = "2018"
+description = ''
+homepage = ''
+license = 'Unlicense'
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
+# alias "parity-scale-code" to "codec"
 [dependencies]
 # External Dependencies
-hex-literal = '0.3.3'
-codec = { package = 'parity-scale-codec', version = '2.0.0', default-features = false, features = ['derive'] }
 scale-info = { version = '1.0', default-features = false, features = ['derive'] }
+codec = { package = 'parity-scale-codec', version = '2.0.0', default-features = false, features = ['derive'] }
 
 # Substrate packages
 ## Substrate Primitive Dependencies
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
-sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
@@ -32,6 +31,15 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
+# Local Dependencies
+labs = { path = '../../labs', default-features = false }
+services = { path = '../../services', default-features = false }
+certifications = { path = '../../certifications', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
+
+primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
+traits-services = { path = '../../../traits/services', default-features = false }
+
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
 
@@ -39,15 +47,22 @@ serde = { default-features = false, version = "1.0.119" }
 default = ['std']
 std = [
     'codec/std',
-	'scale-info/std',
 
-	'sp-runtime/std',
-	'sp-std/std',
     'sp-io/std',
-	'frame-support/std',
-	'frame-system/std',
+    'sp-core/std',
+    'sp-runtime/std',
+
+    'frame-benchmarking/std',
+    'frame-support/std',
+    'frame-system/std',
 
 	'pallet-balances/std',
+
+    'labs/std',
+    'services/std',
+    'certifications/std',
+    'user-profile/std',
+
+    'primitives-area-code/std',
+    'traits-services/std',
 ]
-runtime-benchmarks = ['frame-benchmarking']
-try-runtime = ['frame-support/try-runtime']

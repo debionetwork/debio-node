@@ -11,7 +11,7 @@ use frame_support::{
 };
 pub use pallet::*;
 pub use scale_info::TypeInfo;
-use sp_std::prelude::*;
+use sp_std::{prelude::*, vec};
 use traits_genetic_testing::{DnaSampleTracking, DnaSampleTrackingId, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_services::{

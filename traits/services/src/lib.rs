@@ -88,6 +88,6 @@ pub trait ServiceOwner<T: Config> {
 
     fn can_create_service(id: &T::AccountId) -> bool;
     fn get_owner(id: &T::AccountId) -> Option<Self::Owner>;
-    fn associate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
-    fn disassociate(owner_id: &T::AccountId, service_id: &T::Hash) -> ();
+    fn associate(owner_id: &T::AccountId, service_id: &T::Hash);
+    fn disassociate(owner_id: &T::AccountId, service_id: &T::Hash);
 }

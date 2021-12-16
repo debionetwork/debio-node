@@ -1,14 +1,12 @@
-use crate as rewards;
 use frame_support::parameter_types;
+use frame_system as system;
 use pallet_balances::AccountData;
-use sp_core::H256;
-use sp_io::TestExternalities;
+use scale_info::TypeInfo;
+use sp_core::{Decode, Encode, RuntimeDebug, H256};
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
-	BuildStorage
 };
-use frame_support::PalletId;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -23,18 +21,19 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
+		Labs: labs::{Pallet, Call, Storage, Event<T>},
+		Services: services::{Pallet, Call, Storage, Event<T>},
+		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
 	}
 );
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
-	pub BlockWeights: frame_system::limits::BlockWeights =
-	frame_system::limits::BlockWeights::simple_max(1024);
 }
 
-impl frame_system::Config for Test {
+impl system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type BlockWeights = ();
 	type BlockLength = ();
@@ -64,7 +63,6 @@ type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
-	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 }
 
 impl pallet_balances::Config for Test {
@@ -81,28 +79,48 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-impl rewards::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
-	type PalletId = RewardPalletId;
+impl labs::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type Services = Services;
+	type Certifications = Certifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
 
+impl services::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type ServiceOwner = Labs;
+	type WeightInfo = ();
+}
+
+impl certifications::Config for Test {
+	type Event = Event;
+	type CertificationOwner = Labs;
+	type WeightInfo = ();
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
+pub struct EthereumAddress(pub [u8; 20]);
+
+impl user_profile::Config for Test {
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
+	type WeightInfo = ();
+}
+
+#[cfg(test)]
+use sp_io::TestExternalities;
+
+#[cfg(test)]
 pub struct ExternalityBuilder;
 
+#[cfg(test)]
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		GenesisConfig {
-			system: frame_system::GenesisConfig{
-				code: vec![],
-				changes_trie_config: Default::default(),
-			},
-			balances: pallet_balances::GenesisConfig::<Test>{
-				balances: vec![]
-			},
-			rewards: rewards::GenesisConfig::<Test>{
-				rewarder_key: 1
-			}
-		}.build_storage().unwrap().into()
+		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		TestExternalities::from(storage)
 	}
 }

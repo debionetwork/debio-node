@@ -42,24 +42,24 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications Certifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(59_145_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(59_145_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: Certifications Certifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(36_215_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		(36_215_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: Certifications Certifications (r:1 w:1)
 	// Storage: Labs Labs (r:1 w:1)
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications CertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(66_180_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		(66_180_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
@@ -70,23 +70,23 @@ impl WeightInfo for () {
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications Certifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		(59_145_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(3 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(59_145_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: Certifications Certifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		(36_215_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+		(36_215_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: Certifications Certifications (r:1 w:1)
 	// Storage: Labs Labs (r:1 w:1)
 	// Storage: Certifications CertificationsCount (r:1 w:1)
 	// Storage: Certifications CertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		(66_180_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
+		(66_180_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 }
