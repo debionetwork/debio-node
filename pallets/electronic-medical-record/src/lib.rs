@@ -146,9 +146,7 @@ where
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct ElectronicMedicalRecordFileSubmission<Hash>
-where
-    Hash: PartialEq + Eq,
+pub struct ElectronicMedicalRecordFileSubmission
 {
     pub title: Vec<u8>,
     pub description: Vec<u8>,
@@ -194,7 +192,7 @@ pub mod pallet {
         ElectronicMedicalRecordFile<HashOf<T>, MomentOf<T>>;
     pub type ElectronicMedicalRecordIdOf<T> = HashOf<T>;
     pub type ElectronicMedicalRecordFileIdOf<T> = HashOf<T>;
-    pub type ElectronicMedicalRecordFileSubmissionOf<T> = ElectronicMedicalRecordFileSubmission<HashOf<T>>;
+    pub type ElectronicMedicalRecordFileSubmissionOf = ElectronicMedicalRecordFileSubmission;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -259,7 +257,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             title: Vec<u8>,
             category: Vec<u8>,
-            files: Vec<ElectronicMedicalRecordFileSubmissionOf<T>>
+            files: Vec<ElectronicMedicalRecordFileSubmissionOf>
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -311,7 +309,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
 
     type ElectronicMedicalRecordFileId = T::Hash;
     type ElectronicMedicalRecordFile = ElectronicMedicalRecordFileOf<T>;
-    type ElectronicMedicalRecordFileSubmission = ElectronicMedicalRecordFileSubmissionOf<T>;
+    type ElectronicMedicalRecordFileSubmission = ElectronicMedicalRecordFileSubmissionOf;
 
     fn generate_electronic_medical_record_id(
         owner_id: &T::AccountId,
