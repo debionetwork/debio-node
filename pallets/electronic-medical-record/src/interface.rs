@@ -22,6 +22,15 @@ pub trait ElectronicMedicalRecordInterface<T: frame_system::Config> {
         owner_id: &T::AccountId,
         title: &[u8],
         category: &[u8],
+        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
+    ) -> Result<Self::ElectronicMedicalRecord, Self::Error>;
+
+    fn update_electronic_medical_record(
+        owner_id: &T::AccountId,
+        electronic_medical_record_id: &T::Hash,
+        title: &Vec<u8>,
+        category: &Vec<u8>,
+        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error>;
 
     fn remove_electronic_medical_record(

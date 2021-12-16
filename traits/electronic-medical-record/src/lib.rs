@@ -11,14 +11,8 @@ pub trait ElectronicMedicalRecordFile<T: Config + TimeConfig> {
 }
 
 pub trait ElectronicMedicalRecordFilesProvider<T: Config + TimeConfig> {
-    type Error;
-    type Moment;
     type ElectronicMedicalRecordFile: ElectronicMedicalRecordFile<T> + sp_std::fmt::Debug;
 
-    fn remove_electronic_medical_record_file(
-        owner_id: &T::AccountId,
-        electronic_medical_record_file_id: &T::Hash,
-    ) -> Result<Self::ElectronicMedicalRecordFile, Self::Error>;
     fn electronic_medical_record_file_by_id(
         electronic_medical_record_file_id: &T::Hash,
     ) -> Option<Self::ElectronicMedicalRecordFile>;

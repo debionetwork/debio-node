@@ -146,7 +146,7 @@ where
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct ElectronicMedicalRecordFileSubmission<Hash, Moment>
+pub struct ElectronicMedicalRecordFileSubmission<Hash>
 where
     Hash: PartialEq + Eq,
 {
@@ -161,7 +161,10 @@ pub mod pallet {
     use crate::weights::WeightInfo;
     use crate::interface::ElectronicMedicalRecordInterface;
     use crate::{
-        ElectronicMedicalRecord, ElectronicMedicalRecordFile, ElectronicMedicalRecordFileByElectronicMedicalRecord
+        ElectronicMedicalRecord, 
+        ElectronicMedicalRecordFile, 
+        ElectronicMedicalRecordFileSubmission, 
+        ElectronicMedicalRecordFileByElectronicMedicalRecord
     };
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
@@ -192,6 +195,7 @@ pub mod pallet {
         ElectronicMedicalRecordFile<HashOf<T>, MomentOf<T>>;
     pub type ElectronicMedicalRecordIdOf<T> = HashOf<T>;
     pub type ElectronicMedicalRecordFileIdOf<T> = HashOf<T>;
+    pub type ElectronicMedicalRecordFileSubmissionOf<T> = ElectronicMedicalRecordFileSubmission<HashOf<T>>;
 
     // ------- Storage -------------
     #[pallet::storage]
@@ -265,7 +269,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             title: Vec<u8>,
             category: Vec<u8>,
-            files: Vec<ElectronicMedicalRecordFileSubmission>
+            files: Vec<ElectronicMedicalRecordFileSubmissionOf<T>>
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -282,13 +286,13 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::update_electronic_medical_record())]
+        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::add_electronic_medical_record())]
         pub fn update_electronic_medical_record(
             origin: OriginFor<T>,
             electronic_medical_record_id: HashOf<T>,
             title: Vec<u8>,
             category: Vec<u8>,
-            files: Vec<ElectronicMedicalRecordFileSubmission>
+            files: Vec<ElectronicMedicalRecordFileSubmissionOf<T>>
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -345,6 +349,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
 
     type ElectronicMedicalRecordFileId = T::Hash;
     type ElectronicMedicalRecordFile = ElectronicMedicalRecordFileOf<T>;
+    type ElectronicMedicalRecordFileSubmission = ElectronicMedicalRecordFileSubmissionOf<T>;
 
     fn generate_electronic_medical_record_id(
         owner_id: &T::AccountId,
@@ -374,9 +379,9 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
 
     fn add_electronic_medical_record(
         owner_id: &T::AccountId,
-        title: &Vec<u8>,
-        category: &Vec<u8>,
-        files: Vec<ElectronicMedicalRecordFile>
+        title: &[u8],
+        category: &[u8],
+        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
         let owner_electronic_medical_record_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_count_by_owner(owner_id);
         let electronic_medical_record_id = Self::generate_electronic_medical_record_id(
@@ -401,10 +406,10 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         Self::add_electronic_medical_record_count();
         Self::add_electronic_medical_record_count_by_owner(owner_id);
 
-        for emr_files in std::array::IntoIter::new(files) {
-            let owner_electronic_medical_record_file_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_file_count_by_electronic_medical_record_id(electronic_medical_record_id);
+        for emr_files in files {
+            let owner_electronic_medical_record_file_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_file_count_by_electronic_medical_record_id(&electronic_medical_record_id);
             let electronic_medical_record_file_id = Self::generate_electronic_medical_record_file_id(
-                electronic_medical_record_id,
+                &electronic_medical_record_id,
                 owner_electronic_medical_record_file_count,
             );
     
@@ -431,7 +436,42 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             );
     
             // Associate created electronic_medical_record_file to the electronic_medical_record
-            T::ElectronicMedicalRecord::associate(electronic_medical_record_id, &electronic_medical_record_file_id);
+            T::ElectronicMedicalRecord::associate(&electronic_medical_record_id, &electronic_medical_record_file_id);
+        }
+
+        Ok(electronic_medical_record)
+    }
+
+    fn update_electronic_medical_record(
+        owner_id: &T::AccountId,
+        electronic_medical_record_id: &T::Hash,
+        title: &Vec<u8>,
+        category: &Vec<u8>,
+        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
+    ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
+
+        let electronic_medical_record = ElectronicMedicalRecord::new(
+            *electronic_medical_record_id,
+            owner_id.clone(),
+            title.to_vec(),
+            category.to_vec()
+        );
+
+        // Store to ElectronicMedicalRecordById storage
+        ElectronicMedicalRecordById::<T>::insert(electronic_medical_record_id, &electronic_medical_record);
+
+        for emr_file in files {
+            let emr_file_id = emr_file.id.unwrap();
+            let mut electronic_medical_record_file = Self::electronic_medical_record_file_by_id(emr_file_id).unwrap();
+            electronic_medical_record_file.title = emr_file.title.clone();
+            electronic_medical_record_file.description = emr_file.description.clone();
+            electronic_medical_record_file.record_link = emr_file.record_link.clone();
+    
+            // Store to ElectronicMedicalRecordFiles storage
+            ElectronicMedicalRecordFileById::<T>::insert(
+                &emr_file_id,
+                electronic_medical_record_file,
+            );
         }
 
         Ok(electronic_medical_record)
@@ -450,18 +490,14 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             return Err(Error::<T>::NotElectronicMedicalRecordOwner);
         }
 
-        if electronic_medical_record.unwrap().owner_id != owner_id.clone() {
-            return Err(Error::<T>::NotElectronicMedicalRecordOwner)?;
-        }
-
-        // Remove electronic_medical_record from storage
+        // Get electronic_medical_record from storage
         let electronic_medical_record =
             ElectronicMedicalRecordById::<T>::get(electronic_medical_record_id).unwrap();
 
-        for emr_files in std::array::IntoIter::new(electronic_medical_record.files) {
+        for emr_file_id in &electronic_medical_record.files {
             // Remove electronic_medical_record_file from storage
             let electronic_medical_record_file =
-                ElectronicMedicalRecordFileById::<T>::take(emr_files.id).unwrap();
+                ElectronicMedicalRecordFileById::<T>::take(emr_file_id).unwrap();
 
             // disassociate electronic_medical_record_file reference from the electronic_medical_record
             T::ElectronicMedicalRecord::disassociate(
@@ -542,8 +578,6 @@ impl<T: Config> Pallet<T> {
         );
     }
 
-
-
     // Add electronic_medical_record count
     pub fn add_electronic_medical_record_count() {
         let electronic_medical_record_count =
@@ -579,8 +613,6 @@ impl<T: Config> Pallet<T> {
             electronic_medical_record_count - 1,
         );
     }
-
-
 
     // Add electronic_medical_record_file count
     pub fn add_electronic_medical_record_file_count() {
@@ -621,24 +653,12 @@ impl<T: Config> Pallet<T> {
 
 /// ElectronicMedicalRecordFilesProvider Trait Implementation
 impl<T: Config> ElectronicMedicalRecordFilesProvider<T> for Pallet<T> {
-    type Error = Error<T>;
-    type Moment = MomentOf<T>;
     type ElectronicMedicalRecordFile = ElectronicMedicalRecordFileOf<T>;
 
     fn electronic_medical_record_file_by_id(
         electronic_medical_record_file_id: &T::Hash,
     ) -> Option<ElectronicMedicalRecordFileOf<T>> {
         <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_file_by_id(
-            electronic_medical_record_file_id,
-        )
-    }
-
-    fn remove_electronic_medical_record_file(
-        owner_id: &T::AccountId,
-        electronic_medical_record_file_id: &T::Hash,
-    ) -> Result<Self::ElectronicMedicalRecordFile, Self::Error> {
-        <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record_file(
-            owner_id,
             electronic_medical_record_file_id,
         )
     }
