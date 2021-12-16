@@ -1,7 +1,6 @@
 use super::*;
 
 use crate::{
-	Pallet as Rewards,
 	RewarderKey
 };
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite};
