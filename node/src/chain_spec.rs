@@ -100,11 +100,11 @@ pub fn appchain_config(
 }
 
 pub fn octopus_mainnet_config() -> Result<ChainSpec, String> {
-	ChainSpec::from_json_bytes(&include_bytes!("../../resources/mainnet.json")[..])
+	ChainSpec::from_json_bytes(&include_bytes!("../res/mainnet.json")[..])
 }
 
 pub fn octopus_testnet_config() -> Result<ChainSpec, String> {
-	ChainSpec::from_json_bytes(&include_bytes!("../../resources/testnet.json")[..])
+	ChainSpec::from_json_bytes(&include_bytes!(".../res/testnet.json")[..])
 }
 
 pub fn mainnet_config() -> Result<ChainSpec, String> {
