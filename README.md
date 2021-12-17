@@ -40,7 +40,8 @@ This command will start the single-node development chain with persistent state:
 ./target/debug/debio \
 --base-path .local \
 --dev \
---alice
+--alice \
+--enable-offchain-indexing true
 ```
 
 Purge the development chain's state:
@@ -59,6 +60,7 @@ RUST_LOG=debug RUST_BACKTRACE=1 ./target/debug/debio \
 --base-path .local \
 --dev \
 --alice \
+--enable-offchain-indexing true \
 -lruntime=debug
 ```
 
@@ -68,6 +70,10 @@ First, install [Docker](https://docs.docker.com/get-docker/) and
 [Docker Compose](https://docs.docker.com/compose/install/).
 
 Then run the following command to start a single node development chain.
+
+```bash
+./.maintain/docker/create-network.sh
+```
 
 ```bash
 ./.maintain/docker/start-docker-compose.sh
