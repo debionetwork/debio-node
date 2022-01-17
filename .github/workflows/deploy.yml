@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   workflow_run:
-    workflows: ["Main automation"]
+    workflows: ["Builder"]
     branches: [main]
     types: 
       - completed
@@ -96,7 +96,7 @@ jobs:
             helm repo update
             helm upgrade debio-node debio/debio-node \
               --install \
-              --set-string image.tag=${{ needs.compute-build-info.outputs.sha_short }}-${{ needs.compute-build-info.outputs.date }} \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.sha_short }} \
               --set-string config.chain=dev-testnet \
               --set-string config.nodes[0].name=full1 \
               --set config.nodes[0].bootnode=true \
@@ -155,7 +155,8 @@ jobs:
               --set-string ingress.websocketRPC.tls[0].secretName=debio-node-websocket-rpc-tls \
               --set-string ingress.websocketRPC.tls[0].hosts[0]=ws-rpc.dev.debio.network \
               --set-string volume.storageClassName=premium-rwo \
-              --set-string volume.dataSize=50Gi
+              --set-string volume.dataSize=50Gi \
+              --set-string nodeSelector.pool=blockchain
             kubectl rollout status statefulset/debio-node-full1
 
   deploy-alpha-release:
@@ -278,7 +279,8 @@ jobs:
               --set-string ingress.websocketRPC.tls[0].secretName=debio-node-websocket-rpc-tls \
               --set-string ingress.websocketRPC.tls[0].hosts[0]=ws-rpc.stg.debio.network \
               --set-string volume.storageClassName=premium-rwo \
-              --set-string volume.dataSize=50Gi
+              --set-string volume.dataSize=50Gi \
+              --set-string nodeSelector.pool=blockchain
             kubectl rollout status statefulset/debio-node-full1
 
   deploy-beta-release:
@@ -373,7 +375,8 @@ jobs:
               --set-string ingress.websocketRPC.tls[0].secretName=debio-node-websocket-rpc-tls \
               --set-string ingress.websocketRPC.tls[0].hosts[0]=ws-rpc.testnet.debio.network \
               --set-string volume.storageClassName=premium-rwo \
-              --set-string volume.dataSize=50Gi
+              --set-string volume.dataSize=50Gi \
+              --set-string nodeSelector.pool=blockchain
             kubectl rollout status statefulset/debio-node-full1
 
   deploy-pre-release:
@@ -473,7 +476,8 @@ jobs:
               --set-string ingress.websocketRPC.tls[0].secretName=debio-node-websocket-rpc-tls \
               --set-string ingress.websocketRPC.tls[0].hosts[0]=ws-rpc.stg.debio.network \
               --set-string volume.storageClassName=premium-rwo \
-              --set-string volume.dataSize=50Gi
+              --set-string volume.dataSize=50Gi \
+              --set-string nodeSelector.pool=blockchain
             kubectl rollout status statefulset/debio-node-full1
 
   deploy-release:
@@ -530,7 +534,7 @@ jobs:
             helm repo update
             helm upgrade debio-node debio/debio-node \
               --install \
-              --set-string image.tag=${{ github.event.release.tag_name }} \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.latest_tag }} \
               --set-string config.chain=octopus-mainnet \
               --set-string config.nodes[0].name=full1 \
               --set config.nodes[0].bootnode=true \
@@ -573,5 +577,6 @@ jobs:
               --set-string ingress.websocketRPC.tls[0].secretName=debio-node-websocket-rpc-tls \
               --set-string ingress.websocketRPC.tls[0].hosts[0]=ws-rpc.debio.network \
               --set-string volume.storageClassName=premium-rwo \
-              --set-string volume.dataSize=50Gi
+              --set-string volume.dataSize=50Gi \
+              --set-string nodeSelector.pool=blockchain
             kubectl rollout status statefulset/debio-node-full1
