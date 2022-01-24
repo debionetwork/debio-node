@@ -431,19 +431,20 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         category: &[u8],
         files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
-        let _ = <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(
+        let _ =  match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(
             owner_id,
             electronic_medical_record_id,
-        );
+        ) {
+            Ok(res) => res,
+            Err(error) => return Err(error.into()),
+        };
 
-        let electronic_medical_record = <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record(
+        <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record(
             owner_id,
             title,
             category,
             files,
-        ).unwrap();
-
-        Ok(electronic_medical_record)
+        )
     }
 
     fn remove_electronic_medical_record(
