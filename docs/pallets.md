@@ -194,19 +194,14 @@ Each `ElectronicMedicalRecord` will be mapped to an account, and each `Electroni
 The following extrinsic calls are exposed:
 ### Add a new Electronic Medical Record to Account
 ```rust
-pub fn add_electronic_medical_record(origin: OriginFor<T>, title: Vec<u8>, category: Vec<u8>) -> DispatchResultWithPostInfo
+pub fn add_electronic_medical_record(origin: OriginFor<T>, title: Vec<u8>, category: Vec<u8>, files: Vec<ElectronicMedicalRecordFileSubmissionOf>) -> DispatchResultWithPostInfo
 ```
 ### Remove an Electronic Medical Record from an Account
 ```rust
+pub fn update_electronic_medical_record(origin: OriginFor<T>, electronic_medical_record_id: HashOf<T>, title: Vec<u8>, category: Vec<u8>, files: Vec<ElectronicMedicalRecordFileSubmissionOf>) -> DispatchResultWithPostInfo
+### Remove an Electronic Medical Record from an Account
+```rust
 pub fn remove_electronic_medical_record(origin: OriginFor<T>, electronic_medical_record_id: HashOf<T>) -> DispatchResultWithPostInfo
-```
-### Attach a new file to an existing Electronic Medical Record
-```rust
-pub fn add_electronic_medical_record_file(origin: OriginFor<T>, electronic_medical_record_id: HashOf<T>, mut title: Vec<u8>, mut description: Vec<u8>, mut record_link: Vec<u8>) -> DispatchResultWithPostInfo
-```
-### Remove file attached to an existing Electronic Medical Record
-```rust
-pub fn remove_electronic_medical_record_file(origin: OriginFor<T>, electronic_medical_record_file_id: HashOf<T>) -> DispatchResultWithPostInfo
 ```
 
 ## Service Request Pallet
