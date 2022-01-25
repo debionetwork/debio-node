@@ -273,6 +273,33 @@ pub mod pallet {
                 Err(error) => Err(error.into()),
             }
         }
+        #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::update_electronic_medical_record())]
+        pub fn update_electronic_medical_record(
+            origin: OriginFor<T>,
+            electronic_medical_record_id: HashOf<T>,
+            title: Vec<u8>,
+            category: Vec<u8>,
+            files: Vec<ElectronicMedicalRecordFileSubmissionOf>
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            match <Self as ElectronicMedicalRecordInterface<T>>::update_electronic_medical_record(
+                &who, 
+                &electronic_medical_record_id,
+                &title, 
+                &category, 
+                &files
+            ) {
+                Ok(electronic_medical_record) => {
+                    Self::deposit_event(Event::ElectronicMedicalRecordUpdated(
+                        electronic_medical_record,
+                        who.clone(),
+                    ));
+                    Ok(().into())
+                }
+                Err(error) => Err(error.into()),
+            }
+        }
 
         #[pallet::weight(T::ElectronicMedicalRecordWeightInfo::remove_electronic_medical_record())]
         pub fn remove_electronic_medical_record(
@@ -395,6 +422,29 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         }
 
         Ok(electronic_medical_record)
+    }
+
+    fn update_electronic_medical_record(
+        owner_id: &T::AccountId,
+        electronic_medical_record_id: &T::Hash,
+        title: &[u8],
+        category: &[u8],
+        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
+    ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
+        let _ =  match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(
+            owner_id,
+            electronic_medical_record_id,
+        ) {
+            Ok(res) => res,
+            Err(error) => return Err(error.into()),
+        };
+
+        <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record(
+            owner_id,
+            title,
+            category,
+            files,
+        )
     }
 
     fn remove_electronic_medical_record(
