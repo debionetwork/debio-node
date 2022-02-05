@@ -1,11 +1,10 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use sp_std::prelude::*;
-
 use frame_support::{
 	codec::{Encode, Decode},
 	scale_info::TypeInfo,
     sp_std::convert::TryInto,
+    sp_std::vec::Vec,
 	sp_runtime::{RuntimeDebug},
 };
 
