@@ -191,4 +191,5 @@ runtime-benchmarks = [
 	'user-profile/runtime-benchmarks',
 	'rewards/runtime-benchmarks',
 	'service-request/runtime-benchmarks',
+	'genetic-data/runtime-benchmarks',
 ]

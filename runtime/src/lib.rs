@@ -1097,6 +1097,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, user_profile, UserProfile);
 			list_benchmark!(list, extra, rewards, Rewards);
 			list_benchmark!(list, extra, service_request, ServiceRequest);
+			list_benchmark!(list, extra, genetic_data, GeneticData);
 			list_benchmark!(list, extra, genetic_testing, GeneticTestingBench::<Runtime>);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
@@ -1163,6 +1164,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
 			add_benchmark!(params, batches, user_profile, UserProfile);
 			add_benchmark!(params, batches, rewards, Rewards);
+			add_benchmark!(params, batches, genetic_data, GeneticData);
 			add_benchmark!(params, batches, genetic_testing, GeneticTestingBench::<Runtime>);
 			add_benchmark!(params, batches, service_request, ServiceRequest);
 
