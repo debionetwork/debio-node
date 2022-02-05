@@ -34,10 +34,12 @@ pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch
 
 # Local Dependencies
 genetic-analysts = { path = '../../genetic-analysts', default-features = false }
+genetic-analyst-services = { path = '../../genetic-analyst-services', default-features = false }
 genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
+traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analyst-qualifications = { path = '../../../traits/genetic-analyst-qualifications', default-features = false }
 
 [dev-dependencies]
@@ -60,9 +62,11 @@ std = [
     'pallet-timestamp/std',
 
     'genetic-analysts/std',
+    'genetic-analyst-services/std',
     'genetic-analyst-qualifications/std',
     'user-profile/std',
 
     'primitives-area-code/std',
+    'traits-genetic-analyst-services/std',
     'traits-genetic-analyst-qualifications/std',
 ]

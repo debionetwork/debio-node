@@ -1,5 +1,5 @@
 use frame_support::codec::{Decode, Encode};
-use frame_support::pallet_prelude::*;
+use frame_support::RuntimeDebug;
 use sp_std::prelude::*;
 use scale_info::TypeInfo;
 
