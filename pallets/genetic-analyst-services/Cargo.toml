@@ -1,0 +1,51 @@
+[package]
+name = "genetic-analyst-services"
+version = "0.1.0"
+authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
+edition = "2018"
+description = ''
+homepage = ''
+license = 'AGPL-3.0'
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+# alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
+[dependencies]
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+
+primitives-duration = { path = '../../primitives/duration', default-features = false }
+primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
+traits-genetic-analyst-services = { path = './traits', default-features = false }
+
+[dev-dependencies]
+serde = { default-features = false, version = "1.0.119" }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+	'scale-info/std',
+    'sp-std/std',
+    'sp-io/std',
+    'primitives-duration/std',
+    'primitives-price-and-currency/std',
+    'frame-support/std',
+    'frame-system/std',
+    'traits-genetic-analyst-services/std',
+]
+runtime-benchmarks = []
+try-runtime = ["frame-support/try-runtime"]
