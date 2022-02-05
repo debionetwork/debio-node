@@ -26,8 +26,8 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Doctors: genetic_analysts::{Pallet, Call, Storage, Event<T>},
-		DoctorCertifications: genetic_analyst_certifications::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
 	}
 );
@@ -65,13 +65,29 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
+}
+
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
-	type DoctorCertifications = DoctorCertifications;
+    type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
-	type WeightInfo = ();
+	type GeneticAnalystWeightInfo = ();
 }
 
 impl user_profile::Config for Test {
@@ -80,9 +96,9 @@ impl user_profile::Config for Test {
 	type WeightInfo = ();
 }
 
-impl genetic_analyst_certifications::Config for Test {
+impl genetic_analyst_qualifications::Config for Test {
 	type Event = Event;
-	type DoctorCertificationOwner = Doctors;
+	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
