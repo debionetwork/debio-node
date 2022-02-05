@@ -1386,6 +1386,7 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "genetic-analyst-qualifications",
+ "genetic-analyst-qualifications-benchmarking",
  "genetic-analysts",
  "genetic-testing",
  "genetic-testing-benchmarking",
@@ -2246,6 +2247,27 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analyst-qualifications",
+]
+
+[[package]]
+name = "genetic-analyst-qualifications-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analyst-qualifications",
+ "genetic-analysts",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
  "serde",
  "sp-core",
  "sp-io",

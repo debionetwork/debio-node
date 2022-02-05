@@ -92,6 +92,7 @@ doctor-certifications = { path = '../pallets/doctor-certifications', default-fea
 doctor-certifications-benchmarking = { path = '../pallets/doctor-certifications/benchmarking', default-features = false, optional = true }
 genetic-analysts = { path = '../pallets/genetic-analysts', default-features = false }
 genetic-analyst-qualifications = { path = '../pallets/genetic-analyst-qualifications', default-features = false }
+genetic-analyst-qualifications-benchmarking = { path = '../pallets/genetic-analyst-qualifications/benchmarking', default-features = false, optional = true }
 
 [features]
 default = ['std']
@@ -153,6 +154,8 @@ std = [
     'hospital-certifications/std',
     'doctors/std',
     'doctor-certifications/std',
+    'genetic-analysts/std',
+    'genetic-analyst-qualifications/std',
 ]
 runtime-benchmarks = [
 	'hex-literal',
@@ -181,6 +184,7 @@ runtime-benchmarks = [
 	'hospital-certifications-benchmarking',
 	'doctors/runtime-benchmarks',
 	'doctor-certifications-benchmarking',
+	'genetic-analyst-qualifications-benchmarking',
 	'genetic-testing-benchmarking',
 	'user-profile/runtime-benchmarks',
 	'rewards/runtime-benchmarks',
