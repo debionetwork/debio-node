@@ -1386,8 +1386,8 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "genetic-analyst-qualifications",
- "genetic-analyst-services",
  "genetic-analyst-qualifications-benchmarking",
+ "genetic-analyst-services",
  "genetic-analysts",
  "genetic-data",
  "genetic-testing",
@@ -2242,6 +2242,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "genetic-analysis"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-tracking-id",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analysis",
+ "traits-genetic-analysis-orders",
+]
+
+[[package]]
+name = "genetic-analysis-orders"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "genetic-analyst-qualifications"
 version = "0.1.0"
 dependencies = [
@@ -2331,7 +2369,6 @@ dependencies = [
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
- "primitives-area-code",
  "scale-info",
  "serde",
  "sp-core",
@@ -5279,6 +5316,16 @@ dependencies = [
 
 [[package]]
 name = "primitives-price-and-currency"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "primitives-tracking-id"
 version = "0.1.0"
 dependencies = [
  "frame-support",
@@ -8363,6 +8410,29 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-genetic-analysis"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "primitives-tracking-id",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-genetic-analysis-orders"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
  "parity-scale-codec",
  "scale-info",
  "sp-std",
