@@ -1385,6 +1385,8 @@ dependencies = [
  "frame-system",
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
+ "genetic-analyst-qualifications",
+ "genetic-analysts",
  "genetic-testing",
  "genetic-testing-benchmarking",
  "hex-literal",
@@ -2234,6 +2236,67 @@ checksum = "501466ecc8a30d1d3b7fc9229b122b2ce8ed6e9d9223f1138d4babb253e51817"
 dependencies = [
  "typenum",
  "version_check",
+]
+
+[[package]]
+name = "genetic-analyst-qualifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analyst-qualifications",
+]
+
+[[package]]
+name = "genetic-analyst-qualifications-tests"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analyst-qualifications",
+ "genetic-analysts",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "traits-genetic-analyst-qualifications",
+ "user-profile",
+]
+
+[[package]]
+name = "genetic-analysts"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analyst-qualifications",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analyst-qualifications",
+ "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
@@ -8220,6 +8283,17 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-genetic-analyst-qualifications"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
  "parity-scale-codec",
  "scale-info",
  "sp-std",

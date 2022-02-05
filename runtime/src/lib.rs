@@ -676,6 +676,15 @@ impl doctors::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl genetic_analysts::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type GeneticAnalystQualifications = GeneticAnalystQualifications;
+    type EthereumAddress = EthereumAddress;
+    type UserProfile = UserProfile;
+	type GeneticAnalystWeightInfo = ();
+}
+
 impl services::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
@@ -729,6 +738,12 @@ impl doctor_certifications::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl genetic_analyst_qualifications::Config for Runtime {
+    type Event = Event;
+	type GeneticAnalystQualificationOwner = GeneticAnalysts;
+	type WeightInfo = ();
+}
+
 impl hospital_certifications::Config for Runtime {
     type Event = Event;
 	type HospitalCertificationOwner = Hospitals;
@@ -773,6 +788,8 @@ construct_runtime!(
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 		Doctors: doctors::{Pallet, Call, Storage, Event<T>},
 		DoctorCertifications: doctor_certifications::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
 		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
 	}
