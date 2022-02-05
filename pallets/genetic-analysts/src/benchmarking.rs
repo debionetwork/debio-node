@@ -1,84 +1,86 @@
 use super::*;
 
-use crate::DoctorInfo;
+use crate::{
+	GeneticAnalystInfo,
+	StakeStatus,
+};
 #[allow(unused)]
-use crate::Pallet as Doctors;
+use crate::Pallet as GeneticAnalysts;
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
-use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 benchmarks! {
-	register_doctor {
-		let doctor = DoctorInfo {
-			name: "DeBio Doctor".as_bytes().to_vec(),
-			email: "DeBio Email".as_bytes().to_vec(),
-			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-			city: CityCode::from_vec("City".as_bytes().to_vec()),
-			address: "DeBio Address".as_bytes().to_vec(),
-			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+	register_genetic_analyst {
+		let genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
 		let caller: T::AccountId = whitelisted_caller();
-	}: register_doctor(
+	}: register_genetic_analyst(
 		RawOrigin::Signed(caller),
-		doctor
+		genetic_analyst
 	)
 
-	update_doctor {
+	update_genetic_analyst {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let old_doctor = DoctorInfo {
-			name: "DeBio Doctor".as_bytes().to_vec(),
-			email: "DeBio Email".as_bytes().to_vec(),
-			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-			city: CityCode::from_vec("City".as_bytes().to_vec()),
-			address: "DeBio Address".as_bytes().to_vec(),
-			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		let old_genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
-		let _add_doctors = Doctors::<T>::register_doctor(caller_origin.clone(), old_doctor);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 
-		let new_doctor = DoctorInfo {
-			name: "DeBio Doctor 2".as_bytes().to_vec(),
-			email: "DeBio Email 2".as_bytes().to_vec(),
-			country: CountryCode::from_vec("C2".as_bytes().to_vec()),
-			region: RegionCode::from_vec("DBI2".as_bytes().to_vec()),
-			city: CityCode::from_vec("C2C2".as_bytes().to_vec()),
-			address: "DeBio Address 2".as_bytes().to_vec(),
-			latitude: Some("DeBio Latitude 2".as_bytes().to_vec()),
-			longitude: Some("DeBio Longtitude 2".as_bytes().to_vec()),
-			profile_image: Some("DeBio Profile Image owo".as_bytes().to_vec()),
+		let new_genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name 2".as_bytes().to_vec(),
+			last_name: "Last Name 2".as_bytes().to_vec(),
+			gender: "Gender 2".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email 2".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
-	}: update_doctor(
+	}: update_genetic_analyst(
 		RawOrigin::Signed(caller),
-		new_doctor
+		new_genetic_analyst
 	)
 
-	deregister_doctor {
+	deregister_genetic_analyst {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let doctor = DoctorInfo {
-			name: "DeBio Doctor".as_bytes().to_vec(),
-			email: "DeBio Email".as_bytes().to_vec(),
-			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-			city: CityCode::from_vec("City".as_bytes().to_vec()),
-			address: "DeBio Address".as_bytes().to_vec(),
-			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		let genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
 
-		let _add_doctors = Doctors::<T>::register_doctor(caller_origin.clone(), doctor);
-	}: deregister_doctor(
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+	}: deregister_genetic_analyst(
 		RawOrigin::Signed(caller)
 	)
 }
 
-impl_benchmark_test_suite! {Doctors, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
+impl_benchmark_test_suite! {GeneticAnalysts, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
