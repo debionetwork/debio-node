@@ -31,9 +31,7 @@ use sp_std::marker::PhantomData;
 pub trait WeightInfo {
 	fn reject_genetic_analysis() -> Weight;
 	fn process_genetic_analysis() -> Weight;
-	fn submit_test_result() -> Weight;
-	fn submit_independent_test_result() -> Weight;
-	fn submit_data_bounty_details() -> Weight;
+	fn submit_genetic_analysis() -> Weight;
 }
 
 /// Weights for genetic_analysis using the Substrate node and recommended hardware.
@@ -59,26 +57,10 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaTestResultsByLab (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
-	fn submit_test_result() -> Weight {
+	fn submit_genetic_analysis() -> Weight {
 		(57_980_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(4 as Weight))
 			.saturating_add(T::DbWeight::get().writes(4 as Weight))
-	}
-	// Storage: System Account (r:1 w:0)
-	// Storage: RandomnessCollectiveFlip RandomMaterial (r:1 w:0)
-	// Storage: Timestamp Now (r:1 w:0)
-	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
-	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
-	fn submit_independent_test_result() -> Weight {
-		(54_853_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(5 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
-	}
-	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1)
-	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1)
-	fn submit_data_bounty_details() -> Weight {
-		(23_762_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
 	}
 }
 
@@ -104,25 +86,9 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaTestResultsByLab (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
-	fn submit_test_result() -> Weight {
+	fn submit_genetic_analysis() -> Weight {
 		(57_980_000 as Weight)
 			.saturating_add(RocksDbWeight::get().reads(4 as Weight))
 			.saturating_add(RocksDbWeight::get().writes(4 as Weight))
-	}
-	// Storage: System Account (r:1 w:0)
-	// Storage: RandomnessCollectiveFlip RandomMaterial (r:1 w:0)
-	// Storage: Timestamp Now (r:1 w:0)
-	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
-	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
-	fn submit_independent_test_result() -> Weight {
-		(54_853_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(5 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
-	}
-	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1)
-	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1)
-	fn submit_data_bounty_details() -> Weight {
-		(23_762_000 as Weight)
-			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
 	}
 }

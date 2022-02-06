@@ -37,8 +37,10 @@ pub struct GeneticAnalysis<AccountId, Hash, Moment> {
     genetic_analysis_tracking_id: TrackingId,
     genetic_analyst_id: AccountId,
     owner_id: AccountId,
-    comment: Vec<u8>,
     report_link: Vec<u8>,
+    comment: Option<Vec<u8>>,
+    rejected_title: Option<Vec<u8>>,
+    rejected_description: Option<Vec<u8>>,
     genetic_analysis_order_id: Hash,
     created_at: Moment,
     updated_at: Moment,
@@ -46,21 +48,23 @@ pub struct GeneticAnalysis<AccountId, Hash, Moment> {
 }
 impl<AccountId, Hash, Moment: Copy> GeneticAnalysis<AccountId, Hash, Moment> {
     pub fn new(
-        genetic_analysis_tracking_id: TrackingId,
         genetic_analyst_id: AccountId,
-        owner_id: AccountId,
-        comment: Vec<u8>,
-        report_link: Vec<u8>,
         genetic_analysis_order_id: Hash,
+        genetic_analysis_tracking_id: TrackingId,
+        owner_id: AccountId,
+        report_link: Vec<u8>,
+        comment: Option<Vec<u8>>,
         created_at: Moment,
     ) -> Self {
         Self {
-            genetic_analysis_tracking_id,
             genetic_analyst_id,
-            owner_id,
-            comment,
-            report_link,
             genetic_analysis_order_id,
+            genetic_analysis_tracking_id,
+            owner_id,
+            report_link,
+            comment,
+            rejected_title: None,
+            rejected_description: None,
             created_at: created_at,
             updated_at: created_at,
             status: GeneticAnalysisStatus::default(),
@@ -77,12 +81,6 @@ impl<AccountId, Hash, Moment> GeneticAnalysisTracking for GeneticAnalysis<Accoun
     fn is_rejected(&self) -> bool {
         self.status == GeneticAnalysisStatus::Rejected
     }
-}
-
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct GeneticAnalysisSubmission {
-    pub comments: Vec<u8>,
-    pub report_link: Vec<u8>,
 }
 
 #[frame_support::pallet]
@@ -110,7 +108,7 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// parameters [GeneticAnalysis]
-        GeneticAnalysisRegistered(GeneticAnalysisOf<T>),
+        GeneticAnalysisSubmitted(GeneticAnalysisOf<T>),
         /// Received -> InProgress
         GeneticAnalysisInProgress(GeneticAnalysisOf<T>),
         /// QC Rejected
@@ -123,6 +121,7 @@ pub mod pallet {
     pub enum Error<T> {
         GeneticAnalysisOrderNotFound,
         GeneticAnalysisNotFound,
+        GeneticAnalysisNotYetSubmitted,
         Unauthorized,
         TrackingIdCollision,
         ResultLinkRequired,
@@ -191,9 +190,6 @@ pub mod pallet {
             ) {
                 Ok(genetic_analysis) => {
                     match status {
-                        GeneticAnalysisStatus::QualityControlled => Self::deposit_event(
-                            Event::<T>::GeneticAnalysisQualityControlled(genetic_analysis.clone()),
-                        ),
                         GeneticAnalysisStatus::ResultReady => Self::deposit_event(
                             Event::<T>::GeneticAnalysisResultReady(genetic_analysis.clone()),
                         ),
@@ -210,14 +206,16 @@ pub mod pallet {
         pub fn submit_genetic_analysis(
             origin: OriginFor<T>,
             genetic_analysis_tracking_id: TrackingId,
-            submission: GeneticAnalysisSubmission,
+            report_link: Vec<u8>,
+            comment: Option<Vec<u8>>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             match <Self as GeneticAnalysisInterface<T>>::submit_genetic_analysis(
                 &who,
                 &genetic_analysis_tracking_id,
-                &submission,
+                &report_link,
+                &comment,
             ) {
                 Ok(genetic_analysis) => {
                     Self::deposit_event(Event::<T>::GeneticAnalysisSubmitted(
@@ -235,52 +233,6 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
     type GeneticAnalysis = GeneticAnalysisOf<T>;
     type GeneticAnalysisStatus = GeneticAnalysisStatus;
     type Error = Error<T>;
-
-    fn register_genetic_analysis(
-        genetic_analyst_id: &T::AccountId,
-        owner_id: &T::AccountId,
-        genetic_analysis_order_id: &HashOf<T>,
-    ) -> Result<Self::GeneticAnalysis, Self::Error> {
-        let seed = Self::generate_random_seed(genetic_analyst_id, owner_id);
-
-        let mut tries = 10;
-        loop {
-            let genetic_analysis_tracking_id = genetic_analysis_tracking_id_generator::generate(seed.clone());
-            let now = pallet_timestamp::Pallet::<T>::get();
-
-            if !GeneticAnalysisStorage::<T>::contains_key(&genetic_analysis_tracking_id) {
-                let genetic_analysis = GeneticAnalysis::new(
-                    genetic_analysis_tracking_id.clone(),
-                    genetic_analyst_id.clone(),
-                    owner_id.clone(),
-                    genetic_analysis_order_id.clone(),
-                    now,
-                );
-                GeneticAnalysisStorage::<T>::insert(&genetic_analysis.genetic_analysis_tracking_id, &genetic_analysis);
-                Self::add_genetic_analysis_by_owner(&genetic_analysis);
-                Self::add_genetic_analysis_by_genetic_analyst(&genetic_analysis);
-
-                return Ok(genetic_analysis);
-            }
-
-            tries += 1;
-            if tries > 10 {
-                return Err(Error::<T>::TrackingIdCollision);
-            }
-        }
-    }
-
-    fn delete_genetic_analysis(
-        genetic_analysis_tracking_id: &TrackingId
-    ) -> Result<Self::GeneticAnalysis, Self::Error> {
-        let genetic_analysis = GeneticAnalysisStorage::<T>::take(genetic_analysis_tracking_id);
-        if genetic_analysis.is_none() {
-            return Err(Error::<T>::GeneticAnalysisNotFound);
-        }
-        let genetic_analysis = genetic_analysis.unwrap();
-
-        Ok(genetic_analysis)
-    }
 
     fn reject_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
@@ -303,9 +255,8 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         genetic_analysis.rejected_description = Some(rejected_description.clone());
         genetic_analysis.status = GeneticAnalysisStatus::Rejected;
         genetic_analysis.updated_at = now;
+
         GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
-        T::GeneticAnalysisOrders::emit_event_order_failed(&genetic_analysis.genetic_analysis_order_id);
-        T::GeneticAnalysisOrders::update_status_failed(&genetic_analysis.genetic_analysis_order_id);
 
         Ok(genetic_analysis)
     }
@@ -343,7 +294,8 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
     fn submit_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         genetic_analysis_tracking_id: &TrackingId,
-        submission: &Self::GeneticAnalysisSubmission,
+        report_link: &Vec<u8>,
+        comment: &Option<Vec<u8>>,
     ) -> Result<Self::GeneticAnalysis, Self::Error> {
         let genetic_analysis = GeneticAnalysisStorage::<T>::get(genetic_analysis_tracking_id);
         if genetic_analysis.is_none() {
@@ -356,21 +308,11 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
+        genetic_analysis.report_link = report_link.clone();
+        genetic_analysis.comment = comment.clone();
         genetic_analysis.updated_at = now;
-        GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
 
-        // Create GeneticAnalysis
-        let genetic_analysis = GeneticAnalysis::new(
-            genetic_analysis_tracking_id.clone(),
-            Some(genetic_analyst_id.clone()),        // GeneticAnalyst
-            genetic_analysis.owner_id.clone(), // Owner
-            submission.clone(),
-            Some(genetic_analysis.genetic_analysis_order_id.clone()),
-            now,
-        );
         GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
-        Self::add_genetic_analysis_by_genetic_analyst(&genetic_analysis);
-        Self::add_genetic_analysis_by_owner(&genetic_analysis);
 
         Ok(genetic_analysis)
     }
@@ -392,19 +334,8 @@ impl<T: Config> GeneticAnalysisProvider<T> for Pallet<T> {
     type GeneticAnalysis = GeneticAnalysisOf<T>;
     type Error = Error<T>;
 
-    fn register_genetic_analysis(
-        genetic_analyst_id: &T::AccountId,
-        owner_id: &T::AccountId,
-        genetic_analysis_order_id: &HashOf<T>,
-    ) -> Result<Self::GeneticAnalysis, Self::Error> {
-        <Self as GeneticAnalysisInterface<T>>::register_genetic_analysis(genetic_analyst_id, owner_id, genetic_analysis_order_id)
-    }
     fn genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id: &TrackingId) -> Option<Self::GeneticAnalysis> {
         <Self as GeneticAnalysisInterface<T>>::genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id)
-    }
-
-    fn delete_genetic_analysis(genetic_analysis_tracking_id: &TrackingId) -> Result<Self::GeneticAnalysis, Self::Error> {
-        <Self as GeneticAnalysisInterface<T>>::delete_genetic_analysis(genetic_analysis_tracking_id)
     }
 }
 
@@ -447,49 +378,6 @@ impl<T: Config> Pallet<T> {
             Some(mut genetic_analysis_tracking_ids) => {
                 genetic_analysis_tracking_ids.push(genetic_analysis.genetic_analysis_tracking_id.clone());
                 GeneticAnalysisByGeneticAnalyst::<T>::insert(&genetic_analysis.genetic_analyst_id, genetic_analysis_tracking_ids);
-            }
-        }
-    }
-}
-
-/// Human Readable Tracking ID
-pub mod genetic_analysis_tracking_id_generator {
-    use crate::*;
-
-    pub const SAFE: [char; 36] = [
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        // 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-        // 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    ];
-
-    pub fn generate(seed: Vec<u8>) -> TrackingId {
-        let alphabet = &SAFE;
-        let size = 21;
-        let mask = alphabet.len().next_power_of_two() - 1;
-
-        // Assert that the masking does not truncate the alphabet. (See #9)
-        debug_assert!(alphabet.len() <= mask + 1);
-
-        let mut id = Vec::new();
-
-        loop {
-            for &byte in &seed {
-                let byte = byte as usize & mask;
-
-                if alphabet.len() > byte {
-                    id.push(alphabet[byte]);
-
-                    if id.len() == size {
-                        let _vec_id = id.iter()
-                            .map(|c| *c as u8)
-                            .collect::<Vec<_>>();
-                        
-                        let _dna_genetic_analysis_tracking_id = TrackingId::from_vec(_vec_id);
-                        return _dna_genetic_analysis_tracking_id;
-                    }
-                }
             }
         }
     }

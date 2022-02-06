@@ -8419,11 +8419,9 @@ dependencies = [
 name = "traits-genetic-analysis"
 version = "0.1.0"
 dependencies = [
- "frame-support",
  "frame-system",
  "parity-scale-codec",
  "primitives-tracking-id",
- "scale-info",
  "sp-std",
 ]
 
