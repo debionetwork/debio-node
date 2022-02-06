@@ -1091,6 +1091,7 @@ impl_runtime_apis! {
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
 			use orders_benchmarking::Pallet as OrdersBench;
+			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
 
@@ -1118,6 +1119,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, rewards, Rewards);
 			list_benchmark!(list, extra, service_request, ServiceRequest);
 			list_benchmark!(list, extra, genetic_testing, GeneticTestingBench::<Runtime>);
+			list_benchmark!(list, extra, genetic_analysis_orders, GeneticAnalysisOrdersBench::<Runtime>);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -1138,6 +1140,7 @@ impl_runtime_apis! {
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
 			use orders_benchmarking::Pallet as OrdersBench;
+			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl services_benchmarking::Config for Runtime {}
@@ -1147,6 +1150,7 @@ impl_runtime_apis! {
 			impl hospital_certifications_benchmarking::Config for Runtime {}
 			impl genetic_testing_benchmarking::Config for Runtime {}
 			impl orders_benchmarking::Config for Runtime {}
+			impl genetic_analysis_orders_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1189,6 +1193,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, rewards, Rewards);
 			add_benchmark!(params, batches, genetic_testing, GeneticTestingBench::<Runtime>);
 			add_benchmark!(params, batches, service_request, ServiceRequest);
+			add_benchmark!(params, batches, genetic_analysis_orders, GeneticAnalysisOrdersBench::<Runtime>);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)

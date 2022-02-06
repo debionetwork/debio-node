@@ -1387,6 +1387,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "genetic-analysis",
  "genetic-analysis-orders",
+ "genetic-analysis-orders-benchmarking",
  "genetic-analyst-qualifications",
  "genetic-analyst-qualifications-benchmarking",
  "genetic-analyst-services",
@@ -2288,6 +2289,37 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+]
+
+[[package]]
+name = "genetic-analysis-orders-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
+ "genetic-analyst-qualifications",
+ "genetic-analyst-services",
+ "genetic-analysts",
+ "hex-literal",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-duration",
+ "primitives-price-and-currency",
+ "primitives-tracking-id",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analysis",
+ "traits-genetic-analysis-orders",
+ "traits-genetic-analyst-services",
+ "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
