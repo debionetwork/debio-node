@@ -9,10 +9,12 @@ use scale_info::TypeInfo;
 pub enum CurrencyType {
     DAI,
     ETH,
+    DBIO,
+    USDO,
 }
 impl Default for CurrencyType {
     fn default() -> Self {
-        CurrencyType::DAI
+        CurrencyType::DBIO
     }
 }
 

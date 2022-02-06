@@ -12,9 +12,10 @@ use frame_support::{
 pub use pallet::*;
 pub use scale_info::TypeInfo;
 use sp_std::{prelude::*, vec};
-use traits_genetic_analysis::{GeneticAnalysisProvider};
+use traits_genetic_analysis::{GeneticAnalysisTracking, GeneticAnalysisProvider};
 use traits_genetic_analysis_orders::{GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater};
 use traits_genetic_analyst_services::{
+	GeneticAnalystServiceInfo,
 	GeneticAnalystServicesProvider,
 };
 use primitives_price_and_currency::{CurrencyType, Price};
@@ -324,18 +325,18 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 	fn create_genetic_analysis_order(
 		customer_id: &T::AccountId,
-		service_id: &T::Hash,
+		genetic_analyst_service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		let service = T::GeneticAnalystServices::genetic_analyst_service_by_id(service_id);
-		if service.is_none() {
+		let genetic_analyst_service = T::GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst_service_id);
+		if genetic_analyst_service.is_none() {
 			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
 		}
-		let service = service.unwrap();
-		let genetic_analysis_order_id = Self::generate_genetic_analysis_order_id(customer_id, service_id);
-		let seller_id = service.get_owner_id();
-		let prices_by_currency = service.get_prices_by_currency();
+		let genetic_analyst_service = genetic_analyst_service.unwrap();
+		let genetic_analysis_order_id = Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
+		let seller_id = genetic_analyst_service.get_owner_id();
+		let prices_by_currency = genetic_analyst_service.get_prices_by_currency();
 
 		if prices_by_currency.is_empty() ||
 			prices_by_currency.len() - 1 < price_index.try_into().unwrap()
@@ -360,11 +361,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		let genetic_analysis_order = GeneticAnalysisOrder::new(
 			genetic_analysis_order_id,
-			*service_id,
+			*genetic_analyst_service_id,
 			customer_id.clone(),
 			*customer_box_public_key,
 			seller_id.clone(),
-			genetic_analysis.get_tracking_id().clone(),
+			genetic_analysis.get_genetic_analysis_tracking_id().clone(),
 			currency.clone(),
 			prices.clone(),
 			additional_prices.clone(),

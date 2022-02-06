@@ -15,7 +15,7 @@ pub use frame_system::pallet_prelude::*;
 pub use interface::GeneticAnalysisInterface;
 pub use sp_std::fmt::Debug;
 pub use sp_std::prelude::*;
-pub use primitives_tracking_id::TrackingId;
+pub use primitives_tracking_id::{TrackingId, tracking_id_generator};
 pub use traits_genetic_analysis::{GeneticAnalysisTracking, GeneticAnalysisProvider};
 pub use traits_genetic_analysis_orders::{GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater};
 
@@ -234,6 +234,52 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
     type GeneticAnalysisStatus = GeneticAnalysisStatus;
     type Error = Error<T>;
 
+    fn register_genetic_analysis(
+        genetic_analyst_id: &T::AccountId,
+        owner_id: &T::AccountId,
+        genetic_analysis_order_id: &HashOf<T>,
+    ) -> Result<Self::GeneticAnalysis, Self::Error> {
+        let seed = Self::generate_random_seed(genetic_analyst_id, owner_id);
+
+        let mut tries = 10;
+        loop {
+            let tracking_id = tracking_id_generator::generate(seed.clone());
+            let now = pallet_timestamp::Pallet::<T>::get();
+
+            if !GeneticAnalysisStorage::<T>::contains_key(&tracking_id) {
+                let genetic_analysis = GeneticAnalysis::new(
+                    genetic_analyst_id.clone(),
+                    genetic_analysis_order_id.clone(),
+                    tracking_id.clone(),
+                    owner_id.clone(),
+                    Vec::<u8>::new(),
+                    None,
+                    now,
+                );
+                GeneticAnalysisStorage::<T>::insert(&genetic_analysis.genetic_analysis_tracking_id, &genetic_analysis);
+                Self::add_genetic_analysis_by_owner(&genetic_analysis);
+                Self::add_genetic_analysis_by_genetic_analyst(&genetic_analysis);
+
+                return Ok(genetic_analysis);
+            }
+
+            tries += 1;
+            if tries > 10 {
+                return Err(Error::<T>::TrackingIdCollision);
+            }
+        }
+    }
+
+    fn delete_genetic_analysis(tracking_id: &TrackingId) -> Result<Self::GeneticAnalysis, Self::Error> {
+        let genetic_analysis = GeneticAnalysisStorage::<T>::take(tracking_id);
+        if genetic_analysis.is_none() {
+            return Err(Error::<T>::GeneticAnalysisNotFound);
+        }
+        let genetic_analysis = genetic_analysis.unwrap();
+
+        Ok(genetic_analysis)
+    }
+
     fn reject_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         genetic_analysis_tracking_id: &TrackingId,
@@ -333,6 +379,18 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 impl<T: Config> GeneticAnalysisProvider<T> for Pallet<T> {
     type GeneticAnalysis = GeneticAnalysisOf<T>;
     type Error = Error<T>;
+
+    fn register_genetic_analysis(
+        genetic_analyst_id: &T::AccountId,
+        owner_id: &T::AccountId,
+        genetic_analysis_order_id: &HashOf<T>,
+    ) -> Result<Self::GeneticAnalysis, Self::Error> {
+        <Self as GeneticAnalysisInterface<T>>::register_genetic_analysis(genetic_analyst_id, owner_id, genetic_analysis_order_id)
+    }
+
+    fn delete_genetic_analysis(tracking_id: &TrackingId) -> Result<Self::GeneticAnalysis, Self::Error> {
+        <Self as GeneticAnalysisInterface<T>>::delete_genetic_analysis(tracking_id)
+    }
 
     fn genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id: &TrackingId) -> Option<Self::GeneticAnalysis> {
         <Self as GeneticAnalysisInterface<T>>::genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id)
