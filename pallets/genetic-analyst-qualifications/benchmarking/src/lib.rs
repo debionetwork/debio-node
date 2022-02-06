@@ -19,6 +19,7 @@ use genetic_analysts::{
 };
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_support::sp_runtime::SaturatedConversion;
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(GeneticAnalystQualifications<T>);
@@ -44,7 +45,7 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
+			stake_amount: 50000u128.saturated_into(),
 			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, genetic_analyst);
@@ -82,7 +83,7 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
+			stake_amount: 50000u128.saturated_into(),
 			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
@@ -143,7 +144,7 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
+			stake_amount: 50000u128.saturated_into(),
 			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);

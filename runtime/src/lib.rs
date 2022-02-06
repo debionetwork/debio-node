@@ -649,6 +649,7 @@ impl labs::Config for Runtime {
 
 parameter_types! {
 	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
+	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 }
 
 impl rewards::Config for Runtime {
@@ -738,6 +739,7 @@ impl hospital_certifications::Config for Runtime {
 impl genetic_analysts::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
     type GeneticAnalystServices = GeneticAnalystServices;
     type GeneticAnalystQualifications = GeneticAnalystQualifications;
     type EthereumAddress = EthereumAddress;
