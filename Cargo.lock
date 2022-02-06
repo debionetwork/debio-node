@@ -2277,6 +2277,7 @@ dependencies = [
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",
  "scale-info",
@@ -2288,6 +2289,8 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+ "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
