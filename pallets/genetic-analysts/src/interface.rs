@@ -27,6 +27,10 @@ pub trait GeneticAnalystInterface<T: frame_system::Config> {
 		account_id: &T::AccountId,
 		status: &Self::VerificationStatus,
 	) -> Result<Self::GeneticAnalyst, Self::Error>;
+	/// Stake GeneticAnalyst
+	fn stake_genetic_analyst(
+		account_id: &T::AccountId
+	) -> Result<Self::GeneticAnalyst, Self::Error>;
 	/// Delete GeneticAnalyst
 	fn delete_genetic_analyst(
 		account_id: &T::AccountId

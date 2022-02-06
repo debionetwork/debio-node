@@ -261,6 +261,8 @@ pub mod pallet {
 		GeneticAnalystDoesNotExist,
 		/// GeneticAnalyst is not the owner of the qualification
 		GeneticAnalystIsNotOwner,
+		/// Insufficient funds
+		InsufficientFunds,
 		/// Unauthorized access to extrinsic
 		Unauthorized,
 	}
@@ -404,6 +406,26 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		Ok(genetic_analyst)
 	}
 
+	fn stake_genetic_analyst(
+		account_id: &T::AccountId
+	) -> Result<Self::GeneticAnalyst, Self::Error> {
+		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
+		if genetic_analyst == None {
+			return Err(Error::<T>::GeneticAnalystDoesNotExist)
+		}
+		if Self::is_balance_sufficient_for_staking(account_id) {
+			return Err(Error::<T>::InsufficientFunds)
+		}
+		
+		let mut genetic_analyst = genetic_analyst.unwrap();
+		genetic_analyst.info.stake_amount = Self::stake_balance(account_id);
+		genetic_analyst.info.stake_status = StakeStatus::Staked;
+
+		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
+
+		Ok(genetic_analyst)
+	}
+
 	fn delete_genetic_analyst(
 		account_id: &T::AccountId
 	) -> Result<Self::GeneticAnalyst, Self::Error> {
@@ -452,15 +474,15 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Is the balance sufficient for staking
-	pub fn is_balance_sufficient_for_staking(account_id: AccountIdOf<T>) -> bool {
-		let balance = T::Currency::free_balance(&account_id);
-		balance >= 50000u128.saturated_into()
+	pub fn is_balance_sufficient_for_staking(account_id: &AccountIdOf<T>) -> bool {
+		let balance = T::Currency::free_balance(account_id);
+		balance >= 50000000000000000000000u128.saturated_into()
 	}
 
 	/// Stake balance
-	pub fn stake_balance(account_id: AccountIdOf<T>) -> BalanceOf<T> {
-		let balance = 50000u128.saturated_into();
-		let _ = T::Currency::transfer(&account_id, &Self::account_id(), balance, AllowDeath);
+	pub fn stake_balance(account_id: &AccountIdOf<T>) -> BalanceOf<T> {
+		let balance = 50000000000000000000000u128.saturated_into();
+		let _ = T::Currency::transfer(account_id, &Self::account_id(), balance, AllowDeath);
 		Self::set_total_stake_amount();
 		balance
 	}
