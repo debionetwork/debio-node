@@ -430,6 +430,9 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 	}
 }
 
+use frame_support::sp_runtime::SaturatedConversion;
+use frame_support::traits::ExistenceRequirement::AllowDeath;
+
 impl<T: Config> Pallet<T> {
 	// Add genetic_analyst count
 	pub fn add_genetic_analyst_count() {
@@ -446,6 +449,20 @@ impl<T: Config> Pallet<T> {
 	/// The account ID that holds the funds
 	pub fn account_id() -> AccountIdOf<T> {
         T::PalletId::get().into_account()
+	}
+
+	/// Is the balance sufficient for staking
+	pub fn is_balance_sufficient_for_staking(account_id: AccountIdOf<T>) -> bool {
+		let balance = T::Currency::free_balance(&account_id);
+		balance >= 50000u128.saturated_into()
+	}
+
+	/// Stake balance
+	pub fn stake_balance(account_id: AccountIdOf<T>) -> BalanceOf<T> {
+		let balance = 50000u128.saturated_into();
+		let _ = T::Currency::transfer(&account_id, &Self::account_id(), balance, AllowDeath);
+		Self::set_total_stake_amount();
+		balance
 	}
 
 	/// Set current total stake amount
