@@ -1385,6 +1385,8 @@ dependencies = [
  "frame-system",
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
+ "genetic-analysis",
+ "genetic-analysis-orders",
  "genetic-analyst-qualifications",
  "genetic-analyst-qualifications-benchmarking",
  "genetic-analyst-services",

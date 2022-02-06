@@ -270,7 +270,9 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         }
     }
 
-    fn delete_genetic_analysis(tracking_id: &TrackingId) -> Result<Self::GeneticAnalysis, Self::Error> {
+    fn delete_genetic_analysis(
+        tracking_id: &TrackingId
+    ) -> Result<Self::GeneticAnalysis, Self::Error> {
         let genetic_analysis = GeneticAnalysisStorage::<T>::take(tracking_id);
         if genetic_analysis.is_none() {
             return Err(Error::<T>::GeneticAnalysisNotFound);
@@ -360,18 +362,27 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 
         GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
 
+        T::GeneticAnalysisOrders::emit_event_genetic_analysis_order_failed(&genetic_analysis.genetic_analysis_order_id);
+        T::GeneticAnalysisOrders::update_status_failed(&genetic_analysis.genetic_analysis_order_id);
+
         Ok(genetic_analysis)
     }
 
-    fn genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id: &TrackingId) -> Option<Self::GeneticAnalysis> {
+    fn genetic_analysis_by_genetic_analysis_tracking_id(
+        genetic_analysis_tracking_id: &TrackingId
+    ) -> Option<Self::GeneticAnalysis> {
         Self::genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id)
     }
 
-    fn genetic_analysis_by_owner_id(owner_id: &T::AccountId) -> Option<Vec<TrackingId>> {
+    fn genetic_analysis_by_owner_id(
+        owner_id: &T::AccountId
+    ) -> Option<Vec<TrackingId>> {
         Self::genetic_analysis_by_owner_id(owner_id)
     }
 
-    fn genetic_analysis_by_genetic_analyst_id(genetic_analyst_id: &T::AccountId) -> Option<Vec<TrackingId>> {
+    fn genetic_analysis_by_genetic_analyst_id(
+        genetic_analyst_id: &T::AccountId
+    ) -> Option<Vec<TrackingId>> {
         Self::genetic_analysis_by_genetic_analyst_id(genetic_analyst_id)
     }
 }
@@ -388,17 +399,24 @@ impl<T: Config> GeneticAnalysisProvider<T> for Pallet<T> {
         <Self as GeneticAnalysisInterface<T>>::register_genetic_analysis(genetic_analyst_id, owner_id, genetic_analysis_order_id)
     }
 
-    fn delete_genetic_analysis(tracking_id: &TrackingId) -> Result<Self::GeneticAnalysis, Self::Error> {
+    fn delete_genetic_analysis(
+        tracking_id: &TrackingId
+    ) -> Result<Self::GeneticAnalysis, Self::Error> {
         <Self as GeneticAnalysisInterface<T>>::delete_genetic_analysis(tracking_id)
     }
 
-    fn genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id: &TrackingId) -> Option<Self::GeneticAnalysis> {
+    fn genetic_analysis_by_genetic_analysis_tracking_id(
+        genetic_analysis_tracking_id: &TrackingId
+    ) -> Option<Self::GeneticAnalysis> {
         <Self as GeneticAnalysisInterface<T>>::genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id)
     }
 }
 
 impl<T: Config> Pallet<T> {
-    pub fn generate_random_seed(creator_id: &T::AccountId, owner_id: &T::AccountId) -> Vec<u8> {
+    pub fn generate_random_seed(
+        creator_id: &T::AccountId, 
+        owner_id: &T::AccountId
+    ) -> Vec<u8> {
         let creator_info = frame_system::Pallet::<T>::account(creator_id);
         let creator_nonce = creator_info.nonce.clone();
         let owner_info = frame_system::Pallet::<T>::account(owner_id);
@@ -412,7 +430,9 @@ impl<T: Config> Pallet<T> {
         T::RandomnessSource::random(&seed).encode()
     }
 
-    pub fn add_genetic_analysis_by_owner(genetic_analysis: &GeneticAnalysisOf<T>) {
+    pub fn add_genetic_analysis_by_owner(
+        genetic_analysis: &GeneticAnalysisOf<T>
+    ) {
         match GeneticAnalysisByOwner::<T>::get(&genetic_analysis.owner_id) {
             None => {
                 let mut genetic_analysis_tracking_ids = Vec::<TrackingId>::new();
@@ -426,7 +446,9 @@ impl<T: Config> Pallet<T> {
         }
     }
 
-    pub fn add_genetic_analysis_by_genetic_analyst(genetic_analysis: &GeneticAnalysisOf<T>) {
+    pub fn add_genetic_analysis_by_genetic_analyst(
+        genetic_analysis: &GeneticAnalysisOf<T>
+    ) {
         match GeneticAnalysisByGeneticAnalyst::<T>::get(&genetic_analysis.owner_id) {
             None => {
                 let mut genetic_analysis_tracking_ids = Vec::<TrackingId>::new();

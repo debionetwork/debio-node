@@ -676,27 +676,10 @@ impl doctors::Config for Runtime {
 	type WeightInfo = ();
 }
 
-impl genetic_analysts::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type GeneticAnalystServices = GeneticAnalystServices;
-    type GeneticAnalystQualifications = GeneticAnalystQualifications;
-    type EthereumAddress = EthereumAddress;
-    type UserProfile = UserProfile;
-	type GeneticAnalystWeightInfo = ();
-}
-
 impl services::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
     type ServiceOwner = Labs;
-	type WeightInfo = ();
-}
-
-impl genetic_analyst_services::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type GeneticAnalystServiceOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
@@ -734,11 +717,6 @@ impl electronic_medical_record::Config for Runtime {
 	type ElectronicMedicalRecordWeightInfo = ();
 }
 
-impl genetic_data::Config for Runtime {
-    type Event = Event;
-	type GeneticDataWeightInfo = ();
-}
-
 impl certifications::Config for Runtime {
     type Event = Event;
 	type CertificationOwner = Labs;
@@ -751,16 +729,53 @@ impl doctor_certifications::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl hospital_certifications::Config for Runtime {
+    type Event = Event;
+	type HospitalCertificationOwner = Hospitals;
+	type WeightInfo = ();
+}
+
+impl genetic_analysts::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type GeneticAnalystServices = GeneticAnalystServices;
+    type GeneticAnalystQualifications = GeneticAnalystQualifications;
+    type EthereumAddress = EthereumAddress;
+    type UserProfile = UserProfile;
+	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_analyst_services::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type GeneticAnalystServiceOwner = GeneticAnalysts;
+	type WeightInfo = ();
+}
+
+impl genetic_data::Config for Runtime {
+    type Event = Event;
+	type GeneticDataWeightInfo = ();
+}
+
 impl genetic_analyst_qualifications::Config for Runtime {
     type Event = Event;
 	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
-impl hospital_certifications::Config for Runtime {
+impl genetic_analysis::Config for Runtime {
     type Event = Event;
-	type HospitalCertificationOwner = Hospitals;
-	type WeightInfo = ();
+    type RandomnessSource = RandomnessCollectiveFlip;
+    type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type GeneticAnalysisWeightInfo = ();
+}
+
+impl genetic_analysis_orders::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type GeneticAnalysis = GeneticAnalysis;
+    type GeneticAnalystServices = GeneticAnalystServices;
+	type GeneticAnalysisOrdersWeightInfo = ();
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -801,12 +816,14 @@ construct_runtime!(
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 		Doctors: doctors::{Pallet, Call, Storage, Event<T>},
 		DoctorCertifications: doctor_certifications::{Pallet, Call, Storage, Event<T>},
+		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
+		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
 		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
-		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
-		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
 );
 
