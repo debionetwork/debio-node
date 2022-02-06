@@ -2261,22 +2261,31 @@ dependencies = [
 ]
 
 [[package]]
-name = "genetic-analysis-orders"
+name = "genetic-analysis-genetic-analysis-orderss"
 version = "0.1.0"
 dependencies = [
  "chrono",
  "frame-support",
  "frame-system",
+ "genetic-analysis",
+ "genetic-analyst-qualifications",
+ "genetic-analyst-services",
+ "genetic-analysts",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-price-and-currency",
+ "primitives-tracking-id",
  "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-genetic-analysis",
+ "traits-genetic-analysis-orders",
+ "traits-genetic-analyst-services",
 ]
 
 [[package]]
