@@ -42,7 +42,7 @@ primitives-duration = { path = '../../../primitives/duration', default-features 
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
 
 traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
-traits-genetic-analyst-qualifications = { path = '../../../traits/genetic-analyst-qualifications', default-features = false }
+traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
