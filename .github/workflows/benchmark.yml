@@ -1,0 +1,132 @@
+name: Benchmark automation
+
+on:
+  issue_comment:
+    types:
+    - created
+
+concurrency:
+  group: benchmark-automation
+
+jobs:
+  compute-build-info:
+    runs-on: ubuntu-latest
+    outputs:
+      sha_short: ${{ steps.build-info.outputs.sha_short }}
+      date: ${{ steps.build-info.outputs.date }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Compute build info
+        id: build-info
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=date::$(date +'%Y%m%d')"
+
+  start-runner:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.DEV_GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.DEV_GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: start runner
+        run: gcloud compute instances start github-runner --zone=asia-southeast1-b
+
+  self-host:
+    runs-on: [self-hosted, blockchain]
+    needs: [compute-build-info, start-runner]
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
+    steps:
+      - uses: actions/github-script@v3
+        id: get-pr
+        with:
+          script: |
+            const request = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            }
+            core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
+            try {
+              const result = await github.pulls.get(request)
+              return result.data
+            } catch (err) {
+              core.setFailed(`Request failed with error ${err}`)
+            }
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
+          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }} # or .head.sha, .head.ref for branch name
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+          override: true
+          default: true
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v1.3.0
+      - name: benchmarking
+        run: |
+          cargo +nightly run --release --features=runtime-benchmarks --locked -- benchmark \
+              --chain=dev \
+              --execution=wasm \
+              --wasm-execution=compiled \
+              --pallet="electronic-medical-record" \
+              --extrinsic="*" \
+              --steps=20 \
+              --repeat=10 \
+              --heap-pages=4096 \
+              --raw \
+              --output="./pallets/electronic-medical-record/src/weights.rs" \
+              --template="./.maintain/pallet-weight-template.hbs"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.DEBIO_DEVOPS_GITHUB_TOKEN }}
+          commit-message: Update Benchmark
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: benchmark
+          delete-branch: true
+          title: "Update Benchmark"
+          body: |
+            Update benchmark
+
+            :crown: *An automated PR*
+          labels: benchmark
+          assignees: debio-devops
+          draft: false
+
+  stop-runner:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
+    needs: [self-host]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.DEV_GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.DEV_GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: stop runner
+        run: gcloud compute instances stop github-runner --zone=asia-southeast1-b
