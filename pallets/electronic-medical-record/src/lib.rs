@@ -491,7 +491,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     fn electronic_medical_record_by_owner_id(
         owner_id: &T::AccountId,
     ) -> Option<Vec<T::Hash>> {
-        ElectronicMedicalRecordByOwner::<T>::get(owner_id).map(|electronic_medical_record_vec| electronic_medical_record_vec)
+        ElectronicMedicalRecordByOwner::<T>::get(owner_id)
     }
 
     fn electronic_medical_record_count_by_owner(owner_id: &T::AccountId) -> u64 {

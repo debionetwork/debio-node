@@ -19,8 +19,8 @@ pub trait GeneticAnalysisInterface<T: frame_system::Config> {
     fn reject_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         tracking_id: &TrackingId,
-        rejected_title: &Vec<u8>,
-        rejected_description: &Vec<u8>,
+        rejected_title: &[u8],
+        rejected_description: &[u8],
     ) -> Result<Self::GeneticAnalysis, Self::Error>;
     fn process_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
@@ -30,7 +30,7 @@ pub trait GeneticAnalysisInterface<T: frame_system::Config> {
     fn submit_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         tracking_id: &TrackingId,
-        report_link: &Vec<u8>,
+        report_link: &[u8],
         comment: &Option<Vec<u8>>,
     ) -> Result<Self::GeneticAnalysis, Self::Error>;
 

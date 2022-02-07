@@ -63,7 +63,7 @@ impl<AccountId, Hash, Moment: Copy> GeneticAnalysis<AccountId, Hash, Moment> {
             comment: None,
             rejected_title: None,
             rejected_description: None,
-            created_at: created_at,
+            created_at,
             updated_at: created_at,
             status: GeneticAnalysisStatus::default(),
         }
@@ -169,10 +169,10 @@ pub mod pallet {
                 &rejected_description,
             ) {
                 Ok(genetic_analysis) => {
-                    Self::deposit_event(Event::<T>::GeneticAnalysisRejected(genetic_analysis.clone()));
+                    Self::deposit_event(Event::<T>::GeneticAnalysisRejected(genetic_analysis));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -190,16 +190,15 @@ pub mod pallet {
                 status.clone(),
             ) {
                 Ok(genetic_analysis) => {
-                    match status {
-                        GeneticAnalysisStatus::ResultReady => Self::deposit_event(
-                            Event::<T>::GeneticAnalysisResultReady(genetic_analysis.clone()),
-                        ),
-                        _ => (),
+                    if status == GeneticAnalysisStatus::ResultReady {
+                        Self::deposit_event(
+                            Event::<T>::GeneticAnalysisResultReady(genetic_analysis),
+                        )
                     }
 
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -220,11 +219,11 @@ pub mod pallet {
             ) {
                 Ok(genetic_analysis) => {
                     Self::deposit_event(Event::<T>::GeneticAnalysisSubmitted(
-                        genetic_analysis.clone(),
+                        genetic_analysis,
                     ));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
     }
@@ -250,8 +249,8 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
             if !GeneticAnalysisStorage::<T>::contains_key(&tracking_id) {
                 let genetic_analysis = GeneticAnalysis::new(
                     genetic_analyst_id.clone(),
-                    genetic_analysis_order_id.clone(),
-                    tracking_id.clone(),
+                    *genetic_analysis_order_id,
+                    tracking_id,
                     owner_id.clone(),
                     now,
                 );
@@ -284,8 +283,8 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
     fn reject_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         genetic_analysis_tracking_id: &TrackingId,
-        rejected_title: &Vec<u8>,
-        rejected_description: &Vec<u8>,
+        rejected_title: &[u8],
+        rejected_description: &[u8],
     ) -> Result<Self::GeneticAnalysis, Self::Error> {
         let genetic_analysis = GeneticAnalysisStorage::<T>::get(genetic_analysis_tracking_id);
         if genetic_analysis.is_none() {
@@ -298,8 +297,8 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        genetic_analysis.rejected_title = Some(rejected_title.clone());
-        genetic_analysis.rejected_description = Some(rejected_description.clone());
+        genetic_analysis.rejected_title = Some(rejected_title.to_vec());
+        genetic_analysis.rejected_description = Some(rejected_description.to_vec());
         genetic_analysis.status = GeneticAnalysisStatus::Rejected;
         genetic_analysis.updated_at = now;
 
@@ -331,7 +330,7 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        genetic_analysis.status = status.clone();
+        genetic_analysis.status = status;
         genetic_analysis.updated_at = now;
         GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
 
@@ -341,7 +340,7 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
     fn submit_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         genetic_analysis_tracking_id: &TrackingId,
-        report_link: &Vec<u8>,
+        report_link: &[u8],
         comment: &Option<Vec<u8>>,
     ) -> Result<Self::GeneticAnalysis, Self::Error> {
         let genetic_analysis = GeneticAnalysisStorage::<T>::get(genetic_analysis_tracking_id);
@@ -355,7 +354,7 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        genetic_analysis.report_link = report_link.clone();
+        genetic_analysis.report_link = report_link.to_vec();
         genetic_analysis.comment = comment.clone();
         genetic_analysis.updated_at = now;
 
@@ -417,9 +416,9 @@ impl<T: Config> Pallet<T> {
         owner_id: &T::AccountId
     ) -> Vec<u8> {
         let creator_info = frame_system::Pallet::<T>::account(creator_id);
-        let creator_nonce = creator_info.nonce.clone();
+        let creator_nonce = creator_info.nonce;
         let owner_info = frame_system::Pallet::<T>::account(owner_id);
-        let owner_nonce = owner_info.nonce.clone();
+        let owner_nonce = owner_info.nonce;
 
         let mut seed = creator_id.encode();
         seed.append(&mut creator_nonce.encode());
@@ -434,8 +433,7 @@ impl<T: Config> Pallet<T> {
     ) {
         match GeneticAnalysisByOwner::<T>::get(&genetic_analysis.owner_id) {
             None => {
-                let mut genetic_analysis_tracking_ids = Vec::<TrackingId>::new();
-                genetic_analysis_tracking_ids.push(genetic_analysis.genetic_analysis_tracking_id.clone());
+                let genetic_analysis_tracking_ids = vec![genetic_analysis.genetic_analysis_tracking_id.clone()];
                 GeneticAnalysisByOwner::<T>::insert(&genetic_analysis.owner_id, genetic_analysis_tracking_ids);
             }
             Some(mut genetic_analysis_tracking_ids) => {
@@ -450,8 +448,7 @@ impl<T: Config> Pallet<T> {
     ) {
         match GeneticAnalysisByGeneticAnalyst::<T>::get(&genetic_analysis.owner_id) {
             None => {
-                let mut genetic_analysis_tracking_ids = Vec::<TrackingId>::new();
-                genetic_analysis_tracking_ids.push(genetic_analysis.genetic_analysis_tracking_id.clone());
+                let genetic_analysis_tracking_ids = vec![genetic_analysis.genetic_analysis_tracking_id.clone()];
                 GeneticAnalysisByGeneticAnalyst::<T>::insert(&genetic_analysis.genetic_analyst_id, genetic_analysis_tracking_ids);
             }
             Some(mut genetic_analysis_tracking_ids) => {
