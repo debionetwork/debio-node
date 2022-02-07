@@ -1,5 +1,13 @@
-use crate::{mock::*, GeneticAnalyst, GeneticAnalystInfo, StakeStatus, Error};
+use crate::{
+	mock::*, 
+	GeneticAnalyst,
+	GeneticAnalystInfo,
+	StakeStatus,
+	GeneticAnalystVerifierKey,
+	Error
+};
 use primitives_verification_status::VerificationStatus;
+use frame_system::RawOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_support::sp_runtime::SaturatedConversion;
 
@@ -309,5 +317,359 @@ fn call_event_should_work() {
 			},
 			1,
 		)));
+	})
+}
+
+#[test]
+fn update_genetic_analyst_verification_status_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
+			Origin::signed(1),
+		));
+
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
+			Origin::signed(2),
+			1,
+			VerificationStatus::Verified,
+		));
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 50000000000000000000000u128.saturated_into(),
+				stake_status: StakeStatus::Staked,
+				verification_status: VerificationStatus::Verified,
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn update_genetic_analyst_verification_status_reject_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
+			Origin::signed(1),
+		));
+
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
+			Origin::signed(2),
+			1,
+			VerificationStatus::Rejected,
+		));
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::Unstaked,
+				verification_status: VerificationStatus::Rejected,
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn cant_update_genetic_analyst_verification_status_reject_unstaked() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_noop!(
+			GeneticAnalysts::update_genetic_analyst_verification_status(
+				Origin::signed(2),
+				1,
+				VerificationStatus::Verified,
+			),
+			Error::<Test>::GeneticAnalystIsNotStaked
+		);
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn cant_update_genetic_analyst_verification_status_when_not_admin() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		assert_noop!(
+			GeneticAnalysts::update_genetic_analyst_verification_status(
+				Origin::signed(2),
+				1,
+				VerificationStatus::Verified,
+			),
+			Error::<Test>::Unauthorized
+		);
+	})
+}
+
+#[test]
+fn cant_update_genetic_analyst_verification_status_when_not_exist() {
+	ExternalityBuilder::build().execute_with(|| {
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_noop!(
+			GeneticAnalysts::update_genetic_analyst_verification_status(
+				Origin::signed(2),
+				1,
+				VerificationStatus::Verified,
+			),
+			Error::<Test>::GeneticAnalystDoesNotExist
+		);
+	})
+}
+
+#[test]
+fn stake_genetic_analyst_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
+			Origin::signed(1),
+		));
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 50000000000000000000000u128.saturated_into(),
+				stake_status: StakeStatus::Staked,
+				verification_status: VerificationStatus::default(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn cant_stake_genetic_analyst_when_not_exist() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_noop!(
+			GeneticAnalysts::stake_genetic_analyst(
+				Origin::signed(1),
+			),
+			Error::<Test>::GeneticAnalystDoesNotExist
+		);
+	})
+}
+
+#[test]
+fn cant_stake_genetic_analyst_when_insufficient_funds() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		assert_noop!(
+			GeneticAnalysts::stake_genetic_analyst(
+				Origin::signed(1),
+			),
+			Error::<Test>::InsufficientFunds
+		);
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn cant_stake_genetic_analyst_when_already_staked() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
+			Origin::signed(1),
+		));
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 50000000000000000000000u128.saturated_into(),
+				stake_status: StakeStatus::Staked,
+				verification_status: VerificationStatus::default(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				}
+			})
+		);
+
+		assert_noop!(
+			GeneticAnalysts::stake_genetic_analyst(
+				Origin::signed(1),
+			),
+			Error::<Test>::GeneticAnalystAlreadyStaked
+		);
 	})
 }
