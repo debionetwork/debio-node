@@ -31,6 +31,7 @@ use sp_std::marker::PhantomData;
 pub trait WeightInfo {
 	fn register_genetic_analyst() -> Weight;
 	fn update_genetic_analyst() -> Weight;
+	fn update_genetic_analyst_verification_status() -> Weight;
 	fn deregister_genetic_analyst() -> Weight;
 }
 
@@ -46,6 +47,12 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst() -> Weight {
+		30_515_000_u64
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	fn update_genetic_analyst_verification_status() -> Weight {
 		30_515_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
@@ -70,6 +77,12 @@ impl WeightInfo for () {
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst() -> Weight {
+		30_515_000_u64
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	fn update_genetic_analyst_verification_status() -> Weight {
 		30_515_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))

@@ -4,7 +4,7 @@ mod mock;
 mod tests {
 	use crate::mock::*;
 
-	use genetic_analysts::{GeneticAnalystInfo, StakeStatus};
+	use genetic_analysts::GeneticAnalystInfo;
 	use genetic_analyst_services::{
 		Error, 
 		GeneticAnalystService, GeneticAnalystServiceInfo
@@ -30,8 +30,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 
@@ -91,8 +89,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 			
@@ -166,8 +162,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 			
@@ -234,8 +228,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 
@@ -273,8 +265,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 			
@@ -327,8 +317,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 
@@ -357,8 +345,6 @@ mod tests {
 					email: "Email".as_bytes().to_vec(),
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					stake_amount: 100,
-					stake_status: StakeStatus::default(),
 				}
 			));
 			

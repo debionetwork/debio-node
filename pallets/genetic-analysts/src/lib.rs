@@ -20,19 +20,44 @@ mod benchmarking;
 
 pub mod interface;
 pub use crate::interface::GeneticAnalystInterface;
-use frame_support::pallet_prelude::*;
+use frame_support::{
+	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	pallet_prelude::*,
+	sp_runtime::{
+		traits::{AccountIdConversion},
+		RuntimeDebug,
+	},
+	PalletId,
+};
 use traits_genetic_analyst_qualifications::GeneticAnalystQualificationOwnerInfo;
 use traits_genetic_analyst_services::GeneticAnalystServiceOwnerInfo;
+use primitives_verification_status::{VerificationStatus, VerificationStatusTrait};
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum StakeStatus {
 	Staked,
-	WaitingForStaked,
+	WaitingForUnstaked,
 	Unstaked,
 }
 impl Default for StakeStatus {
 	fn default() -> Self {
 		StakeStatus::Unstaked
+	}
+}
+pub trait StakeStatusTrait {
+	fn is_staked(&self) -> bool;
+	fn is_waiting_for_staked(&self) -> bool;
+	fn is_unstaked(&self) -> bool;
+}
+impl StakeStatusTrait for StakeStatus {
+	fn is_staked(&self) -> bool {
+		matches!(*self, StakeStatus::Staked)
+	}
+	fn is_waiting_for_staked(&self) -> bool {
+		matches!(*self, StakeStatus::WaitingForUnstaked)
+	}
+	fn is_unstaked(&self) -> bool {
+		matches!(*self, StakeStatus::Unstaked)
 	}
 }
 
@@ -47,14 +72,12 @@ pub struct GeneticAnalystInfo<Moment> {
 	pub email: Vec<u8>,
 	pub phone_number: Vec<u8>,
 	pub specialization: Vec<u8>,
-	pub stake_amount: i64,
-	pub stake_status: StakeStatus,
 }
 
 // GeneticAnalyst Struct
 // the fields (excluding account_id and qualifications) come from GeneticAnalystInfo struct
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct GeneticAnalyst<AccountId, Hash, Moment>
+pub struct GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 {
@@ -62,9 +85,12 @@ where
 	pub services: Vec<Hash>,
 	pub qualifications: Vec<Hash>,
 	pub info: GeneticAnalystInfo<Moment>,
+	pub stake_amount: Balance,
+	pub stake_status: StakeStatus,
+	pub verification_status: VerificationStatus,
 }
 
-impl<AccountId, Hash, Moment> GeneticAnalyst<AccountId, Hash, Moment>
+impl<AccountId, Hash, Moment, Balance: Default> GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 {
@@ -73,7 +99,10 @@ where
 			account_id, 
 			services: Vec::<Hash>::new(), 
 			qualifications: Vec::<Hash>::new(), 
-			info 
+			info,
+			stake_amount: Balance::default(),
+			stake_status: StakeStatus::default(),
+			verification_status: VerificationStatus::default()
 		}
 	}
 
@@ -106,7 +135,7 @@ where
 	}
 }
 
-impl<T, AccountId, Hash, Moment> GeneticAnalystServiceOwnerInfo<T> for GeneticAnalyst<AccountId, Hash, Moment>
+impl<T, AccountId, Hash, Moment, Balance: Default> GeneticAnalystServiceOwnerInfo<T> for GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 	T: frame_system::Config<AccountId = AccountId>,
@@ -116,7 +145,7 @@ where
 	}
 }
 
-impl<T, AccountId, Hash, Moment> GeneticAnalystQualificationOwnerInfo<T> for GeneticAnalyst<AccountId, Hash, Moment>
+impl<T, AccountId, Hash, Moment, Balance: Default> GeneticAnalystQualificationOwnerInfo<T> for GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 	T: frame_system::Config<AccountId = AccountId>,
@@ -161,6 +190,8 @@ pub mod pallet {
 			+ sp_std::fmt::Debug;
 		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
 		type GeneticAnalystWeightInfo: WeightInfo;
+        /// Currency type for this pallet.
+        type PalletId: Get<PalletId>;
 	}
 
 	// ----- This is template code, every pallet needs this ---
@@ -175,10 +206,10 @@ pub mod pallet {
 	// ---- Types ----------------------
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
-	pub type GeneticAnalystOf<T> = GeneticAnalyst<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
     pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
 	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
+	pub type GeneticAnalystOf<T> = GeneticAnalyst<AccountIdOf<T>, HashOf<T>, MomentOf<T>, BalanceOf<T>>;
 
 	// ----- Storage ------------------
 	/// Get GeneticAnalyst by account id
@@ -192,7 +223,35 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn genetic_analyst_count)]
 	pub type GeneticAnalystCount<T> = StorageValue<_, u64>;
-	// -----------------------------------
+
+	#[pallet::storage]
+	#[pallet::getter(fn admin_key)]
+	pub type GeneticAnalystVerifierKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn total_stake_amount)]
+	pub type TotalStakeAmount<T> = StorageValue<_, BalanceOf<T>>;
+	// -----------------------------------------
+
+	// ----- Genesis Configs ------------------
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config> {
+		pub genetic_analyst_verifier_key: T::AccountId,
+	}
+
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { genetic_analyst_verifier_key: Default::default() }
+		}
+	}
+
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+			GeneticAnalystVerifierKey::<T>::put(&self.genetic_analyst_verifier_key);
+		}
+	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -206,6 +265,15 @@ pub mod pallet {
 		/// GeneticAnalyst deleted
 		/// parameters. [GeneticAnalyst, who]
 		GeneticAnalystDeleted(GeneticAnalystOf<T>, AccountIdOf<T>),
+		/// GeneticAnalyst verification updated
+		/// parameters. [GeneticAnalyst, who]
+		GeneticAnalystUpdateVerificationStatus(GeneticAnalystOf<T>, AccountIdOf<T>),
+		/// GeneticAnalyst stake successful
+		/// parameters. [GeneticAnalyst, who]
+		GeneticAnalystStakeSuccessful(GeneticAnalystOf<T>, AccountIdOf<T>),
+		/// GeneticAnalyst verification failed
+		/// parameters. [GeneticAnalyst, who]
+		GeneticAnalystverificationFailed(GeneticAnalystOf<T>, AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -213,10 +281,22 @@ pub mod pallet {
 	pub enum Error<T> {
 		/// Account already has genetic_analyst registered
 		GeneticAnalystAlreadyRegistered,
+		/// Account already has genetic_analyst staked
+		GeneticAnalystAlreadyStaked,
 		/// GeneticAnalyst identified by the AccountId does not exist
 		GeneticAnalystDoesNotExist,
 		/// GeneticAnalyst is not the owner of the qualification
 		GeneticAnalystIsNotOwner,
+		/// GeneticAnalyst verification failed
+		GeneticAnalystverificationFailed,
+		/// Insufficient funds
+		InsufficientFunds,
+		/// Insufficient pallet funds
+		InsufficientPalletFunds,
+		/// Unauthorized access to extrinsic
+		Unauthorized,
+		// Bad signature
+		BadSignature,
 	}
 
 	#[pallet::call]
@@ -254,7 +334,9 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::GeneticAnalystWeightInfo::deregister_genetic_analyst())]
-		pub fn deregister_genetic_analyst(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+		pub fn deregister_genetic_analyst(
+			origin: OriginFor<T>
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// Check if user is a genetic_analyst
 			let genetic_analyst = Self::genetic_analyst_by_account_id(&who);
@@ -270,6 +352,44 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
+
+		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
+		pub fn update_genetic_analyst_verification_status(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+			status: VerificationStatus,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystInterface<T>>::update_genetic_analyst_verification_status(
+				&who,
+				&account_id,
+				&status,
+			) {
+				Ok(genetic_analyst) => {
+					Self::deposit_event(Event::GeneticAnalystUpdateVerificationStatus(genetic_analyst, who.clone()));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
+		pub fn stake_genetic_analyst(
+			origin: OriginFor<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystInterface<T>>::stake_genetic_analyst(
+				&who,
+			) {
+				Ok(genetic_analyst) => {
+					Self::deposit_event(Event::GeneticAnalystStakeSuccessful(genetic_analyst, who.clone()));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
 	}
 }
 
@@ -277,6 +397,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type GeneticAnalystInfo = GeneticAnalystInfo<MomentOf<T>>;
 	type GeneticAnalyst = GeneticAnalystOf<T>;
+	type VerificationStatus = VerificationStatus;
 
 	fn create_genetic_analyst(
 		account_id: &T::AccountId,
@@ -312,7 +433,79 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		Ok(genetic_analyst)
 	}
 
-	fn delete_genetic_analyst(account_id: &T::AccountId) -> Result<Self::GeneticAnalyst, Self::Error> {
+	fn update_genetic_analyst_verification_status(
+		genetic_analyst_verifier_key: &T::AccountId,
+		account_id: &T::AccountId,
+		status: &Self::VerificationStatus,
+	) -> Result<Self::GeneticAnalyst, Self::Error> {
+		if genetic_analyst_verifier_key.clone() != GeneticAnalystVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
+		if genetic_analyst == None {
+			return Err(Error::<T>::GeneticAnalystDoesNotExist)
+		}
+
+		let mut genetic_analyst = genetic_analyst.unwrap();
+		genetic_analyst.verification_status = status.clone();
+		
+		if status.is_rejected() {
+			let refund_amount = genetic_analyst.stake_amount.saturated_into();
+			if !Self::is_pallet_balance_sufficient_for_refund(refund_amount) {
+				return Err(Error::<T>::InsufficientPalletFunds)
+			}
+	
+			match CurrencyOf::<T>::withdraw(
+				&Self::account_id(),
+				refund_amount,
+				WithdrawReasons::TRANSFER,
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(imb) => {
+					CurrencyOf::<T>::resolve_creating(account_id, imb);
+			
+					genetic_analyst.stake_amount = 0u128.saturated_into();
+					genetic_analyst.stake_status = StakeStatus::Unstaked;
+			
+					Self::set_total_stake_amount();
+				},
+				_ => return Err(Error::<T>::BadSignature),
+			}
+		}
+
+		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
+		
+		Ok(genetic_analyst)
+	}
+
+	fn stake_genetic_analyst(
+		account_id: &T::AccountId
+	) -> Result<Self::GeneticAnalyst, Self::Error> {
+		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
+		if genetic_analyst == None {
+			return Err(Error::<T>::GeneticAnalystDoesNotExist)
+		}
+		if !Self::is_balance_sufficient_for_staking(account_id) {
+			return Err(Error::<T>::InsufficientFunds)
+		}
+		
+		let mut genetic_analyst = genetic_analyst.unwrap();
+		if genetic_analyst.stake_status.is_staked() || genetic_analyst.stake_status.is_waiting_for_staked() {
+			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
+		}
+
+		genetic_analyst.stake_amount = Self::stake_balance(account_id);
+		genetic_analyst.stake_status = StakeStatus::Staked;
+
+		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
+
+		Ok(genetic_analyst)
+	}
+
+	fn delete_genetic_analyst(
+		account_id: &T::AccountId
+	) -> Result<Self::GeneticAnalyst, Self::Error> {
 		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
 		if genetic_analyst == None {
 			return Err(Error::<T>::GeneticAnalystDoesNotExist)
@@ -329,10 +522,15 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		Ok(genetic_analyst)
 	}
 
-	fn genetic_analyst_by_account_id(account_id: &T::AccountId) -> Option<Self::GeneticAnalyst> {
+	fn genetic_analyst_by_account_id(
+		account_id: &T::AccountId
+	) -> Option<Self::GeneticAnalyst> {
 		Self::genetic_analyst_by_account_id(account_id)
 	}
 }
+
+use frame_support::sp_runtime::SaturatedConversion;
+use frame_support::traits::ExistenceRequirement::AllowDeath;
 
 impl<T: Config> Pallet<T> {
 	// Add genetic_analyst count
@@ -346,10 +544,49 @@ impl<T: Config> Pallet<T> {
 		let genetic_analyst_count = <GeneticAnalystCount<T>>::get().unwrap_or(1);
 		GeneticAnalystCount::<T>::put(genetic_analyst_count - 1);
 	}
+
+	/// The account ID that holds the funds
+	pub fn account_id() -> AccountIdOf<T> {
+        T::PalletId::get().into_account()
+	}
+
+	pub fn get_balance_by_account_id(account_id: &AccountIdOf<T>) -> BalanceOf<T> {
+		T::Currency::free_balance(account_id)
+	}
+
+	pub fn get_required_stake_balance() -> BalanceOf<T> {
+		50000000000000000000000u128.saturated_into()
+	}
+
+	/// Is the balance sufficient for staking
+	pub fn is_balance_sufficient_for_staking(account_id: &AccountIdOf<T>) -> bool {
+		let balance = T::Currency::free_balance(account_id);
+		balance >= Self::get_required_stake_balance()
+	}
+
+	/// Stake balance
+	pub fn stake_balance(account_id: &AccountIdOf<T>) -> BalanceOf<T> {
+		let balance = Self::get_required_stake_balance();
+		let _ = T::Currency::transfer(account_id, &Self::account_id(), balance, AllowDeath);
+		Self::set_total_stake_amount();
+		balance
+	}
+
+	/// Is the pallet balance sufficient for refund
+	pub fn is_pallet_balance_sufficient_for_refund(refund_amount: BalanceOf<T>) -> bool {
+		let balance = T::Currency::free_balance(&Self::account_id());
+		balance >= refund_amount
+	}
+
+	/// Set current total stake amount
+	pub fn set_total_stake_amount() {
+		let balance = T::Currency::free_balance(&Self::account_id());
+		TotalStakeAmount::<T>::put(balance);
+	}
 }
 
 impl<T: Config> GeneticAnalystServiceOwner<T> for Pallet<T> {
-	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>>;
+	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
 	/// User can create genetic_analyst_service if he/she is a genetic_analyst and has set ethereum address
 	fn can_create_genetic_analyst_service(user_id: &T::AccountId) -> bool {
@@ -382,7 +619,7 @@ impl<T: Config> GeneticAnalystServiceOwner<T> for Pallet<T> {
 }
 
 impl<T: Config> GeneticAnalystQualificationOwner<T> for Pallet<T> {
-	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>>;
+	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
 	/// User can create qualification if he/she is a genetic_analyst
 	fn can_create_qualification(user_id: &T::AccountId) -> bool {

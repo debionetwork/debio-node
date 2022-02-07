@@ -1,4 +1,4 @@
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -85,6 +85,7 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -98,6 +99,7 @@ impl pallet_timestamp::Config for Test {
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
