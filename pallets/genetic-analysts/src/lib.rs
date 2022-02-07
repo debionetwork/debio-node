@@ -36,7 +36,7 @@ use primitives_verification_status::{VerificationStatus, VerificationStatusTrait
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum StakeStatus {
 	Staked,
-	WaitingForStaked,
+	WaitingForUnstaked,
 	Unstaked,
 }
 impl Default for StakeStatus {
@@ -54,7 +54,7 @@ impl StakeStatusTrait for StakeStatus {
 		matches!(*self, StakeStatus::Staked)
 	}
 	fn is_waiting_for_staked(&self) -> bool {
-		matches!(*self, StakeStatus::WaitingForStaked)
+		matches!(*self, StakeStatus::WaitingForUnstaked)
 	}
 	fn is_unstaked(&self) -> bool {
 		matches!(*self, StakeStatus::Unstaked)
