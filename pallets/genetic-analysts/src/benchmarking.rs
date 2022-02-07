@@ -19,8 +19,6 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 		let caller: T::AccountId = whitelisted_caller();
 	}: register_genetic_analyst(
@@ -40,8 +38,6 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 
@@ -53,8 +49,6 @@ benchmarks! {
 			email: "Email 2".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 	}: update_genetic_analyst(
 		RawOrigin::Signed(caller),
@@ -73,8 +67,6 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);

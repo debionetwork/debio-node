@@ -25,8 +25,6 @@ fn create_genetic_analysis_order() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -91,8 +89,6 @@ fn cancel_genetic_analysis_order_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -159,8 +155,6 @@ fn set_genetic_analysis_order_paid_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -229,8 +223,6 @@ fn fulfill_genetic_analysis_order_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -313,8 +305,6 @@ fn set_genetic_analysis_order_refunded_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -410,8 +400,6 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -466,8 +454,6 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -517,8 +503,6 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -592,8 +576,6 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -642,8 +624,6 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -693,8 +673,6 @@ fn cant_set_genetic_analysis_order_refunded_when_unauthorized() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
@@ -747,8 +725,6 @@ fn call_event_should_work() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-				stake_amount: 100,
-				stake_status: StakeStatus::default(),
 			}
 		));
 
