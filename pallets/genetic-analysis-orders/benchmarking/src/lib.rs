@@ -120,7 +120,10 @@ benchmarks! {
 			description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 			test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
 		};
-		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin, genetic_analyst_service_info);
+		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(
+			caller_origin.clone(), 
+			genetic_analyst_service_info
+		);
 		
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
