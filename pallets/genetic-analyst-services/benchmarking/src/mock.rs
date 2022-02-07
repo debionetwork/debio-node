@@ -24,6 +24,7 @@ frame_support::construct_runtime!(
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 	}
 );
@@ -96,10 +97,18 @@ impl pallet_timestamp::Config for Test {
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_analyst_services::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticAnalystServiceOwner = GeneticAnalysts;
+	type WeightInfo = ();
 }
 
 impl genetic_analyst_qualifications::Config for Test {
