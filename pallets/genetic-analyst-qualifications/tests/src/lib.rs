@@ -4,202 +4,282 @@ mod mock;
 mod tests {
 	use crate::mock::*;
 	
-	use doctors::DoctorInfo;
-	use doctor_certifications::{
+	use genetic_analysts::{
+		GeneticAnalystInfo,
+		StakeStatus
+	};
+	use genetic_analyst_qualifications::{
 		Error, 
-		DoctorCertification, DoctorCertificationInfo
+		GeneticAnalystQualification, GeneticAnalystQualificationInfo,
+		GeneticAnalystCertification, GeneticAnalystExperience
 	};
 	
 	use frame_support::{
 		assert_noop, assert_ok,
 		sp_runtime::traits::{Hash, Keccak256},
 	};
-	use primitives_area_code::{CityCode, CountryCode, RegionCode};
 	
 	#[test]
-	fn create_doctor_certification_works() {
+	fn create_genetic_analyst_qualification_works() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			));
 			
-			assert_ok!(DoctorCertifications::create_certification(
+			assert_ok!(GeneticAnalystQualifications::create_qualification(
 				Origin::signed(1),
-				DoctorCertificationInfo {
-					title: "DeBio title".as_bytes().to_vec(),
-					issuer: "DeBio issuer".as_bytes().to_vec(),
-					month: "DeBio month".as_bytes().to_vec(),
-					year: "DeBio year".as_bytes().to_vec(),
-					description: "DeBio description".as_bytes().to_vec(),
-					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
-			));
-	
-			let doctor = Doctors::doctor_by_account_id(1).unwrap();
-	
-			assert_eq!(
-				DoctorCertifications::certification_by_id(doctor.certifications[0]),
-				Some(
-					DoctorCertification {
-						id: doctor.certifications[0],
-						owner_id: 1,
-						info: DoctorCertificationInfo {
+				GeneticAnalystQualificationInfo {
+					experience: vec![
+						GeneticAnalystExperience {
 							title: "DeBio title".as_bytes().to_vec(),
-							issuer: "DeBio issuer".as_bytes().to_vec(),
-							month: "DeBio month".as_bytes().to_vec(),
-							year: "DeBio year".as_bytes().to_vec(),
-							description: "DeBio description".as_bytes().to_vec(),
-							supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 						}
-					}
-				)
-			);
+					],
+					certification: Some(
+						vec![
+							GeneticAnalystCertification {
+								title: "DeBio title".as_bytes().to_vec(),
+								issuer: "DeBio issuer".as_bytes().to_vec(),
+								month: "DeBio month".as_bytes().to_vec(),
+								year: "DeBio year".as_bytes().to_vec(),
+								description: "DeBio description".as_bytes().to_vec(),
+								supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+							}
+						]
+					),
+				}
+			));
+	
+			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 	
 			assert_eq!(
-				DoctorCertifications::certification_count_by_owner(1),
-				Some(1)
-			);
-		})
-	}
-	
-	#[test]
-	fn update_doctor_certification_works() {
-		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
-				Origin::signed(1),
-				DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
-			));
-			
-			assert_ok!(DoctorCertifications::create_certification(
-				Origin::signed(1),
-				DoctorCertificationInfo {
-					title: "DeBio title".as_bytes().to_vec(),
-					issuer: "DeBio issuer".as_bytes().to_vec(),
-					month: "DeBio month".as_bytes().to_vec(),
-					year: "DeBio year".as_bytes().to_vec(),
-					description: "DeBio description".as_bytes().to_vec(),
-					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-				}
-			));
-	
-			let doctor = Doctors::doctor_by_account_id(1).unwrap();
-			
-			assert_ok!(DoctorCertifications::update_certification(
-				Origin::signed(1),
-				doctor.certifications[0],
-				DoctorCertificationInfo {
-					title: "DeBio title 2".as_bytes().to_vec(),
-					issuer: "DeBio issuer 2".as_bytes().to_vec(),
-					month: "DeBio month 2".as_bytes().to_vec(),
-					year: "DeBio year 2".as_bytes().to_vec(),
-					description: "DeBio description 2".as_bytes().to_vec(),
-					supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
-				}
-			));
-	
-			assert_eq!(
-				DoctorCertifications::certification_by_id(doctor.certifications[0]),
+				GeneticAnalystQualifications::qualification_by_id(genetic_analyst.qualifications[0]),
 				Some(
-					DoctorCertification {
-						id: doctor.certifications[0],
+					GeneticAnalystQualification {
+						id: genetic_analyst.qualifications[0],
 						owner_id: 1,
-						info: DoctorCertificationInfo {
-							title: "DeBio title 2".as_bytes().to_vec(),
-							issuer: "DeBio issuer 2".as_bytes().to_vec(),
-							month: "DeBio month 2".as_bytes().to_vec(),
-							year: "DeBio year 2".as_bytes().to_vec(),
-							description: "DeBio description 2".as_bytes().to_vec(),
-							supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+						info: GeneticAnalystQualificationInfo {
+							experience: vec![
+								GeneticAnalystExperience {
+									title: "DeBio title".as_bytes().to_vec(),
+								}
+							],
+							certification: Some(
+								vec![
+									GeneticAnalystCertification {
+										title: "DeBio title".as_bytes().to_vec(),
+										issuer: "DeBio issuer".as_bytes().to_vec(),
+										month: "DeBio month".as_bytes().to_vec(),
+										year: "DeBio year".as_bytes().to_vec(),
+										description: "DeBio description".as_bytes().to_vec(),
+										supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+									}
+								]
+							),
 						}
 					}
 				)
 			);
 	
 			assert_eq!(
-				DoctorCertifications::certification_count_by_owner(1),
+				GeneticAnalystQualifications::qualification_count_by_owner(1),
 				Some(1)
 			);
 		})
 	}
 	
 	#[test]
-	fn delete_doctor_certification_works() {
+	fn update_genetic_analyst_qualification_works() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			));
 			
-			assert_ok!(DoctorCertifications::create_certification(
+			assert_ok!(GeneticAnalystQualifications::create_qualification(
 				Origin::signed(1),
-				DoctorCertificationInfo {
-					title: "DeBio title".as_bytes().to_vec(),
-					issuer: "DeBio issuer".as_bytes().to_vec(),
-					month: "DeBio month".as_bytes().to_vec(),
-					year: "DeBio year".as_bytes().to_vec(),
-					description: "DeBio description".as_bytes().to_vec(),
-					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystQualificationInfo {
+					experience: vec![
+						GeneticAnalystExperience {
+							title: "DeBio title".as_bytes().to_vec(),
+						}
+					],
+					certification: Some(
+						vec![
+							GeneticAnalystCertification {
+								title: "DeBio title".as_bytes().to_vec(),
+								issuer: "DeBio issuer".as_bytes().to_vec(),
+								month: "DeBio month".as_bytes().to_vec(),
+								year: "DeBio year".as_bytes().to_vec(),
+								description: "DeBio description".as_bytes().to_vec(),
+								supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+							}
+						]
+					),
 				}
 			));
 	
-			let doctor = Doctors::doctor_by_account_id(1).unwrap();
+			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 			
-			assert_ok!(DoctorCertifications::delete_certification(
+			assert_ok!(GeneticAnalystQualifications::update_qualification(
 				Origin::signed(1),
-				doctor.certifications[0]
+				genetic_analyst.qualifications[0],
+				GeneticAnalystQualificationInfo {
+					experience: vec![
+						GeneticAnalystExperience {
+							title: "DeBio title 2".as_bytes().to_vec(),
+						}
+					],
+					certification: Some(
+						vec![
+							GeneticAnalystCertification {
+								title: "DeBio title 2".as_bytes().to_vec(),
+								issuer: "DeBio issuer 2".as_bytes().to_vec(),
+								month: "DeBio month 2".as_bytes().to_vec(),
+								year: "DeBio year 2".as_bytes().to_vec(),
+								description: "DeBio description 2".as_bytes().to_vec(),
+								supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+							}
+						]
+					),
+				}
 			));
 	
 			assert_eq!(
-				DoctorCertifications::certification_count_by_owner(1),
+				GeneticAnalystQualifications::qualification_by_id(genetic_analyst.qualifications[0]),
+				Some(
+					GeneticAnalystQualification {
+						id: genetic_analyst.qualifications[0],
+						owner_id: 1,
+						info: GeneticAnalystQualificationInfo {
+							experience: vec![
+								GeneticAnalystExperience {
+									title: "DeBio title 2".as_bytes().to_vec(),
+								}
+							],
+							certification: Some(
+								vec![
+									GeneticAnalystCertification {
+										title: "DeBio title 2".as_bytes().to_vec(),
+										issuer: "DeBio issuer 2".as_bytes().to_vec(),
+										month: "DeBio month 2".as_bytes().to_vec(),
+										year: "DeBio year 2".as_bytes().to_vec(),
+										description: "DeBio description 2".as_bytes().to_vec(),
+										supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+									}
+								]
+							),
+						}
+					}
+				)
+			);
+	
+			assert_eq!(
+				GeneticAnalystQualifications::qualification_count_by_owner(1),
+				Some(1)
+			);
+		})
+	}
+	
+	#[test]
+	fn delete_genetic_analyst_qualification_works() {
+		ExternalityBuilder::build().execute_with(|| {
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
+				}
+			));
+			
+			assert_ok!(GeneticAnalystQualifications::create_qualification(
+				Origin::signed(1),
+				GeneticAnalystQualificationInfo {
+					experience: vec![
+						GeneticAnalystExperience {
+							title: "DeBio title".as_bytes().to_vec(),
+						}
+					],
+					certification: Some(
+						vec![
+							GeneticAnalystCertification {
+								title: "DeBio title".as_bytes().to_vec(),
+								issuer: "DeBio issuer".as_bytes().to_vec(),
+								month: "DeBio month".as_bytes().to_vec(),
+								year: "DeBio year".as_bytes().to_vec(),
+								description: "DeBio description".as_bytes().to_vec(),
+								supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+							}
+						]
+					),
+				}
+			));
+	
+			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+			
+			assert_ok!(GeneticAnalystQualifications::delete_qualification(
+				Origin::signed(1),
+				genetic_analyst.qualifications[0]
+			));
+	
+			assert_eq!(
+				GeneticAnalystQualifications::qualification_count_by_owner(1),
 				Some(0)
 			);
 		})
 	}
 	
 	#[test]
-	fn not_allowed_to_create_doctor_certification() {
+	fn not_allowed_to_create_genetic_analyst_qualification() {
 		ExternalityBuilder::build().execute_with(|| {		
 			assert_noop!(
-				DoctorCertifications::create_certification(
+				GeneticAnalystQualifications::create_qualification(
 					Origin::signed(1),
-					DoctorCertificationInfo {
-						title: "DeBio title".as_bytes().to_vec(),
-						issuer: "DeBio issuer".as_bytes().to_vec(),
-						month: "DeBio month".as_bytes().to_vec(),
-						year: "DeBio year".as_bytes().to_vec(),
-						description: "DeBio description".as_bytes().to_vec(),
-						supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+					GeneticAnalystQualificationInfo {
+						experience: vec![
+							GeneticAnalystExperience {
+								title: "DeBio title".as_bytes().to_vec(),
+							}
+						],
+						certification: Some(
+							vec![
+								GeneticAnalystCertification {
+									title: "DeBio title".as_bytes().to_vec(),
+									issuer: "DeBio issuer".as_bytes().to_vec(),
+									month: "DeBio month".as_bytes().to_vec(),
+									year: "DeBio year".as_bytes().to_vec(),
+									description: "DeBio description".as_bytes().to_vec(),
+									supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+								}
+							]
+						),
 					}
 				),
 				Error::<Test>::NotAllowedToCreate
@@ -208,161 +288,205 @@ mod tests {
 	}
 	
 	#[test]
-	fn update_doctor_certification_does_not_exist() {
+	fn update_genetic_analyst_qualification_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			));
 			
 			assert_noop!(
-				DoctorCertifications::update_certification(
+				GeneticAnalystQualifications::update_qualification(
 					Origin::signed(1),
 					Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
 					),
-					DoctorCertificationInfo {
-						title: "DeBio title 2".as_bytes().to_vec(),
-						issuer: "DeBio issuer 2".as_bytes().to_vec(),
-						month: "DeBio month 2".as_bytes().to_vec(),
-						year: "DeBio year 2".as_bytes().to_vec(),
-						description: "DeBio description 2".as_bytes().to_vec(),
-						supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+					GeneticAnalystQualificationInfo {
+						experience: vec![
+							GeneticAnalystExperience {
+								title: "DeBio title 2".as_bytes().to_vec(),
+							}
+						],
+						certification: Some(
+							vec![
+								GeneticAnalystCertification {
+									title: "DeBio title 2".as_bytes().to_vec(),
+									issuer: "DeBio issuer 2".as_bytes().to_vec(),
+									month: "DeBio month 2".as_bytes().to_vec(),
+									year: "DeBio year 2".as_bytes().to_vec(),
+									description: "DeBio description 2".as_bytes().to_vec(),
+									supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+								}
+							]
+						),
 					}
 				),
-				Error::<Test>::DoctorCertificationDoesNotExist
+				Error::<Test>::GeneticAnalystQualificationDoesNotExist
 			);
 		})
 	}
 	
 	#[test]
-	fn update_doctor_certification_not_owner() {
+	fn update_genetic_analyst_qualification_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			));
 			
-			assert_ok!(DoctorCertifications::create_certification(
+			assert_ok!(GeneticAnalystQualifications::create_qualification(
 				Origin::signed(1),
-				DoctorCertificationInfo {
-					title: "DeBio title".as_bytes().to_vec(),
-					issuer: "DeBio issuer".as_bytes().to_vec(),
-					month: "DeBio month".as_bytes().to_vec(),
-					year: "DeBio year".as_bytes().to_vec(),
-					description: "DeBio description".as_bytes().to_vec(),
-					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystQualificationInfo {
+					experience: vec![
+						GeneticAnalystExperience {
+							title: "DeBio title".as_bytes().to_vec(),
+						}
+					],
+					certification: Some(
+						vec![
+							GeneticAnalystCertification {
+								title: "DeBio title".as_bytes().to_vec(),
+								issuer: "DeBio issuer".as_bytes().to_vec(),
+								month: "DeBio month".as_bytes().to_vec(),
+								year: "DeBio year".as_bytes().to_vec(),
+								description: "DeBio description".as_bytes().to_vec(),
+								supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+							}
+						]
+					),
 				}
 			));
 	
-			let doctor = Doctors::doctor_by_account_id(1).unwrap();
+			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 			
 			assert_noop!(
-				DoctorCertifications::update_certification(
+				GeneticAnalystQualifications::update_qualification(
 					Origin::signed(2),
-					doctor.certifications[0],
-					DoctorCertificationInfo {
-						title: "DeBio title 2".as_bytes().to_vec(),
-						issuer: "DeBio issuer 2".as_bytes().to_vec(),
-						month: "DeBio month 2".as_bytes().to_vec(),
-						year: "DeBio year 2".as_bytes().to_vec(),
-						description: "DeBio description 2".as_bytes().to_vec(),
-						supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+					genetic_analyst.qualifications[0],
+					GeneticAnalystQualificationInfo {
+						experience: vec![
+							GeneticAnalystExperience {
+								title: "DeBio title 2".as_bytes().to_vec(),
+							}
+						],
+						certification: Some(
+							vec![
+								GeneticAnalystCertification {
+									title: "DeBio title 2".as_bytes().to_vec(),
+									issuer: "DeBio issuer 2".as_bytes().to_vec(),
+									month: "DeBio month 2".as_bytes().to_vec(),
+									year: "DeBio year 2".as_bytes().to_vec(),
+									description: "DeBio description 2".as_bytes().to_vec(),
+									supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+								}
+							]
+						),
 					}
 				),
-				Error::<Test>::NotDoctorCertificationOwner
+				Error::<Test>::NotGeneticAnalystQualificationOwner
 			);
 		})
 	}
 	
 	#[test]
-	fn delete_doctor_certification_does_not_exist() {
+	fn delete_genetic_analyst_qualification_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			));
 			
 			assert_noop!(
-				DoctorCertifications::delete_certification(
+				GeneticAnalystQualifications::delete_qualification(
 					Origin::signed(1),
 					Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
 					)
 				),
-				Error::<Test>::DoctorCertificationDoesNotExist
+				Error::<Test>::GeneticAnalystQualificationDoesNotExist
 			);
 		})
 	}
 	
 	#[test]
-	fn delete_doctor_certification_not_owner() {
+	fn delete_genetic_analyst_qualification_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(Doctors::register_doctor(
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			));
 			
-			assert_ok!(DoctorCertifications::create_certification(
+			assert_ok!(GeneticAnalystQualifications::create_qualification(
 				Origin::signed(1),
-				DoctorCertificationInfo {
-					title: "DeBio title".as_bytes().to_vec(),
-					issuer: "DeBio issuer".as_bytes().to_vec(),
-					month: "DeBio month".as_bytes().to_vec(),
-					year: "DeBio year".as_bytes().to_vec(),
-					description: "DeBio description".as_bytes().to_vec(),
-					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystQualificationInfo {
+					experience: vec![
+						GeneticAnalystExperience {
+							title: "DeBio title".as_bytes().to_vec(),
+						}
+					],
+					certification: Some(
+						vec![
+							GeneticAnalystCertification {
+								title: "DeBio title".as_bytes().to_vec(),
+								issuer: "DeBio issuer".as_bytes().to_vec(),
+								month: "DeBio month".as_bytes().to_vec(),
+								year: "DeBio year".as_bytes().to_vec(),
+								description: "DeBio description".as_bytes().to_vec(),
+								supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+							}
+						]
+					),
 				}
 			));
 	
-			let doctor = Doctors::doctor_by_account_id(1).unwrap();
+			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 			
 			assert_noop!(
-				DoctorCertifications::delete_certification(
+				GeneticAnalystQualifications::delete_qualification(
 					Origin::signed(2),
-					doctor.certifications[0]
+					genetic_analyst.qualifications[0]
 				),
-				Error::<Test>::NotDoctorCertificationOwner
+				Error::<Test>::NotGeneticAnalystQualificationOwner
 			);
 		})
 	}
