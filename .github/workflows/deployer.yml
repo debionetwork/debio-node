@@ -1,16 +1,19 @@
-name: Deploy automation
+name: Deployer
 
 on:
   release:
-    types: [published]
+    types:
+      - published
   workflow_run:
-    workflows: ["Builder"]
-    branches: [main]
-    types: 
+    branches:
+      - main
+    workflows:
+      - 'Builder'
+    types:
       - completed
 
 concurrency:
-  group: deploy-automation
+  group: deployer
 
 jobs:
   compute-build-info:
