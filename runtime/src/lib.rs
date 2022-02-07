@@ -739,6 +739,7 @@ impl hospital_certifications::Config for Runtime {
 impl genetic_analysts::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
     type GeneticAnalystServices = GeneticAnalystServices;
     type GeneticAnalystQualifications = GeneticAnalystQualifications;
     type EthereumAddress = EthereumAddress;

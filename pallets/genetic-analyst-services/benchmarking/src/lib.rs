@@ -12,7 +12,7 @@ use genetic_analyst_services::{
 use genetic_analysts::Pallet as GeneticAnalysts;
 use genetic_analysts::{
 	Config as GeneticAnalystsConfig,
-	GeneticAnalystInfo, StakeStatus
+	GeneticAnalystInfo,
 };
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
@@ -43,8 +43,6 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
@@ -70,8 +68,6 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst_info);
 
@@ -111,8 +107,6 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-			stake_amount: 100,
-			stake_status: StakeStatus::default(),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst_info);
 
