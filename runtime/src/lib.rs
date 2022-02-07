@@ -739,7 +739,6 @@ impl hospital_certifications::Config for Runtime {
 impl genetic_analysts::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-	type PalletId = GeneticAnalystPalletId;
     type GeneticAnalystServices = GeneticAnalystServices;
     type GeneticAnalystQualifications = GeneticAnalystQualifications;
     type EthereumAddress = EthereumAddress;
@@ -1089,10 +1088,13 @@ impl_runtime_apis! {
 			use services_benchmarking::Pallet as ServicesBench;
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use genetic_analyst_services_benchmarking::Pallet as GeneticAnalystServicesBench;
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use orders_benchmarking::Pallet as OrdersBench;
+			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
 
@@ -1115,11 +1117,15 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, doctors, Doctors);
 			list_benchmark!(list, extra, doctor_certifications, DoctorCertificationsBench::<Runtime>);
 			list_benchmark!(list, extra, genetic_analysts, GeneticAnalysts);
+			list_benchmark!(list, extra, genetic_analyst_services, GeneticAnalystServicesBench::<Runtime>);
 			list_benchmark!(list, extra, genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>);
 			list_benchmark!(list, extra, user_profile, UserProfile);
 			list_benchmark!(list, extra, rewards, Rewards);
 			list_benchmark!(list, extra, service_request, ServiceRequest);
+			list_benchmark!(list, extra, genetic_data, GeneticData);
 			list_benchmark!(list, extra, genetic_testing, GeneticTestingBench::<Runtime>);
+			list_benchmark!(list, extra, genetic_analysis_orders, GeneticAnalysisOrdersBench::<Runtime>);
+			list_benchmark!(list, extra, genetic_analysis, GeneticAnalysisBench::<Runtime>);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -1136,19 +1142,25 @@ impl_runtime_apis! {
 			use services_benchmarking::Pallet as ServicesBench;
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use genetic_analyst_services_benchmarking::Pallet as GeneticAnalystServicesBench;
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use orders_benchmarking::Pallet as OrdersBench;
+			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl services_benchmarking::Config for Runtime {}
 			impl certifications_benchmarking::Config for Runtime {}
 			impl doctor_certifications_benchmarking::Config for Runtime {}
+			impl genetic_analyst_services_benchmarking::Config for Runtime {}
 			impl genetic_analyst_qualifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
 			impl genetic_testing_benchmarking::Config for Runtime {}
+			impl genetic_analysis_benchmarking::Config for Runtime {}
 			impl orders_benchmarking::Config for Runtime {}
+			impl genetic_analysis_orders_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1186,11 +1198,15 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, doctors, Doctors);
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
 			add_benchmark!(params, batches, genetic_analysts, GeneticAnalysts);
+			add_benchmark!(params, batches, genetic_analyst_services, GeneticAnalystServicesBench::<Runtime>);
 			add_benchmark!(params, batches, genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>);
 			add_benchmark!(params, batches, user_profile, UserProfile);
 			add_benchmark!(params, batches, rewards, Rewards);
+			add_benchmark!(params, batches, genetic_data, GeneticData);
 			add_benchmark!(params, batches, genetic_testing, GeneticTestingBench::<Runtime>);
+			add_benchmark!(params, batches, genetic_analysis, GeneticAnalysisBench::<Runtime>);
 			add_benchmark!(params, batches, service_request, ServiceRequest);
+			add_benchmark!(params, batches, genetic_analysis_orders, GeneticAnalysisOrdersBench::<Runtime>);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)
