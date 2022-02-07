@@ -184,9 +184,10 @@ runtime-benchmarks = [
 	'hospital-certifications-benchmarking',
 	'doctors/runtime-benchmarks',
 	'doctor-certifications-benchmarking',
-	'genetic-analyst-qualifications-benchmarking',
 	'genetic-testing-benchmarking',
 	'user-profile/runtime-benchmarks',
 	'rewards/runtime-benchmarks',
 	'service-request/runtime-benchmarks',
+	'genetic-analysts/runtime-benchmarks',
+	'genetic-analyst-qualifications-benchmarking',
 ]

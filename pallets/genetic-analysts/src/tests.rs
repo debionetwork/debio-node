@@ -1,272 +1,223 @@
-use crate::{mock::*, Doctor, DoctorInfo, Error};
+use crate::{mock::*, GeneticAnalyst, GeneticAnalystInfo, StakeStatus, Error};
 use frame_support::{assert_noop, assert_ok};
-use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode};
 
 #[test]
-fn register_doctor_works() {
+fn register_genetic_analyst_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Doctors::register_doctor(
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
 		assert_eq!(
-			Doctors::doctor_by_account_id(1),
-			Some(Doctor {
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
 				account_id: 1,
-				certifications: Vec::new(),
-				info: DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				qualifications: Vec::new(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			})
 		);
 
-		let country_region_code = CountryRegionCode::from_vec("DC-DBIO".as_bytes().to_vec());
-		let city_code = CityCode::from_vec("City".as_bytes().to_vec());
-
-		assert_ok!(Doctors::register_doctor(
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(2),
-			DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name 2".as_bytes().to_vec(),
+				last_name: "Last Name 2".as_bytes().to_vec(),
+				gender: "Gender 2".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email 2".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
-		assert_eq!(
-			Doctors::doctors_by_country_region_city(&country_region_code, &city_code),
-			Some(vec![1, 2])
-		);
-
-		assert_eq!(Doctors::doctor_count(), Some(2),);
-
-		assert_eq!(
-			Doctors::doctor_count_by_country_region_city(&country_region_code, &city_code),
-			Some(2),
-		)
+		assert_eq!(GeneticAnalysts::genetic_analyst_count(), Some(2),);
 	})
 }
 
 #[test]
-fn update_doctor_works() {
+fn update_genetic_analyst_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Doctors::register_doctor(
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
-			}
-		));
-
-		assert_ok!(Doctors::update_doctor(
-			Origin::signed(1),
-			DoctorInfo {
-				name: "Abdul Hakim".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
 		assert_eq!(
-			Doctors::doctor_by_account_id(1),
-			Some(Doctor {
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
 				account_id: 1,
-				certifications: Vec::new(),
-				info: DoctorInfo {
-					name: "Abdul Hakim".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				qualifications: Vec::new(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			})
 		);
 
-		let old_country_region_code = CountryRegionCode::from_vec("DC-DBIO".as_bytes().to_vec());
-		let old_city_code = CityCode::from_vec("City".as_bytes().to_vec());
-
-		assert_ok!(Doctors::update_doctor(
+		assert_ok!(GeneticAnalysts::update_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "Abdul Hakim".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("ID".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name 2".as_bytes().to_vec(),
+				last_name: "Last Name 2".as_bytes().to_vec(),
+				gender: "Gender 2".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email 2".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
 		assert_eq!(
-			Doctors::doctors_by_country_region_city(&old_country_region_code, &old_city_code),
-			Some(Vec::new())
-		);
-
-		assert_eq!(
-			Doctors::doctor_count_by_country_region_city(&old_country_region_code, &old_city_code),
-			Some(0)
-		);
-
-		let new_country_region_code = CountryRegionCode::from_vec("ID-DBIO".as_bytes().to_vec());
-		let new_city_code = CityCode::from_vec("City".as_bytes().to_vec());
-
-		assert_eq!(
-			Doctors::doctors_by_country_region_city(&new_country_region_code, &new_city_code),
-			Some(vec![1])
-		);
-
-		assert_eq!(
-			Doctors::doctor_count_by_country_region_city(&new_country_region_code, &new_city_code),
-			Some(1)
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				qualifications: Vec::new(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name 2".as_bytes().to_vec(),
+					last_name: "Last Name 2".as_bytes().to_vec(),
+					gender: "Gender 2".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email 2".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
+				}
+			})
 		);
 	})
 }
 
 #[test]
-fn deregister_doctor_works() {
+fn deregister_genetic_analyst_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Doctors::register_doctor(
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
-		assert_ok!(Doctors::deregister_doctor(Origin::signed(1),));
+		assert_ok!(GeneticAnalysts::deregister_genetic_analyst(Origin::signed(1),));
 
-		assert_eq!(Doctors::doctor_by_account_id(1), None);
+		assert_eq!(GeneticAnalysts::genetic_analyst_by_account_id(1), None);
 
-		let country_region_code = CountryRegionCode::from_vec("DC-DBIO".as_bytes().to_vec());
-		let city_code = CityCode::from_vec("City".as_bytes().to_vec());
-
-		assert_eq!(
-			Doctors::doctors_by_country_region_city(&country_region_code, &city_code),
-			Some(Vec::new())
-		);
-
-		assert_eq!(Doctors::doctor_count(), Some(0),);
-
-		assert_eq!(
-			Doctors::doctor_count_by_country_region_city(&country_region_code, &city_code),
-			Some(0),
-		)
+		assert_eq!(GeneticAnalysts::genetic_analyst_count(), Some(0),);
 	})
 }
 
 #[test]
-fn cant_register_doctor_when_already_exist() {
+fn cant_register_genetic_analyst_when_already_exist() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Doctors::register_doctor(
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
 		assert_noop!(
-			Doctors::register_doctor(
+			GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			),
-			Error::<Test>::DoctorAlreadyRegistered
+			Error::<Test>::GeneticAnalystAlreadyRegistered
 		);
 	})
 }
 
 #[test]
-fn cant_update_and_deregister_doctor_when_not_exist() {
+fn cant_update_and_deregister_genetic_analyst_when_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
-			Doctors::update_doctor(
+			GeneticAnalysts::update_genetic_analyst(
 				Origin::signed(1),
-				DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				}
 			),
-			Error::<Test>::DoctorDoesNotExist
+			Error::<Test>::GeneticAnalystDoesNotExist
 		);
 
 		assert_noop!(
-			Doctors::deregister_doctor(Origin::signed(1)),
-			Error::<Test>::DoctorDoesNotExist
+			GeneticAnalysts::deregister_genetic_analyst(Origin::signed(1)),
+			Error::<Test>::GeneticAnalystDoesNotExist
 		);
 	})
 }
@@ -276,90 +227,90 @@ fn call_event_should_work() {
 	ExternalityBuilder::build().execute_with(|| {
 		System::set_block_number(1);
 
-		assert_ok!(Doctors::register_doctor(
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "DeBio Doctor".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
-		System::assert_last_event(Event::Doctors(crate::Event::DoctorRegistered(
-			Doctor {
+		System::assert_last_event(Event::GeneticAnalysts(crate::Event::GeneticAnalystRegistered(
+			GeneticAnalyst {
 				account_id: 1,
-				certifications: Vec::new(),
-				info: DoctorInfo {
-					name: "DeBio Doctor".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				qualifications: Vec::new(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				},
 			},
 			1,
 		)));
 
-		assert_ok!(Doctors::update_doctor(
+		assert_ok!(GeneticAnalysts::update_genetic_analyst(
 			Origin::signed(1),
-			DoctorInfo {
-				name: "Abdul Hakim".as_bytes().to_vec(),
-				email: "DeBio Email".as_bytes().to_vec(),
-				country: CountryCode::from_vec("ID".as_bytes().to_vec()),
-				region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-				city: CityCode::from_vec("City".as_bytes().to_vec()),
-				address: "DeBio Address".as_bytes().to_vec(),
-				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			GeneticAnalystInfo {
+				first_name: "First Name 2".as_bytes().to_vec(),
+				last_name: "Last Name 2".as_bytes().to_vec(),
+				gender: "Gender 2".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email 2".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+				stake_amount: 100,
+				stake_status: StakeStatus::default(),
 			}
 		));
 
-		System::assert_last_event(Event::Doctors(crate::Event::DoctorUpdated(
-			Doctor {
+		System::assert_last_event(Event::GeneticAnalysts(crate::Event::GeneticAnalystUpdated(
+			GeneticAnalyst {
 				account_id: 1,
-				certifications: Vec::new(),
-				info: DoctorInfo {
-					name: "Abdul Hakim".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("ID".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				qualifications: Vec::new(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name 2".as_bytes().to_vec(),
+					last_name: "Last Name 2".as_bytes().to_vec(),
+					gender: "Gender 2".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email 2".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				},
 			},
 			1,
 		)));
 
-		assert_ok!(Doctors::deregister_doctor(Origin::signed(1)));
+		assert_ok!(GeneticAnalysts::deregister_genetic_analyst(Origin::signed(1)));
 
-		System::assert_last_event(Event::Doctors(crate::Event::DoctorDeleted(
-			Doctor {
+		System::assert_last_event(Event::GeneticAnalysts(crate::Event::GeneticAnalystDeleted(
+			GeneticAnalyst {
 				account_id: 1,
-				certifications: Vec::new(),
-				info: DoctorInfo {
-					name: "Abdul Hakim".as_bytes().to_vec(),
-					email: "DeBio Email".as_bytes().to_vec(),
-					country: CountryCode::from_vec("ID".as_bytes().to_vec()),
-					region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-					city: CityCode::from_vec("City".as_bytes().to_vec()),
-					address: "DeBio Address".as_bytes().to_vec(),
-					latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-					longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				qualifications: Vec::new(),
+				info: GeneticAnalystInfo {
+					first_name: "First Name 2".as_bytes().to_vec(),
+					last_name: "Last Name 2".as_bytes().to_vec(),
+					gender: "Gender 2".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email 2".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+					stake_amount: 100,
+					stake_status: StakeStatus::default(),
 				},
 			},
 			1,

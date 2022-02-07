@@ -1080,6 +1080,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, hospital_certifications, HospitalCertificationsBench::<Runtime>);
 			list_benchmark!(list, extra, doctors, Doctors);
 			list_benchmark!(list, extra, doctor_certifications, DoctorCertificationsBench::<Runtime>);
+			list_benchmark!(list, extra, genetic_analysts, GeneticAnalysts);
 			list_benchmark!(list, extra, genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>);
 			list_benchmark!(list, extra, user_profile, UserProfile);
 			list_benchmark!(list, extra, rewards, Rewards);
@@ -1150,6 +1151,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, hospital_certifications, HospitalCertificationsBench::<Runtime>);
 			add_benchmark!(params, batches, doctors, Doctors);
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
+			add_benchmark!(params, batches, genetic_analysts, GeneticAnalysts);
 			add_benchmark!(params, batches, genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>);
 			add_benchmark!(params, batches, user_profile, UserProfile);
 			add_benchmark!(params, batches, rewards, Rewards);
