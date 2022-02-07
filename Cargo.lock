@@ -2320,6 +2320,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-services-benchmarking"
+name = "genetic-analyst-services-tests"
 version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
