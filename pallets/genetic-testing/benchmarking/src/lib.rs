@@ -96,7 +96,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -156,7 +156,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -215,7 +215,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),

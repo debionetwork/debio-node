@@ -79,7 +79,10 @@ benchmarks! {
 			description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 			test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
 		};
-		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin.clone(), genetic_analyst_service_info);
+		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(
+			caller_origin, 
+			genetic_analyst_service_info
+		);
 		
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
@@ -117,13 +120,13 @@ benchmarks! {
 			description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 			test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
 		};
-		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin.clone(), genetic_analyst_service_info);
+		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin, genetic_analyst_service_info);
 		
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -171,7 +174,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -232,7 +235,7 @@ benchmarks! {
 
 		let _set_genetic_analysis_order_paid = GeneticAnalysisOrders::<T>::set_genetic_analysis_order_paid(
 			caller_origin.clone(), 
-			_genetic_analysis_order.id.clone()
+			_genetic_analysis_order.id
 		);
 
 		let _submit_genetic_analysis = GeneticAnalysis::<T>::submit_genetic_analysis(
@@ -243,7 +246,7 @@ benchmarks! {
 		);
 
 		let _ = GeneticAnalysis::<T>::process_genetic_analysis(
-			caller_origin.clone(),
+			caller_origin,
 			_genetic_analysis_order.genetic_analysis_tracking_id,
 			GeneticAnalysisStatus::ResultReady
 		);
@@ -298,11 +301,11 @@ benchmarks! {
 
 		let _set_genetic_analysis_order_paid = GeneticAnalysisOrders::<T>::set_genetic_analysis_order_paid(
 			caller_origin.clone(), 
-			_genetic_analysis_order.id.clone()
+			_genetic_analysis_order.id
 		);
 
 		let _ = GeneticAnalysis::<T>::reject_genetic_analysis(
-			caller_origin.clone(),
+			caller_origin,
 			_genetic_analysis_order.genetic_analysis_tracking_id,
 			"Rejected title".as_bytes().to_vec(),
 			"Rejected description".as_bytes().to_vec()

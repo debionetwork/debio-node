@@ -85,7 +85,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -135,7 +135,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -184,7 +184,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),

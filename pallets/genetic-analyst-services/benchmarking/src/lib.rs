@@ -44,7 +44,7 @@ benchmarks! {
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
 		};
-		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, genetic_analyst);
 
 		let genetic_analyst_service_info = GeneticAnalystServiceInfo {
 			name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),

@@ -86,7 +86,7 @@ benchmarks! {
 			description: "This is my description".as_bytes().to_vec(),
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
-		let _create_certification = Certifications::<T>::create_certification(caller_origin.clone(), old_certification);
+		let _create_certification = Certifications::<T>::create_certification(caller_origin, old_certification);
         let _lab = Labs::<T>::lab_by_account_id(caller.clone())
             .unwrap();
 
@@ -128,7 +128,7 @@ benchmarks! {
 			description: "This is my description".as_bytes().to_vec(),
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
-		let _create_certification = Certifications::<T>::create_certification(caller_origin.clone(), old_certification);
+		let _create_certification = Certifications::<T>::create_certification(caller_origin, old_certification);
         let _lab = Labs::<T>::lab_by_account_id(caller.clone())
             .unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _lab.certifications[0])

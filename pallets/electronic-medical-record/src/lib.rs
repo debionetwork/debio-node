@@ -369,7 +369,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         owner_id: &T::AccountId,
         title: &[u8],
         category: &[u8],
-        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
+        files: &[Self::ElectronicMedicalRecordFileSubmission]
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
         let owner_electronic_medical_record_count = <Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_count_by_owner(owner_id);
         let electronic_medical_record_id = Self::generate_electronic_medical_record_id(
@@ -403,8 +403,8 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
             );
     
             let electronic_medical_record_file = ElectronicMedicalRecordFile::new(
-                electronic_medical_record_file_id.clone(),
-                electronic_medical_record_id.clone(),
+                electronic_medical_record_file_id,
+                electronic_medical_record_id,
                 emr_files.title.clone(),
                 emr_files.description.clone(),
                 emr_files.record_link.clone(),
@@ -429,14 +429,14 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         electronic_medical_record_id: &T::Hash,
         title: &[u8],
         category: &[u8],
-        files: &Vec<Self::ElectronicMedicalRecordFileSubmission>
+        files: &[Self::ElectronicMedicalRecordFileSubmission]
     ) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
         let _ =  match <Self as ElectronicMedicalRecordInterface<T>>::remove_electronic_medical_record(
             owner_id,
             electronic_medical_record_id,
         ) {
             Ok(res) => res,
-            Err(error) => return Err(error.into()),
+            Err(error) => return Err(error),
         };
 
         <Self as ElectronicMedicalRecordInterface<T>>::add_electronic_medical_record(
@@ -467,8 +467,8 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
         for emr_file_id in &electronic_medical_record.files {
             // disassociate electronic_medical_record_file reference from the electronic_medical_record
             T::ElectronicMedicalRecord::disassociate(
-                &electronic_medical_record_id,
-                &emr_file_id,
+                electronic_medical_record_id,
+                emr_file_id,
             );
                 
             // Remove electronic_medical_record_file from storage
@@ -491,10 +491,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
     fn electronic_medical_record_by_owner_id(
         owner_id: &T::AccountId,
     ) -> Option<Vec<T::Hash>> {
-        match ElectronicMedicalRecordByOwner::<T>::get(owner_id) {
-            None => None,
-            Some(electronic_medical_record_vec) => Some(electronic_medical_record_vec),
-        }
+        match ElectronicMedicalRecordByOwner::<T>::get(owner_id).map(|electronic_medical_record_vec| electronic_medical_record_vec)
     }
 
     fn electronic_medical_record_count_by_owner(owner_id: &T::AccountId) -> u64 {

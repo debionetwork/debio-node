@@ -90,7 +90,7 @@ benchmarks! {
 			long_description: Some("This is my long description".as_bytes().to_vec()),
 			image: Some("This is my image".as_bytes().to_vec()),
 		};
-		let _create_service = Services::<T>::create_service(caller_origin.clone(), service_info, ServiceFlow::default());
+		let _create_service = Services::<T>::create_service(caller_origin, service_info, ServiceFlow::default());
 		
 		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
 			.unwrap();
@@ -144,7 +144,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -202,7 +202,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin.clone(), 
+			caller_origin, 
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -274,7 +274,7 @@ benchmarks! {
 
 		let _set_order_paid = Orders::<T>::set_order_paid(
 			caller_origin.clone(), 
-			_order.id.clone()
+			_order.id
 		);
 
 		let _dna_test_result = DnaTestResultSubmission {
@@ -290,7 +290,7 @@ benchmarks! {
 		);
 
 		let _ = GeneticTesting::<T>::process_dna_sample(
-			caller_origin.clone(),
+			caller_origin,
 			_order.dna_sample_tracking_id,
 			DnaSampleStatus::ResultReady
 		);
@@ -355,11 +355,11 @@ benchmarks! {
 
 		let _set_order_paid = Orders::<T>::set_order_paid(
 			caller_origin.clone(), 
-			_order.id.clone()
+			_order.id
 		);
 
 		let _ = GeneticTesting::<T>::reject_dna_sample(
-			caller_origin.clone(),
+			caller_origin,
 			_order.dna_sample_tracking_id,
 			"Rejected title".as_bytes().to_vec(),
 			"Rejected description".as_bytes().to_vec()
