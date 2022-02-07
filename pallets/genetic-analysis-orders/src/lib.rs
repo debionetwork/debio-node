@@ -146,7 +146,7 @@ pub mod pallet {
 	pub type GeneticAnalysisOrdersByCustomer<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, GeneticAnalysisOrderIdsOf<T>>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn genetic_analysis_by_genetic_analyst_id)]
+	#[pallet::getter(fn genetic_analysis_orders_by_genetic_analyst_id)]
 	pub type GeneticAnalysisOrdersBySeller<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, GeneticAnalysisOrderIdsOf<T>>;
 
 	#[pallet::storage]

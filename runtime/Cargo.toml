@@ -98,6 +98,7 @@ genetic-analyst-services-benchmarking = { path = '../pallets/genetic-analyst-ser
 genetic-analyst-qualifications-benchmarking = { path = '../pallets/genetic-analyst-qualifications/benchmarking', default-features = false, optional = true }
 genetic-analysis = { path = '../pallets/genetic-analysis', default-features = false }
 genetic-analysis-orders = { path = '../pallets/genetic-analysis-orders', default-features = false }
+genetic-analysis-orders-benchmarking = { path = '../pallets/genetic-analysis-orders/benchmarking', default-features = false, optional = true }
 
 [features]
 default = ['std']
@@ -200,6 +201,7 @@ runtime-benchmarks = [
 	'user-profile/runtime-benchmarks',
 	'rewards/runtime-benchmarks',
 	'service-request/runtime-benchmarks',
+	'genetic-analysis-orders-benchmarking',
 	'genetic-data/runtime-benchmarks',
 	'genetic-analysts/runtime-benchmarks',
 	'genetic-analyst-qualifications-benchmarking',
