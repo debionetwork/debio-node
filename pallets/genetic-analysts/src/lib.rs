@@ -22,6 +22,7 @@ pub mod interface;
 pub use crate::interface::GeneticAnalystInterface;
 use frame_support::pallet_prelude::*;
 use traits_genetic_analyst_qualifications::GeneticAnalystQualificationOwnerInfo;
+use traits_genetic_analyst_services::GeneticAnalystServiceOwnerInfo;
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum StakeStatus {
@@ -58,6 +59,7 @@ where
 	Hash: PartialEq + Eq,
 {
 	pub account_id: AccountId,
+	pub services: Vec<Hash>,
 	pub qualifications: Vec<Hash>,
 	pub info: GeneticAnalystInfo<Moment>,
 }
@@ -67,7 +69,12 @@ where
 	Hash: PartialEq + Eq,
 {
 	pub fn new(account_id: AccountId, info: GeneticAnalystInfo<Moment>) -> Self {
-		Self { account_id, qualifications: Vec::<Hash>::new(), info }
+		Self { 
+			account_id, 
+			services: Vec::<Hash>::new(), 
+			qualifications: Vec::<Hash>::new(), 
+			info 
+		}
 	}
 
 	fn update_info(&mut self, info: GeneticAnalystInfo<Moment>) {
@@ -78,6 +85,16 @@ where
 		&self.account_id
 	}
 
+	pub fn add_service(&mut self, service_id: Hash) {
+		self.services.push(service_id);
+	}
+
+	pub fn remove_service(&mut self, service_id: Hash) {
+		if let Some(pos) = &self.services.iter().position(|x| *x == service_id) {
+			self.services.remove(*pos);
+		}
+	}
+
 	pub fn add_qualification(&mut self, qualification_id: Hash) {
 		self.qualifications.push(qualification_id);
 	}
@@ -86,6 +103,16 @@ where
 		if let Some(pos) = &self.qualifications.iter().position(|x| *x == qualification_id) {
 			self.qualifications.remove(*pos);
 		}
+	}
+}
+
+impl<T, AccountId, Hash, Moment> GeneticAnalystServiceOwnerInfo<T> for GeneticAnalyst<AccountId, Hash, Moment>
+where
+	Hash: PartialEq + Eq,
+	T: frame_system::Config<AccountId = AccountId>,
+{
+	fn get_id(&self) -> &AccountId {
+		self.get_account_id()
 	}
 }
 
@@ -109,6 +136,9 @@ pub mod pallet {
 	pub use traits_genetic_analyst_qualifications::{
 		GeneticAnalystQualificationOwner, GeneticAnalystQualificationsProvider,
 	};
+	pub use traits_genetic_analyst_services::{
+		GeneticAnalystServiceOwner, GeneticAnalystServicesProvider
+	};
 	use traits_user_profile::UserProfileProvider;
 
 	#[pallet::config]
@@ -117,6 +147,7 @@ pub mod pallet {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type Currency: Currency<Self::AccountId>;
+		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticAnalystQualifications: GeneticAnalystQualificationsProvider<Self>;
 		type EthereumAddress: Clone
 			+ Copy
@@ -144,8 +175,10 @@ pub mod pallet {
 	// ---- Types ----------------------
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
-    pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
 	pub type GeneticAnalystOf<T> = GeneticAnalyst<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
+    pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
+	pub type CurrencyOf<T> = <T as self::Config>::Currency;
+	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 
 	// ----- Storage ------------------
 	/// Get GeneticAnalyst by account id
@@ -312,6 +345,39 @@ impl<T: Config> Pallet<T> {
 	pub fn sub_genetic_analyst_count() {
 		let genetic_analyst_count = <GeneticAnalystCount<T>>::get().unwrap_or(1);
 		GeneticAnalystCount::<T>::put(genetic_analyst_count - 1);
+	}
+}
+
+impl<T: Config> GeneticAnalystServiceOwner<T> for Pallet<T> {
+	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>>;
+
+	/// User can create genetic_analyst_service if he/she is a genetic_analyst and has set ethereum address
+	fn can_create_genetic_analyst_service(user_id: &T::AccountId) -> bool {
+		GeneticAnalysts::<T>::contains_key(user_id)
+	}
+
+	fn get_owner(id: &T::AccountId) -> Option<Self::Owner> {
+		GeneticAnalysts::<T>::get(id)
+	}
+
+	fn associate(owner_id: &T::AccountId, genetic_analyst_service_id: &T::Hash) {
+		<GeneticAnalysts<T>>::mutate(owner_id, |genetic_analyst| {
+			match genetic_analyst {
+				None => (), // If genetic_analyst does not exist, do nothing
+				Some(genetic_analyst) => {
+					genetic_analyst.add_service(*genetic_analyst_service_id);
+				},
+			}
+		});
+	}
+
+	fn disassociate(owner_id: &T::AccountId, genetic_analyst_service_id: &T::Hash) {
+		GeneticAnalysts::<T>::mutate(owner_id, |genetic_analyst| match genetic_analyst {
+			None => (),
+			Some(genetic_analyst) => {
+				genetic_analyst.remove_service(*genetic_analyst_service_id);
+			},
+		});
 	}
 }
 

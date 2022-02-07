@@ -1386,6 +1386,7 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "genetic-analyst-qualifications",
+ "genetic-analyst-services",
  "genetic-analyst-qualifications-benchmarking",
  "genetic-analysts",
  "genetic-testing",
@@ -2256,6 +2257,7 @@ dependencies = [
 ]
 
 [[package]]
+name = "genetic-analyst-qualifications-tests"
 name = "genetic-analyst-qualifications-benchmarking"
 version = "0.1.0"
 dependencies = [
@@ -2263,15 +2265,31 @@ dependencies = [
  "frame-support",
  "frame-system",
  "genetic-analyst-qualifications",
+ "genetic-analyst-services",
  "genetic-analysts",
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "traits-genetic-analyst-qualifications",
+ "traits-genetic-analyst-services",
+ "user-profile",
+]
+
+[[package]]
+name = "genetic-analyst-services"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "primitives-duration",
+ "primitives-price-and-currency",
  "sp-std",
  "traits-genetic-analyst-qualifications",
 ]
@@ -2294,6 +2312,8 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
+ "traits-genetic-analyst-services",
  "traits-genetic-analyst-qualifications",
  "user-profile",
 ]
@@ -2306,6 +2326,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "genetic-analyst-qualifications",
+ "genetic-analyst-services",
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
@@ -2317,6 +2338,7 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-genetic-analyst-qualifications",
+ "traits-genetic-analyst-services",
  "traits-user-profile",
  "user-profile",
 ]
@@ -5223,7 +5245,25 @@ name = "primitives-area-code"
 version = "0.1.0"
 dependencies = [
  "frame-support",
- "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "primitives-duration"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
+name = "primitives-price-and-currency"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
  "parity-scale-codec",
  "scale-info",
  "sp-std",
@@ -8317,6 +8357,18 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-genetic-analyst-services"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "primitives-price-and-currency",
  "scale-info",
  "sp-std",
 ]
