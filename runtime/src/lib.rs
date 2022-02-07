@@ -1091,6 +1091,7 @@ impl_runtime_apis! {
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
@@ -1121,6 +1122,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, service_request, ServiceRequest);
 			list_benchmark!(list, extra, genetic_data, GeneticData);
 			list_benchmark!(list, extra, genetic_testing, GeneticTestingBench::<Runtime>);
+			list_benchmark!(list, extra, genetic_analysis, GeneticAnalysisBench::<Runtime>);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -1141,6 +1143,7 @@ impl_runtime_apis! {
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
@@ -1151,6 +1154,7 @@ impl_runtime_apis! {
 			impl genetic_analyst_qualifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
 			impl genetic_testing_benchmarking::Config for Runtime {}
+			impl genetic_analysis_benchmarking::Config for Runtime {}
 			impl orders_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
@@ -1195,6 +1199,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, rewards, Rewards);
 			add_benchmark!(params, batches, genetic_data, GeneticData);
 			add_benchmark!(params, batches, genetic_testing, GeneticTestingBench::<Runtime>);
+			add_benchmark!(params, batches, genetic_analysis, GeneticAnalysisBench::<Runtime>);
 			add_benchmark!(params, batches, service_request, ServiceRequest);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
