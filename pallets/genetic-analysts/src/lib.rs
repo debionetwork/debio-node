@@ -44,6 +44,22 @@ impl Default for StakeStatus {
 		StakeStatus::Unstaked
 	}
 }
+pub trait StakeStatusTrait {
+	fn is_staked(&self) -> bool;
+	fn is_waiting_for_staked(&self) -> bool;
+	fn is_unstaked(&self) -> bool;
+}
+impl StakeStatusTrait for StakeStatus {
+	fn is_staked(&self) -> bool {
+		matches!(*self, StakeStatus::Staked)
+	}
+	fn is_waiting_for_staked(&self) -> bool {
+		matches!(*self, StakeStatus::WaitingForStaked)
+	}
+	fn is_unstaked(&self) -> bool {
+		matches!(*self, StakeStatus::Unstaked)
+	}
+}
 
 // GeneticAnalystInfo Struct
 // Used as parameter of dispatchable calls
@@ -265,6 +281,8 @@ pub mod pallet {
 	pub enum Error<T> {
 		/// Account already has genetic_analyst registered
 		GeneticAnalystAlreadyRegistered,
+		/// Account already has genetic_analyst staked
+		GeneticAnalystAlreadyStaked,
 		/// GeneticAnalyst identified by the AccountId does not exist
 		GeneticAnalystDoesNotExist,
 		/// GeneticAnalyst is not the owner of the qualification
@@ -429,17 +447,32 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalystDoesNotExist)
 		}
 
-		if status.is_rejected() {
-			match Self::refund_genetic_analyst_stake(
-				account_id,
-			) {
-				Ok(_) => (),
-				Err(error) => return Err(error.into()),
-			}
-		}
-		
 		let mut genetic_analyst = genetic_analyst.unwrap();
 		genetic_analyst.verification_status = status.clone();
+		
+		if status.is_rejected() {
+			let refund_amount = genetic_analyst.stake_amount.saturated_into();
+			if !Self::is_pallet_balance_sufficient_for_refund(refund_amount) {
+				return Err(Error::<T>::InsufficientPalletFunds)
+			}
+	
+			match CurrencyOf::<T>::withdraw(
+				&Self::account_id(),
+				refund_amount,
+				WithdrawReasons::TRANSFER,
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(imb) => {
+					CurrencyOf::<T>::resolve_creating(account_id, imb);
+			
+					genetic_analyst.stake_amount = 0u128.saturated_into();
+					genetic_analyst.stake_status = StakeStatus::Unstaked;
+			
+					Self::set_total_stake_amount();
+				},
+				_ => return Err(Error::<T>::BadSignature),
+			}
+		}
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
 		
@@ -453,50 +486,19 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		if genetic_analyst == None {
 			return Err(Error::<T>::GeneticAnalystDoesNotExist)
 		}
-		if Self::is_balance_sufficient_for_staking(account_id) {
+		if !Self::is_balance_sufficient_for_staking(account_id) {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 		
 		let mut genetic_analyst = genetic_analyst.unwrap();
+		if genetic_analyst.stake_status.is_staked() || genetic_analyst.stake_status.is_waiting_for_staked() {
+			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
+		}
+
 		genetic_analyst.stake_amount = Self::stake_balance(account_id);
 		genetic_analyst.stake_status = StakeStatus::Staked;
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
-
-		Ok(genetic_analyst)
-	}
-
-	fn refund_genetic_analyst_stake(
-		account_id: &AccountIdOf<T>,
-	) -> Result<Self::GeneticAnalyst, Self::Error> {
-		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
-		if genetic_analyst == None {
-			return Err(Error::<T>::GeneticAnalystDoesNotExist)
-		}
-
-		let mut genetic_analyst = genetic_analyst.unwrap();
-		let refund_amount = genetic_analyst.stake_amount.saturated_into();
-		if Self::is_pallet_balance_sufficient_for_refund(refund_amount) {
-			return Err(Error::<T>::InsufficientPalletFunds)
-		}
-
-		match CurrencyOf::<T>::withdraw(
-			&Self::account_id(),
-			refund_amount,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(account_id, imb);
-		
-				genetic_analyst.stake_amount = 0u128.saturated_into();
-				genetic_analyst.stake_status = StakeStatus::Unstaked;
-		
-				GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
-				Self::set_total_stake_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
 
 		Ok(genetic_analyst)
 	}
@@ -573,7 +575,7 @@ impl<T: Config> Pallet<T> {
 	/// Is the pallet balance sufficient for refund
 	pub fn is_pallet_balance_sufficient_for_refund(refund_amount: BalanceOf<T>) -> bool {
 		let balance = T::Currency::free_balance(&Self::account_id());
-		balance < refund_amount
+		balance >= refund_amount
 	}
 
 	/// Set current total stake amount

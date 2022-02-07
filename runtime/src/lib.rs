@@ -821,7 +821,7 @@ construct_runtime!(
 		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
 		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
 		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},

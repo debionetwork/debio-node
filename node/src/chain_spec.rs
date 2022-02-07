@@ -2,7 +2,7 @@ use beefy_primitives::crypto::AuthorityId as BeefyId;
 use debio_runtime::{
 	currency::{OCT, UNITS as DBIO},
 	opaque::{Block, SessionKeys},
-	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, LabsConfig, UserProfileConfig,
+	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, LabsConfig, UserProfileConfig, GeneticAnalystsConfig,
 	OctopusAppchainConfig, OctopusLposConfig, GeneticAnalysisOrdersConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig,
 	SessionConfig, Signature, SudoConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
@@ -537,12 +537,13 @@ fn genesis(
 			validators: initial_authorities.iter().map(|x| (x.0.clone(), x.6)).collect(),
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
+		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
-		genetic_analysis_orders: GeneticAnalysisOrdersConfig { escrow_key: api_admin_key.clone() },
 		rewards: RewardsConfig {
 			rewarder_key: api_admin_key.clone(),
 		},
-		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
+		genetic_analysts: GeneticAnalystsConfig { genetic_analyst_verifier_key: api_admin_key.clone() },
+		genetic_analysis_orders: GeneticAnalysisOrdersConfig { escrow_key: api_admin_key.clone() },
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
 		user_profile: UserProfileConfig { admin_key: api_admin_key.clone() }
 	}
