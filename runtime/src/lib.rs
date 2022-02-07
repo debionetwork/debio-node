@@ -734,6 +734,11 @@ impl electronic_medical_record::Config for Runtime {
 	type ElectronicMedicalRecordWeightInfo = ();
 }
 
+impl genetic_data::Config for Runtime {
+    type Event = Event;
+	type GeneticDataWeightInfo = ();
+}
+
 impl certifications::Config for Runtime {
     type Event = Event;
 	type CertificationOwner = Labs;
@@ -796,6 +801,7 @@ construct_runtime!(
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 		Doctors: doctors::{Pallet, Call, Storage, Event<T>},
 		DoctorCertifications: doctor_certifications::{Pallet, Call, Storage, Event<T>},
+		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},

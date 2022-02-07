@@ -1387,6 +1387,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
+ "genetic-data",
  "genetic-analyst-services-benchmarking",
  "genetic-analyst-qualifications-benchmarking",
  "genetic-analysts",
@@ -2258,7 +2259,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genetic-analyst-qualifications-tests"
 name = "genetic-analyst-qualifications-benchmarking"
 version = "0.1.0"
 dependencies = [
@@ -2314,6 +2314,10 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-genetic-analyst-services",
+]
+
+[[package]]
+name = "genetic-analysts"
  "traits-genetic-analyst-qualifications",
  "user-profile",
 ]
@@ -2367,11 +2371,12 @@ dependencies = [
  "sp-std",
  "traits-genetic-analyst-qualifications",
  "traits-genetic-analyst-services",
+ "traits-user-profile",
  "user-profile",
 ]
 
 [[package]]
-name = "genetic-analysts"
+name = "genetic-data"
 version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
