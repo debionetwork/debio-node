@@ -353,7 +353,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
+		#[pallet::weight(T::GeneticAnalystWeightInfo::update_genetic_analyst_verification_status())]
 		pub fn update_genetic_analyst_verification_status(
 			origin: OriginFor<T>,
 			account_id: T::AccountId,
@@ -374,7 +374,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
+		#[pallet::weight(T::GeneticAnalystWeightInfo::stake_genetic_analyst())]
 		pub fn stake_genetic_analyst(
 			origin: OriginFor<T>,
 		) -> DispatchResultWithPostInfo {
