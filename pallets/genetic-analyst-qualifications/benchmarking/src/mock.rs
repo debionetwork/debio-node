@@ -23,8 +23,8 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Doctors: doctors::{Pallet, Call, Storage, Event<T>},
-		DoctorCertifications: doctor_certifications::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -77,17 +77,35 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-impl doctors::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
-    type DoctorCertifications = DoctorCertifications;
-    type EthereumAddress = ();
-    type UserProfile = ();
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
 }
 
-impl doctor_certifications::Config for Test {
-    type Event = Event;
-	type CertificationOwner = Doctors;
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
+}
+
+impl genetic_analysts::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticAnalystQualifications = GeneticAnalystQualifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
+	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_analyst_qualifications::Config for Test {
+	type Event = Event;
+	type GeneticAnalystQualificationOwner = GeneticAnalysts;
+	type WeightInfo = ();
 }
 
 pub struct ExternalityBuilder;
