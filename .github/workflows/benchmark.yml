@@ -11,6 +11,7 @@ concurrency:
 jobs:
   compute-build-info:
     runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
     outputs:
       sha_short: ${{ steps.build-info.outputs.sha_short }}
       date: ${{ steps.build-info.outputs.date }}
