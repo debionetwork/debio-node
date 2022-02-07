@@ -1386,6 +1386,7 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "genetic-analysis",
+ "genetic-analysis-benchmarking",
  "genetic-analysis-orders",
  "genetic-analyst-qualifications",
  "genetic-analyst-qualifications-benchmarking",
@@ -2265,6 +2266,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "genetic-analysis-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
+ "genetic-analyst-qualifications",
+ "genetic-analyst-services",
+ "genetic-analysts",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-duration",
+ "primitives-price-and-currency",
+ "primitives-tracking-id",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analysis",
+ "traits-genetic-analysis-orders",
+ "traits-genetic-analyst-services",
+ "traits-user-profile",
+ "user-profile",
+]
+
+[[package]]
 name = "genetic-analysis-orders"
 version = "0.1.0"
 dependencies = [
@@ -2304,6 +2335,38 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+]
+
+[[package]]
+name = "genetic-analysis-tests"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
+ "genetic-analyst-qualifications",
+ "genetic-analyst-services",
+ "genetic-analysts",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-duration",
+ "primitives-price-and-currency",
+ "primitives-tracking-id",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analysis",
+ "traits-genetic-analysis-orders",
+ "traits-genetic-analyst-services",
+ "traits-user-profile",
+ "user-profile",
 ]
 
 [[package]]
