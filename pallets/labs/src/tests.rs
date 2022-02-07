@@ -396,6 +396,22 @@ fn cant_update_lab_verification_status_when_not_admin() {
 }
 
 #[test]
+fn cant_update_lab_verification_status_when_not_exist() {
+	ExternalityBuilder::build().execute_with(|| {
+		LabVerifierKey::<Test>::put(2);
+
+		assert_noop!(
+			Labs::update_lab_verification_status(
+				Origin::signed(2),
+				1,
+				LabVerificationStatus::Verified,
+			),
+			Error::<Test>::LabDoesNotExist
+		);
+	})
+}
+
+#[test]
 fn cant_update_and_delete_lab_when_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(

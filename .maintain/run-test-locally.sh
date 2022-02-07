@@ -8,9 +8,7 @@ pushd .
 PROJECT_ROOT=`git rev-parse --show-toplevel`
 cd $PROJECT_ROOT
 
-echo "Check Code"
-cargo +nightly check --all
-echo "Start Testing Code"
+echo "Test Code"
 for entry in `ls pallets`; do
   pushd .
 
@@ -28,13 +26,5 @@ for entry in `ls pallets`; do
 
   popd
 done
-echo "Check Lint"
-cargo +nightly clippy --all -- -D warnings
-echo "Check Format"
-cargo +nightly fmt --all -- --check
-echo "Check Runtime"
-cargo +nightly build --release --locked
-echo "Check Benchmark"
-cargo +nightly --release --features=runtime-benchmarks --locked
 
 popd

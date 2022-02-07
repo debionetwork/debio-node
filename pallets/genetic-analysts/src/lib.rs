@@ -228,6 +228,10 @@ pub mod pallet {
 	#[pallet::getter(fn admin_key)]
 	pub type GeneticAnalystVerifierKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
+    #[pallet::storage]
+    #[pallet::getter(fn pallet_id)]
+    pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
 	#[pallet::storage]
 	#[pallet::getter(fn total_stake_amount)]
 	pub type TotalStakeAmount<T> = StorageValue<_, BalanceOf<T>>;
@@ -250,6 +254,8 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			GeneticAnalystVerifierKey::<T>::put(&self.genetic_analyst_verifier_key);
+            PalletAccount::<T>::put(<Pallet<T>>::account_id());
+            <Pallet<T>>::set_total_stake_amount();
 		}
 	}
 
@@ -293,6 +299,8 @@ pub mod pallet {
 		InsufficientFunds,
 		/// Insufficient pallet funds
 		InsufficientPalletFunds,
+		/// Account has not staked
+		GeneticAnalystIsNotStaked,
 		/// Unauthorized access to extrinsic
 		Unauthorized,
 		// Bad signature
@@ -353,7 +361,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
+		#[pallet::weight(T::GeneticAnalystWeightInfo::update_genetic_analyst_verification_status())]
 		pub fn update_genetic_analyst_verification_status(
 			origin: OriginFor<T>,
 			account_id: T::AccountId,
@@ -374,7 +382,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
+		#[pallet::weight(T::GeneticAnalystWeightInfo::stake_genetic_analyst())]
 		pub fn stake_genetic_analyst(
 			origin: OriginFor<T>,
 		) -> DispatchResultWithPostInfo {
@@ -449,6 +457,10 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 
 		let mut genetic_analyst = genetic_analyst.unwrap();
 		genetic_analyst.verification_status = status.clone();
+
+		if !genetic_analyst.stake_status.is_staked() {
+			return Err(Error::<T>::GeneticAnalystIsNotStaked)
+		}
 		
 		if status.is_rejected() {
 			let refund_amount = genetic_analyst.stake_amount.saturated_into();
@@ -486,13 +498,14 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		if genetic_analyst == None {
 			return Err(Error::<T>::GeneticAnalystDoesNotExist)
 		}
-		if !Self::is_balance_sufficient_for_staking(account_id) {
-			return Err(Error::<T>::InsufficientFunds)
-		}
 		
 		let mut genetic_analyst = genetic_analyst.unwrap();
 		if genetic_analyst.stake_status.is_staked() || genetic_analyst.stake_status.is_waiting_for_staked() {
 			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
+		}
+		
+		if !Self::is_balance_sufficient_for_staking(account_id) {
+			return Err(Error::<T>::InsufficientFunds)
 		}
 
 		genetic_analyst.stake_amount = Self::stake_balance(account_id);
