@@ -5,14 +5,14 @@ use frame_support::pallet_prelude::*;
 pub use pallet::*;
 pub use scale_info::TypeInfo;
 
-// #[cfg(test)]
-// mod mock;
+#[cfg(test)]
+mod mock;
 
-// #[cfg(test)]
-// mod tests;
+#[cfg(test)]
+mod tests;
 
-// #[cfg(feature = "runtime-benchmarks")]
-// mod benchmarking;
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 pub mod weights;
 pub mod interface;
