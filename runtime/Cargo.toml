@@ -90,6 +90,8 @@ hospital-certifications-benchmarking = { path = '../pallets/hospital-certificati
 doctors = { path = '../pallets/doctors', default-features = false }
 doctor-certifications = { path = '../pallets/doctor-certifications', default-features = false }
 doctor-certifications-benchmarking = { path = '../pallets/doctor-certifications/benchmarking', default-features = false, optional = true }
+genetic-analysts = { path = '../pallets/genetic-analysts', default-features = false }
+genetic-analyst-qualifications = { path = '../pallets/genetic-analyst-qualifications', default-features = false }
 
 [features]
 default = ['std']
