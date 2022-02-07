@@ -545,6 +545,6 @@ fn genesis(
 		genetic_analysts: GeneticAnalystsConfig { genetic_analyst_verifier_key: api_admin_key.clone() },
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig { escrow_key: api_admin_key.clone() },
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
-		user_profile: UserProfileConfig { admin_key: api_admin_key.clone() }
+		user_profile: UserProfileConfig { admin_key: api_admin_key }
 	}
 }

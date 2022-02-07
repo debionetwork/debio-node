@@ -93,11 +93,11 @@ pub mod currency {
 	pub const CENTS: Balance = DOLLARS / 100;
 	pub const MILLICENTS: Balance = CENTS / 1_000;
 
-	pub const EXISTENSIAL_DEPOSIT: Balance = 0 * DOLLARS;
+	pub const EXISTENSIAL_DEPOSIT: Balance = 0;
 	pub const BYTE_FEE: Balance = 10 * MILLICENTS;
 
 	pub const fn deposit(items: u32, bytes: u32) -> Balance {
-		(items as Balance) * 1 * DOLLARS + (bytes as Balance) * BYTE_FEE
+		(items as Balance) * DOLLARS + (bytes as Balance) * BYTE_FEE
 	}
 }
 
@@ -474,7 +474,7 @@ where
 		let signature = raw_payload.using_encoded(|payload| C::sign(payload, public))?;
 		let address = <Self as frame_system::Config>::Lookup::unlookup(account);
 		let (call, extra, _) = raw_payload.deconstruct();
-		Some((call, (address, signature.into(), extra)))
+		Some((call, (address, signature, extra)))
 	}
 }
 
@@ -515,10 +515,10 @@ impl pallet_mmr::Config for Runtime {
 
 parameter_types! {
 	pub const AssetDeposit: Balance = 100 * currency::DOLLARS;
-	pub const ApprovalDeposit: Balance = 1 * currency::DOLLARS;
+	pub const ApprovalDeposit: Balance = currency::DOLLARS;
 	pub const StringLimit: u32 = 50;
 	pub const MetadataDepositBase: Balance = 10 * currency::DOLLARS;
-	pub const MetadataDepositPerByte: Balance = 1 * currency::DOLLARS;
+	pub const MetadataDepositPerByte: Balance = currency::DOLLARS;
 }
 
 impl pallet_assets::Config for Runtime {
