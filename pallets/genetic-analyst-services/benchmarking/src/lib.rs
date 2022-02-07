@@ -3,17 +3,11 @@ mod mock;
 
 #[allow(unused)]
 use genetic_analyst_services::Pallet as GeneticAnalystServices;
-use genetic_analyst_services::{
-	Config as GeneticAnalystServicesConfig,
-	GeneticAnalystServiceInfo
-};
+use genetic_analyst_services::{Config as GeneticAnalystServicesConfig, GeneticAnalystServiceInfo};
 
 #[allow(unused)]
 use genetic_analysts::Pallet as GeneticAnalysts;
-use genetic_analysts::{
-	Config as GeneticAnalystsConfig,
-	GeneticAnalystInfo,
-};
+use genetic_analysts::{Config as GeneticAnalystsConfig, GeneticAnalystInfo};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
@@ -21,15 +15,12 @@ use sp_std::vec;
 
 pub struct Pallet<T: Config>(GeneticAnalystServices<T>);
 
-pub trait Config:
-	GeneticAnalystServicesConfig
-	+ GeneticAnalystsConfig
-{}
+pub trait Config: GeneticAnalystServicesConfig + GeneticAnalystsConfig {}
 
 use genetic_analyst_services::Call;
 
-use primitives_price_and_currency::PriceByCurrency;
 use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::PriceByCurrency;
 
 benchmarks! {
 	create_genetic_analyst_service {

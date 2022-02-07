@@ -6,7 +6,7 @@ use frame_support::parameter_types;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
-    MultiSignature
+	MultiSignature,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -78,15 +78,15 @@ impl pallet_balances::Config for Test {
 }
 
 impl hospitals::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
-    type HostpialCertifications = HostpialCertifications;
-    type EthereumAddress = ();
-    type UserProfile = ();
+	type Event = Event;
+	type Currency = Balances;
+	type HostpialCertifications = HostpialCertifications;
+	type EthereumAddress = ();
+	type UserProfile = ();
 }
 
 impl hospital_certifications::Config for Test {
-    type Event = Event;
+	type Event = Event;
 	type HostpialCertificationOwner = Hospitals;
 }
 

@@ -7,7 +7,7 @@ use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
-    MultiSignature
+	MultiSignature,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -82,35 +82,35 @@ impl pallet_balances::Config for Test {
 }
 
 impl labs::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
-    type Services = ();
-    type Certifications = Certifications;
-    type EthereumAddress = ();
-    type UserProfile = ();
+	type Event = Event;
+	type Currency = Balances;
+	type Services = ();
+	type Certifications = Certifications;
+	type EthereumAddress = ();
+	type UserProfile = ();
 }
 
 impl services::Config for Test {
-    type Currency = Balances;
-    type ServiceOwner = Labs;
+	type Currency = Balances;
+	type ServiceOwner = Labs;
 }
 
 impl user_profile::Config for Runtime {
-    type Event = Event;
-    type EthereumAddress = EthereumAddress;
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
 }
 
 impl orders::Config for Test {
-    type Event = Event;
-    type Services = Services;
-    type GeneticTesting = GeneticTesting;
-    type Currency = Balances;
+	type Event = Event;
+	type Services = Services;
+	type GeneticTesting = GeneticTesting;
+	type Currency = Balances;
 }
 
 impl genetic_testing::Config for Test {
-    type Event = Event;
-    type Orders = Orders;
-    type RandomnessSource = RandomnessCollectiveFlip;
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
 }
 
 pub struct ExternalityBuilder;

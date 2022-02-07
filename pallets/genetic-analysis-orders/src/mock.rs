@@ -1,5 +1,5 @@
 use crate as genetic_analysis_orders;
-use frame_support::{PalletId, parameter_types};
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -129,17 +129,17 @@ impl genetic_analyst_qualifications::Config for Test {
 }
 
 impl genetic_analysis::Config for Test {
-    type Event = Event;
-    type RandomnessSource = RandomnessCollectiveFlip;
-    type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalysisWeightInfo = ();
 }
 
 impl genetic_analysis_orders::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
-    type GeneticAnalysis = GeneticAnalysis;
-    type GeneticAnalystServices = GeneticAnalystServices;
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticAnalysis = GeneticAnalysis;
+	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
 }
 

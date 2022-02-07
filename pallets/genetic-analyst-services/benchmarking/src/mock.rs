@@ -6,7 +6,7 @@ use frame_support::parameter_types;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
-    MultiSignature
+	MultiSignature,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;

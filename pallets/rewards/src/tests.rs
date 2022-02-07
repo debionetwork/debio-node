@@ -1,6 +1,6 @@
-use crate::{mock::*, Error, RewarderKey, PalletAccount};
-use frame_system::RawOrigin;
+use crate::{mock::*, Error, PalletAccount, RewarderKey};
 use frame_support::{assert_noop, assert_ok};
+use frame_system::RawOrigin;
 
 #[test]
 fn reward_funds_works() {
@@ -9,20 +9,15 @@ fn reward_funds_works() {
 
 		assert_eq!(RewarderKey::<Test>::put(1), ());
 
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), PalletAccount::<Test>::get(), 100, 0));
-		assert_ok!(
-			Rewards::reward_funds(
-				Origin::signed(1),
-				2,
-				10
-			)
-		);
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			PalletAccount::<Test>::get(),
+			100,
+			0
+		));
+		assert_ok!(Rewards::reward_funds(Origin::signed(1), 2, 10));
 
-		System::assert_last_event(Event::Rewards(crate::Event::RewardFunds(
-			2, 
-			10, 
-			1
-		)));
+		System::assert_last_event(Event::Rewards(crate::Event::RewardFunds(2, 10, 1)));
 
 		assert_eq!(Balances::free_balance(PalletAccount::<Test>::get()), 90);
 	})
@@ -35,15 +30,13 @@ fn reward_funds_bad_signature() {
 
 		assert_eq!(RewarderKey::<Test>::put(1), ());
 
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), PalletAccount::<Test>::get(), 1, 0));
-		assert_noop!(
-			Rewards::reward_funds(
-				Origin::signed(1),
-				2,
-				2
-			),
-			Error::<Test>::BadSignature
-		);
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			PalletAccount::<Test>::get(),
+			1,
+			0
+		));
+		assert_noop!(Rewards::reward_funds(Origin::signed(1), 2, 2), Error::<Test>::BadSignature);
 	})
 }
 
@@ -54,13 +47,6 @@ fn cant_reward_funds_when_not_admin() {
 
 		assert_eq!(RewarderKey::<Test>::put(1), ());
 
-		assert_noop!(
-			Rewards::reward_funds(
-				Origin::signed(2),
-				2,
-				1
-			),
-			Error::<Test>::Unauthorized
-		);
+		assert_noop!(Rewards::reward_funds(Origin::signed(2), 2, 1), Error::<Test>::Unauthorized);
 	})
 }

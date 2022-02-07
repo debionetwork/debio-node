@@ -4,7 +4,7 @@ use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{AccountIdLookup, BlakeTwo256}
+	traits::{AccountIdLookup, BlakeTwo256},
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -56,7 +56,7 @@ impl frame_system::Config for Test {
 }
 
 impl genetic_data::Config for Test {
-    type Event = Event;
+	type Event = Event;
 	type GeneticDataWeightInfo = ();
 }
 

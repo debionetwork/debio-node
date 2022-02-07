@@ -1,14 +1,13 @@
 use crate as rewards;
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use pallet_balances::AccountData;
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
-	BuildStorage
+	BuildStorage,
 };
-use frame_support::PalletId;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -82,8 +81,8 @@ impl pallet_balances::Config for Test {
 }
 
 impl rewards::Config for Test {
-    type Event = Event;
-    type Currency = Balances;
+	type Event = Event;
+	type Currency = Balances;
 	type PalletId = RewardPalletId;
 	type WeightInfo = ();
 }
@@ -93,16 +92,15 @@ pub struct ExternalityBuilder;
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
 		GenesisConfig {
-			system: frame_system::GenesisConfig{
+			system: frame_system::GenesisConfig {
 				code: vec![],
 				changes_trie_config: Default::default(),
 			},
-			balances: pallet_balances::GenesisConfig::<Test>{
-				balances: vec![]
-			},
-			rewards: rewards::GenesisConfig::<Test>{
-				rewarder_key: 1
-			}
-		}.build_storage().unwrap().into()
+			balances: pallet_balances::GenesisConfig::<Test> { balances: vec![] },
+			rewards: rewards::GenesisConfig::<Test> { rewarder_key: 1 },
+		}
+		.build_storage()
+		.unwrap()
+		.into()
 	}
 }

@@ -1,15 +1,9 @@
 use crate::{
-	mock::*, 
-	GeneticAnalyst,
-	GeneticAnalystInfo,
-	StakeStatus,
-	GeneticAnalystVerifierKey,
-	Error
+	mock::*, Error, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey, StakeStatus,
 };
-use primitives_verification_status::VerificationStatus;
+use frame_support::{assert_noop, assert_ok, sp_runtime::SaturatedConversion};
 use frame_system::RawOrigin;
-use frame_support::{assert_noop, assert_ok};
-use frame_support::sp_runtime::SaturatedConversion;
+use primitives_verification_status::VerificationStatus;
 
 #[test]
 fn register_genetic_analyst_works() {
@@ -323,7 +317,12 @@ fn call_event_should_work() {
 #[test]
 fn update_genetic_analyst_verification_status_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -340,9 +339,7 @@ fn update_genetic_analyst_verification_status_works() {
 
 		GeneticAnalystVerifierKey::<Test>::put(2);
 
-		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
-			Origin::signed(1),
-		));
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
 			Origin::signed(2),
@@ -376,7 +373,12 @@ fn update_genetic_analyst_verification_status_works() {
 #[test]
 fn update_genetic_analyst_verification_status_reject_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -393,9 +395,7 @@ fn update_genetic_analyst_verification_status_reject_works() {
 
 		GeneticAnalystVerifierKey::<Test>::put(2);
 
-		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
-			Origin::signed(1),
-		));
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
 			Origin::signed(2),
@@ -522,7 +522,12 @@ fn cant_update_genetic_analyst_verification_status_when_not_exist() {
 #[test]
 fn stake_genetic_analyst_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -537,9 +542,7 @@ fn stake_genetic_analyst_works() {
 			}
 		));
 
-		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
-			Origin::signed(1),
-		));
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
 
 		assert_eq!(
 			GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -568,9 +571,7 @@ fn stake_genetic_analyst_works() {
 fn cant_stake_genetic_analyst_when_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
-			GeneticAnalysts::stake_genetic_analyst(
-				Origin::signed(1),
-			),
+			GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
 			Error::<Test>::GeneticAnalystDoesNotExist
 		);
 	})
@@ -593,9 +594,7 @@ fn cant_stake_genetic_analyst_when_insufficient_funds() {
 		));
 
 		assert_noop!(
-			GeneticAnalysts::stake_genetic_analyst(
-				Origin::signed(1),
-			),
+			GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
 			Error::<Test>::InsufficientFunds
 		);
 
@@ -625,7 +624,12 @@ fn cant_stake_genetic_analyst_when_insufficient_funds() {
 #[test]
 fn cant_stake_genetic_analyst_when_already_staked() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 60000000000000000000000u128.saturated_into(), 0));
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -640,9 +644,7 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 			}
 		));
 
-		assert_ok!(GeneticAnalysts::stake_genetic_analyst(
-			Origin::signed(1),
-		));
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
 
 		assert_eq!(
 			GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -666,9 +668,7 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 		);
 
 		assert_noop!(
-			GeneticAnalysts::stake_genetic_analyst(
-				Origin::signed(1),
-			),
+			GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
 			Error::<Test>::GeneticAnalystAlreadyStaked
 		);
 	})

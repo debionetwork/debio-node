@@ -1,33 +1,27 @@
 use crate::{
-    mock::*, 
-    Error,
-    ElectronicMedicalRecord as ElectronicMedicalRecordStruct,
-	ElectronicMedicalRecordFileSubmission
+	mock::*, ElectronicMedicalRecord as ElectronicMedicalRecordStruct,
+	ElectronicMedicalRecordFileSubmission, Error,
 };
 use frame_support::{
-    assert_noop, assert_ok,
-    sp_runtime::traits::{Hash, Keccak256}
+	assert_noop, assert_ok,
+	sp_runtime::traits::{Hash, Keccak256},
 };
 
 #[test]
 fn add_electronic_medical_record_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(
-			ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
+			Origin::signed(1),
+			"DeBio EMR".as_bytes().to_vec(),
+			"DeBio EMR Category".as_bytes().to_vec(),
+			vec![ElectronicMedicalRecordFileSubmission {
+				title: "DeBio EMR Document Title".as_bytes().to_vec(),
+				description: "DeBio EMR Document Description".as_bytes().to_vec(),
+				record_link: "DeBio EMR Link".as_bytes().to_vec()
+			}]
+		));
 
-        let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
+		let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(1));
 
@@ -41,17 +35,18 @@ fn add_electronic_medical_record_works() {
 		assert_eq!(emr.category, "DeBio EMR Category".as_bytes().to_vec());
 
 		assert_eq!(
-            ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
-            Some(ElectronicMedicalRecordStruct {
-                id: emr_ids[0],
-                owner_id: 1,
-                title: "DeBio EMR".as_bytes().to_vec(),
-                category: "DeBio EMR Category".as_bytes().to_vec(),
-                files: emr.files.clone()
-            })
-        );
+			ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
+			Some(ElectronicMedicalRecordStruct {
+				id: emr_ids[0],
+				owner_id: 1,
+				title: "DeBio EMR".as_bytes().to_vec(),
+				category: "DeBio EMR Category".as_bytes().to_vec(),
+				files: emr.files.clone()
+			})
+		);
 
-        let emr_file = ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
+		let emr_file =
+			ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
 
 		assert_eq!(emr_file.title, "DeBio EMR Document Title".as_bytes().to_vec());
 		assert_eq!(emr_file.description, "DeBio EMR Document Description".as_bytes().to_vec());
@@ -62,22 +57,18 @@ fn add_electronic_medical_record_works() {
 #[test]
 fn remove_electronic_medical_record_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(
-			ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
+			Origin::signed(1),
+			"DeBio EMR".as_bytes().to_vec(),
+			"DeBio EMR Category".as_bytes().to_vec(),
+			vec![ElectronicMedicalRecordFileSubmission {
+				title: "DeBio EMR Document Title".as_bytes().to_vec(),
+				description: "DeBio EMR Document Description".as_bytes().to_vec(),
+				record_link: "DeBio EMR Link".as_bytes().to_vec()
+			}]
+		));
 
-        let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
+		let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(1));
 
@@ -91,28 +82,27 @@ fn remove_electronic_medical_record_works() {
 		assert_eq!(emr.category, "DeBio EMR Category".as_bytes().to_vec());
 
 		assert_eq!(
-            ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
-            Some(ElectronicMedicalRecordStruct {
-                id: emr_ids[0],
-                owner_id: 1,
-                title: "DeBio EMR".as_bytes().to_vec(),
-                category: "DeBio EMR Category".as_bytes().to_vec(),
-                files: emr.files.clone()
-            })
-        );
+			ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
+			Some(ElectronicMedicalRecordStruct {
+				id: emr_ids[0],
+				owner_id: 1,
+				title: "DeBio EMR".as_bytes().to_vec(),
+				category: "DeBio EMR Category".as_bytes().to_vec(),
+				files: emr.files.clone()
+			})
+		);
 
-        let emr_file = ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
+		let emr_file =
+			ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
 
 		assert_eq!(emr_file.title, "DeBio EMR Document Title".as_bytes().to_vec());
 		assert_eq!(emr_file.description, "DeBio EMR Document Description".as_bytes().to_vec());
 		assert_eq!(emr_file.record_link, "DeBio EMR Link".as_bytes().to_vec());
 
-		assert_ok!(
-			ElectronicMedicalRecord::remove_electronic_medical_record(
-				Origin::signed(1),
-                emr_ids[0]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::remove_electronic_medical_record(
+			Origin::signed(1),
+			emr_ids[0]
+		));
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(0));
 
@@ -126,11 +116,9 @@ fn remove_electronic_medical_record_does_not_exist() {
 		assert_noop!(
 			ElectronicMedicalRecord::remove_electronic_medical_record(
 				Origin::signed(1),
-                Keccak256::hash(
-                    "0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
-                )
+				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 			),
-            Error::<Test>::ElectronicMedicalRecordDoesNotExist
+			Error::<Test>::ElectronicMedicalRecordDoesNotExist
 		);
 	})
 }
@@ -138,22 +126,18 @@ fn remove_electronic_medical_record_does_not_exist() {
 #[test]
 fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(
-			ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
+			Origin::signed(1),
+			"DeBio EMR".as_bytes().to_vec(),
+			"DeBio EMR Category".as_bytes().to_vec(),
+			vec![ElectronicMedicalRecordFileSubmission {
+				title: "DeBio EMR Document Title".as_bytes().to_vec(),
+				description: "DeBio EMR Document Description".as_bytes().to_vec(),
+				record_link: "DeBio EMR Link".as_bytes().to_vec()
+			}]
+		));
 
-        let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
+		let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(1));
 
@@ -167,17 +151,18 @@ fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 		assert_eq!(emr.category, "DeBio EMR Category".as_bytes().to_vec());
 
 		assert_eq!(
-            ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
-            Some(ElectronicMedicalRecordStruct {
-                id: emr_ids[0],
-                owner_id: 1,
-                title: "DeBio EMR".as_bytes().to_vec(),
-                category: "DeBio EMR Category".as_bytes().to_vec(),
-                files: emr.files.clone()
-            })
-        );
+			ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
+			Some(ElectronicMedicalRecordStruct {
+				id: emr_ids[0],
+				owner_id: 1,
+				title: "DeBio EMR".as_bytes().to_vec(),
+				category: "DeBio EMR Category".as_bytes().to_vec(),
+				files: emr.files.clone()
+			})
+		);
 
-        let emr_file = ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
+		let emr_file =
+			ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
 
 		assert_eq!(emr_file.title, "DeBio EMR Document Title".as_bytes().to_vec());
 		assert_eq!(emr_file.description, "DeBio EMR Document Description".as_bytes().to_vec());
@@ -186,9 +171,9 @@ fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 		assert_noop!(
 			ElectronicMedicalRecord::remove_electronic_medical_record(
 				Origin::signed(2),
-                emr_ids[0]
+				emr_ids[0]
 			),
-            Error::<Test>::NotElectronicMedicalRecordOwner
+			Error::<Test>::NotElectronicMedicalRecordOwner
 		);
 	})
 }
@@ -196,22 +181,18 @@ fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 #[test]
 fn update_electronic_medical_record_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(
-			ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
+			Origin::signed(1),
+			"DeBio EMR".as_bytes().to_vec(),
+			"DeBio EMR Category".as_bytes().to_vec(),
+			vec![ElectronicMedicalRecordFileSubmission {
+				title: "DeBio EMR Document Title".as_bytes().to_vec(),
+				description: "DeBio EMR Document Description".as_bytes().to_vec(),
+				record_link: "DeBio EMR Link".as_bytes().to_vec()
+			}]
+		));
 
-        let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
+		let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(1));
 
@@ -225,39 +206,36 @@ fn update_electronic_medical_record_works() {
 		assert_eq!(emr.category, "DeBio EMR Category".as_bytes().to_vec());
 
 		assert_eq!(
-            ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
-            Some(ElectronicMedicalRecordStruct {
-                id: emr_ids[0],
-                owner_id: 1,
-                title: "DeBio EMR".as_bytes().to_vec(),
-                category: "DeBio EMR Category".as_bytes().to_vec(),
-                files: emr.files.clone()
-            })
-        );
+			ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
+			Some(ElectronicMedicalRecordStruct {
+				id: emr_ids[0],
+				owner_id: 1,
+				title: "DeBio EMR".as_bytes().to_vec(),
+				category: "DeBio EMR Category".as_bytes().to_vec(),
+				files: emr.files.clone()
+			})
+		);
 
-        let emr_file = ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
+		let emr_file =
+			ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
 
 		assert_eq!(emr_file.title, "DeBio EMR Document Title".as_bytes().to_vec());
 		assert_eq!(emr_file.description, "DeBio EMR Document Description".as_bytes().to_vec());
 		assert_eq!(emr_file.record_link, "DeBio EMR Link".as_bytes().to_vec());
 
-		assert_ok!(
-			ElectronicMedicalRecord::update_electronic_medical_record(
-				Origin::signed(1),
-                emr_ids[0],
-                "DeBio EMR 2".as_bytes().to_vec(),
-                "DeBio EMR Category 2".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title 2".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description 2".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link 2".as_bytes().to_vec()
-					}
-				]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::update_electronic_medical_record(
+			Origin::signed(1),
+			emr_ids[0],
+			"DeBio EMR 2".as_bytes().to_vec(),
+			"DeBio EMR Category 2".as_bytes().to_vec(),
+			vec![ElectronicMedicalRecordFileSubmission {
+				title: "DeBio EMR Document Title 2".as_bytes().to_vec(),
+				description: "DeBio EMR Document Description 2".as_bytes().to_vec(),
+				record_link: "DeBio EMR Link 2".as_bytes().to_vec()
+			}]
+		));
 
-        let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
+		let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(1));
 
@@ -271,17 +249,18 @@ fn update_electronic_medical_record_works() {
 		assert_eq!(emr.category, "DeBio EMR Category 2".as_bytes().to_vec());
 
 		assert_eq!(
-            ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
-            Some(ElectronicMedicalRecordStruct {
-                id: emr_ids[0],
-                owner_id: 1,
-                title: "DeBio EMR 2".as_bytes().to_vec(),
-                category: "DeBio EMR Category 2".as_bytes().to_vec(),
-                files: emr.files.clone()
-            })
-        );
+			ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
+			Some(ElectronicMedicalRecordStruct {
+				id: emr_ids[0],
+				owner_id: 1,
+				title: "DeBio EMR 2".as_bytes().to_vec(),
+				category: "DeBio EMR Category 2".as_bytes().to_vec(),
+				files: emr.files.clone()
+			})
+		);
 
-        let emr_file = ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
+		let emr_file =
+			ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
 
 		assert_eq!(emr_file.title, "DeBio EMR Document Title 2".as_bytes().to_vec());
 		assert_eq!(emr_file.description, "DeBio EMR Document Description 2".as_bytes().to_vec());
@@ -295,20 +274,16 @@ fn update_electronic_medical_record_does_not_exist() {
 		assert_noop!(
 			ElectronicMedicalRecord::update_electronic_medical_record(
 				Origin::signed(1),
-                Keccak256::hash(
-                    "0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
-                ),
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
+				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+				"DeBio EMR".as_bytes().to_vec(),
+				"DeBio EMR Category".as_bytes().to_vec(),
+				vec![ElectronicMedicalRecordFileSubmission {
+					title: "DeBio EMR Document Title".as_bytes().to_vec(),
+					description: "DeBio EMR Document Description".as_bytes().to_vec(),
+					record_link: "DeBio EMR Link".as_bytes().to_vec()
+				}]
 			),
-            Error::<Test>::ElectronicMedicalRecordDoesNotExist
+			Error::<Test>::ElectronicMedicalRecordDoesNotExist
 		);
 	})
 }
@@ -316,22 +291,18 @@ fn update_electronic_medical_record_does_not_exist() {
 #[test]
 fn update_electronic_medical_record_not_electronic_medical_record_owner() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(
-			ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
-			)
-		);
+		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
+			Origin::signed(1),
+			"DeBio EMR".as_bytes().to_vec(),
+			"DeBio EMR Category".as_bytes().to_vec(),
+			vec![ElectronicMedicalRecordFileSubmission {
+				title: "DeBio EMR Document Title".as_bytes().to_vec(),
+				description: "DeBio EMR Document Description".as_bytes().to_vec(),
+				record_link: "DeBio EMR Link".as_bytes().to_vec()
+			}]
+		));
 
-        let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
+		let emr_ids = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1).unwrap();
 
 		assert_eq!(ElectronicMedicalRecord::electronic_medical_record_count(), Some(1));
 
@@ -345,17 +316,18 @@ fn update_electronic_medical_record_not_electronic_medical_record_owner() {
 		assert_eq!(emr.category, "DeBio EMR Category".as_bytes().to_vec());
 
 		assert_eq!(
-            ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
-            Some(ElectronicMedicalRecordStruct {
-                id: emr_ids[0],
-                owner_id: 1,
-                title: "DeBio EMR".as_bytes().to_vec(),
-                category: "DeBio EMR Category".as_bytes().to_vec(),
-                files: emr.files.clone()
-            })
-        );
+			ElectronicMedicalRecord::electronic_medical_record_by_id(emr_ids[0]),
+			Some(ElectronicMedicalRecordStruct {
+				id: emr_ids[0],
+				owner_id: 1,
+				title: "DeBio EMR".as_bytes().to_vec(),
+				category: "DeBio EMR Category".as_bytes().to_vec(),
+				files: emr.files.clone()
+			})
+		);
 
-        let emr_file = ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
+		let emr_file =
+			ElectronicMedicalRecord::electronic_medical_record_file_by_id(emr.files[0]).unwrap();
 
 		assert_eq!(emr_file.title, "DeBio EMR Document Title".as_bytes().to_vec());
 		assert_eq!(emr_file.description, "DeBio EMR Document Description".as_bytes().to_vec());
@@ -364,18 +336,16 @@ fn update_electronic_medical_record_not_electronic_medical_record_owner() {
 		assert_noop!(
 			ElectronicMedicalRecord::update_electronic_medical_record(
 				Origin::signed(2),
-                emr_ids[0],
-                "DeBio EMR".as_bytes().to_vec(),
-                "DeBio EMR Category".as_bytes().to_vec(),
-				vec![
-					ElectronicMedicalRecordFileSubmission {
-						title: "DeBio EMR Document Title".as_bytes().to_vec(),
-						description: "DeBio EMR Document Description".as_bytes().to_vec(),
-						record_link: "DeBio EMR Link".as_bytes().to_vec()
-					}
-				]
+				emr_ids[0],
+				"DeBio EMR".as_bytes().to_vec(),
+				"DeBio EMR Category".as_bytes().to_vec(),
+				vec![ElectronicMedicalRecordFileSubmission {
+					title: "DeBio EMR Document Title".as_bytes().to_vec(),
+					description: "DeBio EMR Document Description".as_bytes().to_vec(),
+					record_link: "DeBio EMR Link".as_bytes().to_vec()
+				}]
 			),
-            Error::<Test>::NotElectronicMedicalRecordOwner
+			Error::<Test>::NotElectronicMedicalRecordOwner
 		);
 	})
 }

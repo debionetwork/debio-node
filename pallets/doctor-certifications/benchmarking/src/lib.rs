@@ -3,30 +3,21 @@ mod mock;
 
 #[allow(unused)]
 use doctor_certifications::Pallet as DoctorCertifications;
-use doctor_certifications::{
-	Config as DoctorCertificationsConfig,
-	DoctorCertificationInfo
-};
+use doctor_certifications::{Config as DoctorCertificationsConfig, DoctorCertificationInfo};
 
 #[allow(unused)]
 use doctors::Pallet as Doctors;
-use doctors::{
-	Config as DoctorsConfig,
-	DoctorInfo
-};
+use doctors::{Config as DoctorsConfig, DoctorInfo};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(DoctorCertifications<T>);
 
-pub trait Config:
-	DoctorCertificationsConfig
-	+ DoctorsConfig 
-{}
+pub trait Config: DoctorCertificationsConfig + DoctorsConfig {}
 
 use doctor_certifications::Call;
-use primitives_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 benchmarks! {
 	create_certification {
@@ -34,15 +25,15 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let doctor = DoctorInfo {
-            name: "DeBio Doctor".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			name: "DeBio Doctor".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_doctors = Doctors::<T>::register_doctor(caller_origin, doctor);
 
@@ -61,15 +52,15 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let doctor = DoctorInfo {
-            name: "DeBio Doctor".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			name: "DeBio Doctor".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_doctors = Doctors::<T>::register_doctor(caller_origin.clone(), doctor);
 
@@ -82,8 +73,8 @@ benchmarks! {
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
 		let _create_certification = DoctorCertifications::<T>::create_certification(caller_origin, old_certification);
-        let _doctor = Doctors::<T>::doctor_by_account_id(caller.clone())
-            .unwrap();
+		let _doctor = Doctors::<T>::doctor_by_account_id(caller.clone())
+			.unwrap();
 
 		let new_certification = DoctorCertificationInfo {
 			title: "DeBio certificate 2".as_bytes().to_vec(),
@@ -100,15 +91,15 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let doctor = DoctorInfo {
-            name: "DeBio Doctor".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			name: "DeBio Doctor".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_doctors = Doctors::<T>::register_doctor(caller_origin.clone(), doctor);
 
@@ -121,8 +112,8 @@ benchmarks! {
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
 		let _create_certification = DoctorCertifications::<T>::create_certification(caller_origin, old_certification);
-        let _doctor = Doctors::<T>::doctor_by_account_id(caller.clone())
-            .unwrap();
+		let _doctor = Doctors::<T>::doctor_by_account_id(caller.clone())
+			.unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _doctor.certifications[0])
 }
 
