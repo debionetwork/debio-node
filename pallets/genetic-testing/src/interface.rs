@@ -18,8 +18,8 @@ pub trait GeneticTestingInterface<T: frame_system::Config> {
     fn reject_dna_sample(
         lab_id: &T::AccountId,
         tracking_id: &DnaSampleTrackingId,
-        rejected_title: &Vec<u8>,
-        rejected_description: &Vec<u8>,
+        rejected_title: &[u8],
+        rejected_description: &[u8],
     ) -> Result<Self::DnaSample, Self::Error>;
     fn process_dna_sample(
         lab_id: &T::AccountId,

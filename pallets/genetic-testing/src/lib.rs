@@ -60,7 +60,7 @@ impl<AccountId, Hash, Moment: Copy> DnaSample<AccountId, Hash, Moment> {
             owner_id,
             status: DnaSampleStatus::default(),
             order_id,
-            created_at: created_at,
+            created_at,
             updated_at: created_at,
             rejected_title: None,
             rejected_description: None,
@@ -237,10 +237,10 @@ pub mod pallet {
                 &rejected_description,
             ) {
                 Ok(dna_sample) => {
-                    Self::deposit_event(Event::<T>::DnaSampleRejected(dna_sample.clone()));
+                    Self::deposit_event(Event::<T>::DnaSampleRejected(dna_sample));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -260,17 +260,17 @@ pub mod pallet {
                 Ok(dna_sample) => {
                     match status {
                         DnaSampleStatus::QualityControlled => Self::deposit_event(
-                            Event::<T>::DnaSampleQualityControlled(dna_sample.clone()),
+                            Event::<T>::DnaSampleQualityControlled(dna_sample),
                         ),
                         DnaSampleStatus::ResultReady => Self::deposit_event(
-                            Event::<T>::DnaSampleResultReady(dna_sample.clone()),
+                            Event::<T>::DnaSampleResultReady(dna_sample),
                         ),
                         _ => (),
                     }
 
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -289,11 +289,11 @@ pub mod pallet {
             ) {
                 Ok(dna_test_result) => {
                     Self::deposit_event(Event::<T>::DnaTestResultSubmitted(
-                        dna_test_result.clone(),
+                        dna_test_result,
                     ));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -310,11 +310,11 @@ pub mod pallet {
             ) {
                 Ok(dna_test_result) => {
                     Self::deposit_event(Event::<T>::DnaTestResultSubmitted(
-                        dna_test_result.clone(),
+                        dna_test_result,
                     ));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
 
@@ -330,10 +330,10 @@ pub mod pallet {
                 &who, &data_hash, &order_id
             ) {
                 Ok(_data_staker) => {
-                    Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash.clone(), order_id.clone()));
+                    Self::deposit_event(Event::<T>::DataStaked(who.clone(), data_hash, order_id));
                     Ok(().into())
                 }
-                Err(error) => Err(error)?,
+                Err(error) => Err(error.into()),
             }
         }
     }
@@ -361,10 +361,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
             if !DnaSamples::<T>::contains_key(&tracking_id) {
                 let dna_sample = DnaSample::new(
-                    tracking_id.clone(),
+                    tracking_id,
                     lab_id.clone(),
                     owner_id.clone(),
-                    order_id.clone(),
+                    *order_id,
                     now,
                 );
                 DnaSamples::<T>::insert(&dna_sample.tracking_id, &dna_sample);
@@ -394,8 +394,8 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     fn reject_dna_sample(
         lab_id: &T::AccountId,
         tracking_id: &DnaSampleTrackingId,
-        rejected_title: &Vec<u8>,
-        rejected_description: &Vec<u8>,
+        rejected_title: &[u8],
+        rejected_description: &[u8],
     ) -> Result<Self::DnaSample, Self::Error> {
         let dna_sample = DnaSamples::<T>::get(tracking_id);
         if dna_sample.is_none() {
@@ -408,8 +408,8 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        dna_sample.rejected_title = Some(rejected_title.clone());
-        dna_sample.rejected_description = Some(rejected_description.clone());
+        dna_sample.rejected_title = Some(rejected_title.to_vec());
+        dna_sample.rejected_description = Some(rejected_description.to_vec());
         dna_sample.status = DnaSampleStatus::Rejected;
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
@@ -442,7 +442,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
         }
 
         let now = pallet_timestamp::Pallet::<T>::get();
-        dna_sample.status = status.clone();
+        dna_sample.status = status;
         dna_sample.updated_at = now;
         DnaSamples::<T>::insert(tracking_id, &dna_sample);
 
@@ -474,7 +474,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
             Some(lab_id.clone()),        // Lab
             dna_sample.owner_id.clone(), // Owner
             submission.clone(),
-            Some(dna_sample.order_id.clone()),
+            Some(dna_sample.order_id),
             now,
         );
         DnaTestResults::<T>::insert(tracking_id, &dna_test_result);
@@ -533,7 +533,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
     ) -> Result<Self::StakedData, Self::Error> {
         let data_staker = data_staker.clone();
 
-        let data_hash = data_hash.clone();
+        let data_hash = *data_hash;
 
         StakedDataByAccountId::<T>::insert(data_staker, data_hash);
         StakedDataByOrderId::<T>::insert(order_id, data_hash);
@@ -593,9 +593,9 @@ impl<T: Config> GeneticTestingProvider<T> for Pallet<T> {
 impl<T: Config> Pallet<T> {
     pub fn generate_random_seed(creator_id: &T::AccountId, owner_id: &T::AccountId) -> Vec<u8> {
         let creator_info = frame_system::Pallet::<T>::account(creator_id);
-        let creator_nonce = creator_info.nonce.clone();
+        let creator_nonce = creator_info.nonce;
         let owner_info = frame_system::Pallet::<T>::account(owner_id);
-        let owner_nonce = owner_info.nonce.clone();
+        let owner_nonce = owner_info.nonce;
 
         let mut seed = creator_id.encode();
         seed.append(&mut creator_nonce.encode());
@@ -608,8 +608,7 @@ impl<T: Config> Pallet<T> {
     pub fn add_dna_sample_by_owner(dna_sample: &DnaSampleOf<T>) {
         match DnaSamplesByOwner::<T>::get(&dna_sample.owner_id) {
             None => {
-                let mut tracking_ids = Vec::<DnaSampleTrackingId>::new();
-                tracking_ids.push(dna_sample.tracking_id.clone());
+                let tracking_ids = vec![dna_sample.tracking_id.clone()];
                 DnaSamplesByOwner::<T>::insert(&dna_sample.owner_id, tracking_ids);
             }
             Some(mut tracking_ids) => {
@@ -622,8 +621,7 @@ impl<T: Config> Pallet<T> {
     pub fn add_dna_sample_by_lab(dna_sample: &DnaSampleOf<T>) {
         match DnaSamplesByLab::<T>::get(&dna_sample.owner_id) {
             None => {
-                let mut tracking_ids = Vec::<DnaSampleTrackingId>::new();
-                tracking_ids.push(dna_sample.tracking_id.clone());
+                let tracking_ids = vec![dna_sample.tracking_id.clone()];
                 DnaSamplesByLab::<T>::insert(&dna_sample.lab_id, tracking_ids);
             }
             Some(mut tracking_ids) => {
@@ -636,8 +634,7 @@ impl<T: Config> Pallet<T> {
     pub fn add_dna_test_results_by_owner(dna_test_result: &DnaTestResultOf<T>) {
         match DnaTestResultsByOwner::<T>::get(&dna_test_result.owner_id) {
             None => {
-                let mut tracking_ids = Vec::<DnaSampleTrackingId>::new();
-                tracking_ids.push(dna_test_result.tracking_id.clone());
+                let tracking_ids = vec![dna_test_result.tracking_id.clone()];
                 DnaTestResultsByOwner::<T>::insert(&dna_test_result.owner_id, tracking_ids);
             }
             Some(mut tracking_ids) => {
@@ -652,8 +649,7 @@ impl<T: Config> Pallet<T> {
             None => (),
             Some(lab_id) => match DnaTestResultsByLab::<T>::get(&dna_test_result.owner_id) {
                 None => {
-                    let mut tracking_ids = Vec::<DnaSampleTrackingId>::new();
-                    tracking_ids.push(dna_test_result.tracking_id.clone());
+                    let tracking_ids = vec![dna_test_result.tracking_id.clone()];
                     DnaTestResultsByLab::<T>::insert(lab_id, tracking_ids);
                 }
                 Some(mut tracking_ids) => {

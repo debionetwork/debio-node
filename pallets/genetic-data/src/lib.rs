@@ -283,7 +283,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
             genetic_data_id,
         ) {
             Ok(res) => res,
-            Err(error) => return Err(error.into()),
+            Err(error) => return Err(error),
         };
 
         <Self as GeneticDataInterface<T>>::add_genetic_data(
@@ -327,10 +327,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
     fn genetic_data_by_owner_id(
         owner_id: &T::AccountId,
     ) -> Option<Vec<T::Hash>> {
-        match GeneticDataByOwner::<T>::get(owner_id) {
-            None => None,
-            Some(genetic_data_vec) => Some(genetic_data_vec),
-        }
+        GeneticDataByOwner::<T>::get(owner_id)
     }
 
     fn genetic_data_count_by_owner(owner_id: &T::AccountId) -> u64 {
