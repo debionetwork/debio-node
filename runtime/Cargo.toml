@@ -94,6 +94,7 @@ genetic-data = { path = '../pallets/genetic-data', default-features = false }
 genetic-analysts = { path = '../pallets/genetic-analysts', default-features = false }
 genetic-analyst-services = { path = '../pallets/genetic-analyst-services', default-features = false }
 genetic-analyst-qualifications = { path = '../pallets/genetic-analyst-qualifications', default-features = false }
+genetic-analyst-services-benchmarking = { path = '../pallets/genetic-analyst-services/benchmarking', default-features = false, optional = true }
 genetic-analyst-qualifications-benchmarking = { path = '../pallets/genetic-analyst-qualifications/benchmarking', default-features = false, optional = true }
 
 [features]
@@ -190,8 +191,12 @@ runtime-benchmarks = [
 	'doctor-certifications-benchmarking',
 	'genetic-analysts/runtime-benchmarks',
 	'genetic-analyst-qualifications-benchmarking',
+	'genetic-analyst-services-benchmarking',
 	'genetic-testing-benchmarking',
 	'user-profile/runtime-benchmarks',
 	'rewards/runtime-benchmarks',
 	'service-request/runtime-benchmarks',
+	'genetic-data/runtime-benchmarks',
+	'genetic-analysts/runtime-benchmarks',
+	'genetic-analyst-qualifications-benchmarking',
 ]
