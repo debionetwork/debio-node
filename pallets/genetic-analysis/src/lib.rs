@@ -34,17 +34,17 @@ impl Default for GeneticAnalysisStatus {
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct GeneticAnalysis<AccountId, Hash, Moment> {
-    genetic_analysis_tracking_id: TrackingId,
-    genetic_analyst_id: AccountId,
-    owner_id: AccountId,
-    report_link: Vec<u8>,
-    comment: Option<Vec<u8>>,
-    rejected_title: Option<Vec<u8>>,
-    rejected_description: Option<Vec<u8>>,
-    genetic_analysis_order_id: Hash,
-    created_at: Moment,
-    updated_at: Moment,
-    status: GeneticAnalysisStatus,
+    pub genetic_analysis_tracking_id: TrackingId,
+    pub genetic_analyst_id: AccountId,
+    pub owner_id: AccountId,
+    pub report_link: Vec<u8>,
+    pub comment: Option<Vec<u8>>,
+    pub rejected_title: Option<Vec<u8>>,
+    pub rejected_description: Option<Vec<u8>>,
+    pub genetic_analysis_order_id: Hash,
+    pub created_at: Moment,
+    pub updated_at: Moment,
+    pub status: GeneticAnalysisStatus,
 }
 impl<AccountId, Hash, Moment: Copy> GeneticAnalysis<AccountId, Hash, Moment> {
     pub fn new(
@@ -52,8 +52,6 @@ impl<AccountId, Hash, Moment: Copy> GeneticAnalysis<AccountId, Hash, Moment> {
         genetic_analysis_order_id: Hash,
         genetic_analysis_tracking_id: TrackingId,
         owner_id: AccountId,
-        report_link: Vec<u8>,
-        comment: Option<Vec<u8>>,
         created_at: Moment,
     ) -> Self {
         Self {
@@ -61,8 +59,8 @@ impl<AccountId, Hash, Moment: Copy> GeneticAnalysis<AccountId, Hash, Moment> {
             genetic_analysis_order_id,
             genetic_analysis_tracking_id,
             owner_id,
-            report_link,
-            comment,
+            report_link: Vec::<u8>::new(),
+            comment: None,
             rejected_title: None,
             rejected_description: None,
             created_at: created_at,
@@ -80,6 +78,9 @@ impl<AccountId, Hash, Moment> GeneticAnalysisTracking for GeneticAnalysis<Accoun
     }
     fn is_rejected(&self) -> bool {
         self.status == GeneticAnalysisStatus::Rejected
+    }
+    fn is_empty(&self) -> bool {
+        self.report_link == Vec::<u8>::new() && self.comment == None
     }
 }
 
@@ -252,8 +253,6 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
                     genetic_analysis_order_id.clone(),
                     tracking_id.clone(),
                     owner_id.clone(),
-                    Vec::<u8>::new(),
-                    None,
                     now,
                 );
                 GeneticAnalysisStorage::<T>::insert(&genetic_analysis.genetic_analysis_tracking_id, &genetic_analysis);
@@ -325,8 +324,8 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
         }
 
         if status == GeneticAnalysisStatus::ResultReady {
-            let result = Self::genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id);
-            if result.is_none() {
+            let result = Self::genetic_analysis_by_genetic_analysis_tracking_id(genetic_analysis_tracking_id).unwrap();
+            if result.is_empty() {
                 return Err(Error::<T>::GeneticAnalysisNotYetSubmitted);
             }
         }
