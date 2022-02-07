@@ -22,11 +22,11 @@ use primitives_price_and_currency::{CurrencyType, Price};
 use primitives_tracking_id::TrackingId;
 pub use weights::WeightInfo;
 
-// #[cfg(test)]
-// mod mock;
+#[cfg(test)]
+mod mock;
 
-// #[cfg(test)]
-// mod tests;
+#[cfg(test)]
+mod tests;
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum GeneticAnalysisOrderStatus {
