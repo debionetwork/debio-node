@@ -35,4 +35,8 @@ pub trait GeneticAnalystInterface<T: frame_system::Config> {
 	fn delete_genetic_analyst(
 		account_id: &T::AccountId
 	) -> Result<Self::GeneticAnalyst, Self::Error>;
+	/// Refund GeneticAnalyst
+	fn refund_genetic_analyst_stake(
+		account_id: &T::AccountId,
+	) -> Result<Self::GeneticAnalyst, Self::Error>;
 }
