@@ -31,46 +31,46 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> frame_system::WeightInfo for WeightInfo<T> {
 	fn remark(_b: u32, ) -> Weight {
-		(0 as Weight)
+		(0_u64)
 	}
 	fn remark_with_event(b: u32, ) -> Weight {
-		(8_888_000 as Weight)
+		(8_888_000_u64)
 			// Standard Error: 0
-			.saturating_add((2_000 as Weight).saturating_mul(b as Weight))
+			.saturating_add((2_000_u64).saturating_mul(b as Weight))
 	}
 	// Storage: System Digest (r:1 w:1)
 	// Storage: unknown [0x3a686561707061676573] (r:0 w:1)
 	fn set_heap_pages() -> Weight {
-		(6_003_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+		(6_003_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: System Digest (r:1 w:1)
 	// Storage: unknown [0x3a6368616e6765735f74726965] (r:0 w:1)
 	fn set_changes_trie_config() -> Weight {
-		(9_214_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+		(9_214_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: Skipped Metadata (r:0 w:0)
 	fn set_storage(i: u32, ) -> Weight {
-		(0 as Weight)
+		(0_u64)
 			// Standard Error: 2_000
-			.saturating_add((1_037_000 as Weight).saturating_mul(i as Weight))
-			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(i as Weight)))
+			.saturating_add((1_037_000_u64).saturating_mul(i as Weight))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(i as Weight)))
 	}
 	// Storage: Skipped Metadata (r:0 w:0)
 	fn kill_storage(i: u32, ) -> Weight {
-		(1_790_000 as Weight)
+		(1_790_000_u64)
 			// Standard Error: 1_000
-			.saturating_add((683_000 as Weight).saturating_mul(i as Weight))
-			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(i as Weight)))
+			.saturating_add((683_000_u64).saturating_mul(i as Weight))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(i as Weight)))
 	}
 	// Storage: Skipped Metadata (r:0 w:0)
 	fn kill_prefix(p: u32, ) -> Weight {
-		(0 as Weight)
+		(0_u64)
 			// Standard Error: 2_000
-			.saturating_add((999_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(p as Weight)))
+			.saturating_add((999_000_u64).saturating_mul(p as Weight))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(p as Weight)))
 	}
 }

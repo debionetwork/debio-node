@@ -46,7 +46,7 @@ benchmarks! {
             longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
             profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
+		let _add_labs = Labs::<T>::register_lab(caller_origin, lab);
 
 		let certification = CertificationInfo {
 			title: "DeBio certificate".as_bytes().to_vec(),
