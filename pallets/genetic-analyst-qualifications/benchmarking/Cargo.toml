@@ -1,5 +1,5 @@
 [package]
-name = "genetic-analyst-certifications-benchmarking"
+name = "genetic-analyst-qualifications-benchmarking"
 version = "0.1.0"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
@@ -24,6 +24,7 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -31,10 +32,10 @@ sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polka
 sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 genetic-analysts = { path = '../../genetic-analysts', default-features = false }
-genetic-analyst-certifications = { path = '../../genetic-analyst-certifications', default-features = false }
+genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
-traits-genetic-analyst-certifications = { path = '../../../traits/genetic-analyst-certifications', default-features = false }
+traits-genetic-analyst-qualifications = { path = '../../../traits/genetic-analyst-qualifications', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
@@ -53,10 +54,11 @@ std = [
     'frame-system/std',
 
 	'pallet-balances/std',
+    'pallet-timestamp/std',
 
     'genetic-analysts/std',
-    'genetic-analyst-certifications/std',
+    'genetic-analyst-qualifications/std',
 
     'primitives-area-code/std',
-    'traits-genetic-analyst-certifications/std',
+    'traits-genetic-analyst-qualifications/std',
 ]
