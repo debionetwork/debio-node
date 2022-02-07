@@ -2,128 +2,175 @@
 mod mock;
 
 #[allow(unused)]
-use doctor_certifications::Pallet as DoctorCertifications;
-use doctor_certifications::{
-	Config as DoctorCertificationsConfig,
-	DoctorCertificationInfo
+use genetic_analyst_qualifications::Pallet as GeneticAnalystQualifications;
+use genetic_analyst_qualifications::{
+	Config as GeneticAnalystQualificationsConfig,
+	GeneticAnalystQualificationInfo,
+	GeneticAnalystCertification,
+	GeneticAnalystExperience,
 };
 
 #[allow(unused)]
-use doctors::Pallet as Doctors;
-use doctors::{
-	Config as DoctorsConfig,
-	DoctorInfo
+use genetic_analysts::Pallet as GeneticAnalysts;
+use genetic_analysts::{
+	Config as GeneticAnalystsConfig,
+	GeneticAnalystInfo,
+	StakeStatus,
 };
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 
-pub struct Pallet<T: Config>(DoctorCertifications<T>);
+pub struct Pallet<T: Config>(GeneticAnalystQualifications<T>);
 
 pub trait Config:
-	DoctorCertificationsConfig
-	+ DoctorsConfig 
+	GeneticAnalystQualificationsConfig
+	+ GeneticAnalystsConfig 
 {}
 
-use doctor_certifications::Call;
-use primitives_area_code::{CountryCode, RegionCode, CityCode};
+use sp_std::vec;
+use genetic_analyst_qualifications::Call;
 
 benchmarks! {
-	create_certification {
+	create_qualification {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let doctor = DoctorInfo {
-            name: "DeBio Doctor".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		let genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
-		let _add_doctors = Doctors::<T>::register_doctor(caller_origin, doctor);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, genetic_analyst);
 
-		let certification = DoctorCertificationInfo {
-			title: "DeBio certificate".as_bytes().to_vec(),
-			issuer: "DeBio".as_bytes().to_vec(),
-			month: "August".as_bytes().to_vec(),
-			year: "2021".as_bytes().to_vec(),
-			description: "This is my description".as_bytes().to_vec(),
-			supporting_document: Some("This is my document".as_bytes().to_vec()),
+		let qualification = GeneticAnalystQualificationInfo {
+			experience: vec![
+				GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}
+			],
+			certification: Some(
+				vec![
+					GeneticAnalystCertification {
+						title: "DeBio title".as_bytes().to_vec(),
+						issuer: "DeBio issuer".as_bytes().to_vec(),
+						month: "DeBio month".as_bytes().to_vec(),
+						year: "DeBio year".as_bytes().to_vec(),
+						description: "DeBio description".as_bytes().to_vec(),
+						supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+					}
+				]
+			),
 		};
-	}: create_certification(RawOrigin::Signed(caller), certification)
+	}: create_qualification(RawOrigin::Signed(caller), qualification)
 
-	update_certification {
+	update_qualification {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let doctor = DoctorInfo {
-            name: "DeBio Doctor".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		let genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
-		let _add_doctors = Doctors::<T>::register_doctor(caller_origin.clone(), doctor);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
-		let old_certification = DoctorCertificationInfo {
-			title: "DeBio certificate".as_bytes().to_vec(),
-			issuer: "DeBio".as_bytes().to_vec(),
-			month: "August".as_bytes().to_vec(),
-			year: "2021".as_bytes().to_vec(),
-			description: "This is my description".as_bytes().to_vec(),
-			supporting_document: Some("This is my document".as_bytes().to_vec()),
+		let old_qualification = GeneticAnalystQualificationInfo {
+			experience: vec![
+				GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}
+			],
+			certification: Some(
+				vec![
+					GeneticAnalystCertification {
+						title: "DeBio title".as_bytes().to_vec(),
+						issuer: "DeBio issuer".as_bytes().to_vec(),
+						month: "DeBio month".as_bytes().to_vec(),
+						year: "DeBio year".as_bytes().to_vec(),
+						description: "DeBio description".as_bytes().to_vec(),
+						supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+					}
+				]
+			),
 		};
-		let _create_certification = DoctorCertifications::<T>::create_certification(caller_origin, old_certification);
-        let _doctor = Doctors::<T>::doctor_by_account_id(caller.clone())
+		let _create_qualification = GeneticAnalystQualifications::<T>::create_qualification(caller_origin, old_qualification);
+        let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
             .unwrap();
 
-		let new_certification = DoctorCertificationInfo {
-			title: "DeBio certificate 2".as_bytes().to_vec(),
-			issuer: "DeBio 2".as_bytes().to_vec(),
-			month: "September".as_bytes().to_vec(),
-			year: "2022".as_bytes().to_vec(),
-			description: "This is my description 2".as_bytes().to_vec(),
-			supporting_document: Some("This is my document 2".as_bytes().to_vec()),
+		let new_qualification = GeneticAnalystQualificationInfo {
+			experience: vec![
+				GeneticAnalystExperience {
+					title: "DeBio title 2".as_bytes().to_vec(),
+				}
+			],
+			certification: Some(
+				vec![
+					GeneticAnalystCertification {
+						title: "DeBio title 2".as_bytes().to_vec(),
+						issuer: "DeBio issuer 2".as_bytes().to_vec(),
+						month: "DeBio month 2".as_bytes().to_vec(),
+						year: "DeBio year 2".as_bytes().to_vec(),
+						description: "DeBio description 2".as_bytes().to_vec(),
+						supporting_document: Some("DeBio Profile Image uwu 2".as_bytes().to_vec()),
+					}
+				]
+			),
 		};
-	}: update_certification(RawOrigin::Signed(caller), _doctor.certifications[0], new_certification)
+	}: update_qualification(RawOrigin::Signed(caller), _genetic_analyst.qualifications[0], new_qualification)
 
-	delete_certification {
+	delete_qualification {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let doctor = DoctorInfo {
-            name: "DeBio Doctor".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		let genetic_analyst = GeneticAnalystInfo {
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			stake_amount: 100,
+			stake_status: StakeStatus::default(),
 		};
-		let _add_doctors = Doctors::<T>::register_doctor(caller_origin.clone(), doctor);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
-		let old_certification = DoctorCertificationInfo {
-			title: "DeBio certificate".as_bytes().to_vec(),
-			issuer: "DeBio".as_bytes().to_vec(),
-			month: "August".as_bytes().to_vec(),
-			year: "2021".as_bytes().to_vec(),
-			description: "This is my description".as_bytes().to_vec(),
-			supporting_document: Some("This is my document".as_bytes().to_vec()),
+		let old_qualification = GeneticAnalystQualificationInfo {
+			experience: vec![
+				GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}
+			],
+			certification: Some(
+				vec![
+					GeneticAnalystCertification {
+						title: "DeBio title".as_bytes().to_vec(),
+						issuer: "DeBio issuer".as_bytes().to_vec(),
+						month: "DeBio month".as_bytes().to_vec(),
+						year: "DeBio year".as_bytes().to_vec(),
+						description: "DeBio description".as_bytes().to_vec(),
+						supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+					}
+				]
+			),
 		};
-		let _create_certification = DoctorCertifications::<T>::create_certification(caller_origin, old_certification);
-        let _doctor = Doctors::<T>::doctor_by_account_id(caller.clone())
+		let _create_qualification = GeneticAnalystQualifications::<T>::create_qualification(caller_origin, old_qualification);
+        let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
             .unwrap();
-	}: delete_certification(RawOrigin::Signed(caller), _doctor.certifications[0])
+	}: delete_qualification(RawOrigin::Signed(caller), _genetic_analyst.qualifications[0])
 }
 
 impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
