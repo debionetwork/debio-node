@@ -1,5 +1,7 @@
 use crate::{mock::*, GeneticAnalyst, GeneticAnalystInfo, StakeStatus, Error};
+use primitives_verification_status::VerificationStatus;
 use frame_support::{assert_noop, assert_ok};
+use frame_support::sp_runtime::SaturatedConversion;
 
 #[test]
 fn register_genetic_analyst_works() {
@@ -21,7 +23,11 @@ fn register_genetic_analyst_works() {
 			GeneticAnalysts::genetic_analyst_by_account_id(1),
 			Some(GeneticAnalyst {
 				account_id: 1,
+				services: Vec::new(),
 				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
@@ -71,7 +77,11 @@ fn update_genetic_analyst_works() {
 			GeneticAnalysts::genetic_analyst_by_account_id(1),
 			Some(GeneticAnalyst {
 				account_id: 1,
+				services: Vec::new(),
 				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
@@ -101,7 +111,11 @@ fn update_genetic_analyst_works() {
 			GeneticAnalysts::genetic_analyst_by_account_id(1),
 			Some(GeneticAnalyst {
 				account_id: 1,
+				services: Vec::new(),
 				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
 					first_name: "First Name 2".as_bytes().to_vec(),
 					last_name: "Last Name 2".as_bytes().to_vec(),
@@ -221,7 +235,11 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::GeneticAnalysts(crate::Event::GeneticAnalystRegistered(
 			GeneticAnalyst {
 				account_id: 1,
+				services: Vec::new(),
 				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
@@ -251,7 +269,11 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::GeneticAnalysts(crate::Event::GeneticAnalystUpdated(
 			GeneticAnalyst {
 				account_id: 1,
+				services: Vec::new(),
 				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
 					first_name: "First Name 2".as_bytes().to_vec(),
 					last_name: "Last Name 2".as_bytes().to_vec(),
@@ -270,7 +292,11 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::GeneticAnalysts(crate::Event::GeneticAnalystDeleted(
 			GeneticAnalyst {
 				account_id: 1,
+				services: Vec::new(),
 				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::default(),
+				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
 					first_name: "First Name 2".as_bytes().to_vec(),
 					last_name: "Last Name 2".as_bytes().to_vec(),

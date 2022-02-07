@@ -5,7 +5,7 @@ use frame_support::{
 };
 use frame_system::RawOrigin;
 use genetic_analysis::GeneticAnalysisStatus;
-use genetic_analysts::{GeneticAnalystInfo, StakeStatus};
+use genetic_analysts::GeneticAnalystInfo;
 use genetic_analyst_services::GeneticAnalystServiceInfo;
 
 use primitives_duration::ExpectedDuration;

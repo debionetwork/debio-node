@@ -9,7 +9,7 @@ mod tests {
 		sp_runtime::traits::{Hash, Keccak256},
 	};
 	
-	use genetic_analysts::{StakeStatus, GeneticAnalystInfo};
+	use genetic_analysts::GeneticAnalystInfo;
 	use genetic_analysis::{Error, GeneticAnalysisStatus};
 	use genetic_analyst_services::GeneticAnalystServiceInfo;
 	

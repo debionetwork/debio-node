@@ -1,5 +1,5 @@
 use crate as genetic_analysis_orders;
-use frame_support::parameter_types;
+use frame_support::{PalletId, parameter_types};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -87,6 +87,7 @@ type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 }
 
 impl pallet_balances::Config for Test {
@@ -106,6 +107,7 @@ impl pallet_balances::Config for Test {
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;

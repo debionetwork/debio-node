@@ -11,12 +11,11 @@ mod tests {
 	
 	use labs::LabInfo;
 	use services::ServiceInfo;
-	use orders::{EscrowKey, Order, OrderStatus};
-	use genetic_testing::{Error, DnaSampleStatus, DnaTestResultSubmission, DnaTestResultsByOwner};
+	use genetic_testing::{Error, DnaSampleStatus, DnaTestResultSubmission};
 	
 	use primitives_area_code::{CityCode, CountryCode, RegionCode};
 	use traits_genetic_testing::{DnaSampleTracking, DnaSampleTrackingId};
-	use traits_services::types::{CurrencyType, ExpectedDuration, PriceByCurrency, ServiceFlow};
+	use traits_services::types::{ExpectedDuration, PriceByCurrency, ServiceFlow};
 	
 	#[test]
 	fn reject_dna_sample_works() {

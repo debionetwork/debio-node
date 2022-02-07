@@ -4,7 +4,7 @@ mod mock;
 mod tests {
 	use crate::mock::*;
 
-	use genetic_analysts::{GeneticAnalystInfo, StakeStatus};
+	use genetic_analysts::GeneticAnalystInfo;
 	use genetic_analyst_services::{
 		Error, 
 		GeneticAnalystService, GeneticAnalystServiceInfo
