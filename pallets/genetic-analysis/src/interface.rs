@@ -7,6 +7,15 @@ pub trait GeneticAnalysisInterface<T: frame_system::Config> {
     type GeneticAnalysisStatus;
     type Error;
 
+
+    fn register_genetic_analysis(
+        genetic_analyst_id: &T::AccountId,
+        owner_id: &T::AccountId,
+        genetic_analysis_order_id: &T::Hash,
+    ) -> Result<Self::GeneticAnalysis, Self::Error>;
+    fn delete_genetic_analysis(
+        tracking_id: &TrackingId
+    ) -> Result<Self::GeneticAnalysis, Self::Error>;
     fn reject_genetic_analysis(
         genetic_analyst_id: &T::AccountId,
         tracking_id: &TrackingId,

@@ -96,6 +96,8 @@ genetic-analyst-services = { path = '../pallets/genetic-analyst-services', defau
 genetic-analyst-qualifications = { path = '../pallets/genetic-analyst-qualifications', default-features = false }
 genetic-analyst-services-benchmarking = { path = '../pallets/genetic-analyst-services/benchmarking', default-features = false, optional = true }
 genetic-analyst-qualifications-benchmarking = { path = '../pallets/genetic-analyst-qualifications/benchmarking', default-features = false, optional = true }
+genetic-analysis = { path = '../pallets/genetic-analysis', default-features = false }
+genetic-analysis-orders = { path = '../pallets/genetic-analysis-orders', default-features = false }
 
 [features]
 default = ['std']
@@ -161,6 +163,8 @@ std = [
     'genetic-analysts/std',
     'genetic-analyst-services/std',
     'genetic-analyst-qualifications/std',
+    'genetic-analysis/std',
+    'genetic-analysis-orders/std',
 ]
 runtime-benchmarks = [
 	'hex-literal',

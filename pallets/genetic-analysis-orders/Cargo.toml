@@ -31,12 +31,23 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
+primitives-tracking-id = { path = '../../primitives/tracking-id', default-features = false }
+primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
+
+traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits', default-features = false }
+traits-genetic-analysis = { path = '../genetic-analysis/traits', default-features = false }
+traits-genetic-analysis-orders = { path = './traits', default-features = false }
+
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies
+genetic-analysts = { path = '../genetic-analysts', default-features = false }
+genetic-analyst-services = { path = '../genetic-analyst-services', default-features = false }
+genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications', default-features = false }
+genetic-analysis = { path = '../genetic-analysis', default-features = false }
 
 [dev-dependencies]
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -59,6 +70,18 @@ std = [
     'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
 	'pallet-balances/std',
+
+	'genetic-analysts/std',
+    'genetic-analyst-services/std',
+	'genetic-analyst-qualifications/std',
+	'genetic-analysis/std',
+
+    'primitives-tracking-id/std',
+    'primitives-price-and-currency/std',
+
+    'traits-genetic-analyst-services/std',
+    'traits-genetic-analysis/std',
+    'traits-genetic-analysis-orders/std',
 ]
 runtime-benchmarks = []
 try-runtime = ["frame-support/try-runtime"]

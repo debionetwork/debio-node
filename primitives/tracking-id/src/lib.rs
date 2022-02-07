@@ -3,7 +3,7 @@
 use frame_support::codec::{Decode, Encode};
 use frame_support::RuntimeDebug;
 use sp_std::vec::Vec;
-use std::convert::TryInto;
+use sp_std::convert::TryInto;
 use scale_info::TypeInfo;
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
