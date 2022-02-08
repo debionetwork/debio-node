@@ -14,6 +14,9 @@ Built on Substrate.
 
 [![Substrate version](https://img.shields.io/badge/Substrate-3.0.0-brightgreen?logo=Parity%20Substrate)](https://substrate.dev/)
 [![Medium](https://img.shields.io/badge/Medium-DeBio-brightgreen?logo=medium)](https://medium.com/@debionetwork.blog)
+[![Builder](https://github.com/debionetwork/debio-node/actions/workflows/builder.yml/badge.svg)](https://github.com/debionetwork/debio-node/actions/workflows/builder.yml)
+[![Sonar](https://github.com/debionetwork/debio-node/actions/workflows/sonar.yml/badge.svg)](https://github.com/debionetwork/debio-node/actions/workflows/sonar.yml)
+[![Tester](https://github.com/debionetwork/debio-node/actions/workflows/tester.yml/badge.svg)](https://github.com/debionetwork/debio-node/actions/workflows/tester.yml)
 </div>
 
 ---
