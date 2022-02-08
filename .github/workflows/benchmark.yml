@@ -64,19 +64,7 @@ jobs:
       - name: Rust cache
         uses: Swatinem/rust-cache@v1.3.0
       - name: benchmarking
-        run: |
-          cargo +nightly run --release --features=runtime-benchmarks --locked -- benchmark \
-              --chain=dev \
-              --execution=wasm \
-              --wasm-execution=compiled \
-              --pallet="electronic-medical-record" \
-              --extrinsic="*" \
-              --steps=20 \
-              --repeat=10 \
-              --heap-pages=4096 \
-              --raw \
-              --output="./pallets/electronic-medical-record/src/weights.rs" \
-              --template="./.maintain/pallet-weight-template.hbs"
+        run: .maintain/run-benchmark-for-pallet.sh
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
