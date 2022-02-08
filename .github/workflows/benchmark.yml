@@ -53,7 +53,7 @@ jobs:
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
           ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }} # or .head.sha, .head.ref for branch name
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v1.0.6
         with:
           profile: minimal
           toolchain: nightly
