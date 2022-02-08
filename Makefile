@@ -24,6 +24,6 @@ build:
 	cargo build --release
 
 .PHONY: clean
-build:
+clean:
 	cargo +nightly fmt
 	cargo +nightly clippy
