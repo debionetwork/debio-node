@@ -3,34 +3,23 @@ mod mock;
 
 #[allow(unused)]
 use genetic_analyst_services::Pallet as GeneticAnalystServices;
-use genetic_analyst_services::{
-	Config as GeneticAnalystServicesConfig,
-	GeneticAnalystServiceInfo
-};
+use genetic_analyst_services::{Config as GeneticAnalystServicesConfig, GeneticAnalystServiceInfo};
 
 #[allow(unused)]
 use genetic_analysts::Pallet as GeneticAnalysts;
-use genetic_analysts::{
-	Config as GeneticAnalystsConfig,
-	GeneticAnalystInfo,
-};
+use genetic_analysts::{Config as GeneticAnalystsConfig, GeneticAnalystInfo};
 
+use user_profile::Config as UserProfileConfig;
 #[allow(unused)]
 use user_profile::Pallet as UserProfile;
-use user_profile::Config as UserProfileConfig;
 
+use genetic_analysis_orders::Config as GeneticAnalysisOrdersConfig;
 #[allow(unused)]
 use genetic_analysis_orders::Pallet as GeneticAnalysisOrders;
-use genetic_analysis_orders::{
-	Config as GeneticAnalysisOrdersConfig
-};
 
 #[allow(unused)]
 use genetic_analysis::Pallet as GeneticAnalysis;
-use genetic_analysis::{
-	GeneticAnalysisStatus,
-	Config as GeneticAnalysisConfig
-};
+use genetic_analysis::{Config as GeneticAnalysisConfig, GeneticAnalysisStatus};
 
 pub trait Config:
 	GeneticAnalystServicesConfig
@@ -38,15 +27,16 @@ pub trait Config:
 	+ UserProfileConfig
 	+ GeneticAnalysisOrdersConfig
 	+ GeneticAnalysisConfig
-{}
+{
+}
 
 pub struct Pallet<T: Config>(GeneticAnalysis<T>);
 
-use sp_core::Decode;
-use genetic_analysis::Call;
-use frame_system::RawOrigin;
-use frame_support::sp_runtime::traits::Hash;
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
+use frame_support::sp_runtime::traits::Hash;
+use frame_system::RawOrigin;
+use genetic_analysis::Call;
+use sp_core::Decode;
 
 use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::PriceByCurrency;
@@ -55,7 +45,7 @@ benchmarks! {
 	reject_genetic_analysis {
 		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		
+
 		let genetic_analyst = GeneticAnalystInfo {
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
@@ -67,7 +57,7 @@ benchmarks! {
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
-        let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
+		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
 
 		let genetic_analyst_service_info = GeneticAnalystServiceInfo {
@@ -80,12 +70,12 @@ benchmarks! {
 			test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
 		};
 		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin.clone(), genetic_analyst_service_info);
-		
+
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin,
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -96,7 +86,7 @@ benchmarks! {
 		let _genetic_analysis_order = GeneticAnalysisOrders::<T>::genetic_analysis_order_by_id(_genetic_analysis_order_id_list[0])
 			.unwrap();
 	}: reject_genetic_analysis(
-		RawOrigin::Signed(caller), 
+		RawOrigin::Signed(caller),
 		_genetic_analysis_order.genetic_analysis_tracking_id,
 		"Rejected title".as_bytes().to_vec(),
 		"Rejected description".as_bytes().to_vec()
@@ -105,7 +95,7 @@ benchmarks! {
 	process_genetic_analysis {
 		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		
+
 		let genetic_analyst = GeneticAnalystInfo {
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
@@ -117,7 +107,7 @@ benchmarks! {
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
-        let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
+		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
 
 		let genetic_analyst_service_info = GeneticAnalystServiceInfo {
@@ -130,12 +120,12 @@ benchmarks! {
 			test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
 		};
 		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin.clone(), genetic_analyst_service_info);
-		
+
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin,
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -146,7 +136,7 @@ benchmarks! {
 		let _genetic_analysis_order = GeneticAnalysisOrders::<T>::genetic_analysis_order_by_id(_genetic_analysis_order_id_list[0])
 			.unwrap();
 	}: process_genetic_analysis(
-		RawOrigin::Signed(caller), 
+		RawOrigin::Signed(caller),
 		_genetic_analysis_order.genetic_analysis_tracking_id,
 		GeneticAnalysisStatus::default()
 	)
@@ -154,7 +144,7 @@ benchmarks! {
 	submit_genetic_analysis {
 		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		
+
 		let genetic_analyst = GeneticAnalystInfo {
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
@@ -166,7 +156,7 @@ benchmarks! {
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
-        let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
+		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
 
 		let genetic_analyst_service_info = GeneticAnalystServiceInfo {
@@ -179,12 +169,12 @@ benchmarks! {
 			test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
 		};
 		let _create_genetic_analyst_service = GeneticAnalystServices::<T>::create_genetic_analyst_service(caller_origin.clone(), genetic_analyst_service_info);
-		
+
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
-			caller_origin.clone(), 
+			caller_origin,
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -195,7 +185,7 @@ benchmarks! {
 		let _genetic_analysis_order = GeneticAnalysisOrders::<T>::genetic_analysis_order_by_id(_genetic_analysis_order_id_list[0])
 			.unwrap();
 	}: submit_genetic_analysis(
-		RawOrigin::Signed(caller), 
+		RawOrigin::Signed(caller),
 		_genetic_analysis_order.genetic_analysis_tracking_id,
 		"Genetic Analysis report_link".as_bytes().to_vec(),
 		Some("Genetic Analysis comments".as_bytes().to_vec())

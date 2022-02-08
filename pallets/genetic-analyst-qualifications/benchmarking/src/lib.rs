@@ -4,31 +4,23 @@ mod mock;
 #[allow(unused)]
 use genetic_analyst_qualifications::Pallet as GeneticAnalystQualifications;
 use genetic_analyst_qualifications::{
-	Config as GeneticAnalystQualificationsConfig,
-	GeneticAnalystQualificationInfo,
-	GeneticAnalystCertification,
-	GeneticAnalystExperience,
+	Config as GeneticAnalystQualificationsConfig, GeneticAnalystCertification,
+	GeneticAnalystExperience, GeneticAnalystQualificationInfo,
 };
 
 #[allow(unused)]
 use genetic_analysts::Pallet as GeneticAnalysts;
-use genetic_analysts::{
-	Config as GeneticAnalystsConfig,
-	GeneticAnalystInfo,
-};
+use genetic_analysts::{Config as GeneticAnalystsConfig, GeneticAnalystInfo};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(GeneticAnalystQualifications<T>);
 
-pub trait Config:
-	GeneticAnalystQualificationsConfig
-	+ GeneticAnalystsConfig 
-{}
+pub trait Config: GeneticAnalystQualificationsConfig + GeneticAnalystsConfig {}
 
-use sp_std::vec;
 use genetic_analyst_qualifications::Call;
+use sp_std::vec;
 
 benchmarks! {
 	create_qualification {
@@ -102,8 +94,8 @@ benchmarks! {
 			),
 		};
 		let _create_qualification = GeneticAnalystQualifications::<T>::create_qualification(caller_origin, old_qualification);
-        let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
-            .unwrap();
+		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
+			.unwrap();
 
 		let new_qualification = GeneticAnalystQualificationInfo {
 			experience: vec![
@@ -161,8 +153,8 @@ benchmarks! {
 			),
 		};
 		let _create_qualification = GeneticAnalystQualifications::<T>::create_qualification(caller_origin, old_qualification);
-        let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
-            .unwrap();
+		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
+			.unwrap();
 	}: delete_qualification(RawOrigin::Signed(caller), _genetic_analyst.qualifications[0])
 }
 

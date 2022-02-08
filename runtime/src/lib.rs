@@ -40,7 +40,7 @@ pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
 use beefy_primitives::{crypto::AuthorityId as BeefyId, mmr::MmrLeafVersion};
-use codec::{Encode, Decode};
+use codec::{Decode, Encode};
 use frame_support::{weights::DispatchClass, PalletId};
 use frame_system::{
 	limits::{BlockLength, BlockWeights},
@@ -49,12 +49,12 @@ use frame_system::{
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_mmr_primitives as mmr;
 use pallet_session::historical as pallet_session_historical;
+use scale_info::TypeInfo;
 use sp_runtime::{
 	generic::Era,
 	traits::{self, ConvertInto, Keccak256, OpaqueKeys, SaturatedConversion, StaticLookup},
 	transaction_validity::TransactionPriority,
 };
-use scale_info::TypeInfo;
 use static_assertions::const_assert;
 
 /// An index to a block.
@@ -84,7 +84,7 @@ mod weights;
 
 /// The native token, uses 18 decimals of precision.
 pub mod currency {
-    use super::Balance;
+	use super::Balance;
 
 	pub const OCT: Balance = 1_000_000_000_000_000_000;
 
@@ -93,11 +93,11 @@ pub mod currency {
 	pub const CENTS: Balance = DOLLARS / 100;
 	pub const MILLICENTS: Balance = CENTS / 1_000;
 
-	pub const EXISTENSIAL_DEPOSIT: Balance = 0 * DOLLARS;
+	pub const EXISTENSIAL_DEPOSIT: Balance = 0;
 	pub const BYTE_FEE: Balance = 10 * MILLICENTS;
 
 	pub const fn deposit(items: u32, bytes: u32) -> Balance {
-		(items as Balance) * 1 * DOLLARS + (bytes as Balance) * BYTE_FEE
+		(items as Balance) * DOLLARS + (bytes as Balance) * BYTE_FEE
 	}
 }
 
@@ -474,7 +474,7 @@ where
 		let signature = raw_payload.using_encoded(|payload| C::sign(payload, public))?;
 		let address = <Self as frame_system::Config>::Lookup::unlookup(account);
 		let (call, extra, _) = raw_payload.deconstruct();
-		Some((call, (address, signature.into(), extra)))
+		Some((call, (address, signature, extra)))
 	}
 }
 
@@ -515,10 +515,10 @@ impl pallet_mmr::Config for Runtime {
 
 parameter_types! {
 	pub const AssetDeposit: Balance = 100 * currency::DOLLARS;
-	pub const ApprovalDeposit: Balance = 1 * currency::DOLLARS;
+	pub const ApprovalDeposit: Balance = currency::DOLLARS;
 	pub const StringLimit: u32 = 50;
 	pub const MetadataDepositBase: Balance = 10 * currency::DOLLARS;
-	pub const MetadataDepositPerByte: Balance = 1 * currency::DOLLARS;
+	pub const MetadataDepositPerByte: Balance = currency::DOLLARS;
 }
 
 impl pallet_assets::Config for Runtime {
@@ -638,12 +638,12 @@ impl pallet_sudo::Config for Runtime {
 // Debio Pallets
 // ------------------------------
 impl labs::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type Services = Services;
-    type Certifications = Certifications;
-    type EthereumAddress = EthereumAddress;
-    type UserProfile = UserProfile;
+	type Event = Event;
+	type Currency = Balances;
+	type Services = Services;
+	type Certifications = Certifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
 
@@ -653,130 +653,130 @@ parameter_types! {
 }
 
 impl rewards::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
+	type Event = Event;
+	type Currency = Balances;
 	type PalletId = RewardPalletId;
 	type WeightInfo = ();
 }
 
 impl hospitals::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type HospitalCertifications = HospitalCertifications;
-    type EthereumAddress = EthereumAddress;
-    type UserProfile = UserProfile;
+	type Event = Event;
+	type Currency = Balances;
+	type HospitalCertifications = HospitalCertifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
 
 impl doctors::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type DoctorCertifications = DoctorCertifications;
-    type EthereumAddress = EthereumAddress;
-    type UserProfile = UserProfile;
+	type Event = Event;
+	type Currency = Balances;
+	type DoctorCertifications = DoctorCertifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
 
 impl services::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type ServiceOwner = Labs;
+	type Event = Event;
+	type Currency = Balances;
+	type ServiceOwner = Labs;
 	type WeightInfo = ();
 }
 
 impl service_request::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type TimeProvider = Timestamp;
-    type Currency = Balances;
+	type Currency = Balances;
 	type Labs = Labs;
 }
 
 impl orders::Config for Runtime {
-    type Event = Event;
-    type Services = Services;
-    type GeneticTesting = GeneticTesting;
-    type Currency = Balances;
+	type Event = Event;
+	type Services = Services;
+	type GeneticTesting = GeneticTesting;
+	type Currency = Balances;
 	type OrdersWeightInfo = ();
 }
 
 impl genetic_testing::Config for Runtime {
-    type Event = Event;
-    type Orders = Orders;
-    type RandomnessSource = RandomnessCollectiveFlip;
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
 	type GeneticTestingWeightInfo = ();
 }
 
 impl user_profile::Config for Runtime {
-    type Event = Event;
-    type EthereumAddress = EthereumAddress;
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
 	type WeightInfo = ();
 }
 
 impl electronic_medical_record::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 	type ElectronicMedicalRecordWeightInfo = ();
 }
 
 impl certifications::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type CertificationOwner = Labs;
 	type WeightInfo = ();
 }
 
 impl doctor_certifications::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type DoctorCertificationOwner = Doctors;
 	type WeightInfo = ();
 }
 
 impl hospital_certifications::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type HospitalCertificationOwner = Hospitals;
 	type WeightInfo = ();
 }
 
 impl genetic_analysts::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
+	type Event = Event;
+	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
-    type GeneticAnalystServices = GeneticAnalystServices;
-    type GeneticAnalystQualifications = GeneticAnalystQualifications;
-    type EthereumAddress = EthereumAddress;
-    type UserProfile = UserProfile;
+	type GeneticAnalystServices = GeneticAnalystServices;
+	type GeneticAnalystQualifications = GeneticAnalystQualifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
 }
 
 impl genetic_analyst_services::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type GeneticAnalystServiceOwner = GeneticAnalysts;
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticAnalystServiceOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
 impl genetic_data::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type GeneticDataWeightInfo = ();
 }
 
 impl genetic_analyst_qualifications::Config for Runtime {
-    type Event = Event;
+	type Event = Event;
 	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
 impl genetic_analysis::Config for Runtime {
-    type Event = Event;
-    type RandomnessSource = RandomnessCollectiveFlip;
-    type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalysisWeightInfo = ();
 }
 
 impl genetic_analysis_orders::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type GeneticAnalysis = GeneticAnalysis;
-    type GeneticAnalystServices = GeneticAnalystServices;
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticAnalysis = GeneticAnalysis;
+	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
 }
 
@@ -810,7 +810,7 @@ construct_runtime!(
 		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
 		ServiceRequest: service_request::{Pallet, Call, Storage, Config<T>, Event<T>},
-        Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
+		Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Config<T>, Event<T>},

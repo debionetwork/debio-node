@@ -35,7 +35,7 @@ genetic-analysts = { path = '../../genetic-analysts', default-features = false }
 genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
-traits-genetic-analyst-qualifications = { path = '../../../traits/genetic-analyst-qualifications', default-features = false }
+traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }

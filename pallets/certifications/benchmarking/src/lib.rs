@@ -1,31 +1,20 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 mod mock;
 
-use certifications::{
-	Pallet as Certifications,
-	Config as CertificationsConfig,
-	CertificationInfo
-};
+use certifications::{CertificationInfo, Config as CertificationsConfig, Pallet as Certifications};
 
-use labs::{
-	Pallet as Labs,
-	Config as LabsConfig,
-	LabInfo
-};
+use labs::{Config as LabsConfig, LabInfo, Pallet as Labs};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(Certifications<T>);
 
-pub trait Config:
-	CertificationsConfig
-	+ LabsConfig 
-{}
+pub trait Config: CertificationsConfig + LabsConfig {}
 
 use certifications::Call;
 use frame_support::sp_runtime::traits::Hash;
-use primitives_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 benchmarks! {
 	create_certification {
@@ -33,20 +22,20 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
-            box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
+		let _add_labs = Labs::<T>::register_lab(caller_origin, lab);
 
 		let certification = CertificationInfo {
 			title: "DeBio certificate".as_bytes().to_vec(),
@@ -63,18 +52,18 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
-            box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
 
@@ -86,9 +75,9 @@ benchmarks! {
 			description: "This is my description".as_bytes().to_vec(),
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
-		let _create_certification = Certifications::<T>::create_certification(caller_origin.clone(), old_certification);
-        let _lab = Labs::<T>::lab_by_account_id(caller.clone())
-            .unwrap();
+		let _create_certification = Certifications::<T>::create_certification(caller_origin, old_certification);
+		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
+			.unwrap();
 
 		let new_certification = CertificationInfo {
 			title: "DeBio certificate 2".as_bytes().to_vec(),
@@ -105,18 +94,18 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
-            box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
 
@@ -128,9 +117,9 @@ benchmarks! {
 			description: "This is my description".as_bytes().to_vec(),
 			supporting_document: Some("This is my document".as_bytes().to_vec()),
 		};
-		let _create_certification = Certifications::<T>::create_certification(caller_origin.clone(), old_certification);
-        let _lab = Labs::<T>::lab_by_account_id(caller.clone())
-            .unwrap();
+		let _create_certification = Certifications::<T>::create_certification(caller_origin, old_certification);
+		let _lab = Labs::<T>::lab_by_account_id(caller.clone())
+			.unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _lab.certifications[0])
 }
 

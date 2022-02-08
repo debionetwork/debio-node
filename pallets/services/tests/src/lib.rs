@@ -5,10 +5,7 @@ mod tests {
 	use crate::mock::*;
 
 	use labs::LabInfo;
-	use services::{
-		Error, 
-		Service, ServiceInfo
-	};
+	use services::{Error, Service, ServiceInfo};
 	use traits_services::types::{ExpectedDuration, PriceByCurrency, ServiceFlow};
 
 	use frame_support::{
@@ -40,19 +37,22 @@ mod tests {
 				}
 			));
 
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
-					dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
+					dna_collection_process: "DeBio service dna_collection_process"
+						.as_bytes()
+						.to_vec(),
 					test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
 					long_description: Some("DeBio service long_description".as_bytes().to_vec()),
 					image: Some("DeBio service image".as_bytes().to_vec()),
@@ -64,32 +64,29 @@ mod tests {
 
 			assert_eq!(
 				Services::service_by_id(lab.services[0]),
-				Some(
-					Service {
-						id: lab.services[0],
-						owner_id: 1,
-						info: ServiceInfo {
-							name: "DeBio service name".as_bytes().to_vec(),
-							prices_by_currency: vec![
-								PriceByCurrency::default()
-							],
-							expected_duration: ExpectedDuration::default(),
-							category: "DeBio service category".as_bytes().to_vec(),
-							description: "DeBio service description".as_bytes().to_vec(),
-							dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
-							test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
-							long_description: Some("DeBio service long_description".as_bytes().to_vec()),
-							image: Some("DeBio service image".as_bytes().to_vec()),
-						},
-						service_flow: ServiceFlow::default()
-					}
-				)
+				Some(Service {
+					id: lab.services[0],
+					owner_id: 1,
+					info: ServiceInfo {
+						name: "DeBio service name".as_bytes().to_vec(),
+						prices_by_currency: vec![PriceByCurrency::default()],
+						expected_duration: ExpectedDuration::default(),
+						category: "DeBio service category".as_bytes().to_vec(),
+						description: "DeBio service description".as_bytes().to_vec(),
+						dna_collection_process: "DeBio service dna_collection_process"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
+						long_description: Some(
+							"DeBio service long_description".as_bytes().to_vec()
+						),
+						image: Some("DeBio service image".as_bytes().to_vec()),
+					},
+					service_flow: ServiceFlow::default()
+				})
 			);
 
-			assert_eq!(
-				Services::services_count_by_owner(1),
-				Some(1)
-			);
+			assert_eq!(Services::services_count_by_owner(1), Some(1));
 		})
 	}
 
@@ -115,20 +112,23 @@ mod tests {
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
-					dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
+					dna_collection_process: "DeBio service dna_collection_process"
+						.as_bytes()
+						.to_vec(),
 					test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
 					long_description: Some("DeBio service long_description".as_bytes().to_vec()),
 					image: Some("DeBio service image".as_bytes().to_vec()),
@@ -143,13 +143,13 @@ mod tests {
 				lab.services[0],
 				ServiceInfo {
 					name: "DeBio service name 2".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category 2".as_bytes().to_vec(),
 					description: "DeBio service description 2".as_bytes().to_vec(),
-					dna_collection_process : "DeBio service dna_collection_process 2".as_bytes().to_vec(),
+					dna_collection_process: "DeBio service dna_collection_process 2"
+						.as_bytes()
+						.to_vec(),
 					test_result_sample: "DeBio service test_result_sample 2".as_bytes().to_vec(),
 					long_description: Some("DeBio service long_description 2".as_bytes().to_vec()),
 					image: Some("DeBio service image 2".as_bytes().to_vec()),
@@ -158,32 +158,31 @@ mod tests {
 
 			assert_eq!(
 				Services::service_by_id(lab.services[0]),
-				Some(
-					Service {
-						id: lab.services[0],
-						owner_id: 1,
-						info: ServiceInfo {
-							name: "DeBio service name 2".as_bytes().to_vec(),
-							prices_by_currency: vec![
-								PriceByCurrency::default()
-							],
-							expected_duration: ExpectedDuration::default(),
-							category: "DeBio service category 2".as_bytes().to_vec(),
-							description: "DeBio service description 2".as_bytes().to_vec(),
-							dna_collection_process : "DeBio service dna_collection_process 2".as_bytes().to_vec(),
-							test_result_sample: "DeBio service test_result_sample 2".as_bytes().to_vec(),
-							long_description: Some("DeBio service long_description 2".as_bytes().to_vec()),
-							image: Some("DeBio service image 2".as_bytes().to_vec()),
-						},
-						service_flow: ServiceFlow::default()
-					}
-				)
+				Some(Service {
+					id: lab.services[0],
+					owner_id: 1,
+					info: ServiceInfo {
+						name: "DeBio service name 2".as_bytes().to_vec(),
+						prices_by_currency: vec![PriceByCurrency::default()],
+						expected_duration: ExpectedDuration::default(),
+						category: "DeBio service category 2".as_bytes().to_vec(),
+						description: "DeBio service description 2".as_bytes().to_vec(),
+						dna_collection_process: "DeBio service dna_collection_process 2"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio service test_result_sample 2"
+							.as_bytes()
+							.to_vec(),
+						long_description: Some(
+							"DeBio service long_description 2".as_bytes().to_vec()
+						),
+						image: Some("DeBio service image 2".as_bytes().to_vec()),
+					},
+					service_flow: ServiceFlow::default()
+				})
 			);
 
-			assert_eq!(
-				Services::services_count_by_owner(1),
-				Some(1)
-			);
+			assert_eq!(Services::services_count_by_owner(1), Some(1));
 		})
 	}
 
@@ -209,20 +208,23 @@ mod tests {
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
-					dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
+					dna_collection_process: "DeBio service dna_collection_process"
+						.as_bytes()
+						.to_vec(),
 					test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
 					long_description: Some("DeBio service long_description".as_bytes().to_vec()),
 					image: Some("DeBio service image".as_bytes().to_vec()),
@@ -232,35 +234,31 @@ mod tests {
 
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
-			assert_ok!(Services::delete_service(
-				Origin::signed(1),
-				lab.services[0]
-			));
+			assert_ok!(Services::delete_service(Origin::signed(1), lab.services[0]));
 
-			assert_eq!(
-				Services::services_count_by_owner(1),
-				Some(0)
-			);
+			assert_eq!(Services::services_count_by_owner(1), Some(0));
 		})
 	}
 
 	#[test]
 	fn not_allowed_to_create_service() {
-		ExternalityBuilder::build().execute_with(|| {		
+		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				Services::create_service(
 					Origin::signed(1),
 					ServiceInfo {
 						name: "DeBio service name".as_bytes().to_vec(),
-						prices_by_currency: vec![
-							PriceByCurrency::default()
-						],
+						prices_by_currency: vec![PriceByCurrency::default()],
 						expected_duration: ExpectedDuration::default(),
 						category: "DeBio service category".as_bytes().to_vec(),
 						description: "DeBio service description".as_bytes().to_vec(),
-						dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
+						dna_collection_process: "DeBio service dna_collection_process"
+							.as_bytes()
+							.to_vec(),
 						test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
-						long_description: Some("DeBio service long_description".as_bytes().to_vec()),
+						long_description: Some(
+							"DeBio service long_description".as_bytes().to_vec()
+						),
 						image: Some("DeBio service image".as_bytes().to_vec()),
 					},
 					ServiceFlow::default()
@@ -296,20 +294,22 @@ mod tests {
 			assert_noop!(
 				Services::update_service(
 					Origin::signed(1),
-					Keccak256::hash(
-						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
-					),
+					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					ServiceInfo {
 						name: "DeBio service name 2".as_bytes().to_vec(),
-						prices_by_currency: vec![
-							PriceByCurrency::default()
-						],
+						prices_by_currency: vec![PriceByCurrency::default()],
 						expected_duration: ExpectedDuration::default(),
 						category: "DeBio service category 2".as_bytes().to_vec(),
 						description: "DeBio service description 2".as_bytes().to_vec(),
-						dna_collection_process : "DeBio service dna_collection_process 2".as_bytes().to_vec(),
-						test_result_sample: "DeBio service test_result_sample 2".as_bytes().to_vec(),
-						long_description: Some("DeBio service long_description 2".as_bytes().to_vec()),
+						dna_collection_process: "DeBio service dna_collection_process 2"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio service test_result_sample 2"
+							.as_bytes()
+							.to_vec(),
+						long_description: Some(
+							"DeBio service long_description 2".as_bytes().to_vec()
+						),
 						image: Some("DeBio service image 2".as_bytes().to_vec()),
 					}
 				),
@@ -340,20 +340,23 @@ mod tests {
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
-					dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
+					dna_collection_process: "DeBio service dna_collection_process"
+						.as_bytes()
+						.to_vec(),
 					test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
 					long_description: Some("DeBio service long_description".as_bytes().to_vec()),
 					image: Some("DeBio service image".as_bytes().to_vec()),
@@ -369,15 +372,19 @@ mod tests {
 					lab.services[0],
 					ServiceInfo {
 						name: "DeBio service name 2".as_bytes().to_vec(),
-						prices_by_currency: vec![
-							PriceByCurrency::default()
-						],
+						prices_by_currency: vec![PriceByCurrency::default()],
 						expected_duration: ExpectedDuration::default(),
 						category: "DeBio service category 2".as_bytes().to_vec(),
 						description: "DeBio service description 2".as_bytes().to_vec(),
-						dna_collection_process : "DeBio service dna_collection_process 2".as_bytes().to_vec(),
-						test_result_sample: "DeBio service test_result_sample 2".as_bytes().to_vec(),
-						long_description: Some("DeBio service long_description 2".as_bytes().to_vec()),
+						dna_collection_process: "DeBio service dna_collection_process 2"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio service test_result_sample 2"
+							.as_bytes()
+							.to_vec(),
+						long_description: Some(
+							"DeBio service long_description 2".as_bytes().to_vec()
+						),
 						image: Some("DeBio service image 2".as_bytes().to_vec()),
 					}
 				),
@@ -412,9 +419,7 @@ mod tests {
 			assert_noop!(
 				Services::delete_service(
 					Origin::signed(1),
-					Keccak256::hash(
-						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
-					)
+					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 				),
 				Error::<Test>::ServiceDoesNotExist
 			);
@@ -443,20 +448,23 @@ mod tests {
 					profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
-					dna_collection_process : "DeBio service dna_collection_process".as_bytes().to_vec(),
+					dna_collection_process: "DeBio service dna_collection_process"
+						.as_bytes()
+						.to_vec(),
 					test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
 					long_description: Some("DeBio service long_description".as_bytes().to_vec()),
 					image: Some("DeBio service image".as_bytes().to_vec()),
@@ -467,10 +475,7 @@ mod tests {
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_noop!(
-				Services::delete_service(
-					Origin::signed(2),
-					lab.services[0]
-				),
+				Services::delete_service(Origin::signed(2), lab.services[0]),
 				Error::<Test>::NotServiceOwner
 			);
 		})

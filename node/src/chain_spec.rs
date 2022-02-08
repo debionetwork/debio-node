@@ -2,9 +2,10 @@ use beefy_primitives::crypto::AuthorityId as BeefyId;
 use debio_runtime::{
 	currency::{OCT, UNITS as DBIO},
 	opaque::{Block, SessionKeys},
-	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, LabsConfig, UserProfileConfig, GeneticAnalystsConfig,
-	OctopusAppchainConfig, OctopusLposConfig, GeneticAnalysisOrdersConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig,
-	SessionConfig, Signature, SudoConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
+	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GeneticAnalysisOrdersConfig,
+	GeneticAnalystsConfig, LabsConfig, OctopusAppchainConfig, OctopusLposConfig, OrdersConfig,
+	RewardsConfig, ServiceRequestConfig, SessionConfig, Signature, SudoConfig, SystemConfig,
+	UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_octopus_appchain::AuthorityId as OctopusId;
@@ -440,15 +441,13 @@ pub fn development_config() -> Result<ChainSpec, String> {
 					authority_keys_from_seed("Alice", 50_000 * OCT),
 				],
 				// Pre-funded accounts
-				vec![
-					(
-						// Sudo account and API admin account
-						// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
-						// Balance amount
-						12_500_000 * DBIO,
-					),
-				],
+				vec![(
+					// Sudo account and API admin account
+					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					// Balance amount
+					12_500_000 * DBIO,
+				)],
 				// Appchain config
 				appchain_config(
 					// Appchain Relay Contract
@@ -539,12 +538,12 @@ fn genesis(
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
 		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
-		rewards: RewardsConfig {
-			rewarder_key: api_admin_key.clone(),
+		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
+		genetic_analysts: GeneticAnalystsConfig {
+			genetic_analyst_verifier_key: api_admin_key.clone(),
 		},
-		genetic_analysts: GeneticAnalystsConfig { genetic_analyst_verifier_key: api_admin_key.clone() },
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig { escrow_key: api_admin_key.clone() },
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
-		user_profile: UserProfileConfig { admin_key: api_admin_key.clone() }
+		user_profile: UserProfileConfig { admin_key: api_admin_key },
 	}
 }

@@ -28,7 +28,7 @@ use sc_finality_grandpa as grandpa;
 use sc_network::NetworkService;
 use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryWorker};
-use sp_runtime::{traits::Block as BlockT};
+use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
 
 // Our native executor instance.
@@ -399,7 +399,7 @@ pub fn new_full_base(
 
 	let beefy_params = beefy_gadget::BeefyParams {
 		client: client.clone(),
-		backend: backend.clone(),
+		backend,
 		key_store: keystore.clone(),
 		network: network.clone(),
 		signed_commitment_sender: beefy_link,

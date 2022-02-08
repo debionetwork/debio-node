@@ -3,23 +3,17 @@ mod mock;
 
 #[allow(unused)]
 use services::Pallet as Services;
-use services::{
-	Config as ServicesConfig,
-	ServiceInfo
-};
+use services::{Config as ServicesConfig, ServiceInfo};
 
 #[allow(unused)]
 use labs::Pallet as Labs;
-use labs::{
-	Config as LabsConfig,
-	LabInfo
-};
+use labs::{Config as LabsConfig, LabInfo};
 
+use user_profile::Config as UserProfileConfig;
 #[allow(unused)]
 use user_profile::Pallet as UserProfile;
-use user_profile::Config as UserProfileConfig;
 
-use traits_services::types::{PriceByCurrency, ExpectedDuration, ServiceFlow};
+use traits_services::types::{ExpectedDuration, PriceByCurrency, ServiceFlow};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
@@ -27,37 +21,33 @@ use sp_std::vec;
 
 pub struct Pallet<T: Config>(Services<T>);
 
-pub trait Config:
-	ServicesConfig
-	+ LabsConfig
-	+ UserProfileConfig
-{}
+pub trait Config: ServicesConfig + LabsConfig + UserProfileConfig {}
 
-use services::Call;
 use frame_support::sp_runtime::traits::Hash;
-use primitives_area_code::{CountryCode, RegionCode, CityCode};
+use primitives_area_code::{CityCode, CountryCode, RegionCode};
+use services::Call;
 
 benchmarks! {
 	create_service {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		let lab = LabInfo {
-            box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
 
-        let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
+		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin, eth_address);
 
 		let service_info = ServiceInfo {
@@ -79,22 +69,22 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		let lab_info = LabInfo {
-            box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab_info);
 
-        let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
+		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
 
 		let old_service_info = ServiceInfo {
@@ -134,22 +124,22 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 		let lab_info = LabInfo {
-            box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-            name: "DeBio Lab".as_bytes().to_vec(),
-            email: "DeBio Email".as_bytes().to_vec(),
-            country: CountryCode::from_vec("DC".as_bytes().to_vec()),
-            region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
-            city: CityCode::from_vec("City".as_bytes().to_vec()),
-            address: "DeBio Address".as_bytes().to_vec(),
-            phone_number: "+6281394653625".as_bytes().to_vec(),
-            website: "DeBio Website".as_bytes().to_vec(),
-            latitude: Some("DeBio Latitude".as_bytes().to_vec()),
-            longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
-            profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab_info);
 
-        let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
+		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
 
 		let old_service_info = ServiceInfo {

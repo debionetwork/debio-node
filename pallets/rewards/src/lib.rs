@@ -3,9 +3,9 @@
 pub mod interface;
 use interface::RewardInterface;
 
-use frame_support::pallet_prelude::*;
 use frame_support::{
-    traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	pallet_prelude::*,
+	traits::{Currency, ExistenceRequirement, WithdrawReasons},
 };
 
 pub use pallet::*;
@@ -30,120 +30,118 @@ use sp_runtime::traits::AccountIdConversion;
 
 #[frame_support::pallet]
 pub mod pallet {
-    use crate::*;
-    use frame_support::{dispatch::DispatchResultWithPostInfo};
-    use frame_system::pallet_prelude::*;
+	use crate::*;
+	use frame_support::dispatch::DispatchResultWithPostInfo;
+	use frame_system::pallet_prelude::*;
 
-    #[pallet::config]
-    pub trait Config: frame_system::Config + Sized {
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        /// Currency type for this pallet.
-        type PalletId: Get<PalletId>;
-        type Currency: Currency<<Self as frame_system::Config>::AccountId>;
-        type WeightInfo: WeightInfo;
-    }
-    // -----------------------------------------
+	#[pallet::config]
+	pub trait Config: frame_system::Config + Sized {
+		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		/// Currency type for this pallet.
+		type PalletId: Get<PalletId>;
+		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
+		type WeightInfo: WeightInfo;
+	}
+	// -----------------------------------------
 
-    // ---- Types --------------------------------------------
+	// ---- Types --------------------------------------------
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
-    pub type CurrencyOf<T> = <T as self::Config>::Currency;
+	pub type CurrencyOf<T> = <T as self::Config>::Currency;
 	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
-    // -------------------------------------------------------
+	// -------------------------------------------------------
 
-    // ------ Storage --------------------------
-    #[pallet::storage]
-    #[pallet::getter(fn admin_key)]
-    pub type RewarderKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	// ------ Storage --------------------------
+	#[pallet::storage]
+	#[pallet::getter(fn admin_key)]
+	pub type RewarderKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
-    #[pallet::storage]
-    #[pallet::getter(fn pallet_id)]
-    pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	#[pallet::storage]
+	#[pallet::getter(fn pallet_id)]
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn total_reward_amount)]
 	pub type TotalRewardAmount<T> = StorageValue<_, BalanceOf<T>>;
-    // -----------------------------------------
+	// -----------------------------------------
 
-    // ----- Genesis Configs ------------------
-    #[pallet::genesis_config]
-    pub struct GenesisConfig<T: Config> {
-        pub rewarder_key: T::AccountId,
-    }
+	// ----- Genesis Configs ------------------
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config> {
+		pub rewarder_key: T::AccountId,
+	}
 
-    #[cfg(feature = "std")]
-    impl<T: Config> Default for GenesisConfig<T> {
-        fn default() -> Self {
-            Self {
-                rewarder_key: Default::default(),
-            }
-        }
-    }
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { rewarder_key: Default::default() }
+		}
+	}
 
-    #[pallet::genesis_build]
-    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-        fn build(&self) {
-            RewarderKey::<T>::put(&self.rewarder_key);
-            PalletAccount::<T>::put(<Pallet<T>>::account_id());
-            <Pallet<T>>::set_total_reward_amount();
-        }
-    }
-    // ----------------------------------------
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+			RewarderKey::<T>::put(&self.rewarder_key);
+			PalletAccount::<T>::put(<Pallet<T>>::account_id());
+			<Pallet<T>>::set_total_reward_amount();
+		}
+	}
+	// ----------------------------------------
 
-    #[pallet::event]
-    #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    pub enum Event<T: Config> {
-        RewardFunds(T::AccountId, BalanceOf<T>, T::BlockNumber),
-    }
+	#[pallet::event]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
+	pub enum Event<T: Config> {
+		RewardFunds(T::AccountId, BalanceOf<T>, T::BlockNumber),
+	}
 
-    #[pallet::error]
-    pub enum Error<T> {
+	#[pallet::error]
+	pub enum Error<T> {
 		/// Insufficient funds.
 		InsufficientFunds,
 		/// Amount overflow.
 		AmountOverflow,
-        /// Unauthorized Account
-        Unauthorized,
-        /// Account doesn't exist
-        NotExist,
+		/// Unauthorized Account
+		Unauthorized,
+		/// Account doesn't exist
+		NotExist,
 		BadSignature,
-    }
+	}
 
-    // ----- This is template code, every pallet needs this ---
-    #[pallet::pallet]
-    #[pallet::generate_store(pub(super) trait Store)]
-    pub struct Pallet<T>(_);
+	// ----- This is template code, every pallet needs this ---
+	#[pallet::pallet]
+	#[pallet::generate_store(pub(super) trait Store)]
+	pub struct Pallet<T>(_);
 
-    #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
-    // --------------------------------------------------------
+	#[pallet::hooks]
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	// --------------------------------------------------------
 
-    // Pallet run from this pallet::call
-    #[pallet::call]
-    impl<T: Config> Pallet<T> {
-        #[pallet::weight(T::WeightInfo::reward_funds())]
-        pub fn reward_funds(
-            origin: OriginFor<T>,
-            to_reward: T::AccountId,
-            reward: BalanceOf<T>,
-        ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+	// Pallet run from this pallet::call
+	#[pallet::call]
+	impl<T: Config> Pallet<T> {
+		#[pallet::weight(T::WeightInfo::reward_funds())]
+		pub fn reward_funds(
+			origin: OriginFor<T>,
+			to_reward: T::AccountId,
+			reward: BalanceOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
 
-            match <Self as RewardInterface<T>>::reward_funds(&who, &to_reward, reward) {
-                Ok(_) => {
-                    let now = <frame_system::Pallet<T>>::block_number();
-                    Self::deposit_event(Event::<T>::RewardFunds(to_reward, reward, now));
-                    Ok(().into())
-                }
-                Err(error) => Err(error.into()),
-            }
-        }
-    }
+			match <Self as RewardInterface<T>>::reward_funds(&who, &to_reward, reward) {
+				Ok(_) => {
+					let now = <frame_system::Pallet<T>>::block_number();
+					Self::deposit_event(Event::<T>::RewardFunds(to_reward, reward, now));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+	}
 }
 
 impl<T: Config> Pallet<T> {
 	/// The account ID that holds the funds
 	pub fn account_id() -> T::AccountId {
-        T::PalletId::get().into_account()
+		T::PalletId::get().into_account()
 	}
 
 	/// Set current total reward amount
@@ -154,18 +152,18 @@ impl<T: Config> Pallet<T> {
 }
 
 impl<T: Config> RewardInterface<T> for Pallet<T> {
-    type Error = Error<T>;
-    type Balance = BalanceOf<T>;
+	type Error = Error<T>;
+	type Balance = BalanceOf<T>;
 
-    fn reward_funds(
-        rewarder_account_id: &T::AccountId,
-        to_reward: &T::AccountId,
-        reward: Self::Balance,
-    ) -> Result<(), Self::Error> {
-        let pallet_id = Self::account_id();
-        if rewarder_account_id.clone() != RewarderKey::<T>::get() {
-            return Err(Error::<T>::Unauthorized);
-        }
+	fn reward_funds(
+		rewarder_account_id: &T::AccountId,
+		to_reward: &T::AccountId,
+		reward: Self::Balance,
+	) -> Result<(), Self::Error> {
+		let pallet_id = Self::account_id();
+		if rewarder_account_id.clone() != RewarderKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
 
 		match CurrencyOf::<T>::withdraw(
 			&pallet_id,
@@ -180,6 +178,6 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 			_ => return Err(Error::<T>::BadSignature),
 		}
 
-        Ok(())
-    }
+		Ok(())
+	}
 }

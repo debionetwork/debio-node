@@ -4,18 +4,15 @@ mod mock;
 mod tests {
 	use crate::mock::*;
 
+	use genetic_analyst_services::{Error, GeneticAnalystService, GeneticAnalystServiceInfo};
 	use genetic_analysts::GeneticAnalystInfo;
-	use genetic_analyst_services::{
-		Error, 
-		GeneticAnalystService, GeneticAnalystServiceInfo
-	};
 
 	use frame_support::{
 		assert_noop, assert_ok,
 		sp_runtime::traits::{Hash, Keccak256},
 	};
-	use primitives_price_and_currency::PriceByCurrency;
 	use primitives_duration::ExpectedDuration;
+	use primitives_price_and_currency::PriceByCurrency;
 
 	#[test]
 	fn create_genetic_analyst_service_works() {
@@ -33,18 +30,21 @@ mod tests {
 				}
 			));
 
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 				Origin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-					test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
 				},
 			));
 
@@ -52,27 +52,24 @@ mod tests {
 
 			assert_eq!(
 				GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst.services[0]),
-				Some(
-					GeneticAnalystService {
-						id: genetic_analyst.services[0],
-						owner_id: 1,
-						info: GeneticAnalystServiceInfo {
-							name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-							prices_by_currency: vec![
-								PriceByCurrency::default()
-							],
-							expected_duration: ExpectedDuration::default(),
-							description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-							test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
-						},
-					}
-				)
+				Some(GeneticAnalystService {
+					id: genetic_analyst.services[0],
+					owner_id: 1,
+					info: GeneticAnalystServiceInfo {
+						name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+						prices_by_currency: vec![PriceByCurrency::default()],
+						expected_duration: ExpectedDuration::default(),
+						description: "DeBio Genetic Analyst Service description"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+							.as_bytes()
+							.to_vec(),
+					},
+				})
 			);
 
-			assert_eq!(
-				GeneticAnalystServices::genetic_analyst_services_count_by_owner(1),
-				Some(1)
-			);
+			assert_eq!(GeneticAnalystServices::genetic_analyst_services_count_by_owner(1), Some(1));
 		})
 	}
 
@@ -91,19 +88,22 @@ mod tests {
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 				Origin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-					test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
 				},
 			));
 
@@ -114,38 +114,35 @@ mod tests {
 				genetic_analyst.services[0],
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name 2".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					description: "DeBio Genetic Analyst Service description 2".as_bytes().to_vec(),
-					test_result_sample: "DeBio Genetic Analyst Service test_result_sample 2".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample 2"
+						.as_bytes()
+						.to_vec(),
 				}
 			));
 
 			assert_eq!(
 				GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst.services[0]),
-				Some(
-					GeneticAnalystService {
-						id: genetic_analyst.services[0],
-						owner_id: 1,
-						info: GeneticAnalystServiceInfo {
-							name: "DeBio Genetic Analyst Service name 2".as_bytes().to_vec(),
-							prices_by_currency: vec![
-								PriceByCurrency::default()
-							],
-							expected_duration: ExpectedDuration::default(),
-							description: "DeBio Genetic Analyst Service description 2".as_bytes().to_vec(),
-							test_result_sample: "DeBio Genetic Analyst Service test_result_sample 2".as_bytes().to_vec(),
-						}
+				Some(GeneticAnalystService {
+					id: genetic_analyst.services[0],
+					owner_id: 1,
+					info: GeneticAnalystServiceInfo {
+						name: "DeBio Genetic Analyst Service name 2".as_bytes().to_vec(),
+						prices_by_currency: vec![PriceByCurrency::default()],
+						expected_duration: ExpectedDuration::default(),
+						description: "DeBio Genetic Analyst Service description 2"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio Genetic Analyst Service test_result_sample 2"
+							.as_bytes()
+							.to_vec(),
 					}
-				)
+				})
 			);
 
-			assert_eq!(
-				GeneticAnalystServices::genetic_analyst_services_count_by_owner(1),
-				Some(1)
-			);
+			assert_eq!(GeneticAnalystServices::genetic_analyst_services_count_by_owner(1), Some(1));
 		})
 	}
 
@@ -164,19 +161,22 @@ mod tests {
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 				Origin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-					test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
 				},
 			));
 
@@ -187,27 +187,26 @@ mod tests {
 				genetic_analyst.services[0]
 			));
 
-			assert_eq!(
-				GeneticAnalystServices::genetic_analyst_services_count_by_owner(1),
-				Some(0)
-			);
+			assert_eq!(GeneticAnalystServices::genetic_analyst_services_count_by_owner(1), Some(0));
 		})
 	}
 
 	#[test]
 	fn not_allowed_to_create_genetic_analyst_service() {
-		ExternalityBuilder::build().execute_with(|| {		
+		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				GeneticAnalystServices::create_genetic_analyst_service(
 					Origin::signed(1),
 					GeneticAnalystServiceInfo {
 						name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-						prices_by_currency: vec![
-							PriceByCurrency::default()
-						],
+						prices_by_currency: vec![PriceByCurrency::default()],
 						expected_duration: ExpectedDuration::default(),
-						description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-						test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+						description: "DeBio Genetic Analyst Service description"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+							.as_bytes()
+							.to_vec(),
 					},
 				),
 				Error::<Test>::NotAllowedToCreate
@@ -234,17 +233,17 @@ mod tests {
 			assert_noop!(
 				GeneticAnalystServices::update_genetic_analyst_service(
 					Origin::signed(1),
-					Keccak256::hash(
-						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
-					),
+					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					GeneticAnalystServiceInfo {
 						name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-						prices_by_currency: vec![
-							PriceByCurrency::default()
-						],
+						prices_by_currency: vec![PriceByCurrency::default()],
 						expected_duration: ExpectedDuration::default(),
-						description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-						test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+						description: "DeBio Genetic Analyst Service description"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+							.as_bytes()
+							.to_vec(),
 					},
 				),
 				Error::<Test>::GeneticAnalystServiceDoesNotExist
@@ -267,19 +266,22 @@ mod tests {
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 				Origin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-					test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
 				},
 			));
 
@@ -291,12 +293,14 @@ mod tests {
 					genetic_analyst.services[0],
 					GeneticAnalystServiceInfo {
 						name: "DeBio Genetic Analyst Service name 2".as_bytes().to_vec(),
-						prices_by_currency: vec![
-							PriceByCurrency::default()
-						],
+						prices_by_currency: vec![PriceByCurrency::default()],
 						expected_duration: ExpectedDuration::default(),
-						description: "DeBio Genetic Analyst Service description 2".as_bytes().to_vec(),
-						test_result_sample: "DeBio Genetic Analyst Service test_result_sample 2".as_bytes().to_vec(),
+						description: "DeBio Genetic Analyst Service description 2"
+							.as_bytes()
+							.to_vec(),
+						test_result_sample: "DeBio Genetic Analyst Service test_result_sample 2"
+							.as_bytes()
+							.to_vec(),
 					}
 				),
 				Error::<Test>::NotGeneticAnalystServiceOwner
@@ -323,9 +327,7 @@ mod tests {
 			assert_noop!(
 				GeneticAnalystServices::delete_genetic_analyst_service(
 					Origin::signed(1),
-					Keccak256::hash(
-						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
-					)
+					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 				),
 				Error::<Test>::GeneticAnalystServiceDoesNotExist
 			);
@@ -347,19 +349,22 @@ mod tests {
 					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
 				}
 			));
-			
-			assert_ok!(UserProfile::set_eth_address(Origin::signed(1), EthereumAddress([b'X'; 20])));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 				Origin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-					prices_by_currency: vec![
-						PriceByCurrency::default()
-					],
+					prices_by_currency: vec![PriceByCurrency::default()],
 					expected_duration: ExpectedDuration::default(),
 					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-					test_result_sample: "DeBio Genetic Analyst Service test_result_sample".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
 				},
 			));
 

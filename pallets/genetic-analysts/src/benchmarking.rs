@@ -1,11 +1,8 @@
 use super::*;
 
-use crate::{
-	GeneticAnalystInfo,
-	GeneticAnalystVerifierKey,
-};
 #[allow(unused)]
 use crate::Pallet as GeneticAnalysts;
+use crate::{GeneticAnalystInfo, GeneticAnalystVerifierKey};
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 use primitives_verification_status::VerificationStatus;

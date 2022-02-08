@@ -1,5 +1,5 @@
 use crate as genetic_analysts;
-use frame_support::{PalletId, parameter_types};
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -88,7 +88,7 @@ impl genetic_analysts::Config for Test {
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
 	type GeneticAnalystServices = GeneticAnalystServices;
-    type GeneticAnalystQualifications = GeneticAnalystQualifications;
+	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
