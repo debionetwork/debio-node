@@ -35,6 +35,6 @@ cargo +nightly fmt --all -- --check
 echo "Check Runtime"
 cargo +nightly build --release --locked
 echo "Check Benchmark"
-cargo +nightly --release --features=runtime-benchmarks --locked
+cargo +nightly build --release --features=runtime-benchmarks --locked
 
 popd
