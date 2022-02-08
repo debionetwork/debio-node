@@ -9,24 +9,6 @@ concurrency:
   group: benchmark-automation
 
 jobs:
-  compute-build-info:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
-    outputs:
-      sha_short: ${{ steps.build-info.outputs.sha_short }}
-      date: ${{ steps.build-info.outputs.date }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Compute build info
-        id: build-info
-        shell: bash
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=date::$(date +'%Y%m%d')"
-
   start-runner:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
@@ -46,7 +28,7 @@ jobs:
 
   self-host:
     runs-on: [self-hosted, blockchain]
-    needs: [compute-build-info, start-runner]
+    needs: [start-runner]
     if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
     steps:
       - uses: actions/github-script@v3
