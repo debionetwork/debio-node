@@ -21,7 +21,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ secrets.NIGHTLY_VERSION }}
+          toolchain: nightly-2021-11-01
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
           override: true
@@ -29,7 +29,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1.3.0
       - name: Change nightly version
-        run: sed -i 's/+nightly/+${{ secrets.NIGHTLY_VERSION }}/g' .maintain/test.sh
+        run: sed -i 's/+nightly/+nightly-2021-11-01/g' .maintain/test.sh
       - name: Test code
         run: ./.maintain/test.sh
 
