@@ -58,13 +58,15 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-11-01
+          toolchain: ${{ secrets.NIGHTLY_VERSION }}
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
           override: true
           default: true
       - name: Rust cache
         uses: Swatinem/rust-cache@v1.3.0
+      - name: Change nightly version
+        run: sed -i 's/+nightly/+${{ secrets.NIGHTLY_VERSION }}/g' .maintain/run-benchmark-for-pallet.sh
       - name: benchmarking
         run: .maintain/run-benchmark-for-pallet.sh
       - name: Create Pull Request
