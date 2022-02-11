@@ -985,7 +985,7 @@ fn cant_process_request_when_unathorized_customer() {
 				String::from("dnasample").into_bytes(),
 				0
 			),
-			Error::<Test>::UnAuthorized
+			Error::<Test>::Unauthorized
 		);
 	})
 }
@@ -1145,7 +1145,7 @@ fn cant_finalize_request_when_unauthorized() {
 				Keccak256::hash("request_id".as_bytes()),
 				true
 			),
-			Error::<Test>::UnAuthorized
+			Error::<Test>::Unauthorized
 		);
 	})
 }
@@ -1385,5 +1385,27 @@ fn call_event_should_work() {
 				pay_amount: 2,
 			},
 		)));
+	})
+}
+
+#[test]
+fn update_admin_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(0).build().execute_with(|| {
+		AdminKey::<Test>::put(2);
+
+		assert_eq!(
+			ServiceRequest::admin_key(),
+			2
+		);
+
+		assert_ok!(ServiceRequest::update_admin_key(
+			Origin::signed(2),
+			1,
+		));
+
+		assert_eq!(
+			ServiceRequest::admin_key(),
+			1
+		);
 	})
 }

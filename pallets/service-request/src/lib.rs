@@ -205,6 +205,7 @@ pub mod pallet {
 		ServiceRequestCreated(AccountIdOf<T>, RequestOf<T>),
 		ServiceRequestWaitingForUnstaked(AccountIdOf<T>, RequestOf<T>),
 		ServiceRequestUnstaked(AccountIdOf<T>, RequestOf<T>),
+		UpdateServiceRequestAdminKeySuccessful(AccountIdOf<T>),
 		ServiceRequestWaitingForClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
 		ServiceRequestClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
 		ServiceRequestProcessed(AccountIdOf<T>, ServiceInvoiceOf<T>),
@@ -217,7 +218,7 @@ pub mod pallet {
 	#[pallet::error]
 	pub enum Error<T> {
 		BadSignature,
-		UnAuthorized,
+		Unauthorized,
 		NotValidAmount,
 		RequestNotFound,
 		RequestUnableToClaimed,
@@ -437,6 +438,27 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
+
+		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+	
+			match <Self as SeviceRequestInterface<T>>::update_admin_key(
+				&who,
+				&account_id,
+			) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateServiceRequestAdminKeySuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
 	}
 }
 
@@ -564,7 +586,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let mut request = request.unwrap();
 
 		if request.requester_address != requester_id {
-			return Err(Error::<T>::UnAuthorized)
+			return Err(Error::<T>::Unauthorized)
 		}
 
 		if request.status != RequestStatus::Open {
@@ -585,7 +607,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		request_id: Self::RequestId,
 	) -> Result<Self::Request, Self::Error> {
 		if admin != AdminKey::<T>::get() {
-			return Err(Error::<T>::UnAuthorized)
+			return Err(Error::<T>::Unauthorized)
 		}
 
 		let request = RequestById::<T>::get(request_id);
@@ -718,7 +740,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let mut request = request.unwrap();
 
 		if requester_id != request.requester_address {
-			return Err(Error::<T>::UnAuthorized)
+			return Err(Error::<T>::Unauthorized)
 		}
 
 		if request.status == RequestStatus::WaitingForUnstaked ||
@@ -829,7 +851,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		test_result_success: bool,
 	) -> Result<Self::ServiceInvoice, Self::Error> {
 		if admin != AdminKey::<T>::get() {
-			return Err(Error::<T>::UnAuthorized)
+			return Err(Error::<T>::Unauthorized)
 		}
 
 		let service_invoice = ServiceInvoiceById::<T>::get(request_id);
@@ -907,5 +929,18 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		RequestById::<T>::insert(request_id, request);
 
 		Ok(service_invoice)
+	}
+
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != AdminKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		AdminKey::<T>::put(admin_key);
+
+		Ok(())
 	}
 }

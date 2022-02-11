@@ -280,6 +280,14 @@ benchmarks! {
 		request_id,
 		true
 	)
+
+	update_admin_key {
+		let caller: T::AccountId = AdminKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_admin_key(
+		RawOrigin::Signed(caller),
+		caller2
+	)
 }
 
 impl_benchmark_test_suite!(

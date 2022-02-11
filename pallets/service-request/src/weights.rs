@@ -35,6 +35,7 @@ pub trait WeightInfo {
 	fn claim_request() -> Weight;
 	fn process_request() -> Weight;
 	fn finalize_request() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for service_request using the Substrate node and recommended hardware.
@@ -98,6 +99,18 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(8_u64))
 			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
+	// Storage: ServiceRequest AdminKey (r:1 w:0)
+	// Storage: ServiceRequest ServiceInvoiceById (r:1 w:0)
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest RequestByAccountId (r:1 w:1)
+	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		210_652_000_u64
+			.saturating_add(T::DbWeight::get().reads(8_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -156,6 +169,11 @@ impl WeightInfo for () {
 	// Storage: ServiceRequest RequestByAccountId (r:1 w:1)
 	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1)
 	fn finalize_request() -> Weight {
+		210_652_000_u64
+			.saturating_add(RocksDbWeight::get().reads(8_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	fn update_admin_key() -> Weight {
 		210_652_000_u64
 			.saturating_add(RocksDbWeight::get().reads(8_u64))
 			.saturating_add(RocksDbWeight::get().writes(5_u64))
