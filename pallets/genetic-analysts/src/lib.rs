@@ -234,8 +234,12 @@ pub mod pallet {
 	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn total_stake_amount)]
-	pub type TotalStakeAmount<T> = StorageValue<_, BalanceOf<T>>;
+	#[pallet::getter(fn total_staked_amount)]
+	pub type TotalStakedAmount<T> = StorageValue<_, BalanceOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn minimum_stake_amount)]
+	pub type MinimumStakeAmount<T> = StorageValue<_, BalanceOf<T>>;
 	// -----------------------------------------
 
 	// ----- Genesis Configs ------------------
@@ -256,7 +260,8 @@ pub mod pallet {
 		fn build(&self) {
 			GeneticAnalystVerifierKey::<T>::put(&self.genetic_analyst_verifier_key);
 			PalletAccount::<T>::put(<Pallet<T>>::account_id());
-			<Pallet<T>>::set_total_stake_amount();
+			<Pallet<T>>::set_minimum_stake_amount(50000000000000000000000u128.saturated_into());
+			<Pallet<T>>::set_total_staked_amount();
 		}
 	}
 
@@ -278,6 +283,12 @@ pub mod pallet {
 		/// GeneticAnalyst stake successful
 		/// parameters. [GeneticAnalyst, who]
 		GeneticAnalystStakeSuccessful(GeneticAnalystOf<T>, AccountIdOf<T>),
+		/// Update GeneticAnalyst minimum stake successful
+		/// parameters. [who]
+		UpdateGeneticAnalystMinimumStakeSuccessful(AccountIdOf<T>),
+		/// Update GeneticAnalyst admin key
+		/// parameters. [who]
+		UpdateGeneticAnalystAdminKeySuccessful(AccountIdOf<T>),
 		/// GeneticAnalyst verification failed
 		/// parameters. [GeneticAnalyst, who]
 		GeneticAnalystverificationFailed(GeneticAnalystOf<T>, AccountIdOf<T>),
@@ -405,11 +416,54 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
+
+		#[pallet::weight(T::GeneticAnalystWeightInfo::update_minimum_stake_amount())]
+		pub fn update_minimum_stake_amount(
+			origin: OriginFor<T>,
+			amount: BalanceOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystInterface<T>>::update_minimum_stake_amount(
+				&who,
+				amount
+			) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateGeneticAnalystMinimumStakeSuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::GeneticAnalystWeightInfo::update_admin_key())]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystInterface<T>>::update_admin_key(
+				&who,
+				&account_id,
+			) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateGeneticAnalystAdminKeySuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
 	}
 }
 
 impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 	type Error = Error<T>;
+	type Balance = BalanceOf<T>;
 	type GeneticAnalystInfo = GeneticAnalystInfo<MomentOf<T>>;
 	type GeneticAnalyst = GeneticAnalystOf<T>;
 	type VerificationStatus = VerificationStatus;
@@ -487,7 +541,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 					genetic_analyst.stake_amount = 0u128.saturated_into();
 					genetic_analyst.stake_status = StakeStatus::Unstaked;
 
-					Self::set_total_stake_amount();
+					Self::set_total_staked_amount();
 				},
 				_ => return Err(Error::<T>::BadSignature),
 			}
@@ -544,6 +598,32 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		Ok(genetic_analyst)
 	}
 
+	fn update_minimum_stake_amount(
+		account_id: &T::AccountId,
+		amount: Self::Balance,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		Self::set_minimum_stake_amount(amount);
+
+		Ok(())
+	}
+
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		GeneticAnalystVerifierKey::<T>::put(admin_key);
+
+		Ok(())
+	}
+
 	fn genetic_analyst_by_account_id(account_id: &T::AccountId) -> Option<Self::GeneticAnalyst> {
 		Self::genetic_analyst_by_account_id(account_id)
 	}
@@ -574,7 +654,9 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub fn get_required_stake_balance() -> BalanceOf<T> {
-		50000000000000000000000u128.saturated_into()
+		<MinimumStakeAmount<T>>::get().unwrap_or(
+			50000000000000000000000u128.saturated_into()
+		)
 	}
 
 	/// Is the balance sufficient for staking
@@ -587,7 +669,7 @@ impl<T: Config> Pallet<T> {
 	pub fn stake_balance(account_id: &AccountIdOf<T>) -> BalanceOf<T> {
 		let balance = Self::get_required_stake_balance();
 		let _ = T::Currency::transfer(account_id, &Self::account_id(), balance, AllowDeath);
-		Self::set_total_stake_amount();
+		Self::set_total_staked_amount();
 		balance
 	}
 
@@ -598,9 +680,14 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Set current total stake amount
-	pub fn set_total_stake_amount() {
+	pub fn set_minimum_stake_amount(amount: BalanceOf<T>) {
+		MinimumStakeAmount::<T>::put(amount);
+	}
+
+	/// Set current total staked amount
+	pub fn set_total_staked_amount() {
 		let balance = T::Currency::free_balance(&Self::account_id());
-		TotalStakeAmount::<T>::put(balance);
+		TotalStakedAmount::<T>::put(balance);
 	}
 }
 
