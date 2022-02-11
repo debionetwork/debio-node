@@ -59,3 +59,25 @@ fn call_event_should_work() {
 		)));
 	})
 }
+
+#[test]
+fn update_admin_key_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		AdminKey::<Test>::put(2);
+
+		assert_eq!(
+			UserProfile::admin_key(),
+			2
+		);
+
+		assert_ok!(UserProfile::update_admin_key(
+			Origin::signed(2),
+			1,
+		));
+
+		assert_eq!(
+			UserProfile::admin_key(),
+			1
+		);
+	})
+}

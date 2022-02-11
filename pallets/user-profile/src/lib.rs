@@ -111,6 +111,9 @@ pub mod pallet {
 		/// User AccountId registered as lab
 		/// parameters. [Lab, who]
 		EthAddressSet(EthereumAddressOf<T>, AccountIdOf<T>),
+		/// Update user profile admin key successful
+		/// parameters. [who]
+		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -157,16 +160,52 @@ pub mod pallet {
 
 			Ok(().into())
 		}
+
+		#[pallet::weight(T::WeightInfo::update_admin_key())]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+	
+			match <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::update_admin_key(
+				&who,
+				&account_id,
+			) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
 	}
 }
 
 impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
+	type Error = Error<T>;
+	
 	fn set_eth_address_by_account_id(
 		account_id: &T::AccountId,
 		eth_address: &EthereumAddressOf<T>,
 	) {
 		EthAddressByAccountId::<T>::insert(account_id, eth_address);
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
+	}
+
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != AdminKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		AdminKey::<T>::put(admin_key);
+
+		Ok(())
 	}
 
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
