@@ -30,6 +30,7 @@ use sp_std::marker::PhantomData;
 /// Weight functions needed for rewards.
 pub trait WeightInfo {
 	fn reward_funds() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for rewards using the Substrate node and recommended hardware.
@@ -43,6 +44,12 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
+	// Storage: Labs LabVerifierKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		21_533_000_u64
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -54,5 +61,11 @@ impl WeightInfo for () {
 		31_361_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs LabVerifierKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		21_533_000_u64
+		.saturating_add(RocksDbWeight::get().reads(2_u64))
+		.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 }

@@ -15,6 +15,14 @@ benchmarks! {
 		_id,
 		value
 	)
+
+	update_admin_key {
+		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_admin_key(
+		RawOrigin::Signed(caller),
+		caller2
+	)
 }
 
 impl_benchmark_test_suite! {Rewards, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
