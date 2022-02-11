@@ -528,6 +528,13 @@ fn stake_genetic_analyst_works() {
 			60000000000000000000000u128.saturated_into(),
 			0
 		));
+		
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+			Origin::signed(2),
+			60000000000000000000000u128.saturated_into(),
+		));
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -670,6 +677,45 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 		assert_noop!(
 			GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
 			Error::<Test>::GeneticAnalystAlreadyStaked
+		);
+	})
+}
+
+#[test]
+fn update_minimum_stake_amount_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+			Origin::signed(2),
+			60000000000000000000000u128.saturated_into(),
+		));
+
+		assert_eq!(
+			GeneticAnalysts::minimum_stake_amount(),
+			Some(60000000000000000000000u128.saturated_into())
+		);
+	})
+}
+
+#[test]
+fn update_admin_key_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_eq!(
+			GeneticAnalysts::admin_key(),
+			2
+		);
+
+		assert_ok!(GeneticAnalysts::update_admin_key(
+			Origin::signed(2),
+			1,
+		));
+
+		assert_eq!(
+			GeneticAnalysts::admin_key(),
+			1
 		);
 	})
 }
