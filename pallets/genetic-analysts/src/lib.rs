@@ -646,7 +646,8 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub fn get_required_stake_balance() -> BalanceOf<T> {
-		<MinimumStakeAmount<T>>::get().unwrap_or(50000000000000000000000u128.saturated_into())
+		<MinimumStakeAmount<T>>::get()
+			.unwrap_or_else(|| 50000000000000000000000u128.saturated_into())
 	}
 
 	/// Is the balance sufficient for staking
