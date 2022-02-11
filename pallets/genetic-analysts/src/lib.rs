@@ -424,10 +424,7 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as GeneticAnalystInterface<T>>::update_minimum_stake_amount(
-				&who,
-				amount
-			) {
+			match <Self as GeneticAnalystInterface<T>>::update_minimum_stake_amount(&who, amount) {
 				Ok(_) => {
 					Self::deposit_event(Event::UpdateGeneticAnalystMinimumStakeSuccessful(
 						who.clone(),
@@ -445,14 +442,9 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as GeneticAnalystInterface<T>>::update_admin_key(
-				&who,
-				&account_id,
-			) {
+			match <Self as GeneticAnalystInterface<T>>::update_admin_key(&who, &account_id) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateGeneticAnalystAdminKeySuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateGeneticAnalystAdminKeySuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -654,9 +646,8 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub fn get_required_stake_balance() -> BalanceOf<T> {
-		<MinimumStakeAmount<T>>::get().unwrap_or(
-			50000000000000000000000u128.saturated_into()
-		)
+		<MinimumStakeAmount<T>>::get()
+			.unwrap_or_else(|| 50000000000000000000000u128.saturated_into())
 	}
 
 	/// Is the balance sufficient for staking
