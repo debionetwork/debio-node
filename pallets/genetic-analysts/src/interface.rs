@@ -2,6 +2,7 @@
 /// Defines the functionalities of GeneticAnalyst Pallet
 pub trait GeneticAnalystInterface<T: frame_system::Config> {
 	type Error;
+	type Balance;
 	type GeneticAnalystInfo;
 	type GeneticAnalyst;
 	type VerificationStatus;
@@ -33,4 +34,14 @@ pub trait GeneticAnalystInterface<T: frame_system::Config> {
 	fn delete_genetic_analyst(
 		account_id: &T::AccountId,
 	) -> Result<Self::GeneticAnalyst, Self::Error>;
+	/// Update genetic analyst minimum stake amount
+	fn update_minimum_stake_amount(
+		account_id: &T::AccountId,
+		amount: Self::Balance,
+	) -> Result<(), Self::Error>;
+	/// Update genetic analyst admin key
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error>;
 }
