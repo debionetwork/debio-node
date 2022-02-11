@@ -161,6 +161,20 @@ pub mod pallet {
 			Ok(().into())
 		}
 
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			AdminKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
+
 		#[pallet::weight(T::WeightInfo::update_admin_key())]
 		pub fn update_admin_key(
 			origin: OriginFor<T>,

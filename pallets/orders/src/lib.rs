@@ -338,6 +338,20 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_escrow_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			EscrowKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
 	}
 }
 

@@ -450,6 +450,20 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			GeneticAnalystVerifierKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateGeneticAnalystAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
 	}
 }
 

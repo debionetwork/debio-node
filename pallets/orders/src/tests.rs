@@ -1067,3 +1067,12 @@ fn update_escrow_key_works() {
 		assert_eq!(Orders::admin_key(), 1);
 	})
 }
+
+#[test]
+fn sudo_update_escrow_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Orders::sudo_update_escrow_key(Origin::root(), 1));
+
+		assert_eq!(Orders::admin_key(), 1);
+	})
+}

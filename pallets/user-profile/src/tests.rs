@@ -72,3 +72,12 @@ fn update_admin_key_works() {
 		assert_eq!(UserProfile::admin_key(), 1);
 	})
 }
+
+#[test]
+fn sudo_update_admin_key_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(UserProfile::sudo_update_admin_key(Origin::root(), 1));
+
+		assert_eq!(UserProfile::admin_key(), 1);
+	})
+}
