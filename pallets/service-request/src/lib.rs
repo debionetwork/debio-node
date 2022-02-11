@@ -29,6 +29,9 @@ mod benchmarking;
 pub mod interface;
 pub use interface::SeviceRequestInterface;
 
+pub mod weights;
+pub use weights::WeightInfo;
+
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum RequestStatus {
 	Open,
@@ -178,6 +181,7 @@ pub mod pallet {
 		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type Labs: LabInterface<Self>;
+		type ServiceRequestWeightInfo: WeightInfo;
 	}
 
 	#[pallet::genesis_config]
@@ -300,7 +304,7 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::create_request())]
 		pub fn create_request(
 			origin: OriginFor<T>,
 			country: CountryOf,
@@ -327,7 +331,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::unstake())]
 		pub fn unstake(origin: OriginFor<T>, request_id: HashOf<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -340,7 +344,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::retrieve_unstaked_amount())]
 		pub fn retrieve_unstaked_amount(
 			origin: OriginFor<T>,
 			request_id: HashOf<T>,
@@ -359,7 +363,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::claim_request())]
 		pub fn claim_request(
 			origin: OriginFor<T>,
 			request_id: HashOf<T>,
@@ -391,7 +395,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::process_request())]
 		pub fn process_request(
 			origin: OriginFor<T>,
 			lab_id: LabIdOf<T>,
@@ -418,7 +422,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::finalize_request())]
 		pub fn finalize_request(
 			origin: OriginFor<T>,
 			request_id: HashOf<T>,
@@ -439,7 +443,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(20_000 + T::DbWeight::get().reads_writes(1, 2))]
+		#[pallet::weight(T::ServiceRequestWeightInfo::update_admin_key())]
 		pub fn update_admin_key(
 			origin: OriginFor<T>,
 			account_id: T::AccountId,

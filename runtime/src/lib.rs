@@ -689,6 +689,7 @@ impl service_request::Config for Runtime {
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
 	type Labs = Labs;
+	type ServiceRequestWeightInfo = ();
 }
 
 impl orders::Config for Runtime {
