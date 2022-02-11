@@ -47,14 +47,14 @@ where
 		report_link: Vec<u8>,
 		created_at: Moment,
 	) -> Self {
-		Self { 
-			id, 
-			owner_id, 
-			title, 
-			description, 
+		Self {
+			id,
+			owner_id,
+			title,
+			description,
 			report_link,
 			created_at,
-			updated_at: Moment::default()
+			updated_at: Moment::default(),
 		}
 	}
 
@@ -247,7 +247,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 			title.to_vec(),
 			description.to_vec(),
 			report_link.to_vec(),
-			now
+			now,
 		);
 
 		// Store to GeneticDataById storage
@@ -278,7 +278,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
-		
+
 		genetic_data.title = title.to_vec();
 		genetic_data.description = description.to_vec();
 		genetic_data.report_link = report_link.to_vec();
@@ -286,7 +286,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 
 		// Store to GeneticDataById storage
 		GeneticDataById::<T>::insert(genetic_data_id, &genetic_data);
-		
+
 		Ok(genetic_data)
 	}
 

@@ -25,7 +25,10 @@ fn add_genetic_data_works() {
 		assert_eq!(genetic_data.id, genetic_data_ids[0]);
 		assert_eq!(genetic_data.owner_id, 1);
 		assert_eq!(genetic_data.title, "DeBio Genetic Data".as_bytes().to_vec());
-		assert_eq!(genetic_data.description, "DeBio Genetic Data Document Description".as_bytes().to_vec());
+		assert_eq!(
+			genetic_data.description,
+			"DeBio Genetic Data Document Description".as_bytes().to_vec()
+		);
 		assert_eq!(genetic_data.report_link, "DeBio Genetic Data Link".as_bytes().to_vec());
 	})
 }
@@ -51,7 +54,10 @@ fn remove_genetic_data_works() {
 		assert_eq!(genetic_data.id, genetic_data_ids[0]);
 		assert_eq!(genetic_data.owner_id, 1);
 		assert_eq!(genetic_data.title, "DeBio Genetic Data".as_bytes().to_vec());
-		assert_eq!(genetic_data.description, "DeBio Genetic Data Document Description".as_bytes().to_vec());
+		assert_eq!(
+			genetic_data.description,
+			"DeBio Genetic Data Document Description".as_bytes().to_vec()
+		);
 		assert_eq!(genetic_data.report_link, "DeBio Genetic Data Link".as_bytes().to_vec());
 
 		assert_ok!(GeneticData::remove_genetic_data(Origin::signed(1), genetic_data_ids[0]));
@@ -96,7 +102,10 @@ fn remove_genetic_data_not_genetic_data_owner() {
 		assert_eq!(genetic_data.id, genetic_data_ids[0]);
 		assert_eq!(genetic_data.owner_id, 1);
 		assert_eq!(genetic_data.title, "DeBio Genetic Data".as_bytes().to_vec());
-		assert_eq!(genetic_data.description, "DeBio Genetic Data Document Description".as_bytes().to_vec());
+		assert_eq!(
+			genetic_data.description,
+			"DeBio Genetic Data Document Description".as_bytes().to_vec()
+		);
 		assert_eq!(genetic_data.report_link, "DeBio Genetic Data Link".as_bytes().to_vec());
 
 		assert_noop!(
@@ -127,7 +136,10 @@ fn update_genetic_data_works() {
 		assert_eq!(genetic_data.id, genetic_data_ids[0]);
 		assert_eq!(genetic_data.owner_id, 1);
 		assert_eq!(genetic_data.title, "DeBio Genetic Data".as_bytes().to_vec());
-		assert_eq!(genetic_data.description, "DeBio Genetic Data Document Description".as_bytes().to_vec());
+		assert_eq!(
+			genetic_data.description,
+			"DeBio Genetic Data Document Description".as_bytes().to_vec()
+		);
 		assert_eq!(genetic_data.report_link, "DeBio Genetic Data Link".as_bytes().to_vec());
 
 		assert_ok!(GeneticData::update_genetic_data(
@@ -194,7 +206,10 @@ fn update_genetic_data_not_genetic_data_owner() {
 		assert_eq!(genetic_data.id, genetic_data_ids[0]);
 		assert_eq!(genetic_data.owner_id, 1);
 		assert_eq!(genetic_data.title, "DeBio Genetic Data".as_bytes().to_vec());
-		assert_eq!(genetic_data.description, "DeBio Genetic Data Document Description".as_bytes().to_vec());
+		assert_eq!(
+			genetic_data.description,
+			"DeBio Genetic Data Document Description".as_bytes().to_vec()
+		);
 		assert_eq!(genetic_data.report_link, "DeBio Genetic Data Link".as_bytes().to_vec());
 
 		assert_noop!(
