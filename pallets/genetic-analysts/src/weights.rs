@@ -34,6 +34,8 @@ pub trait WeightInfo {
 	fn update_genetic_analyst_verification_status() -> Weight;
 	fn deregister_genetic_analyst() -> Weight;
 	fn stake_genetic_analyst() -> Weight;
+	fn update_minimum_stake_amount() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for genetic_analysts using the Substrate node and recommended hardware.
@@ -74,6 +76,22 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: GeneticAnalysts TotalStakeAmount (r:0 w:1)
+	fn update_minimum_stake_amount() -> Weight {
+		80_255_000_u64
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: GeneticAnalysts TotalStakeAmount (r:0 w:1)
+	fn update_admin_key() -> Weight {
+		80_255_000_u64
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -109,6 +127,22 @@ impl WeightInfo for () {
 	// Storage: System Account (r:2 w:2)
 	// Storage: GeneticAnalysts TotalStakeAmount (r:0 w:1)
 	fn stake_genetic_analyst() -> Weight {
+		80_255_000_u64
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: GeneticAnalysts TotalStakeAmount (r:0 w:1)
+	fn update_minimum_stake_amount() -> Weight {
+		80_255_000_u64
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: GeneticAnalysts TotalStakeAmount (r:0 w:1)
+	fn update_admin_key() -> Weight {
 		80_255_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
