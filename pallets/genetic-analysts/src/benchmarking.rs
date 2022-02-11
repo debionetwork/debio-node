@@ -121,10 +121,10 @@ benchmarks! {
 
 	update_admin_key {
 		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller2: T::AccountId = whitelisted_caller();
 	}: update_admin_key(
 		RawOrigin::Signed(caller),
-		caller_origin.clone()
+		caller2
 	)
 }
 
