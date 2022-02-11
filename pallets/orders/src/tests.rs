@@ -1054,3 +1054,25 @@ fn call_event_should_work() {
 		})));
 	});
 }
+
+#[test]
+fn update_escrow_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		EscrowKey::<Test>::put(2);
+
+		assert_eq!(
+			Orders::admin_key(),
+			2
+		);
+
+		assert_ok!(Orders::update_escrow_key(
+			Origin::signed(2),
+			1,
+		));
+
+		assert_eq!(
+			Orders::admin_key(),
+			1
+		);
+	})
+}

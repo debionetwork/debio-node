@@ -34,6 +34,7 @@ pub trait WeightInfo {
 	fn set_order_paid() -> Weight;
 	fn fulfill_order() -> Weight;
 	fn set_order_refunded() -> Weight;
+	fn update_escrow_key() -> Weight;
 }
 
 /// Weights for orders using the Substrate node and recommended hardware.
@@ -88,6 +89,15 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
+	// Storage: Orders EscrowKey (r:1 w:0)
+	// Storage: Orders Orders (r:1 w:1)
+	// Storage: GeneticTesting DnaSamples (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn update_escrow_key() -> Weight {
+		45_261_000_u64
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -137,6 +147,15 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaSamples (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_order_refunded() -> Weight {
+		45_261_000_u64
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Orders EscrowKey (r:1 w:0)
+	// Storage: Orders Orders (r:1 w:1)
+	// Storage: GeneticTesting DnaSamples (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn update_escrow_key() -> Weight {
 		45_261_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))

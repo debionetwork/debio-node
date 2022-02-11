@@ -355,6 +355,14 @@ benchmarks! {
 		RawOrigin::Signed(caller),
 		_order.id
 	)
+
+	update_escrow_key {
+		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_escrow_key(
+		RawOrigin::Signed(caller),
+		caller2
+	)
 }
 
 impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
