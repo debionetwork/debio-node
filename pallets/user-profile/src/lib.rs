@@ -141,7 +141,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::admin_set_eth_address())]
 		pub fn admin_set_eth_address(
 			origin: OriginFor<T>,
 			account_id: AccountIdOf<T>,
