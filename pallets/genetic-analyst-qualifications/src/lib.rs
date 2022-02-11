@@ -49,6 +49,11 @@ pub struct GeneticAnalystQualification<AccountId, Hash> {
 	pub owner_id: AccountId,
 	pub info: GeneticAnalystQualificationInfo,
 }
+impl GeneticAnalystQualificationInfo {
+	pub fn does_experience_exist(&self) -> bool {
+		!self.experience.is_empty()
+	}
+}
 impl<AccountId, Hash> GeneticAnalystQualification<AccountId, Hash> {
 	pub fn new(id: Hash, owner_id: AccountId, info: GeneticAnalystQualificationInfo) -> Self {
 		Self { id, owner_id, info }
@@ -151,6 +156,8 @@ pub mod pallet {
 		NotGeneticAnalystQualificationOwner,
 		/// Ordering a qualification that does not exist
 		GeneticAnalystQualificationDoesNotExist,
+		/// Creating a qualification without experience
+		GeneticAnalystExperienceCannotBeEmpty,
 	}
 
 	#[pallet::call]
@@ -259,6 +266,9 @@ impl<T: Config> GeneticAnalystQualificationInterface<T> for Pallet<T> {
 		if !can_create_qualification {
 			return Err(Error::<T>::NotAllowedToCreate)
 		}
+		if !qualification_info.does_experience_exist() {
+			return Err(Error::<T>::GeneticAnalystExperienceCannotBeEmpty)
+		}
 
 		let owner_qualification_count =
 			<Self as GeneticAnalystQualificationInterface<T>>::qualification_count_by_owner(
@@ -299,6 +309,10 @@ impl<T: Config> GeneticAnalystQualificationInterface<T> for Pallet<T> {
 
 		if qualification.owner_id != owner_id.clone() {
 			return Err(Error::<T>::NotGeneticAnalystQualificationOwner)
+		}
+
+		if !qualification_info.does_experience_exist() {
+			return Err(Error::<T>::GeneticAnalystExperienceCannotBeEmpty)
 		}
 
 		qualification.info = qualification_info.clone();

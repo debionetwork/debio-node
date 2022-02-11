@@ -2245,6 +2245,7 @@ dependencies = [
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
@@ -2259,6 +2260,7 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+ "traits-genetic-data",
  "traits-user-profile",
  "user-profile",
 ]
@@ -2274,6 +2276,7 @@ dependencies = [
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -2290,6 +2293,7 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+ "traits-genetic-data",
  "traits-user-profile",
  "user-profile",
 ]
@@ -2306,6 +2310,7 @@ dependencies = [
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
  "hex-literal",
  "pallet-balances",
  "pallet-timestamp",
@@ -2321,6 +2326,7 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+ "traits-genetic-data",
  "traits-user-profile",
  "user-profile",
 ]
@@ -2337,6 +2343,7 @@ dependencies = [
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -2353,6 +2360,7 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+ "traits-genetic-data",
  "traits-user-profile",
  "user-profile",
 ]
@@ -2526,6 +2534,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-genetic-data",
 ]
 
 [[package]]
@@ -5049,9 +5058,9 @@ dependencies = [
 
 [[package]]
 name = "parity-db"
-version = "0.3.6"
+version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68de01cff53da5574397233383dd7f5c15ee958c348245765ea8cb09f2571e6b"
+checksum = "7cb5195cb862b13055cf7f7a76c55073dc73885c2a61511e322b8c1666be7332"
 dependencies = [
  "blake2-rfc",
  "crc32fast",
@@ -8589,6 +8598,17 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "primitives-price-and-currency",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-genetic-data"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
  "scale-info",
  "sp-std",
 ]

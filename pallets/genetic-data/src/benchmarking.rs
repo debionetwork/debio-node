@@ -26,12 +26,12 @@ benchmarks! {
 			"DeBio Genetic Data Link".as_bytes().to_vec()
 		);
 
-		let _emr_ids = GeneticData::<T>::genetic_data_by_owner_id(
+		let _genetic_data_ids = GeneticData::<T>::genetic_data_by_owner_id(
 			caller.clone()
 		).unwrap();
 	}: update_genetic_data(
 		RawOrigin::Signed(caller),
-		_emr_ids[0],
+		_genetic_data_ids[0],
 		"DeBio Genetic Data 2".as_bytes().to_vec(),
 		"DeBio Genetic Data Document Description 2".as_bytes().to_vec(),
 		"DeBio Genetic Data Link 2".as_bytes().to_vec()
@@ -48,12 +48,12 @@ benchmarks! {
 			"DeBio Genetic Data Link".as_bytes().to_vec()
 		);
 
-		let _emr_ids = GeneticData::<T>::genetic_data_by_owner_id(
+		let _genetic_data_ids = GeneticData::<T>::genetic_data_by_owner_id(
 			caller.clone()
 		).unwrap();
 	}: remove_genetic_data(
 		RawOrigin::Signed(caller),
-		_emr_ids[0]
+		_genetic_data_ids[0]
 	)
 }
 

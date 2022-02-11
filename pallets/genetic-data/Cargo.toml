@@ -30,6 +30,8 @@ sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'po
 ## Substrate Pallet Dependencies
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
+traits-genetic-data = { path = './traits', default-features = false }
+
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -48,6 +50,8 @@ std = [
 	'sp-runtime/std',
 
     'pallet-timestamp/std',
+
+    'traits-genetic-data/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'

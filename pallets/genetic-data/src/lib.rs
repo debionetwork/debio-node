@@ -20,31 +20,37 @@ pub mod interface;
 pub mod weights;
 pub use interface::GeneticDataInterface;
 use sp_std::prelude::*;
+use traits_genetic_data::{GeneticData as GeneticDataT, GeneticDataProvider};
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct GeneticData<AccountId, Hash>
-where
-	Hash: PartialEq + Eq,
-{
+pub struct GeneticData<AccountId, Hash, Moment> {
 	pub id: Hash,
 	pub owner_id: AccountId,
 	pub title: Vec<u8>,
 	pub description: Vec<u8>,
 	pub report_link: Vec<u8>,
+	pub created_at: Moment,
+	pub updated_at: Moment,
 }
 
-impl<AccountId, Hash> GeneticData<AccountId, Hash>
-where
-	Hash: PartialEq + Eq,
-{
+impl<AccountId, Hash, Moment: Default> GeneticData<AccountId, Hash, Moment> {
 	pub fn new(
 		id: Hash,
 		owner_id: AccountId,
 		title: Vec<u8>,
 		description: Vec<u8>,
 		report_link: Vec<u8>,
+		created_at: Moment,
 	) -> Self {
-		Self { id, owner_id, title, description, report_link }
+		Self {
+			id,
+			owner_id,
+			title,
+			description,
+			report_link,
+			created_at,
+			updated_at: Moment::default(),
+		}
 	}
 
 	pub fn get_id(&self) -> &Hash {
@@ -53,6 +59,18 @@ where
 
 	pub fn get_owner_id(&self) -> &AccountId {
 		&self.owner_id
+	}
+}
+
+impl<T, AccountId, Hash, Moment: Default> GeneticDataT<T> for GeneticData<AccountId, Hash, Moment>
+where
+	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
+{
+	fn get_id(&self) -> &Hash {
+		self.get_id()
+	}
+	fn get_owner_id(&self) -> &AccountId {
+		self.get_owner_id()
 	}
 }
 
@@ -82,7 +100,7 @@ pub mod pallet {
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
 	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
-	pub type GeneticDataOf<T> = GeneticData<AccountIdOf<T>, HashOf<T>>;
+	pub type GeneticDataOf<T> = GeneticData<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
 	pub type GeneticDataIdOf<T> = HashOf<T>;
 
 	// ------- Storage -------------
@@ -228,12 +246,15 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 			<Self as GeneticDataInterface<T>>::genetic_data_count_by_owner(owner_id);
 		let genetic_data_id = Self::generate_genetic_data_id(owner_id, owner_genetic_data_count);
 
+		let now = pallet_timestamp::Pallet::<T>::get();
+
 		let genetic_data = GeneticData::new(
 			genetic_data_id,
 			owner_id.clone(),
 			title.to_vec(),
 			description.to_vec(),
 			report_link.to_vec(),
+			now,
 		);
 
 		// Store to GeneticDataById storage
@@ -253,19 +274,27 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 		description: &[u8],
 		report_link: &[u8],
 	) -> Result<Self::GeneticData, Self::Error> {
-		let _ =
-			match <Self as GeneticDataInterface<T>>::remove_genetic_data(owner_id, genetic_data_id)
-			{
-				Ok(res) => res,
-				Err(error) => return Err(error),
-			};
+		let genetic_data = GeneticDataById::<T>::get(genetic_data_id);
+		if genetic_data == None {
+			return Err(Error::<T>::GeneticDataDoesNotExist)
+		}
 
-		<Self as GeneticDataInterface<T>>::add_genetic_data(
-			owner_id,
-			title,
-			description,
-			report_link,
-		)
+		let mut genetic_data = genetic_data.unwrap();
+		if genetic_data.owner_id != owner_id.clone() {
+			return Err(Error::<T>::NotGeneticDataOwner)
+		}
+
+		let now = pallet_timestamp::Pallet::<T>::get();
+
+		genetic_data.title = title.to_vec();
+		genetic_data.description = description.to_vec();
+		genetic_data.report_link = report_link.to_vec();
+		genetic_data.updated_at = now;
+
+		// Store to GeneticDataById storage
+		GeneticDataById::<T>::insert(genetic_data_id, &genetic_data);
+
+		Ok(genetic_data)
 	}
 
 	fn remove_genetic_data(
@@ -277,12 +306,10 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticDataDoesNotExist)
 		}
 
-		if genetic_data.unwrap().owner_id != owner_id.clone() {
+		let genetic_data = genetic_data.unwrap();
+		if genetic_data.owner_id != owner_id.clone() {
 			return Err(Error::<T>::NotGeneticDataOwner)
 		}
-
-		// Get genetic_data from storage
-		let genetic_data = GeneticDataById::<T>::get(genetic_data_id).unwrap();
 
 		// Remove genetic_data from storage
 		GeneticDataById::<T>::take(genetic_data_id).unwrap();
@@ -346,5 +373,15 @@ impl<T: Config> Pallet<T> {
 	pub fn sub_genetic_data_count_by_owner(owner_id: &T::AccountId) {
 		let genetic_data_count = GeneticDataCountByOwner::<T>::get(owner_id).unwrap_or(1);
 		GeneticDataCountByOwner::<T>::insert(owner_id, genetic_data_count - 1);
+	}
+}
+
+/// GeneticDataProvider Trait Implementation
+impl<T: Config> GeneticDataProvider<T> for Pallet<T> {
+	type Error = Error<T>;
+	type GeneticData = GeneticDataOf<T>;
+
+	fn genetic_data_by_id(id: &T::Hash) -> Option<GeneticDataOf<T>> {
+		<Self as GeneticDataInterface<T>>::genetic_data_by_id(id)
 	}
 }

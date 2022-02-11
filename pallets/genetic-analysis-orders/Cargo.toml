@@ -37,6 +37,7 @@ primitives-price-and-currency = { path = '../../primitives/price-and-currency', 
 
 traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analysis = { path = '../genetic-analysis/traits', default-features = false }
+traits-genetic-data = { path = '../genetic-data/traits', default-features = false }
 traits-genetic-analysis-orders = { path = './traits', default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 
@@ -50,6 +51,7 @@ genetic-analysts = { path = '../genetic-analysts', default-features = false }
 genetic-analyst-services = { path = '../genetic-analyst-services', default-features = false }
 genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications', default-features = false }
 genetic-analysis = { path = '../genetic-analysis', default-features = false }
+genetic-data = { path = '../genetic-data', default-features = false }
 user-profile = { path = '../user-profile', default-features = false }
 
 [dev-dependencies]
@@ -78,6 +80,7 @@ std = [
     'genetic-analyst-services/std',
 	'genetic-analyst-qualifications/std',
 	'genetic-analysis/std',
+	'genetic-data/std',
 	'user-profile/std',
 
     'primitives-duration/std',
@@ -86,6 +89,7 @@ std = [
 
     'traits-genetic-analyst-services/std',
     'traits-genetic-analysis/std',
+    'traits-genetic-data/std',
     'traits-genetic-analysis-orders/std',
     'traits-user-profile/std',
 ]
