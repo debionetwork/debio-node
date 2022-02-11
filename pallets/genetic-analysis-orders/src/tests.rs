@@ -524,6 +524,114 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 }
 
 #[test]
+fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+			Origin::signed(1),
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+		));
+
+		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+		assert_noop!(
+			GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(1),
+				Keccak256::hash("genetic_data_id".as_bytes()),
+				_genetic_analyst.services[0],
+				10,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			),
+			Error::<Test>::GeneticDataDoesNotExist
+		);
+	})
+}
+
+#[test]
+fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			}
+		));
+
+		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+			Origin::signed(1),
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+		));
+
+		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+		assert_noop!(
+			GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(2),
+				_genetic_data_ids[0],
+				_genetic_analyst.services[0],
+				10,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			),
+			Error::<Test>::NotOwnerOfGeneticData
+		);
+	})
+}
+
+#[test]
 fn cant_cancel_genetic_analysis_order_when_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_noop!(
