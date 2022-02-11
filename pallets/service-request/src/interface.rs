@@ -65,7 +65,7 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		request_id: Self::RequestId,
 		test_result_success: bool,
 	) -> Result<Self::ServiceInvoice, Self::Error>;
-	
+
 	fn update_admin_key(
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,

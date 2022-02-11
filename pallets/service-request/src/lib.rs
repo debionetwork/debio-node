@@ -445,15 +445,10 @@ pub mod pallet {
 			account_id: T::AccountId,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
-	
-			match <Self as SeviceRequestInterface<T>>::update_admin_key(
-				&who,
-				&account_id,
-			) {
+
+			match <Self as SeviceRequestInterface<T>>::update_admin_key(&who, &account_id) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateServiceRequestAdminKeySuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateServiceRequestAdminKeySuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

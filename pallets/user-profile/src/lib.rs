@@ -167,15 +167,13 @@ pub mod pallet {
 			account_id: T::AccountId,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
-	
+
 			match <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::update_admin_key(
 				&who,
 				&account_id,
 			) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -186,7 +184,7 @@ pub mod pallet {
 
 impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 	type Error = Error<T>;
-	
+
 	fn set_eth_address_by_account_id(
 		account_id: &T::AccountId,
 		eth_address: &EthereumAddressOf<T>,

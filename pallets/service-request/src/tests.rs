@@ -1393,19 +1393,10 @@ fn update_admin_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(0).build().execute_with(|| {
 		AdminKey::<Test>::put(2);
 
-		assert_eq!(
-			ServiceRequest::admin_key(),
-			2
-		);
+		assert_eq!(ServiceRequest::admin_key(), 2);
 
-		assert_ok!(ServiceRequest::update_admin_key(
-			Origin::signed(2),
-			1,
-		));
+		assert_ok!(ServiceRequest::update_admin_key(Origin::signed(2), 1,));
 
-		assert_eq!(
-			ServiceRequest::admin_key(),
-			1
-		);
+		assert_eq!(ServiceRequest::admin_key(), 1);
 	})
 }

@@ -56,19 +56,10 @@ fn update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		RewarderKey::<Test>::put(2);
 
-		assert_eq!(
-			Rewards::admin_key(),
-			2
-		);
+		assert_eq!(Rewards::admin_key(), 2);
 
-		assert_ok!(Rewards::update_admin_key(
-			Origin::signed(2),
-			1,
-		));
+		assert_ok!(Rewards::update_admin_key(Origin::signed(2), 1,));
 
-		assert_eq!(
-			Rewards::admin_key(),
-			1
-		);
+		assert_eq!(Rewards::admin_key(), 1);
 	})
 }
