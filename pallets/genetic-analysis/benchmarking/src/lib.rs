@@ -21,9 +21,9 @@ use genetic_analysis_orders::Pallet as GeneticAnalysisOrders;
 use genetic_analysis::Pallet as GeneticAnalysis;
 use genetic_analysis::{Config as GeneticAnalysisConfig, GeneticAnalysisStatus};
 
+use genetic_data::Config as GeneticDataConfig;
 #[allow(unused)]
 use genetic_data::Pallet as GeneticData;
-use genetic_data::Config as GeneticDataConfig;
 
 pub trait Config:
 	GeneticAnalystServicesConfig

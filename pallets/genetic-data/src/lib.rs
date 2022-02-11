@@ -19,11 +19,8 @@ mod benchmarking;
 pub mod interface;
 pub mod weights;
 pub use interface::GeneticDataInterface;
-use traits_genetic_data::{
-	GeneticData as GeneticDataT,
-	GeneticDataProvider,
-};
 use sp_std::prelude::*;
+use traits_genetic_data::{GeneticData as GeneticDataT, GeneticDataProvider};
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct GeneticData<AccountId, Hash, Moment> {
@@ -45,14 +42,14 @@ impl<AccountId, Hash, Moment: Default> GeneticData<AccountId, Hash, Moment> {
 		report_link: Vec<u8>,
 		created_at: Moment,
 	) -> Self {
-		Self { 
-			id, 
-			owner_id, 
-			title, 
-			description, 
+		Self {
+			id,
+			owner_id,
+			title,
+			description,
 			report_link,
 			created_at,
-			updated_at: Moment::default()
+			updated_at: Moment::default(),
 		}
 	}
 
@@ -65,8 +62,7 @@ impl<AccountId, Hash, Moment: Default> GeneticData<AccountId, Hash, Moment> {
 	}
 }
 
-impl<T, AccountId, Hash, Moment: Default> GeneticDataT<T>
-	for GeneticData<AccountId, Hash, Moment>
+impl<T, AccountId, Hash, Moment: Default> GeneticDataT<T> for GeneticData<AccountId, Hash, Moment>
 where
 	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
 {
@@ -258,7 +254,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 			title.to_vec(),
 			description.to_vec(),
 			report_link.to_vec(),
-			now
+			now,
 		);
 
 		// Store to GeneticDataById storage
@@ -289,7 +285,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
-		
+
 		genetic_data.title = title.to_vec();
 		genetic_data.description = description.to_vec();
 		genetic_data.report_link = report_link.to_vec();
@@ -297,7 +293,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 
 		// Store to GeneticDataById storage
 		GeneticDataById::<T>::insert(genetic_data_id, &genetic_data);
-		
+
 		Ok(genetic_data)
 	}
 
@@ -381,8 +377,7 @@ impl<T: Config> Pallet<T> {
 }
 
 /// GeneticDataProvider Trait Implementation
-impl<T: Config> GeneticDataProvider<T> for Pallet<T>
-{
+impl<T: Config> GeneticDataProvider<T> for Pallet<T> {
 	type Error = Error<T>;
 	type GeneticData = GeneticDataOf<T>;
 

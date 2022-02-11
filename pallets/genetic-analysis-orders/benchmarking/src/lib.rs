@@ -9,9 +9,9 @@ use genetic_analyst_services::{Config as GeneticAnalystServicesConfig, GeneticAn
 use genetic_analysts::Pallet as GeneticAnalysts;
 use genetic_analysts::{Config as GeneticAnalystsConfig, GeneticAnalystInfo};
 
+use user_profile::Config as UserProfileConfig;
 #[allow(unused)]
 use user_profile::Pallet as UserProfile;
-use user_profile::Config as UserProfileConfig;
 
 #[allow(unused)]
 use genetic_analysis_orders::Pallet as GeneticAnalysisOrders;
@@ -21,9 +21,9 @@ use genetic_analysis_orders::{Config as GeneticAnalysisOrdersConfig, EscrowKey};
 use genetic_analysis::Pallet as GeneticAnalysis;
 use genetic_analysis::{Config as GeneticAnalysisConfig, GeneticAnalysisStatus};
 
+use genetic_data::Config as GeneticDataConfig;
 #[allow(unused)]
 use genetic_data::Pallet as GeneticData;
-use genetic_data::Config as GeneticDataConfig;
 
 pub trait Config:
 	GeneticAnalystServicesConfig

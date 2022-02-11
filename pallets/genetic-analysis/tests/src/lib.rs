@@ -59,9 +59,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -151,9 +151,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -219,9 +219,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -323,9 +323,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -413,9 +413,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -508,9 +508,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -575,9 +575,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -661,9 +661,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
@@ -726,9 +726,9 @@ mod tests {
 				Origin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
 			);
-	
+
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(

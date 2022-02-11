@@ -47,7 +47,7 @@ fn create_genetic_analysis_order() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -123,7 +123,7 @@ fn cancel_genetic_analysis_order_works() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -204,7 +204,7 @@ fn set_genetic_analysis_order_paid_works() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -287,7 +287,7 @@ fn fulfill_genetic_analysis_order_works() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -384,7 +384,7 @@ fn set_genetic_analysis_order_refunded_works() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -451,7 +451,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_service_not_exists() 
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -505,7 +505,7 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -572,7 +572,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -635,7 +635,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -728,7 +728,7 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -790,7 +790,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -853,7 +853,7 @@ fn cant_set_genetic_analysis_order_refunded_when_unauthorized() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -919,7 +919,7 @@ fn call_event_should_work() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
@@ -985,7 +985,7 @@ fn call_event_should_work() {
 			Origin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-			"DeBio Genetic Data Link".as_bytes().to_vec()
+			"DeBio Genetic Data Link".as_bytes().to_vec(),
 		);
 
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();

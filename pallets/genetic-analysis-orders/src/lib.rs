@@ -18,8 +18,8 @@ use traits_genetic_analysis::{GeneticAnalysisProvider, GeneticAnalysisTracking};
 use traits_genetic_analysis_orders::{
 	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,
 };
-use traits_genetic_data::{GeneticDataProvider, GeneticData};
 use traits_genetic_analyst_services::{GeneticAnalystServiceInfo, GeneticAnalystServicesProvider};
+use traits_genetic_data::{GeneticData, GeneticDataProvider};
 pub use weights::WeightInfo;
 
 #[cfg(test)]
@@ -60,7 +60,9 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub updated_at: Moment,
 }
 #[allow(clippy::too_many_arguments)]
-impl<Hash, AccountId, Balance, Moment: Default> GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
+impl<Hash, AccountId, Balance, Moment: Default>
+	GeneticAnalysisOrder<Hash, AccountId, Balance, Moment>
+{
 	pub fn new(
 		id: Hash,
 		service_id: Hash,
@@ -375,8 +377,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
 		}
 
-		let genetic_data =
-			T::GeneticData::genetic_data_by_id(genetic_data_id);
+		let genetic_data = T::GeneticData::genetic_data_by_id(genetic_data_id);
 		if genetic_data.is_none() {
 			return Err(Error::<T>::GeneticDataDoesNotExist)
 		}
