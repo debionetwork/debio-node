@@ -111,6 +111,21 @@ benchmarks! {
 	}: stake_genetic_analyst(
 		RawOrigin::Signed(caller)
 	)
+
+	update_minimum_stake_amount {
+		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get();
+	}: update_minimum_stake_amount(
+		RawOrigin::Signed(caller),
+		60000000000000000000000u128.saturated_into()
+	)
+
+	update_admin_key {
+		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_admin_key(
+		RawOrigin::Signed(caller),
+		caller2
+	)
 }
 
 impl_benchmark_test_suite! {GeneticAnalysts, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
