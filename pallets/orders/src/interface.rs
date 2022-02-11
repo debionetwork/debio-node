@@ -29,10 +29,8 @@ pub trait OrderInterface<T: frame_system::Config> {
 		escrow_account_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error>;
-
-	/*
-	fn order_by_id(order_id: &T::Hash) -> Option<Self::Order>;
-	fn orders_by_seller_id(seller_id: &T::AccountId) -> Vec<T::Hash>;
-	fn orders_by_customer_id(customer_id: &T::AccountId) -> Vec<T::Hash>;
-	*/
+	fn update_escrow_key(
+		account_id: &T::AccountId,
+		escrow_key: &T::AccountId,
+	) -> Result<(), Self::Error>;
 }

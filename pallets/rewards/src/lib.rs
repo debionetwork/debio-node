@@ -91,6 +91,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		RewardFunds(T::AccountId, BalanceOf<T>, T::BlockNumber),
+		UpdateRewardsAdminKeySuccessful(AccountIdOf<T>),
 	}
 
 	#[pallet::error]
@@ -130,6 +131,36 @@ pub mod pallet {
 				Ok(_) => {
 					let now = <frame_system::Pallet<T>>::block_number();
 					Self::deposit_event(Event::<T>::RewardFunds(to_reward, reward, now));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			RewarderKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateRewardsAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
+
+		#[pallet::weight(T::WeightInfo::update_admin_key())]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as RewardInterface<T>>::update_admin_key(&who, &account_id) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateRewardsAdminKeySuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -177,6 +208,19 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 			},
 			_ => return Err(Error::<T>::BadSignature),
 		}
+
+		Ok(())
+	}
+
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != RewarderKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		RewarderKey::<T>::put(admin_key);
 
 		Ok(())
 	}

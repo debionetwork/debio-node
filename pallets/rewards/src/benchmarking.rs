@@ -1,7 +1,7 @@
 use super::*;
 
 use crate::RewarderKey;
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite};
+use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::sp_runtime::traits::Saturating;
 use frame_system::RawOrigin;
 
@@ -14,6 +14,14 @@ benchmarks! {
 		RawOrigin::Signed(caller.clone()),
 		_id,
 		value
+	)
+
+	update_admin_key {
+		let caller: T::AccountId = RewarderKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_admin_key(
+		RawOrigin::Signed(caller),
+		caller2
 	)
 }
 

@@ -37,7 +37,7 @@ pub trait Config:
 
 pub struct Pallet<T: Config>(GeneticAnalysisOrders<T>);
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
+use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
 use frame_support::sp_runtime::traits::Hash;
 use frame_system::RawOrigin;
 use genetic_analysis_orders::Call;
@@ -370,6 +370,14 @@ benchmarks! {
 	}: set_genetic_analysis_order_refunded(
 		RawOrigin::Signed(caller),
 		_genetic_analysis_order.id
+	)
+
+	update_escrow_key {
+		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_escrow_key(
+		RawOrigin::Signed(caller),
+		caller2
 	)
 }
 

@@ -201,6 +201,9 @@ pub mod pallet {
 		/// Order Not Found
 		/// parameters, []
 		OrderNotFound,
+		/// Update Order escrow key
+		/// parameters. [who]
+		UpdateOrderEscrowKeySuccessful(AccountIdOf<T>),
 		/// Order Failed
 		/// parameters, [Order]
 		OrderFailed(OrderOf<T>),
@@ -318,6 +321,36 @@ pub mod pallet {
 				},
 				Err(error) => Err(error.into()),
 			}
+		}
+
+		#[pallet::weight(T::OrdersWeightInfo::update_escrow_key())]
+		pub fn update_escrow_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as OrderInterface<T>>::update_escrow_key(&who, &account_id) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(who.clone()));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_escrow_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			EscrowKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
 		}
 	}
 }
@@ -466,6 +499,19 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 
 		let order = Self::update_order_status(order_id, OrderStatus::Refunded);
 		Ok(order.unwrap())
+	}
+
+	fn update_escrow_key(
+		account_id: &T::AccountId,
+		escrow_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != EscrowKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		EscrowKey::<T>::put(escrow_key);
+
+		Ok(())
 	}
 }
 

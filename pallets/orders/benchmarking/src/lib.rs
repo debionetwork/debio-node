@@ -26,7 +26,7 @@ use orders::{Config as OrdersConfig, EscrowKey};
 use genetic_testing::Pallet as GeneticTesting;
 use genetic_testing::{Config as GeneticTestingConfig, DnaSampleStatus, DnaTestResultSubmission};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
+use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(Orders<T>);
@@ -354,6 +354,14 @@ benchmarks! {
 	}: set_order_refunded(
 		RawOrigin::Signed(caller),
 		_order.id
+	)
+
+	update_escrow_key {
+		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_escrow_key(
+		RawOrigin::Signed(caller),
+		caller2
 	)
 }
 

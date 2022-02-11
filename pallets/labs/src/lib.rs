@@ -261,6 +261,9 @@ pub mod pallet {
 		/// Lab verification updated
 		/// parameters. [Lab, who]
 		LabUpdateVerificationStatus(LabOf<T>, AccountIdOf<T>),
+		/// Update Lab admin key
+		/// parameters. [who]
+		UpdateLabAdminKeySuccessful(AccountIdOf<T>),
 		/// Lab deregistered
 		/// parameters. [Lab, who]
 		LabDeregistered(LabOf<T>, AccountIdOf<T>),
@@ -350,6 +353,36 @@ pub mod pallet {
 				},
 				Err(error) => Err(error.into()),
 			}
+		}
+
+		#[pallet::weight(T::WeightInfo::update_admin_key())]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as LabInterface<T>>::update_admin_key(&who, &account_id) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateLabAdminKeySuccessful(who.clone()));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			LabVerifierKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateLabAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
 		}
 	}
 }
@@ -455,6 +488,19 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		Self::sub_lab_count();
 
 		Ok(lab)
+	}
+
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != LabVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		LabVerifierKey::<T>::put(admin_key);
+
+		Ok(())
 	}
 
 	fn labs_by_country_region_city(

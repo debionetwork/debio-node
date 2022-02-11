@@ -90,6 +90,7 @@ impl service_request::Config for Test {
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
 	type Labs = Labs;
+	type ServiceRequestWeightInfo = ();
 }
 
 impl labs::Config for Test {

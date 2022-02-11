@@ -76,6 +76,11 @@ pub trait LabInterface<T: frame_system::Config> {
 		account_id: &T::AccountId,
 		status: &Self::LabVerificationStatus,
 	) -> Result<Self::Lab, Self::Error>;
+	/// Update admin key
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error>;
 	/// Delete Lab
 	fn delete_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error>;
 }

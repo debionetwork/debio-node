@@ -111,6 +111,9 @@ pub mod pallet {
 		/// User AccountId registered as lab
 		/// parameters. [Lab, who]
 		EthAddressSet(EthereumAddressOf<T>, AccountIdOf<T>),
+		/// Update user profile admin key successful
+		/// parameters. [who]
+		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -138,7 +141,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::admin_set_eth_address())]
 		pub fn admin_set_eth_address(
 			origin: OriginFor<T>,
 			account_id: AccountIdOf<T>,
@@ -157,16 +160,64 @@ pub mod pallet {
 
 			Ok(().into())
 		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			AdminKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
+
+		#[pallet::weight(T::WeightInfo::update_admin_key())]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::update_admin_key(
+				&who,
+				&account_id,
+			) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(who.clone()));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
 	}
 }
 
 impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
+	type Error = Error<T>;
+
 	fn set_eth_address_by_account_id(
 		account_id: &T::AccountId,
 		eth_address: &EthereumAddressOf<T>,
 	) {
 		EthAddressByAccountId::<T>::insert(account_id, eth_address);
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
+	}
+
+	fn update_admin_key(
+		account_id: &T::AccountId,
+		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != AdminKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		AdminKey::<T>::put(admin_key);
+
+		Ok(())
 	}
 
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {

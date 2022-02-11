@@ -50,3 +50,25 @@ fn cant_reward_funds_when_not_admin() {
 		assert_noop!(Rewards::reward_funds(Origin::signed(2), 2, 1), Error::<Test>::Unauthorized);
 	})
 }
+
+#[test]
+fn update_admin_key_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		RewarderKey::<Test>::put(2);
+
+		assert_eq!(Rewards::admin_key(), 2);
+
+		assert_ok!(Rewards::update_admin_key(Origin::signed(2), 1,));
+
+		assert_eq!(Rewards::admin_key(), 1);
+	})
+}
+
+#[test]
+fn sudo_update_admin_key_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(Rewards::sudo_update_admin_key(Origin::root(), 1));
+
+		assert_eq!(Rewards::admin_key(), 1);
+	})
+}
