@@ -25,4 +25,8 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		escrow_account_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error>;
+	fn update_escrow_key(
+		account_id: &T::AccountId,
+		escrow_key: &T::AccountId,
+	) -> Result<(), Self::Error>;
 }

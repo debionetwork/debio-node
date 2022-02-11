@@ -207,6 +207,9 @@ pub mod pallet {
 		/// GeneticAnalysisOrder Cancelled
 		/// parameters, [GeneticAnalysisOrder]
 		GeneticAnalysisOrderCancelled(GeneticAnalysisOrderOf<T>),
+		/// Update GeneticAnalysisOrder escrow key
+		/// parameters. [who]
+		UpdateGeneticAnalysisOrderEscrowKeySuccessful(AccountIdOf<T>),
 		/// GeneticAnalysisOrder Not Found
 		/// parameters, []
 		GeneticAnalysisOrderNotFound,
@@ -351,6 +354,27 @@ pub mod pallet {
 				Ok(genetic_analysis_order) => {
 					Self::deposit_event(Event::<T>::GeneticAnalysisOrderRefunded(
 						genetic_analysis_order,
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::update_escrow_key())]
+		pub fn update_escrow_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalysisOrderInterface<T>>::update_escrow_key(
+				&who,
+				&account_id,
+			) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateGeneticAnalysisOrderEscrowKeySuccessful(
+						who.clone(),
 					));
 					Ok(().into())
 				},
@@ -538,6 +562,19 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			GeneticAnalysisOrderStatus::Refunded,
 		);
 		Ok(genetic_analysis_order.unwrap())
+	}
+
+	fn update_escrow_key(
+		account_id: &T::AccountId,
+		escrow_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != EscrowKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		EscrowKey::<T>::put(escrow_key);
+
+		Ok(())
 	}
 }
 
