@@ -43,23 +43,34 @@ fn create_genetic_analysis_order() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_eq!(
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
 			Some(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 				),
@@ -108,19 +119,29 @@ fn cancel_genetic_analysis_order_works() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::cancel_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -128,8 +149,9 @@ fn cancel_genetic_analysis_order_works() {
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
 			Some(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 				),
@@ -178,15 +200,25 @@ fn set_genetic_analysis_order_paid_works() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		EscrowKey::<Test>::put(3);
@@ -200,8 +232,9 @@ fn set_genetic_analysis_order_paid_works() {
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
 			Some(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 				),
@@ -250,15 +283,25 @@ fn fulfill_genetic_analysis_order_works() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysis::submit_genetic_analysis(
@@ -283,8 +326,9 @@ fn fulfill_genetic_analysis_order_works() {
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
 			Some(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 				),
@@ -336,15 +380,25 @@ fn set_genetic_analysis_order_refunded_works() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysis::submit_genetic_analysis(
@@ -369,8 +423,9 @@ fn set_genetic_analysis_order_refunded_works() {
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
 			Some(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 				),
@@ -391,9 +446,20 @@ fn set_genetic_analysis_order_refunded_works() {
 fn cant_create_genetic_analysis_order_when_genetic_analyst_service_not_exists() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
 				Origin::signed(1),
+				_genetic_data_ids[0],
 				Keccak256::hash("genetic_analyst_serviceId".as_bytes()),
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -435,9 +501,19 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
 				Origin::signed(1),
+				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				10,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -492,15 +568,25 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_noop!(
@@ -545,15 +631,25 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_paid(
@@ -628,15 +724,25 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 		assert_noop!(
 			GeneticAnalysisOrders::fulfill_genetic_analysis_order(
@@ -680,15 +786,25 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 		assert_noop!(
 			GeneticAnalysisOrders::fulfill_genetic_analysis_order(
@@ -733,15 +849,25 @@ fn cant_set_genetic_analysis_order_refunded_when_unauthorized() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		EscrowKey::<Test>::put(3);
@@ -789,22 +915,33 @@ fn call_event_should_work() {
 
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		System::assert_last_event(Event::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderCreated(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes(),
 				),
@@ -820,15 +957,16 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticAnalysisOrders::cancel_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
 			_genetic_analysis_order_id
 		));
 
 		System::assert_last_event(Event::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderCancelled(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes(),
 				),
@@ -843,15 +981,25 @@ fn call_event_should_work() {
 			}),
 		));
 
+		let _add_genetic_data = GeneticData::add_genetic_data(
+			Origin::signed(1),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(2),
+			Origin::signed(1),
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 		));
 
 		let _genetic_analysis_order_id =
-			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(2).unwrap();
+			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		EscrowKey::<Test>::put(3);
@@ -864,8 +1012,9 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderPaid(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes(),
 				),
@@ -901,8 +1050,9 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderFulfilled(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes(),
 				),
@@ -931,8 +1081,9 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderRefunded(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
 				service_id: _genetic_analyst.services[0],
-				customer_id: 2,
+				customer_id: 1,
 				customer_box_public_key: Keccak256::hash(
 					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes(),
 				),
