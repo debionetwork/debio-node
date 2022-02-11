@@ -23,6 +23,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
@@ -104,6 +105,11 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+impl genetic_data::Config for Test {
+	type Event = Event;
+	type GeneticDataWeightInfo = ();
+}
+
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
@@ -138,6 +144,7 @@ impl genetic_analysis::Config for Test {
 impl genetic_analysis_orders::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type GeneticData = GeneticData;
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();

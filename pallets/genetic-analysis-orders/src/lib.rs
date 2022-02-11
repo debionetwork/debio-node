@@ -18,6 +18,7 @@ use traits_genetic_analysis::{GeneticAnalysisProvider, GeneticAnalysisTracking};
 use traits_genetic_analysis_orders::{
 	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,
 };
+use traits_genetic_data::{GeneticDataProvider, GeneticData};
 use traits_genetic_analyst_services::{GeneticAnalystServiceInfo, GeneticAnalystServicesProvider};
 pub use weights::WeightInfo;
 
@@ -49,6 +50,7 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub customer_id: AccountId,
 	pub customer_box_public_key: Hash,
 	pub seller_id: AccountId,
+	pub genetic_data_id: Hash,
 	pub genetic_analysis_tracking_id: TrackingId,
 	pub currency: CurrencyType,
 	pub prices: Vec<Price<Balance>>,
@@ -58,19 +60,19 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub updated_at: Moment,
 }
 #[allow(clippy::too_many_arguments)]
-impl<Hash, AccountId, Balance, Moment> GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
+impl<Hash, AccountId, Balance, Moment: Default> GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub fn new(
 		id: Hash,
 		service_id: Hash,
 		customer_id: AccountId,
 		customer_box_public_key: Hash,
 		seller_id: AccountId,
+		genetic_data_id: Hash,
 		genetic_analysis_tracking_id: TrackingId,
 		currency: CurrencyType,
 		prices: Vec<Price<Balance>>,
 		additional_prices: Vec<Price<Balance>>,
 		created_at: Moment,
-		updated_at: Moment,
 	) -> Self {
 		Self {
 			id,
@@ -78,13 +80,14 @@ impl<Hash, AccountId, Balance, Moment> GeneticAnalysisOrder<Hash, AccountId, Bal
 			customer_id,
 			customer_box_public_key,
 			seller_id,
+			genetic_data_id,
 			genetic_analysis_tracking_id,
 			currency,
 			prices,
 			additional_prices,
 			status: GeneticAnalysisOrderStatus::default(),
 			created_at,
-			updated_at,
+			updated_at: Moment::default(),
 		}
 	}
 
@@ -111,6 +114,7 @@ pub mod pallet {
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
+		type GeneticData: GeneticDataProvider<Self>;
 		type GeneticAnalysis: GeneticAnalysisProvider<Self>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type GeneticAnalysisOrdersWeightInfo: WeightInfo;
@@ -211,6 +215,10 @@ pub mod pallet {
 
 	#[pallet::error]
 	pub enum Error<T> {
+		/// GeneticData id does not exist
+		GeneticDataDoesNotExist,
+		/// Not owner of GeneticData
+		NotOwnerOfGeneticData,
 		/// GeneticAnalystService id does not exist
 		GeneticAnalystServiceDoesNotExist,
 		/// GeneticAnalysisOrder does not exist
@@ -240,6 +248,7 @@ pub mod pallet {
 		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::create_genetic_analysis_order())]
 		pub fn create_genetic_analysis_order(
 			origin: OriginFor<T>,
+			genetic_data_id: T::Hash,
 			service_id: T::Hash,
 			price_index: u32,
 			customer_box_public_key: T::Hash,
@@ -248,6 +257,7 @@ pub mod pallet {
 
 			match <Self as GeneticAnalysisOrderInterface<T>>::create_genetic_analysis_order(
 				&who,
+				&genetic_data_id,
 				&service_id,
 				price_index,
 				&customer_box_public_key,
@@ -354,6 +364,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 	fn create_genetic_analysis_order(
 		customer_id: &T::AccountId,
+		genetic_data_id: &T::Hash,
 		genetic_analyst_service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
@@ -363,9 +374,22 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		if genetic_analyst_service.is_none() {
 			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
 		}
+
+		let genetic_data =
+			T::GeneticData::genetic_data_by_id(genetic_data_id);
+		if genetic_data.is_none() {
+			return Err(Error::<T>::GeneticDataDoesNotExist)
+		}
+
+		let genetic_data = genetic_data.unwrap();
+		if customer_id.clone() != genetic_data.get_owner_id().clone() {
+			return Err(Error::<T>::NotOwnerOfGeneticData)
+		}
+
 		let genetic_analyst_service = genetic_analyst_service.unwrap();
 		let genetic_analysis_order_id =
 			Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
+
 		let seller_id = genetic_analyst_service.get_owner_id();
 		let prices_by_currency = genetic_analyst_service.get_prices_by_currency();
 
@@ -400,11 +424,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			customer_id.clone(),
 			*customer_box_public_key,
 			seller_id.clone(),
+			*genetic_data_id,
 			genetic_analysis.get_genetic_analysis_tracking_id().clone(),
 			currency.clone(),
 			prices.clone(),
 			additional_prices.clone(),
-			now,
 			now,
 		);
 		Self::insert_genetic_analysis_order_to_storage(&genetic_analysis_order);

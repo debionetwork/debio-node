@@ -21,12 +21,17 @@ use genetic_analysis_orders::Pallet as GeneticAnalysisOrders;
 use genetic_analysis::Pallet as GeneticAnalysis;
 use genetic_analysis::{Config as GeneticAnalysisConfig, GeneticAnalysisStatus};
 
+#[allow(unused)]
+use genetic_data::Pallet as GeneticData;
+use genetic_data::Config as GeneticDataConfig;
+
 pub trait Config:
 	GeneticAnalystServicesConfig
 	+ GeneticAnalystsConfig
 	+ UserProfileConfig
 	+ GeneticAnalysisOrdersConfig
 	+ GeneticAnalysisConfig
+	+ GeneticDataConfig
 {
 }
 
@@ -74,8 +79,20 @@ benchmarks! {
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
+		let _add_genetic_data = GeneticData::<T>::add_genetic_data(
+			caller_origin.clone(),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::<T>::genetic_data_by_owner_id(
+			caller.clone()
+		).unwrap();
+
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
 			caller_origin,
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -124,8 +141,20 @@ benchmarks! {
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
+		let _add_genetic_data = GeneticData::<T>::add_genetic_data(
+			caller_origin.clone(),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::<T>::genetic_data_by_owner_id(
+			caller.clone()
+		).unwrap();
+
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
 			caller_origin,
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -173,8 +202,20 @@ benchmarks! {
 		let _genetic_analyst = GeneticAnalysts::<T>::genetic_analyst_by_account_id(caller.clone())
 			.unwrap();
 
+		let _add_genetic_data = GeneticData::<T>::add_genetic_data(
+			caller_origin.clone(),
+			"DeBio Genetic Data".as_bytes().to_vec(),
+			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+			"DeBio Genetic Data Link".as_bytes().to_vec()
+		);
+
+		let _genetic_data_ids = GeneticData::<T>::genetic_data_by_owner_id(
+			caller.clone()
+		).unwrap();
+
 		let _create_genetic_analysis_order = GeneticAnalysisOrders::<T>::create_genetic_analysis_order(
 			caller_origin,
+			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),

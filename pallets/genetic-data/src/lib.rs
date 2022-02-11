@@ -19,13 +19,14 @@ mod benchmarking;
 pub mod interface;
 pub mod weights;
 pub use interface::GeneticDataInterface;
+use traits_genetic_data::{
+	GeneticData as GeneticDataT,
+	GeneticDataProvider,
+};
 use sp_std::prelude::*;
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct GeneticData<AccountId, Hash>
-where
-	Hash: PartialEq + Eq,
-{
+pub struct GeneticData<AccountId, Hash> {
 	pub id: Hash,
 	pub owner_id: AccountId,
 	pub title: Vec<u8>,
@@ -33,10 +34,7 @@ where
 	pub report_link: Vec<u8>,
 }
 
-impl<AccountId, Hash> GeneticData<AccountId, Hash>
-where
-	Hash: PartialEq + Eq,
-{
+impl<AccountId, Hash> GeneticData<AccountId, Hash> {
 	pub fn new(
 		id: Hash,
 		owner_id: AccountId,
@@ -53,6 +51,19 @@ where
 
 	pub fn get_owner_id(&self) -> &AccountId {
 		&self.owner_id
+	}
+}
+
+impl<T, AccountId, Hash> GeneticDataT<T>
+	for GeneticData<AccountId, Hash>
+where
+	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
+{
+	fn get_id(&self) -> &Hash {
+		self.get_id()
+	}
+	fn get_owner_id(&self) -> &AccountId {
+		self.get_owner_id()
 	}
 }
 
@@ -346,5 +357,16 @@ impl<T: Config> Pallet<T> {
 	pub fn sub_genetic_data_count_by_owner(owner_id: &T::AccountId) {
 		let genetic_data_count = GeneticDataCountByOwner::<T>::get(owner_id).unwrap_or(1);
 		GeneticDataCountByOwner::<T>::insert(owner_id, genetic_data_count - 1);
+	}
+}
+
+/// GeneticDataProvider Trait Implementation
+impl<T: Config> GeneticDataProvider<T> for Pallet<T>
+{
+	type Error = Error<T>;
+	type GeneticData = GeneticDataOf<T>;
+
+	fn genetic_data_by_id(id: &T::Hash) -> Option<GeneticDataOf<T>> {
+		<Self as GeneticDataInterface<T>>::genetic_data_by_id(id)
 	}
 }
