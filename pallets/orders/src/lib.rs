@@ -330,14 +330,9 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as OrderInterface<T>>::update_escrow_key(
-				&who,
-				&account_id,
-			) {
+			match <Self as OrderInterface<T>>::update_escrow_key(&who, &account_id) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

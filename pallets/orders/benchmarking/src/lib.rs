@@ -26,7 +26,7 @@ use orders::{Config as OrdersConfig, EscrowKey};
 use genetic_testing::Pallet as GeneticTesting;
 use genetic_testing::{Config as GeneticTestingConfig, DnaSampleStatus, DnaTestResultSubmission};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
+use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(Orders<T>);

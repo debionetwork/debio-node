@@ -616,19 +616,10 @@ fn update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		LabVerifierKey::<Test>::put(2);
 
-		assert_eq!(
-			Labs::admin_key(),
-			2
-		);
+		assert_eq!(Labs::admin_key(), 2);
 
-		assert_ok!(Labs::update_admin_key(
-			Origin::signed(2),
-			1,
-		));
+		assert_ok!(Labs::update_admin_key(Origin::signed(2), 1,));
 
-		assert_eq!(
-			Labs::admin_key(),
-			1
-		);
+		assert_eq!(Labs::admin_key(), 1);
 	})
 }

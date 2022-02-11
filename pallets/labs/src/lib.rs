@@ -361,15 +361,10 @@ pub mod pallet {
 			account_id: T::AccountId,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
-	
-			match <Self as LabInterface<T>>::update_admin_key(
-				&who,
-				&account_id,
-			) {
+
+			match <Self as LabInterface<T>>::update_admin_key(&who, &account_id) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateLabAdminKeySuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateLabAdminKeySuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
