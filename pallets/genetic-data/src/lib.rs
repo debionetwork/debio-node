@@ -36,7 +36,7 @@ pub struct GeneticData<AccountId, Hash, Moment> {
 	pub updated_at: Moment,
 }
 
-impl<AccountId, Hash, Moment> GeneticData<AccountId, Hash, Moment> {
+impl<AccountId, Hash, Moment: Default> GeneticData<AccountId, Hash, Moment> {
 	pub fn new(
 		id: Hash,
 		owner_id: AccountId,
@@ -65,8 +65,8 @@ impl<AccountId, Hash, Moment> GeneticData<AccountId, Hash, Moment> {
 	}
 }
 
-impl<T, AccountId, Hash> GeneticDataT<T>
-	for GeneticData<AccountId, Hash>
+impl<T, AccountId, Hash, Moment: Default> GeneticDataT<T>
+	for GeneticData<AccountId, Hash, Moment>
 where
 	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
 {
