@@ -4,6 +4,7 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 
 	fn create_genetic_analysis_order(
 		customer_id: &T::AccountId,
+		genetic_data_id: &T::Hash,
 		service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
