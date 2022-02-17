@@ -25,6 +25,8 @@ fn create_genetic_analysis_order() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -101,6 +103,8 @@ fn cancel_genetic_analysis_order_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -182,6 +186,8 @@ fn set_genetic_analysis_order_paid_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -265,6 +271,8 @@ fn fulfill_genetic_analysis_order_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -362,6 +370,8 @@ fn set_genetic_analysis_order_refunded_works() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -483,6 +493,8 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -537,6 +549,8 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -591,6 +605,8 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -658,6 +674,8 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -721,6 +739,8 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -814,6 +834,8 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -876,6 +898,8 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -939,6 +963,8 @@ fn cant_set_genetic_analysis_order_refunded_when_unauthorized() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 
@@ -1005,6 +1031,8 @@ fn call_event_should_work() {
 				email: "Email".as_bytes().to_vec(),
 				phone_number: "+6893026516".as_bytes().to_vec(),
 				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
 

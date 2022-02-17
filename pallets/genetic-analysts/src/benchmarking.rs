@@ -17,6 +17,8 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let caller: T::AccountId = whitelisted_caller();
 	}: register_genetic_analyst(
@@ -36,6 +38,8 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 
@@ -47,6 +51,8 @@ benchmarks! {
 			email: "Email 2".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link 2".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image 2".as_bytes().to_vec()),
 		};
 	}: update_genetic_analyst(
 		RawOrigin::Signed(caller),
@@ -65,6 +71,8 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 	}: update_genetic_analyst_verification_status(
@@ -85,6 +93,8 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
@@ -106,6 +116,8 @@ benchmarks! {
 			email: "Email".as_bytes().to_vec(),
 			phone_number: "+6893026516".as_bytes().to_vec(),
 			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 	}: stake_genetic_analyst(

@@ -69,6 +69,8 @@ pub struct GeneticAnalystInfo<Moment> {
 	pub email: Vec<u8>,
 	pub phone_number: Vec<u8>,
 	pub specialization: Vec<u8>,
+	pub profile_link: Vec<u8>,
+	pub profile_image: Option<Vec<u8>>,
 }
 
 // GeneticAnalyst Struct
