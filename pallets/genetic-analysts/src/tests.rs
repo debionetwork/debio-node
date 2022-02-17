@@ -139,7 +139,9 @@ fn update_genetic_analyst_works() {
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
 					profile_link: "DeBio Genetic Analyst profile_link 2".as_bytes().to_vec(),
-					profile_image: Some("DeBio Genetic Analyst profile_image 2".as_bytes().to_vec()),
+					profile_image: Some(
+						"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec()
+					),
 				}
 			})
 		);
@@ -313,7 +315,9 @@ fn call_event_should_work() {
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
 					profile_link: "DeBio Genetic Analyst profile_link 2".as_bytes().to_vec(),
-					profile_image: Some("DeBio Genetic Analyst profile_image 2".as_bytes().to_vec()),
+					profile_image: Some(
+						"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec(),
+					),
 				},
 			},
 			1,
@@ -338,7 +342,9 @@ fn call_event_should_work() {
 					phone_number: "+6893026516".as_bytes().to_vec(),
 					specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
 					profile_link: "DeBio Genetic Analyst profile_link 2".as_bytes().to_vec(),
-					profile_image: Some("DeBio Genetic Analyst profile_image 2".as_bytes().to_vec()),
+					profile_image: Some(
+						"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec(),
+					),
 				},
 			},
 			1,
