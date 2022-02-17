@@ -307,6 +307,11 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 
 		GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
 
+		T::GeneticAnalysisOrders::emit_event_genetic_analysis_order_failed(
+			&genetic_analysis.genetic_analysis_order_id,
+		);
+		T::GeneticAnalysisOrders::update_status_failed(&genetic_analysis.genetic_analysis_order_id);
+
 		Ok(genetic_analysis)
 	}
 
@@ -365,11 +370,6 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 		genetic_analysis.updated_at = now;
 
 		GeneticAnalysisStorage::<T>::insert(genetic_analysis_tracking_id, &genetic_analysis);
-
-		T::GeneticAnalysisOrders::emit_event_genetic_analysis_order_failed(
-			&genetic_analysis.genetic_analysis_order_id,
-		);
-		T::GeneticAnalysisOrders::update_status_failed(&genetic_analysis.genetic_analysis_order_id);
 
 		Ok(genetic_analysis)
 	}
