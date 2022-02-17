@@ -204,21 +204,21 @@ fn set_genetic_analysis_order_paid_works() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5000000000000000000u128.saturated_into()
+			value: 5u128.saturated_into()
+		};
+
+		let _price_by_currency = PriceByCurrency {
+			currency: CurrencyType::default(),
+			total_price: 10u128.saturated_into(),
+			price_components: vec![_price.clone()],
+			additional_prices: vec![_price],
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 			Origin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-				prices_by_currency: vec![
-					PriceByCurrency {
-						currency: CurrencyType::default(),
-						total_price: 10000000000000000000u128.saturated_into(),
-						price_components: vec![_price.clone()],
-						additional_prices: vec![_price],
-					}
-				],
+				prices_by_currency: vec![_price_by_currency],
 				expected_duration: ExpectedDuration::default(),
 				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
@@ -257,6 +257,18 @@ fn set_genetic_analysis_order_paid_works() {
 			_genetic_analysis_order_id
 		));
 
+		let _price = Price {
+			component: "Price Component".as_bytes().to_vec(),
+			value: 5000000000000000000u128.saturated_into()
+		};
+
+		let _price_by_currency = PriceByCurrency {
+			currency: CurrencyType::default(),
+			total_price: 10000000000000000000u128.saturated_into(),
+			price_components: vec![_price.clone()],
+			additional_prices: vec![_price],
+		};
+
 		assert_eq!(
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
 			Some(GeneticAnalysisOrder {
@@ -269,10 +281,10 @@ fn set_genetic_analysis_order_paid_works() {
 				),
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-				currency: CurrencyType::default(),
-				prices: PriceByCurrency::default().price_components,
-				additional_prices: PriceByCurrency::default().additional_prices,
-				total_price: PriceByCurrency::default().total_price,
+				currency: _price_by_currency.currency,
+				prices:_price_by_currency.price_components,
+				additional_prices:_price_by_currency.additional_prices,
+				total_price:_price_by_currency.total_price,
 				status: GeneticAnalysisOrderStatus::Paid,
 				created_at: 0,
 				updated_at: 0
@@ -285,6 +297,9 @@ fn set_genetic_analysis_order_paid_works() {
 fn fulfill_genetic_analysis_order_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+
+		EscrowKey::<Test>::put(1);
+
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -778,7 +793,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5000000000000000000u128.saturated_into()
+			value: 5u128.saturated_into()
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
@@ -788,7 +803,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 				prices_by_currency: vec![
 					PriceByCurrency {
 						currency: CurrencyType::default(),
-						total_price: 10000000000000000000u128.saturated_into(),
+						total_price: 10u128.saturated_into(),
 						price_components: vec![_price.clone()],
 						additional_prices: vec![_price],
 					}
@@ -859,6 +874,9 @@ fn cant_set_genetic_analysis_order_paid_when_not_exist() {
 fn cant_fulfill_genetic_analysis_order_when_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		
+		EscrowKey::<Test>::put(1);
+
 		assert_noop!(
 			GeneticAnalysisOrders::fulfill_genetic_analysis_order(
 				Origin::signed(1),
@@ -928,7 +946,7 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 				Origin::signed(4),
 				_genetic_analysis_order_id
 			),
-			Error::<Test>::UnauthorizedGeneticAnalysisOrderFulfillment
+			Error::<Test>::Unauthorized
 		);
 	})
 }
@@ -937,6 +955,9 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		
+		EscrowKey::<Test>::put(1);
+
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -1085,28 +1106,11 @@ fn call_event_should_work() {
 			}
 		));
 
-		let _price_by_currency = PriceByCurrency {
-			currency: CurrencyType::default(),
-			total_price: 10000000000000000000u128.saturated_into(),
-			price_components: vec![
-				Price {
-					component: "Price Component".as_bytes().to_vec(),
-					value: 5000000000000000000u128.saturated_into()
-				}
-			],
-			additional_prices: vec![
-				Price {
-					component: "Price Component".as_bytes().to_vec(),
-					value: 5000000000000000000u128.saturated_into()
-				}
-			],
-		};
-
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 			Origin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-				prices_by_currency: vec![_price_by_currency.clone()],
+				prices_by_currency: vec![PriceByCurrency::default()],
 				expected_duration: ExpectedDuration::default(),
 				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
@@ -1149,10 +1153,10 @@ fn call_event_should_work() {
 				),
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-				currency: _price_by_currency.currency.clone(),
-				prices: _price_by_currency.price_components.clone(),
-				additional_prices: _price_by_currency.additional_prices.clone(),
-				total_price: _price_by_currency.total_price,
+				currency: CurrencyType::default(),
+				prices: PriceByCurrency::default().price_components,
+				additional_prices: PriceByCurrency::default().additional_prices,
+				total_price: PriceByCurrency::default().total_price,
 				status: GeneticAnalysisOrderStatus::default(),
 				created_at: 0,
 				updated_at: 0,
@@ -1175,10 +1179,10 @@ fn call_event_should_work() {
 				),
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-				currency: _price_by_currency.currency.clone(),
-				prices: _price_by_currency.price_components.clone(),
-				additional_prices: _price_by_currency.additional_prices.clone(),
-				total_price: _price_by_currency.total_price,
+				currency: CurrencyType::default(),
+				prices: PriceByCurrency::default().price_components,
+				additional_prices: PriceByCurrency::default().additional_prices,
+				total_price: PriceByCurrency::default().total_price,
 				status: GeneticAnalysisOrderStatus::Cancelled,
 				created_at: 0,
 				updated_at: 0,
@@ -1224,10 +1228,10 @@ fn call_event_should_work() {
 				),
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-				currency: _price_by_currency.currency.clone(),
-				prices: _price_by_currency.price_components.clone(),
-				additional_prices: _price_by_currency.additional_prices.clone(),
-				total_price: _price_by_currency.total_price,
+				currency: CurrencyType::default(),
+				prices: PriceByCurrency::default().price_components,
+				additional_prices: PriceByCurrency::default().additional_prices,
+				total_price: PriceByCurrency::default().total_price,
 				status: GeneticAnalysisOrderStatus::Paid,
 				created_at: 0,
 				updated_at: 0,
@@ -1248,7 +1252,7 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticAnalysisOrders::fulfill_genetic_analysis_order(
-			Origin::signed(1),
+			Origin::signed(3),
 			_genetic_analysis_order_id
 		));
 
@@ -1263,10 +1267,10 @@ fn call_event_should_work() {
 				),
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-				currency: _price_by_currency.currency.clone(),
-				prices: _price_by_currency.price_components.clone(),
-				additional_prices: _price_by_currency.additional_prices.clone(),
-				total_price: _price_by_currency.total_price,
+				currency: CurrencyType::default(),
+				prices: PriceByCurrency::default().price_components,
+				additional_prices: PriceByCurrency::default().additional_prices,
+				total_price: PriceByCurrency::default().total_price,
 				status: GeneticAnalysisOrderStatus::Fulfilled,
 				created_at: 0,
 				updated_at: 0,
@@ -1295,10 +1299,10 @@ fn call_event_should_work() {
 				),
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-				currency: _price_by_currency.currency,
-				prices: _price_by_currency.price_components,
-				additional_prices: _price_by_currency.additional_prices,
-				total_price: _price_by_currency.total_price,
+				currency: CurrencyType::default(),
+				prices: PriceByCurrency::default().price_components,
+				additional_prices: PriceByCurrency::default().additional_prices,
+				total_price: PriceByCurrency::default().total_price,
 				status: GeneticAnalysisOrderStatus::Refunded,
 				created_at: 0,
 				updated_at: 0,

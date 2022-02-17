@@ -251,8 +251,6 @@ pub mod pallet {
 		GeneticAnalystServiceDoesNotExist,
 		/// GeneticAnalysisOrder does not exist
 		GeneticAnalysisOrderNotFound,
-		/// Unauthorized to fulfill genetic_analysis_order - user is not the seller who owns the service
-		UnauthorizedGeneticAnalysisOrderFulfillment,
 		/// Unauthorized to cancel genetic_analysis_order - user is not the customer who created the genetic_analysis_order
 		UnauthorizedGeneticAnalysisOrderCancellation,
 		/// Can not fulfill genetic_analysis_order before Specimen is processed
@@ -569,10 +567,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 	}
 
 	fn fulfill_genetic_analysis_order(
-		seller_id: &T::AccountId,
+		escrow_account_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		if seller_id.clone() != EscrowKey::<T>::get() {
+		// Only the admin can fulfill the genetic_analysis_order
+		if escrow_account_id.clone() != EscrowKey::<T>::get() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -581,11 +580,6 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalysisOrderNotFound)
 		}
 		let genetic_analysis_order = genetic_analysis_order.unwrap();
-
-		// Only the seller can fulfill the genetic_analysis_order
-		if genetic_analysis_order.seller_id != seller_id.clone() {
-			return Err(Error::<T>::UnauthorizedGeneticAnalysisOrderFulfillment)
-		}
 
 		let genetic_analysis = T::GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(
 			&genetic_analysis_order.genetic_analysis_tracking_id,
