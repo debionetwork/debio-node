@@ -7,7 +7,17 @@ use interface::GeneticAnalysisOrderInterface;
 use frame_support::{
 	codec::{Decode, Encode},
 	pallet_prelude::*,
-	traits::Currency,
+	PalletId,
+	sp_runtime::traits::{
+		Hash,
+		AccountIdConversion,
+	}, 
+	sp_std::convert::TryInto,
+	traits::{
+		Currency,
+		WithdrawReasons,
+		ExistenceRequirement,
+	},
 };
 pub use pallet::*;
 use primitives_price_and_currency::{CurrencyType, Price};
@@ -55,6 +65,7 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub currency: CurrencyType,
 	pub prices: Vec<Price<Balance>>,
 	pub additional_prices: Vec<Price<Balance>>,
+	pub total_price: Balance,
 	pub status: GeneticAnalysisOrderStatus,
 	pub created_at: Moment,
 	pub updated_at: Moment,
@@ -74,6 +85,7 @@ impl<Hash, AccountId, Balance, Moment: Default>
 		currency: CurrencyType,
 		prices: Vec<Price<Balance>>,
 		additional_prices: Vec<Price<Balance>>,
+		total_price: Balance,
 		created_at: Moment,
 	) -> Self {
 		Self {
@@ -88,6 +100,7 @@ impl<Hash, AccountId, Balance, Moment: Default>
 			prices,
 			additional_prices,
 			status: GeneticAnalysisOrderStatus::default(),
+			total_price,
 			created_at,
 			updated_at: Moment::default(),
 		}
@@ -120,6 +133,8 @@ pub mod pallet {
 		type GeneticAnalysis: GeneticAnalysisProvider<Self>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type GeneticAnalysisOrdersWeightInfo: WeightInfo;
+		/// Currency type for this pallet.
+		type PalletId: Get<PalletId>;
 	}
 
 	// ----- This is template code, every pallet needs this ---
@@ -132,7 +147,7 @@ pub mod pallet {
 	// --------------------------------------------------------
 
 	// ---- Types --------------------------------------------
-	type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
@@ -166,6 +181,14 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
 	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn pallet_id)]
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn total_escrow_amount)]
+	pub type TotalEscrowAmount<T> = StorageValue<_, BalanceOf<T>>;
 	// -----------------------------------------
 
 	// ----- Genesis Configs ------------------
@@ -238,6 +261,8 @@ pub mod pallet {
 		GeneticAnalysisOrderNotYetExpired,
 		/// Unauthorized Account
 		Unauthorized,
+		/// Insufficient funds
+		InsufficientFunds,
 		/// Error on creating DNA sample
 		GeneticAnalysisInitalizationError,
 		/// Customer eth address not found
@@ -246,6 +271,10 @@ pub mod pallet {
 		SellerEthAddressNotFound,
 		/// GeneticAnalystService Price Index not found
 		PriceIndexNotFound,
+		// Bad signature
+		BadSignature,
+		/// Insufficient pallet funds
+		InsufficientPalletFunds,
 	}
 
 	#[pallet::call]
@@ -437,6 +466,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		let price_by_currency = &prices_by_currency[price_index as usize];
 
+		let total_price = &price_by_currency.total_price;
 		let currency = &price_by_currency.currency;
 		let prices = &price_by_currency.price_components;
 		let additional_prices = &price_by_currency.additional_prices;
@@ -465,6 +495,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			currency.clone(),
 			prices.clone(),
 			additional_prices.clone(),
+			total_price.clone(),
 			now,
 		);
 		Self::insert_genetic_analysis_order_to_storage(&genetic_analysis_order);
@@ -516,13 +547,35 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalysisOrderNotFound)
 		}
 
-		Ok(genetic_analysis_order.unwrap())
+		let genetic_analysis_order = genetic_analysis_order.unwrap();
+		if !Self::is_balance_sufficient_for_payment(&genetic_analysis_order.customer_id, genetic_analysis_order.total_price) {
+			return Err(Error::<T>::InsufficientFunds)
+		}
+
+		match CurrencyOf::<T>::withdraw(
+			&genetic_analysis_order.customer_id,
+			genetic_analysis_order.total_price,
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		) {
+			Ok(imb) => {
+				CurrencyOf::<T>::resolve_creating(&Self::account_id(), imb);
+				Self::set_escrow_amount();
+			},
+			_ => return Err(Error::<T>::BadSignature),
+		}
+
+		Ok(genetic_analysis_order)
 	}
 
 	fn fulfill_genetic_analysis_order(
 		seller_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
+		if seller_id.clone() != EscrowKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
 		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id);
 		if genetic_analysis_order.is_none() {
 			return Err(Error::<T>::GeneticAnalysisOrderNotFound)
@@ -539,6 +592,23 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		);
 		if !genetic_analysis.unwrap().process_success() {
 			return Err(Error::<T>::GeneticAnalysisNotSuccessfullyProcessed)
+		}
+
+		if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price) {
+			return Err(Error::<T>::InsufficientPalletFunds)
+		}
+
+		match CurrencyOf::<T>::withdraw(
+			&Self::account_id(),
+			genetic_analysis_order.total_price,
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		) {
+			Ok(imb) => {
+				CurrencyOf::<T>::resolve_creating(&genetic_analysis_order.seller_id, imb);
+				Self::set_escrow_amount();
+			},
+			_ => return Err(Error::<T>::BadSignature),
 		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -563,9 +633,27 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		}
 
 		let genetic_analysis_order_can_be_refunded =
-			Self::genetic_analysis_order_can_be_refunded(genetic_analysis_order.unwrap());
+			Self::genetic_analysis_order_can_be_refunded(genetic_analysis_order.clone().unwrap());
 		if !genetic_analysis_order_can_be_refunded {
 			return Err(Error::<T>::GeneticAnalysisOrderNotYetExpired)
+		}
+
+		let genetic_analysis_order = genetic_analysis_order.unwrap();
+		if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price) {
+			return Err(Error::<T>::InsufficientPalletFunds)
+		}
+
+		match CurrencyOf::<T>::withdraw(
+			&Self::account_id(),
+			genetic_analysis_order.total_price,
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		) {
+			Ok(imb) => {
+				CurrencyOf::<T>::resolve_creating(&genetic_analysis_order.customer_id, imb);
+				Self::set_escrow_amount();
+			},
+			_ => return Err(Error::<T>::BadSignature),
 		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -588,8 +676,6 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		Ok(())
 	}
 }
-
-use frame_support::{sp_runtime::traits::Hash, sp_std::convert::TryInto};
 
 impl<T: Config> Pallet<T> {
 	pub fn generate_genetic_analysis_order_id(
@@ -712,6 +798,37 @@ impl<T: Config> Pallet<T> {
 			return false
 		}
 		true
+	}
+
+	/// The account ID that holds the funds
+	pub fn account_id() -> AccountIdOf<T> {
+		T::PalletId::get().into_account()
+	}
+
+	/// Payment
+	pub fn make_payment(account_id: &AccountIdOf<T>, balance: BalanceOf<T>) -> BalanceOf<T> {
+		let _ = T::Currency::transfer(account_id, &Self::account_id(), balance, ExistenceRequirement::AllowDeath);
+		Self::set_escrow_amount();
+		balance
+	}
+
+	/// Is the balance sufficient for payment
+	pub fn is_balance_sufficient_for_payment(account_id: &AccountIdOf<T>, price: BalanceOf<T>) -> bool {
+		let balance = T::Currency::free_balance(account_id);
+		balance >= price
+	}
+
+	/// Is the pallet balance sufficient for transfer
+	pub fn is_pallet_balance_sufficient_for_transfer(price: BalanceOf<T>) -> bool {
+		let balance = T::Currency::free_balance(&Self::account_id());
+		balance >= price
+	}
+
+	/// Set current escrow amount
+	pub fn set_escrow_amount() {
+		TotalEscrowAmount::<T>::put(
+			T::Currency::free_balance(&Self::account_id())
+		);
 	}
 }
 

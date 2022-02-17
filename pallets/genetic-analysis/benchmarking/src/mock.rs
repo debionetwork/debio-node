@@ -68,6 +68,7 @@ type Balance = u64;
 
 parameter_types! {
 	pub const ExistentialDeposit: Balance = 10;
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_balances::Config for Test {
@@ -124,6 +125,7 @@ impl genetic_analysis_orders::Config for Test {
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
 impl user_profile::Config for Test {
