@@ -1112,7 +1112,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, frame_system, SystemBench::<Runtime>);
 			list_benchmark!(list, extra, pallet_balances, Balances);
 			list_benchmark!(list, extra, pallet_timestamp, Timestamp);
-			list_benchmark!(list, extra, pallet_assets, Assets);
+			list_benchmark!(list, extra, pallet_assets::Instance1, OctopusAssets);
 			list_benchmark!(list, extra, pallet_babe, Babe);
 			list_benchmark!(list, extra, pallet_grandpa, Grandpa);
 			list_benchmark!(list, extra, pallet_im_online, ImOnline);
@@ -1192,7 +1192,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
 			add_benchmark!(params, batches, pallet_balances, Balances);
 			add_benchmark!(params, batches, pallet_timestamp, Timestamp);
-			add_benchmark!(params, batches, pallet_assets, Assets);
+			add_benchmark!(params, batches, pallet_assets::Instance1, OctopusAssets);
 			add_benchmark!(params, batches, pallet_babe, Babe);
 			add_benchmark!(params, batches, pallet_grandpa, Grandpa);
 			add_benchmark!(params, batches, pallet_im_online, ImOnline);
