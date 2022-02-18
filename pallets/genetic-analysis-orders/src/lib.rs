@@ -530,10 +530,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::Unauthorized)
 		}
 
-		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
-			genetic_analysis_order_id,
-			GeneticAnalysisOrderStatus::Paid,
-		);
+		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id);
 		if genetic_analysis_order.is_none() {
 			return Err(Error::<T>::GeneticAnalysisOrderNotFound)
 		}
@@ -559,7 +556,12 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			_ => return Err(Error::<T>::BadSignature),
 		}
 
-		Ok(genetic_analysis_order)
+		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
+			genetic_analysis_order_id,
+			GeneticAnalysisOrderStatus::Paid,
+		);
+
+		Ok(genetic_analysis_order.unwrap())
 	}
 
 	fn fulfill_genetic_analysis_order(
