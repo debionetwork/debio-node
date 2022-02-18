@@ -507,7 +507,6 @@ fn genesis(
 		grandpa: Default::default(),
 		im_online: Default::default(),
 		beefy: Default::default(),
-		assets: Default::default(),
 		balances: BalancesConfig {
 			balances: endowed_accounts.iter().map(|x| (x.0.clone(), x.1)).collect(),
 		},
@@ -536,6 +535,7 @@ fn genesis(
 			validators: initial_authorities.iter().map(|x| (x.0.clone(), x.6)).collect(),
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
+		octopus_assets: Default::default(),
 		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
 		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },

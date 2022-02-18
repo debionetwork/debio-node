@@ -79,6 +79,9 @@ pub type Index = u32;
 /// A hash of some data used by the chain.
 pub type Hash = sp_core::H256;
 
+pub type OctopusAssetId = u32;
+pub type OctopusAssetBalance = u128;
+
 // Weights used in the runtime.
 mod weights;
 
@@ -144,7 +147,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 114,
+	spec_version: 115,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -521,10 +524,10 @@ parameter_types! {
 	pub const MetadataDepositPerByte: Balance = currency::DOLLARS;
 }
 
-impl pallet_assets::Config for Runtime {
+impl pallet_assets::Config<pallet_assets::Instance1> for Runtime {
 	type Event = Event;
-	type Balance = u128;
-	type AssetId = u32;
+	type Balance = OctopusAssetBalance;
+	type AssetId = OctopusAssetId;
 	type Currency = Balances;
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
@@ -589,7 +592,10 @@ impl pallet_octopus_appchain::Config for Runtime {
 	type LposInterface = OctopusLpos;
 	type UpwardMessagesInterface = OctopusUpwardMessages;
 	type Currency = Balances;
-	type Assets = Assets;
+	type Assets = OctopusAssets;
+	type AssetBalance = OctopusAssetBalance;
+	type AssetId = OctopusAssetId;
+	type AssetIdByName = OctopusAppchain;
 	type GracePeriod = GracePeriod;
 	type UnsignedPriority = UnsignedPriority;
 	type RequestEventLimit = RequestEventLimit;
@@ -805,7 +811,7 @@ construct_runtime!(
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>},
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
 		Historical: pallet_session_historical::{Pallet},
-		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
+		OctopusAssets: pallet_assets::<Instance1>::{Pallet, Call, Storage, Event<T>, Config<T>},
 		Mmr: pallet_mmr::{Pallet, Storage},
 		Beefy: pallet_beefy::{Pallet, Config<T>, Storage},
 		MmrLeaf: pallet_beefy_mmr::{Pallet, Storage},
