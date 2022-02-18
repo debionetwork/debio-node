@@ -2,8 +2,8 @@ use crate::{mock::*, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrde
 use frame_support::{
 	assert_noop, assert_ok,
 	sp_runtime::{
-		SaturatedConversion,
 		traits::{Hash, Keccak256},
+		SaturatedConversion,
 	},
 };
 use frame_system::RawOrigin;
@@ -12,7 +12,7 @@ use genetic_analyst_services::GeneticAnalystServiceInfo;
 use genetic_analysts::GeneticAnalystInfo;
 
 use primitives_duration::ExpectedDuration;
-use primitives_price_and_currency::{Price, CurrencyType, PriceByCurrency};
+use primitives_price_and_currency::{CurrencyType, Price, PriceByCurrency};
 
 #[test]
 fn create_genetic_analysis_order() {
@@ -204,7 +204,7 @@ fn set_genetic_analysis_order_paid_works() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into()
+			value: 5u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
@@ -259,7 +259,7 @@ fn set_genetic_analysis_order_paid_works() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5000000000000000000u128.saturated_into()
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
@@ -282,9 +282,9 @@ fn set_genetic_analysis_order_paid_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				currency: _price_by_currency.currency,
-				prices:_price_by_currency.price_components,
-				additional_prices:_price_by_currency.additional_prices,
-				total_price:_price_by_currency.total_price,
+				prices: _price_by_currency.price_components,
+				additional_prices: _price_by_currency.additional_prices,
+				total_price: _price_by_currency.total_price,
 				status: GeneticAnalysisOrderStatus::Paid,
 				created_at: 0,
 				updated_at: 0
@@ -793,21 +793,19 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into()
+			value: 5u128.saturated_into(),
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 			Origin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-				prices_by_currency: vec![
-					PriceByCurrency {
-						currency: CurrencyType::default(),
-						total_price: 10u128.saturated_into(),
-						price_components: vec![_price.clone()],
-						additional_prices: vec![_price],
-					}
-				],
+				prices_by_currency: vec![PriceByCurrency {
+					currency: CurrencyType::default(),
+					total_price: 10u128.saturated_into(),
+					price_components: vec![_price.clone()],
+					additional_prices: vec![_price],
+				}],
 				expected_duration: ExpectedDuration::default(),
 				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
@@ -874,7 +872,7 @@ fn cant_set_genetic_analysis_order_paid_when_not_exist() {
 fn cant_fulfill_genetic_analysis_order_when_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
-		
+
 		EscrowKey::<Test>::put(1);
 
 		assert_noop!(
@@ -955,7 +953,7 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
-		
+
 		EscrowKey::<Test>::put(1);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(

@@ -3,15 +3,12 @@
 use frame_support::{
 	codec::{Decode, Encode},
 	pallet_prelude::*,
-	traits::Currency,
 	sp_runtime::SaturatedConversion,
+	traits::Currency,
 };
 pub use pallet::*;
 use primitives_duration::ExpectedDuration;
-use primitives_price_and_currency::{
-	PriceByCurrency,
-	CurrencyType,
-};
+use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
 pub use scale_info::TypeInfo;
 use traits_genetic_analyst_services::{
 	GeneticAnalystServiceInfo as GeneticAnalystServiceInfoT, GeneticAnalystServiceOwner,
@@ -275,33 +272,35 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 			genetic_analyst_service_info.prices_by_currency.iter().enumerate()
 		{
 			// Remove total price before sum
-			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price = 0u128.saturated_into();
+			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price =
+				0u128.saturated_into();
 
 			for (pc_idx, price_component) in price_by_currency.price_components.iter().enumerate() {
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					price_component.value;
 
 				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx]
-						.price_components[pc_idx]
+					genetic_analyst_service_info_mut.prices_by_currency[idx].price_components
+						[pc_idx]
 						.value *= Self::get_1_dbio();
 				}
 			}
 
-			for (ap_idx, additional_price) in price_by_currency.additional_prices.iter().enumerate() {
+			for (ap_idx, additional_price) in price_by_currency.additional_prices.iter().enumerate()
+			{
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					additional_price.value;
 
 				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx]
-						.additional_prices[ap_idx]
+					genetic_analyst_service_info_mut.prices_by_currency[idx].additional_prices
+						[ap_idx]
 						.value *= Self::get_1_dbio();
 				}
 			}
 
 			if price_by_currency.currency == CurrencyType::DBIO {
-				genetic_analyst_service_info_mut.prices_by_currency[idx]
-					.total_price *= Self::get_1_dbio();
+				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price *=
+					Self::get_1_dbio();
 			}
 		}
 
@@ -346,33 +345,35 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 			genetic_analyst_service_info.prices_by_currency.iter().enumerate()
 		{
 			// Remove total price before sum
-			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price = 0u128.saturated_into();
+			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price =
+				0u128.saturated_into();
 
 			for (pc_idx, price_component) in price_by_currency.price_components.iter().enumerate() {
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					price_component.value;
 
 				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx]
-						.price_components[pc_idx]
+					genetic_analyst_service_info_mut.prices_by_currency[idx].price_components
+						[pc_idx]
 						.value *= Self::get_1_dbio();
 				}
 			}
 
-			for (ap_idx, additional_price) in price_by_currency.additional_prices.iter().enumerate() {
+			for (ap_idx, additional_price) in price_by_currency.additional_prices.iter().enumerate()
+			{
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					additional_price.value;
 
 				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx]
-						.additional_prices[ap_idx]
+					genetic_analyst_service_info_mut.prices_by_currency[idx].additional_prices
+						[ap_idx]
 						.value *= Self::get_1_dbio();
 				}
 			}
 
 			if price_by_currency.currency == CurrencyType::DBIO {
-				genetic_analyst_service_info_mut.prices_by_currency[idx]
-					.total_price *= Self::get_1_dbio();
+				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price *=
+					Self::get_1_dbio();
 			}
 		}
 

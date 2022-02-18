@@ -7,17 +7,10 @@ use interface::GeneticAnalysisOrderInterface;
 use frame_support::{
 	codec::{Decode, Encode},
 	pallet_prelude::*,
-	PalletId,
-	sp_runtime::traits::{
-		Hash,
-		AccountIdConversion,
-	}, 
+	sp_runtime::traits::{AccountIdConversion, Hash},
 	sp_std::convert::TryInto,
-	traits::{
-		Currency,
-		WithdrawReasons,
-		ExistenceRequirement,
-	},
+	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	PalletId,
 };
 pub use pallet::*;
 use primitives_price_and_currency::{CurrencyType, Price};
@@ -493,7 +486,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			currency.clone(),
 			prices.clone(),
 			additional_prices.clone(),
-			total_price.clone(),
+			*total_price,
 			now,
 		);
 		Self::insert_genetic_analysis_order_to_storage(&genetic_analysis_order);
@@ -546,7 +539,10 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		}
 
 		let genetic_analysis_order = genetic_analysis_order.unwrap();
-		if !Self::is_balance_sufficient_for_payment(&genetic_analysis_order.customer_id, genetic_analysis_order.total_price) {
+		if !Self::is_balance_sufficient_for_payment(
+			&genetic_analysis_order.customer_id,
+			genetic_analysis_order.total_price,
+		) {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 
@@ -801,13 +797,21 @@ impl<T: Config> Pallet<T> {
 
 	/// Payment
 	pub fn make_payment(account_id: &AccountIdOf<T>, balance: BalanceOf<T>) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(account_id, &Self::account_id(), balance, ExistenceRequirement::AllowDeath);
+		let _ = T::Currency::transfer(
+			account_id,
+			&Self::account_id(),
+			balance,
+			ExistenceRequirement::AllowDeath,
+		);
 		Self::set_escrow_amount();
 		balance
 	}
 
 	/// Is the balance sufficient for payment
-	pub fn is_balance_sufficient_for_payment(account_id: &AccountIdOf<T>, price: BalanceOf<T>) -> bool {
+	pub fn is_balance_sufficient_for_payment(
+		account_id: &AccountIdOf<T>,
+		price: BalanceOf<T>,
+	) -> bool {
 		let balance = T::Currency::free_balance(account_id);
 		balance >= price
 	}
@@ -820,9 +824,7 @@ impl<T: Config> Pallet<T> {
 
 	/// Set current escrow amount
 	pub fn set_escrow_amount() {
-		TotalEscrowAmount::<T>::put(
-			T::Currency::free_balance(&Self::account_id())
-		);
+		TotalEscrowAmount::<T>::put(T::Currency::free_balance(&Self::account_id()));
 	}
 }
 
