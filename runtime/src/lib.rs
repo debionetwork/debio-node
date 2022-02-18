@@ -650,6 +650,7 @@ impl labs::Config for Runtime {
 parameter_types! {
 	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl rewards::Config for Runtime {
@@ -780,6 +781,7 @@ impl genetic_analysis_orders::Config for Runtime {
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

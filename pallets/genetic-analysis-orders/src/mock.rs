@@ -84,11 +84,12 @@ impl pallet_timestamp::Config for Test {
 
 impl pallet_randomness_collective_flip::Config for Test {}
 
-type Balance = u64;
+type Balance = u128;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_balances::Config for Test {
@@ -148,6 +149,7 @@ impl genetic_analysis_orders::Config for Test {
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
@@ -160,7 +162,7 @@ impl user_profile::Config for Test {
 }
 
 pub struct ExternalityBuilder {
-	existential_deposit: u64,
+	existential_deposit: u128,
 }
 
 impl Default for ExternalityBuilder {
@@ -170,7 +172,7 @@ impl Default for ExternalityBuilder {
 }
 
 impl ExternalityBuilder {
-	pub fn existential_deposit(mut self, existential_deposit: u64) -> Self {
+	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
 		self.existential_deposit = existential_deposit;
 		self
 	}
