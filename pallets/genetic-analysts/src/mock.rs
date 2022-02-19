@@ -113,7 +113,7 @@ impl user_profile::Config for Test {
 	type WeightInfo = ();
 }
 
-type Balance = u64;
+type Balance = u128;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
@@ -133,11 +133,32 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-pub struct ExternalityBuilder;
+pub struct ExternalityBuilder {
+	existential_deposit: u128,
+}
+
+impl Default for ExternalityBuilder {
+	fn default() -> Self {
+		Self { existential_deposit: 1 }
+	}
+}
 
 impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
+		self.existential_deposit = existential_deposit;
+		self
+	}
+	pub fn set_associated_consts(&self) {
+		EXISTENTIAL_DEPOSIT.with(|v| *v.borrow_mut() = self.existential_deposit);
+	}
+	pub fn build(&self) -> TestExternalities {
+		self.set_associated_consts();
+		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
+			.assimilate_storage(&mut storage)
+			.unwrap();
+		let mut ext = sp_io::TestExternalities::new(storage);
+		ext.execute_with(|| System::set_block_number(1));
+		ext
 	}
 }

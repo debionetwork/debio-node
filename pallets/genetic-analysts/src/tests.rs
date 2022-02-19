@@ -1,5 +1,6 @@
 use crate::{
-	mock::*, Error, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey, StakeStatus,
+	mock::*, Error, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey, PalletAccount,
+	StakeStatus,
 };
 use frame_support::{assert_noop, assert_ok, sp_runtime::SaturatedConversion};
 use frame_system::RawOrigin;
@@ -7,7 +8,7 @@ use primitives_verification_status::VerificationStatus;
 
 #[test]
 fn register_genetic_analyst_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -67,7 +68,7 @@ fn register_genetic_analyst_works() {
 
 #[test]
 fn update_genetic_analyst_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -150,7 +151,7 @@ fn update_genetic_analyst_works() {
 
 #[test]
 fn deregister_genetic_analyst_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -176,7 +177,7 @@ fn deregister_genetic_analyst_works() {
 
 #[test]
 fn cant_register_genetic_analyst_when_already_exist() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -214,7 +215,7 @@ fn cant_register_genetic_analyst_when_already_exist() {
 
 #[test]
 fn cant_update_and_deregister_genetic_analyst_when_not_exist() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_noop!(
 			GeneticAnalysts::update_genetic_analyst(
 				Origin::signed(1),
@@ -242,7 +243,7 @@ fn cant_update_and_deregister_genetic_analyst_when_not_exist() {
 
 #[test]
 fn call_event_should_work() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		System::set_block_number(1);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
@@ -354,7 +355,7 @@ fn call_event_should_work() {
 
 #[test]
 fn update_genetic_analyst_verification_status_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
 			1,
@@ -414,7 +415,7 @@ fn update_genetic_analyst_verification_status_works() {
 
 #[test]
 fn update_genetic_analyst_verification_status_reject_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
 			1,
@@ -438,6 +439,11 @@ fn update_genetic_analyst_verification_status_reject_works() {
 		));
 
 		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+			Origin::signed(2),
+			0u128.saturated_into(),
+		));
 
 		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
 
@@ -473,8 +479,8 @@ fn update_genetic_analyst_verification_status_reject_works() {
 }
 
 #[test]
-fn cant_update_genetic_analyst_verification_status_reject_unstaked() {
-	ExternalityBuilder::build().execute_with(|| {
+fn cant_update_genetic_analyst_verification_status_when_is_not_staked() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -528,7 +534,7 @@ fn cant_update_genetic_analyst_verification_status_reject_unstaked() {
 
 #[test]
 fn cant_update_genetic_analyst_verification_status_when_not_admin() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -557,7 +563,7 @@ fn cant_update_genetic_analyst_verification_status_when_not_admin() {
 
 #[test]
 fn cant_update_genetic_analyst_verification_status_when_not_exist() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		GeneticAnalystVerifierKey::<Test>::put(2);
 
 		assert_noop!(
@@ -572,8 +578,55 @@ fn cant_update_genetic_analyst_verification_status_when_not_exist() {
 }
 
 #[test]
+fn cant_update_genetic_analyst_verification_status_when_bad_signature() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			PalletAccount::<Test>::get(),
+			0u128.saturated_into(),
+			0
+		));
+
+		assert_noop!(
+			GeneticAnalysts::update_genetic_analyst_verification_status(
+				Origin::signed(2),
+				1,
+				VerificationStatus::Rejected,
+			),
+			Error::<Test>::BadSignature
+		);
+	})
+}
+
+#[test]
 fn stake_genetic_analyst_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
 			1,
@@ -611,7 +664,7 @@ fn stake_genetic_analyst_works() {
 				account_id: 1,
 				services: Vec::new(),
 				qualifications: Vec::new(),
-				stake_amount: 50000000000000000000000u128.saturated_into(),
+				stake_amount: 60000000000000000000000u128.saturated_into(),
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
@@ -632,7 +685,7 @@ fn stake_genetic_analyst_works() {
 
 #[test]
 fn cant_stake_genetic_analyst_when_not_exist() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_noop!(
 			GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
 			Error::<Test>::GeneticAnalystDoesNotExist
@@ -642,7 +695,7 @@ fn cant_stake_genetic_analyst_when_not_exist() {
 
 #[test]
 fn cant_stake_genetic_analyst_when_insufficient_funds() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -690,7 +743,7 @@ fn cant_stake_genetic_analyst_when_insufficient_funds() {
 
 #[test]
 fn cant_stake_genetic_analyst_when_already_staked() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
 			1,
@@ -747,7 +800,7 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 
 #[test]
 fn update_minimum_stake_amount_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		GeneticAnalystVerifierKey::<Test>::put(2);
 
 		assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
@@ -764,7 +817,7 @@ fn update_minimum_stake_amount_works() {
 
 #[test]
 fn update_admin_key_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		GeneticAnalystVerifierKey::<Test>::put(2);
 
 		assert_eq!(GeneticAnalysts::admin_key(), 2);
@@ -777,7 +830,7 @@ fn update_admin_key_works() {
 
 #[test]
 fn sudo_update_admin_key_works() {
-	ExternalityBuilder::build().execute_with(|| {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysts::sudo_update_admin_key(Origin::root(), 1));
 
 		assert_eq!(GeneticAnalysts::admin_key(), 1);

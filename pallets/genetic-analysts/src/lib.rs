@@ -532,14 +532,13 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		}
 
 		if status.is_rejected() {
-			let refund_amount = genetic_analyst.stake_amount.saturated_into();
-			if !Self::is_pallet_balance_sufficient_for_refund(refund_amount) {
+			if !Self::is_pallet_balance_sufficient_for_refund(genetic_analyst.stake_amount) {
 				return Err(Error::<T>::InsufficientPalletFunds)
 			}
 
 			match CurrencyOf::<T>::withdraw(
 				&Self::account_id(),
-				refund_amount,
+				genetic_analyst.stake_amount,
 				WithdrawReasons::TRANSFER,
 				ExistenceRequirement::KeepAlive,
 			) {
