@@ -201,6 +201,7 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			EscrowKey::<T>::put(&self.escrow_key);
+			PalletAccount::<T>::put(<Pallet<T>>::account_id());
 		}
 	}
 	// ----------------------------------------
