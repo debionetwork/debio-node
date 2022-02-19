@@ -1,4 +1,6 @@
-use crate::{mock::*, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrderStatus, PalletAccount};
+use crate::{
+	mock::*, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrderStatus, PalletAccount,
+};
 use frame_support::{
 	assert_noop, assert_ok,
 	sp_runtime::{

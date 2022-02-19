@@ -1,5 +1,6 @@
 use crate::{
-	mock::*, Error, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey, StakeStatus, PalletAccount,
+	mock::*, Error, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey, PalletAccount,
+	StakeStatus,
 };
 use frame_support::{assert_noop, assert_ok, sp_runtime::SaturatedConversion};
 use frame_system::RawOrigin;
