@@ -8,7 +8,7 @@ use frame_support::{
 };
 pub use pallet::*;
 use primitives_duration::ExpectedDuration;
-use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
+use primitives_price_and_currency::PriceByCurrency;
 pub use scale_info::TypeInfo;
 use traits_genetic_analyst_services::{
 	GeneticAnalystServiceInfo as GeneticAnalystServiceInfoT, GeneticAnalystServiceOwner,
@@ -275,32 +275,14 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price =
 				0u128.saturated_into();
 
-			for (pc_idx, price_component) in price_by_currency.price_components.iter().enumerate() {
+			for price_component in price_by_currency.price_components.iter() {
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					price_component.value;
-
-				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx].price_components
-						[pc_idx]
-						.value *= Self::get_1_dbio();
-				}
 			}
 
-			for (ap_idx, additional_price) in price_by_currency.additional_prices.iter().enumerate()
-			{
+			for additional_price in price_by_currency.additional_prices.iter() {
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					additional_price.value;
-
-				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx].additional_prices
-						[ap_idx]
-						.value *= Self::get_1_dbio();
-				}
-			}
-
-			if price_by_currency.currency == CurrencyType::DBIO {
-				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price *=
-					Self::get_1_dbio();
 			}
 		}
 
@@ -348,32 +330,14 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price =
 				0u128.saturated_into();
 
-			for (pc_idx, price_component) in price_by_currency.price_components.iter().enumerate() {
+			for price_component in price_by_currency.price_components.iter() {
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					price_component.value;
-
-				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx].price_components
-						[pc_idx]
-						.value *= Self::get_1_dbio();
-				}
 			}
 
-			for (ap_idx, additional_price) in price_by_currency.additional_prices.iter().enumerate()
-			{
+			for additional_price in price_by_currency.additional_prices.iter() {
 				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
 					additional_price.value;
-
-				if price_by_currency.currency == CurrencyType::DBIO {
-					genetic_analyst_service_info_mut.prices_by_currency[idx].additional_prices
-						[ap_idx]
-						.value *= Self::get_1_dbio();
-				}
-			}
-
-			if price_by_currency.currency == CurrencyType::DBIO {
-				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price *=
-					Self::get_1_dbio();
 			}
 		}
 
@@ -459,11 +423,6 @@ impl<T: Config> Pallet<T> {
 			owner_id,
 			genetic_analyst_services_count - 1,
 		);
-	}
-
-	// 1 DBIO
-	pub fn get_1_dbio() -> BalanceOf<T> {
-		1000000000000000000u128.saturated_into()
 	}
 }
 
