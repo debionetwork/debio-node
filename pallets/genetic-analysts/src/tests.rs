@@ -2,7 +2,14 @@ use crate::{
 	mock::*, Error, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey, PalletAccount,
 	StakeStatus,
 };
-use frame_support::{assert_noop, assert_ok, sp_runtime::SaturatedConversion};
+use frame_support::{
+	assert_noop, 
+	assert_ok, 
+	sp_runtime::{
+		SaturatedConversion,
+		traits::{Hash, Keccak256},
+	}
+};
 use frame_system::RawOrigin;
 use primitives_verification_status::VerificationStatus;
 
@@ -12,6 +19,9 @@ fn register_genetic_analyst_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -34,6 +44,9 @@ fn register_genetic_analyst_works() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -50,6 +63,9 @@ fn register_genetic_analyst_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(2),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name 2".as_bytes().to_vec(),
 				last_name: "Last Name 2".as_bytes().to_vec(),
 				gender: "Gender 2".as_bytes().to_vec(),
@@ -72,6 +88,9 @@ fn update_genetic_analyst_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -94,6 +113,9 @@ fn update_genetic_analyst_works() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -110,6 +132,9 @@ fn update_genetic_analyst_works() {
 		assert_ok!(GeneticAnalysts::update_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name 2".as_bytes().to_vec(),
 				last_name: "Last Name 2".as_bytes().to_vec(),
 				gender: "Gender 2".as_bytes().to_vec(),
@@ -132,6 +157,9 @@ fn update_genetic_analyst_works() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name 2".as_bytes().to_vec(),
 					last_name: "Last Name 2".as_bytes().to_vec(),
 					gender: "Gender 2".as_bytes().to_vec(),
@@ -155,6 +183,9 @@ fn deregister_genetic_analyst_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -181,6 +212,9 @@ fn cant_register_genetic_analyst_when_already_exist() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -197,6 +231,9 @@ fn cant_register_genetic_analyst_when_already_exist() {
 			GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -220,6 +257,9 @@ fn cant_update_and_deregister_genetic_analyst_when_not_exist() {
 			GeneticAnalysts::update_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -249,6 +289,9 @@ fn call_event_should_work() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -270,6 +313,9 @@ fn call_event_should_work() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -287,6 +333,9 @@ fn call_event_should_work() {
 		assert_ok!(GeneticAnalysts::update_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name 2".as_bytes().to_vec(),
 				last_name: "Last Name 2".as_bytes().to_vec(),
 				gender: "Gender 2".as_bytes().to_vec(),
@@ -308,6 +357,9 @@ fn call_event_should_work() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name 2".as_bytes().to_vec(),
 					last_name: "Last Name 2".as_bytes().to_vec(),
 					gender: "Gender 2".as_bytes().to_vec(),
@@ -335,6 +387,9 @@ fn call_event_should_work() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name 2".as_bytes().to_vec(),
 					last_name: "Last Name 2".as_bytes().to_vec(),
 					gender: "Gender 2".as_bytes().to_vec(),
@@ -366,6 +421,9 @@ fn update_genetic_analyst_verification_status_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -398,6 +456,9 @@ fn update_genetic_analyst_verification_status_works() {
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::Verified,
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -426,6 +487,9 @@ fn update_genetic_analyst_verification_status_reject_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -463,6 +527,9 @@ fn update_genetic_analyst_verification_status_reject_works() {
 				stake_status: StakeStatus::Unstaked,
 				verification_status: VerificationStatus::Rejected,
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -484,6 +551,9 @@ fn cant_update_genetic_analyst_verification_status_when_is_not_staked() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -517,6 +587,9 @@ fn cant_update_genetic_analyst_verification_status_when_is_not_staked() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -538,6 +611,9 @@ fn cant_update_genetic_analyst_verification_status_when_not_admin() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -590,6 +666,9 @@ fn cant_update_genetic_analyst_verification_status_when_bad_signature() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -644,6 +723,9 @@ fn stake_genetic_analyst_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -668,6 +750,9 @@ fn stake_genetic_analyst_works() {
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -699,6 +784,9 @@ fn cant_stake_genetic_analyst_when_insufficient_funds() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -726,6 +814,9 @@ fn cant_stake_genetic_analyst_when_insufficient_funds() {
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -754,6 +845,9 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -778,6 +872,9 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::default(),
 				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),

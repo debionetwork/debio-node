@@ -10,6 +10,9 @@ use primitives_verification_status::VerificationStatus;
 benchmarks! {
 	register_genetic_analyst {
 		let genetic_analyst = GeneticAnalystInfo {
+			box_public_key: Keccak256::hash(
+				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+			),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -31,6 +34,9 @@ benchmarks! {
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
+			box_public_key: Keccak256::hash(
+				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+			),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -64,6 +70,9 @@ benchmarks! {
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
+			box_public_key: Keccak256::hash(
+				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+			),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -86,6 +95,9 @@ benchmarks! {
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
+			box_public_key: Keccak256::hash(
+				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+			),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -109,6 +121,9 @@ benchmarks! {
 		let _ = <T as pallet::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
 
 		let old_genetic_analyst = GeneticAnalystInfo {
+			box_public_key: Keccak256::hash(
+				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+			),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),

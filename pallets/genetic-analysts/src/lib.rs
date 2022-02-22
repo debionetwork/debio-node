@@ -61,7 +61,11 @@ impl StakeStatusTrait for StakeStatus {
 // GeneticAnalystInfo Struct
 // Used as parameter of dispatchable calls
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct GeneticAnalystInfo<Moment> {
+pub struct GeneticAnalystInfo<Hash, Moment>
+where
+	Hash: PartialEq + Eq,
+{
+	pub box_public_key: Hash,
 	pub first_name: Vec<u8>,
 	pub last_name: Vec<u8>,
 	pub gender: Vec<u8>,
@@ -83,7 +87,7 @@ where
 	pub account_id: AccountId,
 	pub services: Vec<Hash>,
 	pub qualifications: Vec<Hash>,
-	pub info: GeneticAnalystInfo<Moment>,
+	pub info: GeneticAnalystInfo<Hash, Moment>,
 	pub stake_amount: Balance,
 	pub stake_status: StakeStatus,
 	pub verification_status: VerificationStatus,
@@ -93,7 +97,7 @@ impl<AccountId, Hash, Moment, Balance: Default> GeneticAnalyst<AccountId, Hash, 
 where
 	Hash: PartialEq + Eq,
 {
-	pub fn new(account_id: AccountId, info: GeneticAnalystInfo<Moment>) -> Self {
+	pub fn new(account_id: AccountId, info: GeneticAnalystInfo<Hash, Moment>) -> Self {
 		Self {
 			account_id,
 			services: Vec::<Hash>::new(),
@@ -105,7 +109,7 @@ where
 		}
 	}
 
-	fn update_info(&mut self, info: GeneticAnalystInfo<Moment>) {
+	fn update_info(&mut self, info: GeneticAnalystInfo<Hash, Moment>) {
 		self.info = info;
 	}
 
@@ -326,7 +330,7 @@ pub mod pallet {
 		#[pallet::weight(T::GeneticAnalystWeightInfo::register_genetic_analyst())]
 		pub fn register_genetic_analyst(
 			origin: OriginFor<T>,
-			genetic_analyst_info: GeneticAnalystInfo<MomentOf<T>>,
+			genetic_analyst_info: GeneticAnalystInfo<HashOf<T>, MomentOf<T>>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -345,7 +349,7 @@ pub mod pallet {
 		#[pallet::weight(T::GeneticAnalystWeightInfo::update_genetic_analyst())]
 		pub fn update_genetic_analyst(
 			origin: OriginFor<T>,
-			genetic_analyst_info: GeneticAnalystInfo<MomentOf<T>>,
+			genetic_analyst_info: GeneticAnalystInfo<HashOf<T>, MomentOf<T>>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -472,7 +476,7 @@ pub mod pallet {
 impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type Balance = BalanceOf<T>;
-	type GeneticAnalystInfo = GeneticAnalystInfo<MomentOf<T>>;
+	type GeneticAnalystInfo = GeneticAnalystInfo<HashOf<T>, MomentOf<T>>;
 	type GeneticAnalyst = GeneticAnalystOf<T>;
 	type VerificationStatus = VerificationStatus;
 

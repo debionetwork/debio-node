@@ -21,6 +21,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -87,6 +90,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -171,6 +177,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -244,6 +253,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -284,6 +296,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -327,6 +342,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -389,6 +407,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -449,6 +470,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
@@ -477,6 +501,9 @@ mod tests {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
 					first_name: "First Name".as_bytes().to_vec(),
 					last_name: "Last Name".as_bytes().to_vec(),
 					gender: "Gender".as_bytes().to_vec(),
