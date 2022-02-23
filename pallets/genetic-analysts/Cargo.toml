@@ -30,6 +30,7 @@ primitives-verification-status = { path = '../../primitives/verification-status'
 primitives-availability-status = { path = '../../primitives/availability-status', default-features = false }
 
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
+traits-genetic-analysts = { path = './traits', default-features = false }
 traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications/traits', default-features = false }
 
@@ -61,6 +62,7 @@ std = [
     'primitives-availability-status/std',
 
     'traits-user-profile/std',
+    'traits-genetic-analysts/std',
     'traits-genetic-analyst-services/std',
     'traits-genetic-analyst-qualifications/std',
 

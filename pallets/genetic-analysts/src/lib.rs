@@ -30,6 +30,7 @@ use primitives_availability_status::{AvailabilityStatus, AvailabilityStatusTrait
 use primitives_verification_status::{VerificationStatus, VerificationStatusTrait};
 use traits_genetic_analyst_qualifications::GeneticAnalystQualificationOwnerInfo;
 use traits_genetic_analyst_services::GeneticAnalystServiceOwnerInfo;
+use traits_genetic_analysts::GeneticAnalystsProvider;
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum StakeStatus {
@@ -866,5 +867,14 @@ impl<T: Config> GeneticAnalystQualificationOwner<T> for Pallet<T> {
 				genetic_analyst.remove_qualification(*qualification_id);
 			},
 		});
+	}
+}
+
+/// GeneticAnalystsProvider Trait Implementation
+impl<T: Config> GeneticAnalystsProvider<T> for Pallet<T> {
+	fn is_genetic_analyst_available(id: &T::AccountId) -> Option<bool> {
+		let genetic_analyst =
+			<Self as GeneticAnalystInterface<T>>::genetic_analyst_by_account_id(id);
+		genetic_analyst.map(|genetic_analyst| genetic_analyst.is_available())
 	}
 }

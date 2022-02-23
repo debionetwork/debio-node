@@ -22,6 +22,7 @@ use traits_genetic_analysis_orders::{
 	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,
 };
 use traits_genetic_analyst_services::{GeneticAnalystServiceInfo, GeneticAnalystServicesProvider};
+use traits_genetic_analysts::GeneticAnalystsProvider;
 use traits_genetic_data::{GeneticData, GeneticDataProvider};
 pub use weights::WeightInfo;
 
@@ -124,6 +125,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type GeneticAnalysts: GeneticAnalystsProvider<Self>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticData: GeneticDataProvider<Self>;
 		type GeneticAnalysis: GeneticAnalysisProvider<Self>;
@@ -271,8 +273,8 @@ pub mod pallet {
 		SellerEthAddressNotFound,
 		/// GeneticAnalystService Price Index not found
 		PriceIndexNotFound,
-		// Bad signature
-		BadSignature,
+		// GeneticAnalyst is unavailable
+		GeneticAnalystUnavailable,
 		/// Insufficient pallet funds
 		InsufficientPalletFunds,
 	}
@@ -286,7 +288,7 @@ pub mod pallet {
 			service_id: T::Hash,
 			price_index: u32,
 			customer_box_public_key: T::Hash,
-            genetic_link: Vec<u8>,
+			genetic_link: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -438,10 +440,14 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		customer_box_public_key: &T::Hash,
 		genetic_link: &[u8],
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		let genetic_analyst_service =
-			T::GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst_service_id);
-		if genetic_analyst_service.is_none() {
-			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
+		let genetic_analyst_service = match T::GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst_service_id) {
+			Some(_genetic_analyst_service) => _genetic_analyst_service,
+			None => return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
+		};
+
+		let seller_id = genetic_analyst_service.get_owner_id();
+		if !T::GeneticAnalysts::is_genetic_analyst_available(seller_id).unwrap() { // If _bool is false, then genetic analyst is unavailable
+			return Err(Error::<T>::GeneticAnalystUnavailable)
 		}
 
 		let genetic_data = T::GeneticData::genetic_data_by_id(genetic_data_id);
@@ -454,13 +460,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::NotOwnerOfGeneticData)
 		}
 
-		let genetic_analyst_service = genetic_analyst_service.unwrap();
-		let genetic_analysis_order_id =
-			Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
-
-		let seller_id = genetic_analyst_service.get_owner_id();
 		let prices_by_currency = genetic_analyst_service.get_prices_by_currency();
-
 		if prices_by_currency.is_empty() ||
 			prices_by_currency.len() - 1 < price_index.try_into().unwrap()
 		{
@@ -477,6 +477,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 
 		// Initialize GeneticAnalysis
+		let genetic_analysis_order_id = Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
 		let genetic_analysis = T::GeneticAnalysis::register_genetic_analysis(
 			seller_id,
 			customer_id,
@@ -861,10 +862,10 @@ impl<T: Config> GeneticAnalysisOrderStatusUpdater<T> for Pallet<T> {
 			},
 		}
 	}
-	
+
 	fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_order_id_by_seller(
 		seller_id: &AccountIdOf<T>,
-		genetic_analysis_order_id: &HashOf<T>
+		genetic_analysis_order_id: &HashOf<T>,
 	) {
 		Self::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 			seller_id,

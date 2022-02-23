@@ -784,6 +784,7 @@ impl genetic_analysis_orders::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
