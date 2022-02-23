@@ -440,13 +440,16 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		customer_box_public_key: &T::Hash,
 		genetic_link: &[u8],
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		let genetic_analyst_service = match T::GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst_service_id) {
+		let genetic_analyst_service = match T::GeneticAnalystServices::genetic_analyst_service_by_id(
+			genetic_analyst_service_id,
+		) {
 			Some(_genetic_analyst_service) => _genetic_analyst_service,
-			None => return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
+			None => return Err(Error::<T>::GeneticAnalystServiceDoesNotExist),
 		};
 
 		let seller_id = genetic_analyst_service.get_owner_id();
-		if !T::GeneticAnalysts::is_genetic_analyst_available(seller_id).unwrap() { // If _bool is false, then genetic analyst is unavailable
+		if !T::GeneticAnalysts::is_genetic_analyst_available(seller_id).unwrap() {
+			// If _bool is false, then genetic analyst is unavailable
 			return Err(Error::<T>::GeneticAnalystUnavailable)
 		}
 
@@ -477,7 +480,8 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 
 		// Initialize GeneticAnalysis
-		let genetic_analysis_order_id = Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
+		let genetic_analysis_order_id =
+			Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
 		let genetic_analysis = T::GeneticAnalysis::register_genetic_analysis(
 			seller_id,
 			customer_id,

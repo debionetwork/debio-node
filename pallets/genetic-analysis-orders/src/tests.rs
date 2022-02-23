@@ -13,8 +13,8 @@ use genetic_analysis::GeneticAnalysisStatus;
 use genetic_analyst_services::GeneticAnalystServiceInfo;
 use genetic_analysts::GeneticAnalystInfo;
 
-use primitives_duration::ExpectedDuration;
 use primitives_availability_status::AvailabilityStatus;
+use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::{CurrencyType, Price, PriceByCurrency};
 
 #[test]
@@ -127,7 +127,7 @@ fn cancel_genetic_analysis_order_works() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -227,7 +227,7 @@ fn set_genetic_analysis_order_paid_works() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -350,7 +350,7 @@ fn fulfill_genetic_analysis_order_works() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -460,7 +460,7 @@ fn set_genetic_analysis_order_refunded_works() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -595,7 +595,7 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -720,7 +720,7 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -785,7 +785,7 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -863,7 +863,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -943,7 +943,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -1049,7 +1049,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -1167,7 +1167,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -1243,7 +1243,7 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -1380,7 +1380,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -1463,7 +1463,7 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available
@@ -1570,7 +1570,7 @@ fn call_event_should_work() {
 				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 			}
 		));
-		
+
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 			Origin::signed(1),
 			AvailabilityStatus::Available

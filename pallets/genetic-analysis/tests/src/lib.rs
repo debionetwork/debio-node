@@ -15,9 +15,9 @@ mod tests {
 
 	use traits_genetic_analysis::GeneticAnalysisTracking;
 
+	use primitives_availability_status::AvailabilityStatus;
 	use primitives_duration::ExpectedDuration;
 	use primitives_price_and_currency::PriceByCurrency;
-	use primitives_availability_status::AvailabilityStatus;
 	use primitives_tracking_id::TrackingId;
 
 	#[test]
@@ -40,7 +40,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -143,7 +143,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -222,7 +222,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -337,7 +337,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -438,7 +438,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -544,7 +544,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -622,7 +622,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -719,7 +719,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-			
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
@@ -795,7 +795,7 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
-		
+
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
 				Origin::signed(1),
 				AvailabilityStatus::Available
