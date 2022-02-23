@@ -23,6 +23,9 @@ fn create_genetic_analysis_order() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -102,6 +105,9 @@ fn cancel_genetic_analysis_order_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -192,6 +198,9 @@ fn set_genetic_analysis_order_paid_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -305,6 +314,9 @@ fn fulfill_genetic_analysis_order_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -405,6 +417,9 @@ fn set_genetic_analysis_order_refunded_works() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -529,6 +544,9 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -585,6 +603,9 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -641,6 +662,9 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -710,6 +734,9 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -781,6 +808,9 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -878,6 +908,9 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -962,6 +995,9 @@ fn cant_set_genetic_analysis_order_paid_when_bad_signature() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1071,6 +1107,9 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1138,6 +1177,9 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1243,6 +1285,9 @@ fn cant_fulfill_genetic_analysis_order_when_bad_signature() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1376,6 +1421,9 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1450,6 +1498,9 @@ fn cant_set_genetic_analysis_order_refunded_when_bad_signature() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1560,6 +1611,9 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
@@ -1658,6 +1712,9 @@ fn call_event_should_work() {
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
 				first_name: "First Name".as_bytes().to_vec(),
 				last_name: "Last Name".as_bytes().to_vec(),
 				gender: "Gender".as_bytes().to_vec(),
