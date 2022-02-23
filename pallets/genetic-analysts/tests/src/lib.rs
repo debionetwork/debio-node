@@ -17,7 +17,14 @@ mod tests {
 		},
 	};
 	use frame_system::RawOrigin;
+
+	use genetic_analysis::{GeneticAnalysisStatus, GeneticAnalysisTracking};
+	use genetic_analysis_orders::{GeneticAnalysisOrder, GeneticAnalysisOrderStatus};
+	use genetic_analyst_services::GeneticAnalystServiceInfo;
+
 	use primitives_availability_status::AvailabilityStatus;
+	use primitives_duration::ExpectedDuration;
+	use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
 	use primitives_verification_status::VerificationStatus;
 
 	#[test]
@@ -1091,7 +1098,7 @@ mod tests {
 	}
 
 	#[test]
-	fn update_genetic_analyst_availability_status_reject_works() {
+	fn update_genetic_analyst_availability_status_unavailable_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
@@ -1340,6 +1347,582 @@ mod tests {
 				GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),),
 				Error::<Test>::InsufficientPalletFunds
 			);
+		})
+	}
+
+	#[test]
+	fn cant_unstake_genetic_analyst_when_pending_order_exists() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+				Origin::signed(2),
+				0u128.saturated_into(),
+			));
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+				Origin::signed(1),
+				GeneticAnalystServiceInfo {
+					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+					prices_by_currency: vec![PriceByCurrency::default()],
+					expected_duration: ExpectedDuration::default(),
+					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
+				},
+			));
+
+			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+			let _add_genetic_data = GeneticData::add_genetic_data(
+				Origin::signed(1),
+				"DeBio Genetic Data".as_bytes().to_vec(),
+				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
+			);
+
+			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(1),
+				_genetic_data_ids[0],
+				_genetic_analyst.services[0],
+				0,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+			let _genetic_analysis =
+				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
+
+			assert_eq!(
+				GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
+				Some(GeneticAnalysisOrder {
+					id: _genetic_analysis_order_id,
+					genetic_data_id: _genetic_data_ids[0],
+					service_id: _genetic_analyst.services[0],
+					customer_id: 1,
+					customer_box_public_key: Keccak256::hash(
+						"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
+					),
+					seller_id: 1,
+					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
+					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					currency: CurrencyType::default(),
+					prices: PriceByCurrency::default().price_components,
+					additional_prices: PriceByCurrency::default().additional_prices,
+					total_price: PriceByCurrency::default().total_price,
+					status: GeneticAnalysisOrderStatus::default(),
+					created_at: 0,
+					updated_at: 0
+				})
+			);
+
+			assert_noop!(
+				GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),),
+				Error::<Test>::GeneticAnalystHasPendingOrders
+			);
+		})
+	}
+
+	#[test]
+	fn cant_update_genetic_analyst_availability_status_unavailable_when_pending_order_exists() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+				Origin::signed(2),
+				0u128.saturated_into(),
+			));
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+				Origin::signed(1),
+				GeneticAnalystServiceInfo {
+					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+					prices_by_currency: vec![PriceByCurrency::default()],
+					expected_duration: ExpectedDuration::default(),
+					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
+				},
+			));
+
+			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+			let _add_genetic_data = GeneticData::add_genetic_data(
+				Origin::signed(1),
+				"DeBio Genetic Data".as_bytes().to_vec(),
+				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
+			);
+
+			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(1),
+				_genetic_data_ids[0],
+				_genetic_analyst.services[0],
+				0,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+			let _genetic_analysis =
+				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
+
+			assert_eq!(
+				GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
+				Some(GeneticAnalysisOrder {
+					id: _genetic_analysis_order_id,
+					genetic_data_id: _genetic_data_ids[0],
+					service_id: _genetic_analyst.services[0],
+					customer_id: 1,
+					customer_box_public_key: Keccak256::hash(
+						"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
+					),
+					seller_id: 1,
+					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
+					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					currency: CurrencyType::default(),
+					prices: PriceByCurrency::default().price_components,
+					additional_prices: PriceByCurrency::default().additional_prices,
+					total_price: PriceByCurrency::default().total_price,
+					status: GeneticAnalysisOrderStatus::default(),
+					created_at: 0,
+					updated_at: 0
+				})
+			);
+
+			assert_noop!(
+				GeneticAnalysts::update_genetic_analyst_availability_status(
+					Origin::signed(1),
+					AvailabilityStatus::Unavailable,
+				),
+				Error::<Test>::GeneticAnalystHasPendingOrders
+			);
+		})
+	}
+
+	#[test]
+	fn cant_update_genetic_analyst_verification_status_reject_when_pending_order_exists() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+				Origin::signed(2),
+				0u128.saturated_into(),
+			));
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+				Origin::signed(1),
+				GeneticAnalystServiceInfo {
+					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+					prices_by_currency: vec![PriceByCurrency::default()],
+					expected_duration: ExpectedDuration::default(),
+					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
+				},
+			));
+
+			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+			let _add_genetic_data = GeneticData::add_genetic_data(
+				Origin::signed(1),
+				"DeBio Genetic Data".as_bytes().to_vec(),
+				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
+			);
+
+			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(1),
+				_genetic_data_ids[0],
+				_genetic_analyst.services[0],
+				0,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+			let _genetic_analysis =
+				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
+
+			assert_eq!(
+				GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
+				Some(GeneticAnalysisOrder {
+					id: _genetic_analysis_order_id,
+					genetic_data_id: _genetic_data_ids[0],
+					service_id: _genetic_analyst.services[0],
+					customer_id: 1,
+					customer_box_public_key: Keccak256::hash(
+						"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
+					),
+					seller_id: 1,
+					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
+					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					currency: CurrencyType::default(),
+					prices: PriceByCurrency::default().price_components,
+					additional_prices: PriceByCurrency::default().additional_prices,
+					total_price: PriceByCurrency::default().total_price,
+					status: GeneticAnalysisOrderStatus::default(),
+					created_at: 0,
+					updated_at: 0
+				})
+			);
+
+			assert_noop!(
+				GeneticAnalysts::update_genetic_analyst_verification_status(
+					Origin::signed(2),
+					1,
+					VerificationStatus::Rejected,
+				),
+				Error::<Test>::GeneticAnalystHasPendingOrders
+			);
+		})
+	}
+
+	#[test]
+	fn unstake_genetic_analyst_after_pending_order_is_rejected() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+				Origin::signed(2),
+				0u128.saturated_into(),
+			));
+
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+				Origin::signed(1),
+				GeneticAnalystServiceInfo {
+					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+					prices_by_currency: vec![PriceByCurrency::default()],
+					expected_duration: ExpectedDuration::default(),
+					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
+				},
+			));
+
+			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+			let _add_genetic_data = GeneticData::add_genetic_data(
+				Origin::signed(1),
+				"DeBio Genetic Data".as_bytes().to_vec(),
+				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
+			);
+
+			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(1),
+				_genetic_data_ids[0],
+				_genetic_analyst.services[0],
+				0,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			let _genetic_analysis =
+				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysis::reject_genetic_analysis(
+				Origin::signed(1),
+				_genetic_analysis[0].clone(),
+				"Reject DNA Title".as_bytes().to_vec(),
+				"Reject DNA Description".as_bytes().to_vec()
+			));
+
+			let _genetic_analysis_info =
+				GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(
+					_genetic_analysis[0].clone(),
+				)
+				.unwrap();
+
+			assert_eq!(
+				_genetic_analysis_info.get_genetic_analysis_tracking_id(),
+				&_genetic_analysis[0]
+			);
+			assert_eq!(_genetic_analysis_info.is_rejected(), true);
+
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+		})
+	}
+
+	#[test]
+	fn unstake_genetic_analyst_after_pending_order_is_result_ready() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+				Origin::signed(2),
+				0u128.saturated_into(),
+			));
+
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(UserProfile::set_eth_address(
+				Origin::signed(1),
+				EthereumAddress([b'X'; 20])
+			));
+
+			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
+				Origin::signed(1),
+				GeneticAnalystServiceInfo {
+					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+					prices_by_currency: vec![PriceByCurrency::default()],
+					expected_duration: ExpectedDuration::default(),
+					description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+					test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+						.as_bytes()
+						.to_vec(),
+				}
+			));
+
+			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
+
+			let _add_genetic_data = GeneticData::add_genetic_data(
+				Origin::signed(1),
+				"DeBio Genetic Data".as_bytes().to_vec(),
+				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
+				"DeBio Genetic Data Link".as_bytes().to_vec(),
+			);
+
+			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
+				Origin::signed(1),
+				_genetic_data_ids[0],
+				_genetic_analyst.services[0],
+				0,
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			));
+
+			let _genetic_analysis =
+				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysis::submit_genetic_analysis(
+				Origin::signed(1),
+				_genetic_analysis[0].clone(),
+				"Genetic Analysis report_link".as_bytes().to_vec(),
+				Some("Genetic Analysis comments".as_bytes().to_vec())
+			));
+
+			let _genetic_analysis_ =
+				GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(
+					_genetic_analysis[0].clone(),
+				)
+				.unwrap();
+
+			assert_eq!(
+				_genetic_analysis_.genetic_analysis_tracking_id,
+				_genetic_analysis[0].clone()
+			);
+			assert_eq!(_genetic_analysis_.genetic_analyst_id, 1);
+			assert_eq!(_genetic_analysis_.owner_id, 1);
+			assert_eq!(
+				_genetic_analysis_.comment,
+				Some("Genetic Analysis comments".as_bytes().to_vec())
+			);
+			assert_eq!(
+				_genetic_analysis_.report_link,
+				"Genetic Analysis report_link".as_bytes().to_vec()
+			);
+
+			assert_ok!(GeneticAnalysis::process_genetic_analysis(
+				Origin::signed(1),
+				_genetic_analysis[0].clone(),
+				GeneticAnalysisStatus::ResultReady
+			));
+
+			let _genetic_analysis_info =
+				GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(
+					_genetic_analysis[0].clone(),
+				)
+				.unwrap();
+
+			assert_eq!(
+				_genetic_analysis_info.get_genetic_analysis_tracking_id(),
+				&_genetic_analysis[0]
+			);
+			assert_eq!(_genetic_analysis_info.process_success(), true);
+
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
 		})
 	}
 }

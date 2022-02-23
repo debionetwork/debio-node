@@ -30,4 +30,5 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		account_id: &T::AccountId,
 		escrow_key: &T::AccountId,
 	) -> Result<(), Self::Error>;
+	fn is_pending_genetic_analysis_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool;
 }

@@ -2588,6 +2588,8 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-availability-status",
+ "primitives-duration",
+ "primitives-price-and-currency",
  "primitives-verification-status",
  "scale-info",
  "serde",

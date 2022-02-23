@@ -331,8 +331,8 @@ pub mod pallet {
 		GeneticAnalystIsNotStaked,
 		/// Unauthorized access to extrinsic
 		Unauthorized,
-		// Bad signature
-		BadSignature,
+		// GeneticAnalyst has pending orders
+		GeneticAnalystHasPendingOrders,
 	}
 
 	#[pallet::call]
@@ -584,6 +584,12 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		}
 
 		if status.is_rejected() {
+			if T::GeneticAnalysisOrders::is_pending_genetic_analysis_order_by_seller_exist(
+				account_id,
+			) {
+				return Err(Error::<T>::GeneticAnalystHasPendingOrders)
+			}
+
 			if !Self::is_pallet_balance_sufficient_for_refund(genetic_analyst.stake_amount) {
 				return Err(Error::<T>::InsufficientPalletFunds)
 			}
@@ -611,6 +617,13 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
 		if genetic_analyst == None {
 			return Err(Error::<T>::GeneticAnalystDoesNotExist)
+		}
+
+		if !status.is_available() &&
+			T::GeneticAnalysisOrders::is_pending_genetic_analysis_order_by_seller_exist(
+				account_id,
+			) {
+			return Err(Error::<T>::GeneticAnalystHasPendingOrders)
 		}
 
 		let mut genetic_analyst = genetic_analyst.unwrap();
@@ -663,6 +676,10 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		let mut genetic_analyst = genetic_analyst.unwrap();
 		if !genetic_analyst.stake_status.is_staked() {
 			return Err(Error::<T>::GeneticAnalystIsNotStaked)
+		}
+
+		if T::GeneticAnalysisOrders::is_pending_genetic_analysis_order_by_seller_exist(account_id) {
+			return Err(Error::<T>::GeneticAnalystHasPendingOrders)
 		}
 
 		if !Self::is_pallet_balance_sufficient_for_refund(genetic_analyst.stake_amount) {

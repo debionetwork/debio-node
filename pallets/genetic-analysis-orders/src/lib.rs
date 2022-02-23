@@ -664,6 +664,13 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		Ok(())
 	}
+
+	fn is_pending_genetic_analysis_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool {
+		match PendingGeneticAnalysisOrdersBySeller::<T>::get(account_id) {
+			Some(_arr) => !_arr.is_empty(),
+			None => false,
+		}
+	}
 }
 
 impl<T: Config> Pallet<T> {
@@ -867,7 +874,7 @@ impl<T: Config> GeneticAnalysisOrderStatusUpdater<T> for Pallet<T> {
 		}
 	}
 
-	fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_order_id_by_seller(
+	fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 		seller_id: &AccountIdOf<T>,
 		genetic_analysis_order_id: &HashOf<T>,
 	) {
@@ -875,5 +882,9 @@ impl<T: Config> GeneticAnalysisOrderStatusUpdater<T> for Pallet<T> {
 			seller_id,
 			genetic_analysis_order_id,
 		);
+	}
+
+	fn is_pending_genetic_analysis_order_by_seller_exist(seller_id: &AccountIdOf<T>) -> bool {
+		Self::is_pending_genetic_analysis_order_ids_by_seller_exist(seller_id)
 	}
 }

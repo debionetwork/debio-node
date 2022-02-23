@@ -31,6 +31,7 @@ frame_support::construct_runtime!(
 		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );

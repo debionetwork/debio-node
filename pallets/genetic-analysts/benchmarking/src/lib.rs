@@ -57,7 +57,7 @@ benchmarks! {
 			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
-		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, old_genetic_analyst);
 
 		let new_genetic_analyst = GeneticAnalystInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -96,7 +96,7 @@ benchmarks! {
 
 		let _ = <T as genetic_analysts::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
 
-		let _ = GeneticAnalysts::<T>::stake_genetic_analyst(caller_origin.clone());
+		let _ = GeneticAnalysts::<T>::stake_genetic_analyst(caller_origin);
 	}: update_genetic_analyst_verification_status(
 		RawOrigin::Signed(caller),
 		caller.clone(),
@@ -119,7 +119,7 @@ benchmarks! {
 			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
-		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
+		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, old_genetic_analyst);
 	}: update_genetic_analyst_availability_status(
 		RawOrigin::Signed(caller),
 		AvailabilityStatus::Available
@@ -142,7 +142,7 @@ benchmarks! {
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 
-		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, genetic_analyst);
 	}: deregister_genetic_analyst(
 		RawOrigin::Signed(caller)
 	)
@@ -165,7 +165,7 @@ benchmarks! {
 			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
-		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
+		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, old_genetic_analyst);
 	}: stake_genetic_analyst(
 		RawOrigin::Signed(caller)
 	)
@@ -190,7 +190,7 @@ benchmarks! {
 		};
 		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 
-		let _ = GeneticAnalysts::<T>::stake_genetic_analyst(caller_origin.clone());
+		let _ = GeneticAnalysts::<T>::stake_genetic_analyst(caller_origin);
 	}: unstake_genetic_analyst(
 		RawOrigin::Signed(caller)
 	)

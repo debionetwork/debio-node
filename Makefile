@@ -29,7 +29,7 @@ clean:
 	cargo +nightly clippy
 
 .PHONY: prepush
-clean:
+prepush:
 	cargo +nightly fmt
 	cargo +nightly clippy
 	.maintain/run-test-locally.sh
