@@ -21,10 +21,14 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
 
@@ -79,6 +83,8 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+impl pallet_randomness_collective_flip::Config for Test {}
+
 pub type Moment = u64;
 pub const MILLISECS_PER_BLOCK: Moment = 6000;
 pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
@@ -86,6 +92,7 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -100,11 +107,24 @@ impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_analysis::Config for Test {
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type GeneticAnalysisWeightInfo = ();
+}
+
+impl genetic_data::Config for Test {
+	type Event = Event;
+	type GeneticDataWeightInfo = ();
 }
 
 impl genetic_analyst_services::Config for Test {
@@ -118,6 +138,17 @@ impl genetic_analyst_qualifications::Config for Test {
 	type Event = Event;
 	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
+}
+
+impl genetic_analysis_orders::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
+	type GeneticAnalysis = GeneticAnalysis;
+	type GeneticAnalystServices = GeneticAnalystServices;
+	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]

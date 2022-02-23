@@ -748,6 +748,7 @@ impl genetic_analysts::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;

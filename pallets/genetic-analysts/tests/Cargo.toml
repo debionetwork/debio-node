@@ -1,39 +1,54 @@
 [package]
-name = "genetic-analyst-services-tests"
-version = "0.1.0"
-authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
-edition = "2018"
+name = 'genetic-analysts-tests'
+version = '0.1.0'
+repository = ''
+edition = '2018'
+authors = ['agustinustheoo <agustinustheoo@gmail.com>']
 description = ''
 homepage = ''
-license = 'Unlicense'
+license = 'AGPL-3.0'
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
 # alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
 [dependencies]
 # External Dependencies
-scale-info = { version = '1.0', default-features = false, features = ['derive'] }
-codec = { package = 'parity-scale-codec', version = '2.0.0', default-features = false, features = ['derive'] }
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 
 # Substrate packages
 ## Substrate Primitive Dependencies
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 ## Substrate Frame Dependencies
 frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
 
+primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
+primitives-availability-status = { path = '../../../primitives/availability-status', default-features = false }
+
+traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
+traits-genetic-analysts = { path = '../traits', default-features = false }
+traits-genetic-analysis-orders = { path = '../../genetic-analysis-orders/traits', default-features = false }
+traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
+traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
+
 ## Substrate Pallet Dependencies
-pallet-balances = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
-# Local Dependencies
+## Local Dependencies
 genetic-analysts = { path = '../../genetic-analysts', default-features = false }
 genetic-analyst-services = { path = '../../genetic-analyst-services', default-features = false }
 genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
@@ -42,44 +57,43 @@ genetic-analysis-orders = { path = '../../genetic-analysis-orders', default-feat
 genetic-data = { path = '../../genetic-data', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
-primitives-duration = { path = '../../../primitives/duration', default-features = false }
-primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
-
-traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
-traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
-
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 [features]
 default = ['std']
 std = [
     'codec/std',
-
-    'sp-io/std',
-    'sp-core/std',
-    'sp-runtime/std',
-
-    'frame-benchmarking/std',
+	'scale-info/std',
     'frame-support/std',
     'frame-system/std',
+    'sp-std/std',
+    'sp-io/std',
+    
+    'primitives-verification-status/std',
+    'primitives-availability-status/std',
+
+    'traits-user-profile/std',
+    'traits-genetic-analysts/std',
+    'traits-genetic-analysis-orders/std',
+    'traits-genetic-analyst-services/std',
+    'traits-genetic-analyst-qualifications/std',
 
 	'pallet-balances/std',
     'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
-
+    
     'genetic-analysts/std',
     'genetic-analyst-services/std',
 	'genetic-analyst-qualifications/std',
 	'genetic-analysis/std',
 	'genetic-analysis-orders/std',
 	'genetic-data/std',
-    'user-profile/std',
-    
-    'primitives-duration/std',
-    'primitives-price-and-currency/std',
-
-    'traits-genetic-analyst-services/std',
-    'traits-genetic-analyst-qualifications/std',
+	'user-profile/std',
 ]
-
+runtime-benchmarks = [
+	'frame-benchmarking'
+]
+try-runtime = ['frame-support/try-runtime']

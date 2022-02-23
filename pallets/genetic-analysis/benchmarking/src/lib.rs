@@ -43,9 +43,9 @@ use frame_system::RawOrigin;
 use genetic_analysis::Call;
 use sp_core::Decode;
 
+use primitives_availability_status::AvailabilityStatus;
 use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::PriceByCurrency;
-use primitives_availability_status::AvailabilityStatus;
 
 benchmarks! {
 	reject_genetic_analysis {

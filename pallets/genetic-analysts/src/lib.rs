@@ -9,15 +9,6 @@ pub use pallet::*;
 pub use scale_info::TypeInfo;
 pub use weights::WeightInfo;
 
-#[cfg(test)]
-mod mock;
-
-#[cfg(test)]
-mod tests;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
-
 pub mod interface;
 pub use crate::interface::GeneticAnalystInterface;
 use frame_support::{
@@ -28,6 +19,9 @@ use frame_support::{
 };
 use primitives_availability_status::{AvailabilityStatus, AvailabilityStatusTrait};
 use primitives_verification_status::{VerificationStatus, VerificationStatusTrait};
+pub use traits_genetic_analysis_orders::{
+	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,
+};
 use traits_genetic_analyst_qualifications::GeneticAnalystQualificationOwnerInfo;
 use traits_genetic_analyst_services::GeneticAnalystServiceOwnerInfo;
 use traits_genetic_analysts::GeneticAnalystsProvider;
@@ -191,6 +185,8 @@ pub mod pallet {
 		type Currency: Currency<Self::AccountId>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticAnalystQualifications: GeneticAnalystQualificationsProvider<Self>;
+		type GeneticAnalysisOrders: GeneticAnalysisOrderEventEmitter<Self>
+			+ GeneticAnalysisOrderStatusUpdater<Self>;
 		type EthereumAddress: Clone
 			+ Copy
 			+ PartialEq

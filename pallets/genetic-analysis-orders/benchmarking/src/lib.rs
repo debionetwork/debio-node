@@ -42,9 +42,9 @@ use frame_support::sp_runtime::traits::Hash;
 use frame_system::RawOrigin;
 use genetic_analysis_orders::Call;
 
+use primitives_availability_status::AvailabilityStatus;
 use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::PriceByCurrency;
-use primitives_availability_status::AvailabilityStatus;
 
 benchmarks! {
 	create_genetic_analysis_order {
