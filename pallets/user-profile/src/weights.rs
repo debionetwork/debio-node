@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// target/release/debio
+// ./target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -40,20 +40,20 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
 	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
 	fn set_eth_address() -> Weight {
-		25_058_000_u64
+		16_907_000_u64
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: UserProfile AdminKey (r:1 w:0)
 	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
 	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
 	fn admin_set_eth_address() -> Weight {
-		28_925_000_u64
+		19_946_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: UserProfile AdminKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		23_490_000_u64
+		16_725_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -64,20 +64,20 @@ impl WeightInfo for () {
 	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
 	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
 	fn set_eth_address() -> Weight {
-		25_058_000_u64
+		16_907_000_u64
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 	// Storage: UserProfile AdminKey (r:1 w:0)
 	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
 	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
 	fn admin_set_eth_address() -> Weight {
-		28_925_000_u64
+		19_946_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 	// Storage: UserProfile AdminKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		23_490_000_u64
+		16_725_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}

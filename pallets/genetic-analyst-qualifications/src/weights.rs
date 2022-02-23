@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// target/release/debio
+// ./target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -42,13 +42,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
 	fn create_qualification() -> Weight {
-		63_061_000_u64
+		37_815_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
 	fn update_qualification() -> Weight {
-		41_435_000_u64
+		24_831_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
 	fn delete_qualification() -> Weight {
-		70_696_000_u64
+		45_022_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -70,13 +70,13 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
 	fn create_qualification() -> Weight {
-		63_061_000_u64
+		37_815_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
 	fn update_qualification() -> Weight {
-		41_435_000_u64
+		24_831_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
 	fn delete_qualification() -> Weight {
-		70_696_000_u64
+		45_022_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
