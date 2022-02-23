@@ -3,12 +3,11 @@ use crate::{
 	StakeStatus,
 };
 use frame_support::{
-	assert_noop, 
-	assert_ok, 
+	assert_noop, assert_ok,
 	sp_runtime::{
-		SaturatedConversion,
 		traits::{Hash, Keccak256},
-	}
+		SaturatedConversion,
+	},
 };
 use frame_system::RawOrigin;
 use primitives_verification_status::VerificationStatus;
