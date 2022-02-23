@@ -46,33 +46,33 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	// Storage: GeneticAnalysts GeneticAnalystCount (r:1 w:1)
 	fn register_genetic_analyst() -> Weight {
-		24_207_000_u64
+		33_999_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst() -> Weight {
-		25_313_000_u64
+		34_650_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalystVerifierKey (r:1 w:0)
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst_verification_status() -> Weight {
-		26_353_000_u64
+		34_399_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst_availability_status() -> Weight {
-		23_467_000_u64
+		29_470_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	// Storage: GeneticAnalysts GeneticAnalystCount (r:1 w:1)
 	fn deregister_genetic_analyst() -> Weight {
-		30_176_000_u64
+		37_002_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
@@ -82,29 +82,30 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysts PalletAccount (r:1 w:0)
 	// Storage: GeneticAnalysts TotalStakedAmount (r:0 w:1)
 	fn stake_genetic_analyst() -> Weight {
-		74_011_000_u64
+		94_655_000_u64
 			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:0)
 	// Storage: GeneticAnalysts PalletAccount (r:1 w:0)
 	// Storage: System Account (r:2 w:2)
 	// Storage: GeneticAnalysts TotalStakedAmount (r:0 w:1)
 	fn unstake_genetic_analyst() -> Weight {
-		52_132_000_u64
-			.saturating_add(T::DbWeight::get().reads(4_u64))
+		78_492_000_u64
+			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalystVerifierKey (r:1 w:0)
 	// Storage: GeneticAnalysts MinimumStakeAmount (r:0 w:1)
 	fn update_minimum_stake_amount() -> Weight {
-		15_991_000_u64
+		20_303_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalystVerifierKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		17_599_000_u64
+		20_754_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -115,33 +116,33 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	// Storage: GeneticAnalysts GeneticAnalystCount (r:1 w:1)
 	fn register_genetic_analyst() -> Weight {
-		24_207_000_u64
+		33_999_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst() -> Weight {
-		25_313_000_u64
+		34_650_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalystVerifierKey (r:1 w:0)
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst_verification_status() -> Weight {
-		26_353_000_u64
+		34_399_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	fn update_genetic_analyst_availability_status() -> Weight {
-		23_467_000_u64
+		29_470_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
 	// Storage: GeneticAnalysts GeneticAnalystCount (r:1 w:1)
 	fn deregister_genetic_analyst() -> Weight {
-		30_176_000_u64
+		37_002_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
@@ -151,29 +152,30 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysts PalletAccount (r:1 w:0)
 	// Storage: GeneticAnalysts TotalStakedAmount (r:0 w:1)
 	fn stake_genetic_analyst() -> Weight {
-		74_011_000_u64
+		94_655_000_u64
 			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:0)
 	// Storage: GeneticAnalysts PalletAccount (r:1 w:0)
 	// Storage: System Account (r:2 w:2)
 	// Storage: GeneticAnalysts TotalStakedAmount (r:0 w:1)
 	fn unstake_genetic_analyst() -> Weight {
-		52_132_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64))
+		78_492_000_u64
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalystVerifierKey (r:1 w:0)
 	// Storage: GeneticAnalysts MinimumStakeAmount (r:0 w:1)
 	fn update_minimum_stake_amount() -> Weight {
-		15_991_000_u64
+		20_303_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysts GeneticAnalystVerifierKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		17_599_000_u64
+		20_754_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}

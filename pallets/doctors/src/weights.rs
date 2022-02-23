@@ -42,7 +42,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	fn register_doctor() -> Weight {
-		37_152_000_u64
+		66_331_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -50,7 +50,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2)
 	fn update_doctor() -> Weight {
-		54_855_000_u64
+		97_817_000_u64
 			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
@@ -59,7 +59,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	fn deregister_doctor() -> Weight {
-		44_537_000_u64
+		76_048_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -72,7 +72,7 @@ impl WeightInfo for () {
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	fn register_doctor() -> Weight {
-		37_152_000_u64
+		66_331_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
@@ -80,7 +80,7 @@ impl WeightInfo for () {
 	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2)
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2)
 	fn update_doctor() -> Weight {
-		54_855_000_u64
+		97_817_000_u64
 			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(5_u64))
 	}
@@ -89,7 +89,7 @@ impl WeightInfo for () {
 	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
 	// Storage: Doctors DoctorCount (r:1 w:1)
 	fn deregister_doctor() -> Weight {
-		44_537_000_u64
+		76_048_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

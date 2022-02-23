@@ -43,14 +43,14 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataById (r:0 w:1)
 	fn add_genetic_data() -> Weight {
-		37_596_000_u64
+		76_109_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticData GeneticDataById (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn update_genetic_data() -> Weight {
-		25_918_000_u64
+		31_251_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -59,7 +59,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
 	fn remove_genetic_data() -> Weight {
-		40_603_000_u64
+		47_950_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -73,14 +73,14 @@ impl WeightInfo for () {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataById (r:0 w:1)
 	fn add_genetic_data() -> Weight {
-		37_596_000_u64
+		76_109_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticData GeneticDataById (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn update_genetic_data() -> Weight {
-		25_918_000_u64
+		31_251_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -89,7 +89,7 @@ impl WeightInfo for () {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
 	fn remove_genetic_data() -> Weight {
-		40_603_000_u64
+		47_950_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

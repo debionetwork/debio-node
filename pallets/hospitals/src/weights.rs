@@ -42,7 +42,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	fn register_hospital() -> Weight {
-		41_593_000_u64
+		54_645_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -50,7 +50,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:2 w:2)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:2 w:2)
 	fn update_hospital() -> Weight {
-		62_599_000_u64
+		78_067_000_u64
 			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
@@ -59,7 +59,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	fn deregister_hospital() -> Weight {
-		48_330_000_u64
+		61_237_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -72,7 +72,7 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	fn register_hospital() -> Weight {
-		41_593_000_u64
+		54_645_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
@@ -80,7 +80,7 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:2 w:2)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:2 w:2)
 	fn update_hospital() -> Weight {
-		62_599_000_u64
+		78_067_000_u64
 			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(5_u64))
 	}
@@ -89,7 +89,7 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	fn deregister_hospital() -> Weight {
-		48_330_000_u64
+		61_237_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

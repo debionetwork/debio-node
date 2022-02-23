@@ -42,13 +42,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services Services (r:0 w:1)
 	fn create_service() -> Weight {
-		40_934_000_u64
+		60_904_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: Services Services (r:1 w:1)
 	fn update_service() -> Weight {
-		27_668_000_u64
+		40_503_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services ServicesCountByOwner (r:1 w:1)
 	fn delete_service() -> Weight {
-		49_730_000_u64
+		70_555_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -70,13 +70,13 @@ impl WeightInfo for () {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services Services (r:0 w:1)
 	fn create_service() -> Weight {
-		40_934_000_u64
+		60_904_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: Services Services (r:1 w:1)
 	fn update_service() -> Weight {
-		27_668_000_u64
+		40_503_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: Services ServicesCount (r:1 w:1)
 	// Storage: Services ServicesCountByOwner (r:1 w:1)
 	fn delete_service() -> Weight {
-		49_730_000_u64
+		70_555_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

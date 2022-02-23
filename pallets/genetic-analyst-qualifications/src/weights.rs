@@ -42,13 +42,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
 	fn create_qualification() -> Weight {
-		37_815_000_u64
+		52_756_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
 	fn update_qualification() -> Weight {
-		24_831_000_u64
+		33_993_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
 	fn delete_qualification() -> Weight {
-		45_022_000_u64
+		56_851_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -70,13 +70,13 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
 	fn create_qualification() -> Weight {
-		37_815_000_u64
+		52_756_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
 	fn update_qualification() -> Weight {
-		24_831_000_u64
+		33_993_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
 	fn delete_qualification() -> Weight {
-		45_022_000_u64
+		56_851_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
