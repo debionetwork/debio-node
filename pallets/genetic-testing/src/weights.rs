@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -43,14 +43,14 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Timestamp Now (r:1 w:0)
 	// Storage: Orders Orders (r:1 w:1)
 	fn reject_dna_sample() -> Weight {
-		64_300_000_u64
+		65_895_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticTesting DnaSamples (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn process_dna_sample() -> Weight {
-		16_328_000_u64
+		18_224_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -60,7 +60,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
 	fn submit_test_result() -> Weight {
-		54_000_000_u64
+		57_171_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -70,14 +70,14 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	fn submit_independent_test_result() -> Weight {
-		50_543_000_u64
+		54_000_000_u64
 			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1)
 	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1)
 	fn submit_data_bounty_details() -> Weight {
-		21_863_000_u64
+		24_043_000_u64
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 }
@@ -88,14 +88,14 @@ impl WeightInfo for () {
 	// Storage: Timestamp Now (r:1 w:0)
 	// Storage: Orders Orders (r:1 w:1)
 	fn reject_dna_sample() -> Weight {
-		64_300_000_u64
+		65_895_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticTesting DnaSamples (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn process_dna_sample() -> Weight {
-		16_328_000_u64
+		18_224_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -105,7 +105,7 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
 	fn submit_test_result() -> Weight {
-		54_000_000_u64
+		57_171_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
@@ -115,14 +115,14 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
 	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
 	fn submit_independent_test_result() -> Weight {
-		50_543_000_u64
+		54_000_000_u64
 			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1)
 	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1)
 	fn submit_data_bounty_details() -> Weight {
-		21_863_000_u64
+		24_043_000_u64
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 }

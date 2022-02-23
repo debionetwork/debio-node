@@ -1,5 +1,5 @@
 [package]
-authors = ['Debio Developer <https://github.com/debionetwork>']
+authors = ['Debio Dev Team <debio_dev@blocksphere.id>']
 build = 'build.rs'
 edition = '2018'
 homepage = 'https://debio.network'
