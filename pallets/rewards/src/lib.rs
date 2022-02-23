@@ -81,7 +81,7 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			RewarderKey::<T>::put(&self.rewarder_key);
-			PalletAccount::<T>::put(<Pallet<T>>::account_id());
+			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 			<Pallet<T>>::set_total_reward_amount();
 		}
 	}
@@ -170,9 +170,14 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	/// The account ID that holds the funds
-	pub fn account_id() -> T::AccountId {
+	/// The injected pallet ID
+	fn get_pallet_id() -> AccountIdOf<T> {
 		T::PalletId::get().into_account()
+	}
+
+	/// The account ID that holds the funds
+	fn account_id() -> AccountIdOf<T> {
+		<PalletAccount<T>>::get()
 	}
 
 	/// Set current total reward amount

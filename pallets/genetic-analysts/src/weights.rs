@@ -35,6 +35,7 @@ pub trait WeightInfo {
 	fn update_genetic_analyst_availability_status() -> Weight;
 	fn deregister_genetic_analyst() -> Weight;
 	fn stake_genetic_analyst() -> Weight;
+	fn unstake_genetic_analyst() -> Weight;
 	fn update_minimum_stake_amount() -> Weight;
 	fn update_admin_key() -> Weight;
 }
@@ -80,6 +81,11 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysts MinimumStakeAmount (r:1 w:0)
 	// Storage: GeneticAnalysts TotalStakedAmount (r:0 w:1)
 	fn stake_genetic_analyst() -> Weight {
+		134_367_000_u64
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
+	}
+	fn unstake_genetic_analyst() -> Weight {
 		134_367_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
@@ -139,6 +145,11 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysts MinimumStakeAmount (r:1 w:0)
 	// Storage: GeneticAnalysts TotalStakedAmount (r:0 w:1)
 	fn stake_genetic_analyst() -> Weight {
+		134_367_000_u64
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	fn unstake_genetic_analyst() -> Weight {
 		134_367_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))

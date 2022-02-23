@@ -9,7 +9,7 @@ use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::traits::{AccountIdConversion, Hash},
 	sp_std::convert::TryInto,
-	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	traits::{Currency, ExistenceRequirement},
 	PalletId,
 };
 pub use pallet::*;
@@ -201,7 +201,7 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			EscrowKey::<T>::put(&self.escrow_key);
-			PalletAccount::<T>::put(<Pallet<T>>::account_id());
+			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 		}
 	}
 	// ----------------------------------------
@@ -544,18 +544,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		let _ = Self::transfer_balance(
 			&genetic_analysis_order.customer_id,
+			&Self::account_id(),
 			genetic_analysis_order.total_price,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&Self::account_id(), imb);
-				Self::set_escrow_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -591,18 +584,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		let _ = Self::transfer_balance(
 			&Self::account_id(),
+			&genetic_analysis_order.seller_id,
 			genetic_analysis_order.total_price,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&genetic_analysis_order.seller_id, imb);
-				Self::set_escrow_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -636,18 +622,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		let _ = Self::transfer_balance(
 			&Self::account_id(),
+			&genetic_analysis_order.customer_id,
 			genetic_analysis_order.total_price,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&genetic_analysis_order.customer_id, imb);
-				Self::set_escrow_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -793,21 +772,25 @@ impl<T: Config> Pallet<T> {
 		true
 	}
 
-	/// The account ID that holds the funds
-	pub fn account_id() -> AccountIdOf<T> {
+	/// The injected pallet ID
+	pub fn get_pallet_id() -> AccountIdOf<T> {
 		T::PalletId::get().into_account()
 	}
 
-	/// Payment
-	pub fn make_payment(account_id: &AccountIdOf<T>, balance: BalanceOf<T>) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(
-			account_id,
-			&Self::account_id(),
-			balance,
-			ExistenceRequirement::AllowDeath,
-		);
+	/// The account ID that holds the funds
+	pub fn account_id() -> AccountIdOf<T> {
+		<PalletAccount<T>>::get()
+	}
+
+	/// Transfer balance
+	pub fn transfer_balance(
+		source: &AccountIdOf<T>,
+		dest: &AccountIdOf<T>,
+		amount: BalanceOf<T>,
+	) -> BalanceOf<T> {
+		let _ = T::Currency::transfer(source, dest, amount, ExistenceRequirement::KeepAlive);
 		Self::set_escrow_amount();
-		balance
+		amount
 	}
 
 	/// Is the balance sufficient for payment
