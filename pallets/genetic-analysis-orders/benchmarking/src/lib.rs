@@ -51,9 +51,7 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -109,9 +107,7 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -177,9 +173,7 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -242,9 +236,7 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -325,9 +317,7 @@ benchmarks! {
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),

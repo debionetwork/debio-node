@@ -5,14 +5,13 @@ use crate::Pallet as GeneticAnalysts;
 use crate::{GeneticAnalystInfo, GeneticAnalystVerifierKey};
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
+use frame_support::sp_runtime::traits::Hash;
 use primitives_verification_status::VerificationStatus;
 
 benchmarks! {
 	register_genetic_analyst {
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -34,9 +33,7 @@ benchmarks! {
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -50,6 +47,7 @@ benchmarks! {
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), old_genetic_analyst);
 
 		let new_genetic_analyst = GeneticAnalystInfo {
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name 2".as_bytes().to_vec(),
 			last_name: "Last Name 2".as_bytes().to_vec(),
 			gender: "Gender 2".as_bytes().to_vec(),
@@ -70,9 +68,7 @@ benchmarks! {
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -95,9 +91,7 @@ benchmarks! {
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
@@ -121,9 +115,7 @@ benchmarks! {
 		let _ = <T as pallet::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
 
 		let old_genetic_analyst = GeneticAnalystInfo {
-			box_public_key: Keccak256::hash(
-				"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-			),
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			first_name: "First Name".as_bytes().to_vec(),
 			last_name: "Last Name".as_bytes().to_vec(),
 			gender: "Gender".as_bytes().to_vec(),
