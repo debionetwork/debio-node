@@ -27,6 +27,7 @@ sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkado
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
 
 primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
+primitives-availability-status = { path = '../../primitives/availability-status', default-features = false }
 
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits', default-features = false }
@@ -57,6 +58,7 @@ std = [
     'sp-io/std',
     
     'primitives-verification-status/std',
+    'primitives-availability-status/std',
 
     'traits-user-profile/std',
     'traits-genetic-analyst-services/std',

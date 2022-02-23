@@ -10,6 +10,7 @@ use frame_support::{
 	},
 };
 use frame_system::RawOrigin;
+use primitives_availability_status::AvailabilityStatus;
 use primitives_verification_status::VerificationStatus;
 
 #[test]
@@ -42,6 +43,7 @@ fn register_genetic_analyst_works() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -111,6 +113,7 @@ fn update_genetic_analyst_works() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -155,6 +158,7 @@ fn update_genetic_analyst_works() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -311,6 +315,7 @@ fn call_event_should_work() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -355,6 +360,7 @@ fn call_event_should_work() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -385,6 +391,7 @@ fn call_event_should_work() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -454,6 +461,7 @@ fn update_genetic_analyst_verification_status_works() {
 				stake_amount: 50000000000000000000000u128.saturated_into(),
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::Verified,
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -525,6 +533,7 @@ fn update_genetic_analyst_verification_status_reject_works() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::Unstaked,
 				verification_status: VerificationStatus::Rejected,
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -585,6 +594,7 @@ fn cant_update_genetic_analyst_verification_status_when_is_not_staked() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -748,6 +758,7 @@ fn stake_genetic_analyst_works() {
 				stake_amount: 60000000000000000000000u128.saturated_into(),
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -812,6 +823,7 @@ fn cant_stake_genetic_analyst_when_insufficient_funds() {
 				stake_amount: 0u128.saturated_into(),
 				stake_status: StakeStatus::default(),
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -870,6 +882,7 @@ fn cant_stake_genetic_analyst_when_already_staked() {
 				stake_amount: 50000000000000000000000u128.saturated_into(),
 				stake_status: StakeStatus::Staked,
 				verification_status: VerificationStatus::default(),
+				availability_status: AvailabilityStatus::default(),
 				info: GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -930,5 +943,217 @@ fn sudo_update_admin_key_works() {
 		assert_ok!(GeneticAnalysts::sudo_update_admin_key(Origin::root(), 1));
 
 		assert_eq!(GeneticAnalysts::admin_key(), 1);
+	})
+}
+
+#[test]
+fn update_genetic_analyst_availability_status_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
+			Origin::signed(2),
+			1,
+			VerificationStatus::Verified,
+		));
+
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+			Origin::signed(1),
+			AvailabilityStatus::Available,
+		));
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 50000000000000000000000u128.saturated_into(),
+				stake_status: StakeStatus::Staked,
+				verification_status: VerificationStatus::Verified,
+				availability_status: AvailabilityStatus::Available,
+				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn update_genetic_analyst_availability_status_reject_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+			Origin::signed(2),
+			0u128.saturated_into(),
+		));
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+			Origin::signed(1),
+			AvailabilityStatus::Available,
+		));
+
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+			Origin::signed(1),
+			AvailabilityStatus::Unavailable,
+		));
+
+		assert_eq!(
+			GeneticAnalysts::genetic_analyst_by_account_id(1),
+			Some(GeneticAnalyst {
+				account_id: 1,
+				services: Vec::new(),
+				qualifications: Vec::new(),
+				stake_amount: 0u128.saturated_into(),
+				stake_status: StakeStatus::Unstaked,
+				verification_status: VerificationStatus::Unverified,
+				availability_status: AvailabilityStatus::Unavailable,
+				info: GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			})
+		);
+	})
+}
+
+#[test]
+fn cant_update_genetic_analyst_availability_status_when_not_exist() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_noop!(
+			GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available,
+			),
+			Error::<Test>::GeneticAnalystDoesNotExist
+		);
+	})
+}
+
+#[test]
+fn cant_update_genetic_analyst_availability_status_when_bad_signature() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			1,
+			60000000000000000000000u128.saturated_into(),
+			0
+		));
+
+		assert_ok!(GeneticAnalysts::register_genetic_analyst(
+			Origin::signed(1),
+			GeneticAnalystInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+				),
+				first_name: "First Name".as_bytes().to_vec(),
+				last_name: "Last Name".as_bytes().to_vec(),
+				gender: "Gender".as_bytes().to_vec(),
+				date_of_birth: 0,
+				email: "Email".as_bytes().to_vec(),
+				phone_number: "+6893026516".as_bytes().to_vec(),
+				specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+				profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+				profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+			}
+		));
+
+		GeneticAnalystVerifierKey::<Test>::put(2);
+
+		assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+		assert_ok!(Balances::set_balance(
+			RawOrigin::Root.into(),
+			PalletAccount::<Test>::get(),
+			0u128.saturated_into(),
+			0
+		));
+
+		assert_noop!(
+			GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Unavailable,
+			),
+			Error::<Test>::BadSignature
+		);
 	})
 }
