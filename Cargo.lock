@@ -2350,6 +2350,7 @@ dependencies = [
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",

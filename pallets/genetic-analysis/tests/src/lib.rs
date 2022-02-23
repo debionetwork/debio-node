@@ -17,6 +17,7 @@ mod tests {
 
 	use primitives_duration::ExpectedDuration;
 	use primitives_price_and_currency::PriceByCurrency;
+	use primitives_availability_status::AvailabilityStatus;
 	use primitives_tracking_id::TrackingId;
 
 	#[test]
@@ -38,6 +39,11 @@ mod tests {
 					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
+			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
@@ -74,7 +80,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -136,6 +143,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -171,7 +183,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -209,6 +222,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -244,7 +262,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -318,6 +337,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -353,7 +377,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -413,6 +438,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -448,7 +478,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -513,6 +544,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -548,7 +584,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -585,6 +622,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -620,7 +662,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
@@ -676,6 +719,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+			
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -711,7 +759,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			assert_noop!(
@@ -746,6 +795,11 @@ mod tests {
 					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 				}
 			));
+		
+			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+				Origin::signed(1),
+				AvailabilityStatus::Available
+			));
 
 			assert_ok!(UserProfile::set_eth_address(
 				Origin::signed(1),
@@ -781,7 +835,8 @@ mod tests {
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
-				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
+				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 			));
 
 			let _genetic_analysis =
