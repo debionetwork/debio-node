@@ -1106,6 +1106,7 @@ impl_runtime_apis! {
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
 			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
+			use genetic_analysts_benchmarking::Pallet as GeneticAnalystsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 
@@ -1129,7 +1130,7 @@ impl_runtime_apis! {
 			list_benchmark!(list, extra, hospital_certifications, HospitalCertificationsBench::<Runtime>);
 			list_benchmark!(list, extra, doctors, Doctors);
 			list_benchmark!(list, extra, doctor_certifications, DoctorCertificationsBench::<Runtime>);
-			list_benchmark!(list, extra, genetic_analysts, GeneticAnalysts);
+			list_benchmark!(list, extra, genetic_analysts, GeneticAnalystsBench::<Runtime>);
 			list_benchmark!(list, extra, genetic_analyst_services, GeneticAnalystServicesBench::<Runtime>);
 			list_benchmark!(list, extra, genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>);
 			list_benchmark!(list, extra, user_profile, UserProfile);
@@ -1155,6 +1156,7 @@ impl_runtime_apis! {
 			use services_benchmarking::Pallet as ServicesBench;
 			use certifications_benchmarking::Pallet as CertificationsBench;
 			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use genetic_analysts_benchmarking::Pallet as GeneticAnalystsBench;
 			use genetic_analyst_services_benchmarking::Pallet as GeneticAnalystServicesBench;
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
@@ -1167,6 +1169,7 @@ impl_runtime_apis! {
 			impl services_benchmarking::Config for Runtime {}
 			impl certifications_benchmarking::Config for Runtime {}
 			impl doctor_certifications_benchmarking::Config for Runtime {}
+			impl genetic_analysts_benchmarking::Config for Runtime {}
 			impl genetic_analyst_services_benchmarking::Config for Runtime {}
 			impl genetic_analyst_qualifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
@@ -1210,7 +1213,7 @@ impl_runtime_apis! {
 			add_benchmark!(params, batches, hospital_certifications, HospitalCertificationsBench::<Runtime>);
 			add_benchmark!(params, batches, doctors, Doctors);
 			add_benchmark!(params, batches, doctor_certifications, DoctorCertificationsBench::<Runtime>);
-			add_benchmark!(params, batches, genetic_analysts, GeneticAnalysts);
+			add_benchmark!(params, batches, genetic_analysts, GeneticAnalystsBench::<Runtime>);
 			add_benchmark!(params, batches, genetic_analyst_services, GeneticAnalystServicesBench::<Runtime>);
 			add_benchmark!(params, batches, genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>);
 			add_benchmark!(params, batches, user_profile, UserProfile);

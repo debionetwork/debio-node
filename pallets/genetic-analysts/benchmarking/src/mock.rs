@@ -1,22 +1,23 @@
-use crate as genetic_analysts;
+#![cfg(test)]
+
+use super::*;
+
 use frame_support::{parameter_types, PalletId};
-use frame_system as system;
-use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{BlakeTwo256, IdentityLookup},
+	traits::{AccountIdLookup, IdentifyAccount, Verify},
+	MultiSignature,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
+pub type Signature = MultiSignature;
+pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
 pub struct EthereumAddress(pub [u8; 20]);
-
-pub type AccountId = u64;
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -32,29 +33,29 @@ frame_support::construct_runtime!(
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
-	pub BlockWeights: frame_system::limits::BlockWeights =
-	frame_system::limits::BlockWeights::simple_max(1024);
 }
 
-impl system::Config for Test {
-	type BaseCallFilter = frame_support::traits::Everything;
+impl frame_system::Config for Test {
+	type BaseCallFilter = ();
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
 	type Call = Call;
-	type Lookup = IdentityLookup<Self::AccountId>;
+	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Index = u64;
 	type BlockNumber = u64;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
-	type Header = Header;
+	type Hash = sp_core::H256;
+	type Hashing = ::sp_runtime::traits::BlakeTwo256;
+	type Header = sp_runtime::testing::Header;
 	type Event = Event;
 	type Origin = Origin;
 	type BlockHashCount = BlockHashCount;
@@ -63,7 +64,7 @@ impl system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = AccountData<Balance>;
+	type AccountData = ();
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -76,6 +77,7 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -84,6 +86,15 @@ impl pallet_timestamp::Config for Test {
 	type OnTimestampSet = ();
 	type MinimumPeriod = MinimumPeriod;
 	type WeightInfo = ();
+}
+
+impl pallet_randomness_collective_flip::Config for Test {}
+
+impl genetic_analysis::Config for Test {
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type GeneticAnalysisWeightInfo = ();
 }
 
 impl genetic_analysts::Config for Test {
@@ -96,6 +107,11 @@ impl genetic_analysts::Config for Test {
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_data::Config for Test {
+	type Event = Event;
+	type GeneticDataWeightInfo = ();
 }
 
 impl genetic_analyst_services::Config for Test {

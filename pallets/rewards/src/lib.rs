@@ -171,12 +171,12 @@ pub mod pallet {
 
 impl<T: Config> Pallet<T> {
 	/// The injected pallet ID
-	fn get_pallet_id() -> AccountIdOf<T> {
+	pub fn get_pallet_id() -> AccountIdOf<T> {
 		T::PalletId::get().into_account()
 	}
 
 	/// The account ID that holds the funds
-	fn account_id() -> AccountIdOf<T> {
+	pub fn account_id() -> AccountIdOf<T> {
 		<PalletAccount<T>>::get()
 	}
 

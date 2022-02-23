@@ -25,6 +25,7 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -68,6 +69,7 @@ std = [
 
 	'pallet-timestamp/std',
 	'pallet-balances/std',
+	'pallet-randomness-collective-flip/std',
 
     'genetic-analysts/std',
     'genetic-analyst-services/std',
