@@ -215,12 +215,12 @@ fn set_genetic_analysis_order_paid_works() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
@@ -825,7 +825,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
@@ -834,7 +834,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency {
 					currency: CurrencyType::default(),
-					total_price: 10u128.saturated_into(),
+					total_price: 10000000000000000000u128.saturated_into(),
 					price_components: vec![_price.clone()],
 					additional_prices: vec![_price],
 				}],
@@ -925,12 +925,12 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
@@ -1012,12 +1012,12 @@ fn cant_set_genetic_analysis_order_paid_when_bad_signature() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
@@ -1194,12 +1194,12 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
@@ -1302,12 +1302,12 @@ fn cant_fulfill_genetic_analysis_order_when_bad_signature() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
@@ -1515,12 +1515,12 @@ fn cant_set_genetic_analysis_order_refunded_when_bad_signature() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
@@ -1628,12 +1628,12 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 
 		let _price = Price {
 			component: "Price Component".as_bytes().to_vec(),
-			value: 5u128.saturated_into(),
+			value: 5000000000000000000u128.saturated_into(),
 		};
 
 		let _price_by_currency = PriceByCurrency {
 			currency: CurrencyType::default(),
-			total_price: 10u128.saturated_into(),
+			total_price: 10000000000000000000u128.saturated_into(),
 			price_components: vec![_price.clone()],
 			additional_prices: vec![_price],
 		};
