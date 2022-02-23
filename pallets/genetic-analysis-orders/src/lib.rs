@@ -62,6 +62,7 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub status: GeneticAnalysisOrderStatus,
 	pub created_at: Moment,
 	pub updated_at: Moment,
+	pub genetic_link: Vec<u8>,
 }
 #[allow(clippy::too_many_arguments)]
 impl<Hash, AccountId, Balance, Moment: Default>
@@ -75,6 +76,7 @@ impl<Hash, AccountId, Balance, Moment: Default>
 		seller_id: AccountId,
 		genetic_data_id: Hash,
 		genetic_analysis_tracking_id: TrackingId,
+		genetic_link: Vec<u8>,
 		currency: CurrencyType,
 		prices: Vec<Price<Balance>>,
 		additional_prices: Vec<Price<Balance>>,
@@ -89,6 +91,7 @@ impl<Hash, AccountId, Balance, Moment: Default>
 			seller_id,
 			genetic_data_id,
 			genetic_analysis_tracking_id,
+			genetic_link,
 			currency,
 			prices,
 			additional_prices,
@@ -164,6 +167,11 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn genetic_analysis_orders_by_genetic_analyst_id)]
 	pub type GeneticAnalysisOrdersBySeller<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, GeneticAnalysisOrderIdsOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn pending_genetic_analysis_orders_by_genetic_analyst_id)]
+	pub type PendingGeneticAnalysisOrdersBySeller<T> =
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, GeneticAnalysisOrderIdsOf<T>>;
 
 	#[pallet::storage]
@@ -278,6 +286,7 @@ pub mod pallet {
 			service_id: T::Hash,
 			price_index: u32,
 			customer_box_public_key: T::Hash,
+            genetic_link: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -287,6 +296,7 @@ pub mod pallet {
 				&service_id,
 				price_index,
 				&customer_box_public_key,
+				&genetic_link,
 			) {
 				Ok(genetic_analysis_order) => {
 					Self::deposit_event(Event::<T>::GeneticAnalysisOrderCreated(
@@ -426,6 +436,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		genetic_analyst_service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
+		genetic_link: &[u8],
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
 		let genetic_analyst_service =
 			T::GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst_service_id);
@@ -484,6 +495,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			seller_id.clone(),
 			*genetic_data_id,
 			genetic_analysis.get_genetic_analysis_tracking_id().clone(),
+			genetic_link.to_vec(),
 			currency.clone(),
 			prices.clone(),
 			additional_prices.clone(),
@@ -693,6 +705,9 @@ impl<T: Config> Pallet<T> {
 		Self::insert_genetic_analysis_order_id_into_genetic_analysis_orders_by_seller(
 			genetic_analysis_order,
 		);
+		Self::insert_genetic_analysis_order_id_into_pending_genetic_analysis_orders_by_seller(
+			genetic_analysis_order,
+		);
 		Self::insert_genetic_analysis_order_id_into_genetic_analysis_orders_by_customer(
 			genetic_analysis_order,
 		);
@@ -738,24 +753,34 @@ impl<T: Config> Pallet<T> {
 		}
 	}
 
-	pub fn remove_genetic_analysis_order_id_from_genetic_analysis_orders_by_seller(
+	pub fn insert_genetic_analysis_order_id_into_pending_genetic_analysis_orders_by_seller(
+		genetic_analysis_order: &GeneticAnalysisOrderOf<T>,
+	) {
+		match PendingGeneticAnalysisOrdersBySeller::<T>::get(&genetic_analysis_order.seller_id) {
+			None => {
+				PendingGeneticAnalysisOrdersBySeller::<T>::insert(
+					&genetic_analysis_order.seller_id,
+					vec![genetic_analysis_order.id],
+				);
+			},
+			Some(mut genetic_analysis_orders) => {
+				genetic_analysis_orders.push(genetic_analysis_order.id);
+				PendingGeneticAnalysisOrdersBySeller::<T>::insert(
+					&genetic_analysis_order.seller_id,
+					genetic_analysis_orders,
+				);
+			},
+		}
+	}
+
+	pub fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 		seller_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) {
 		let mut genetic_analysis_orders =
-			GeneticAnalysisOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
+			PendingGeneticAnalysisOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
 		genetic_analysis_orders.retain(|o_id| o_id != genetic_analysis_order_id);
-		GeneticAnalysisOrdersBySeller::<T>::insert(seller_id, genetic_analysis_orders);
-	}
-
-	pub fn remove_genetic_analysis_order_id_from_genetic_analysis_orders_by_customer(
-		customer_id: &T::AccountId,
-		genetic_analysis_order_id: &T::Hash,
-	) {
-		let mut genetic_analysis_orders =
-			GeneticAnalysisOrdersByCustomer::<T>::get(customer_id).unwrap_or_default();
-		genetic_analysis_orders.retain(|o_id| o_id != genetic_analysis_order_id);
-		GeneticAnalysisOrdersByCustomer::<T>::insert(customer_id, genetic_analysis_orders);
+		PendingGeneticAnalysisOrdersBySeller::<T>::insert(seller_id, genetic_analysis_orders);
 	}
 
 	pub fn genetic_analysis_order_can_be_refunded(
@@ -835,5 +860,15 @@ impl<T: Config> GeneticAnalysisOrderStatusUpdater<T> for Pallet<T> {
 				);
 			},
 		}
+	}
+	
+	fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_order_id_by_seller(
+		seller_id: &AccountIdOf<T>,
+		genetic_analysis_order_id: &HashOf<T>
+	) {
+		Self::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
+			seller_id,
+			genetic_analysis_order_id,
+		);
 	}
 }

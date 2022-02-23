@@ -68,6 +68,7 @@ fn create_genetic_analysis_order() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -150,6 +151,7 @@ fn cancel_genetic_analysis_order_works() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -255,6 +257,7 @@ fn set_genetic_analysis_order_paid_works() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -359,6 +362,7 @@ fn fulfill_genetic_analysis_order_works() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -462,6 +466,7 @@ fn set_genetic_analysis_order_refunded_works() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -779,6 +784,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -863,6 +869,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -965,6 +972,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -1065,6 +1073,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -1147,6 +1156,7 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -1266,6 +1276,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -1355,6 +1366,7 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -1444,6 +1456,7 @@ fn call_event_should_work() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =
@@ -1512,6 +1525,7 @@ fn call_event_should_work() {
 			_genetic_analyst.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 		));
 
 		let _genetic_analysis_order_id =

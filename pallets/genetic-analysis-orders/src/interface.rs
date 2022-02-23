@@ -8,6 +8,7 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
+		genetic_link: &[u8],
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error>;
 	fn cancel_genetic_analysis_order(
 		customer_id: &T::AccountId,

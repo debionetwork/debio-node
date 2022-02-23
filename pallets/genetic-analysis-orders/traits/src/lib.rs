@@ -8,4 +8,8 @@ pub trait GeneticAnalysisOrderEventEmitter<T: Config> {
 
 pub trait GeneticAnalysisOrderStatusUpdater<T: Config> {
 	fn update_status_failed(genetic_analysis_order_id: &T::Hash);
+	fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_order_id_by_seller(
+		seller_id: &T::AccountId,
+		genetic_analysis_order_id: &T::Hash
+	);
 }
