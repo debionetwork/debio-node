@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -42,13 +42,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: HospitalCertifications HospitalCertificationsCount (r:1 w:1)
 	// Storage: HospitalCertifications HospitalCertifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		52_877_000_u64
+		55_181_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: HospitalCertifications HospitalCertifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		64_532_000_u64
+		36_813_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: HospitalCertifications HospitalCertificationsCount (r:1 w:1)
 	// Storage: HospitalCertifications HospitalCertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		63_782_000_u64
+		63_612_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -70,13 +70,13 @@ impl WeightInfo for () {
 	// Storage: HospitalCertifications HospitalCertificationsCount (r:1 w:1)
 	// Storage: HospitalCertifications HospitalCertifications (r:0 w:1)
 	fn create_certification() -> Weight {
-		52_877_000_u64
+		55_181_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: HospitalCertifications HospitalCertifications (r:1 w:1)
 	fn update_certification() -> Weight {
-		64_532_000_u64
+		36_813_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -85,7 +85,7 @@ impl WeightInfo for () {
 	// Storage: HospitalCertifications HospitalCertificationsCount (r:1 w:1)
 	// Storage: HospitalCertifications HospitalCertificationsCountByOwner (r:1 w:1)
 	fn delete_certification() -> Weight {
-		63_782_000_u64
+		63_612_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

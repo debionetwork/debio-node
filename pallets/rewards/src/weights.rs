@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -40,13 +40,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: System Account (r:1 w:0)
 	// Storage: Rewards TotalRewardAmount (r:0 w:1)
 	fn reward_funds() -> Weight {
-		29_673_000_u64
+		30_536_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: Rewards RewarderKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		21_513_000_u64
+		22_115_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -58,13 +58,13 @@ impl WeightInfo for () {
 	// Storage: System Account (r:1 w:0)
 	// Storage: Rewards TotalRewardAmount (r:0 w:1)
 	fn reward_funds() -> Weight {
-		29_673_000_u64
+		30_536_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: Rewards RewarderKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		21_513_000_u64
+		22_115_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}

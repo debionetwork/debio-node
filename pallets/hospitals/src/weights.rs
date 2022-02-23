@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -42,7 +42,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	fn register_hospital() -> Weight {
-		50_494_000_u64
+		55_078_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -50,7 +50,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:2 w:2)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:2 w:2)
 	fn update_hospital() -> Weight {
-		71_978_000_u64
+		79_159_000_u64
 			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
@@ -59,7 +59,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	fn deregister_hospital() -> Weight {
-		104_322_000_u64
+		63_516_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -72,7 +72,7 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	fn register_hospital() -> Weight {
-		50_494_000_u64
+		55_078_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
@@ -80,7 +80,7 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalsByCountryRegionCity (r:2 w:2)
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:2 w:2)
 	fn update_hospital() -> Weight {
-		71_978_000_u64
+		79_159_000_u64
 			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(5_u64))
 	}
@@ -89,7 +89,7 @@ impl WeightInfo for () {
 	// Storage: Hospitals HospitalCountByCountryRegionCity (r:1 w:1)
 	// Storage: Hospitals HospitalCount (r:1 w:1)
 	fn deregister_hospital() -> Weight {
-		104_322_000_u64
+		63_516_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

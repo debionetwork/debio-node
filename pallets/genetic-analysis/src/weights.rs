@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// ./target/release/debio
+// target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -41,21 +41,21 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Timestamp Now (r:1 w:0)
 	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:1 w:1)
 	fn reject_genetic_analysis() -> Weight {
-		47_280_000_u64
+		66_341_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn process_genetic_analysis() -> Weight {
-		12_766_000_u64
+		18_008_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn submit_genetic_analysis() -> Weight {
-		28_808_000_u64
+		37_144_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -67,21 +67,21 @@ impl WeightInfo for () {
 	// Storage: Timestamp Now (r:1 w:0)
 	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:1 w:1)
 	fn reject_genetic_analysis() -> Weight {
-		47_280_000_u64
+		66_341_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
 	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn process_genetic_analysis() -> Weight {
-		12_766_000_u64
+		18_008_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn submit_genetic_analysis() -> Weight {
-		28_808_000_u64
+		37_144_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
