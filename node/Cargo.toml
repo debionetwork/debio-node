@@ -1,12 +1,12 @@
 [package]
-authors = ['Debio Developer <https://github.com/debionetwork>']
+authors = ['Debio Dev Team <debio_dev@blocksphere.id>']
 build = 'build.rs'
 edition = '2018'
 homepage = 'https://debio.network'
 license = 'AGPL-3.0'
 name = 'debio'
 repository = 'https://github.com/Degenics/debio-node'
-version = '0.1.0'
+version = '2.0.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
