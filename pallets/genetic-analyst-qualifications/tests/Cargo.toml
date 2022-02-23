@@ -31,11 +31,15 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies
 genetic-analysts = { path = '../../genetic-analysts', default-features = false }
 genetic-analyst-services = { path = '../../genetic-analyst-services', default-features = false }
 genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
+genetic-analysis = { path = '../../genetic-analysis', default-features = false }
+genetic-analysis-orders = { path = '../../genetic-analysis-orders', default-features = false }
+genetic-data = { path = '../../genetic-data', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
 traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
@@ -59,10 +63,14 @@ std = [
 
 	'pallet-balances/std',
     'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
 
     'genetic-analysts/std',
     'genetic-analyst-services/std',
-    'genetic-analyst-qualifications/std',
+	'genetic-analyst-qualifications/std',
+	'genetic-analysis/std',
+	'genetic-analysis-orders/std',
+	'genetic-data/std',
     'user-profile/std',
 
     'traits-genetic-analyst-services/std',

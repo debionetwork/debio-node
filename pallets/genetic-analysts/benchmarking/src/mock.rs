@@ -1,16 +1,23 @@
+#![cfg(test)]
+
+use super::*;
+
 use frame_support::{parameter_types, PalletId};
-use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
-	traits::{BlakeTwo256, IdentityLookup},
+	traits::{AccountIdLookup, IdentifyAccount, Verify},
+	MultiSignature,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-pub type AccountId = u64;
+pub type Signature = MultiSignature;
+pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+
+#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
+pub struct EthereumAddress(pub [u8; 20]);
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -38,17 +45,17 @@ parameter_types! {
 }
 
 impl frame_system::Config for Test {
-	type BaseCallFilter = frame_support::traits::Everything;
+	type BaseCallFilter = ();
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
 	type Call = Call;
-	type Lookup = IdentityLookup<Self::AccountId>;
+	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Index = u64;
 	type BlockNumber = u64;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
-	type Header = Header;
+	type Hash = sp_core::H256;
+	type Hashing = ::sp_runtime::traits::BlakeTwo256;
+	type Header = sp_runtime::testing::Header;
 	type Event = Event;
 	type Origin = Origin;
 	type BlockHashCount = BlockHashCount;
@@ -57,7 +64,7 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = AccountData<Balance>;
+	type AccountData = ();
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -69,6 +76,8 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -81,12 +90,64 @@ impl pallet_timestamp::Config for Test {
 
 impl pallet_randomness_collective_flip::Config for Test {}
 
-type Balance = u64;
+impl genetic_analysis::Config for Test {
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type GeneticAnalysisWeightInfo = ();
+}
+
+impl genetic_analysts::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type GeneticAnalystServices = GeneticAnalystServices;
+	type GeneticAnalystQualifications = GeneticAnalystQualifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
+	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_data::Config for Test {
+	type Event = Event;
+	type GeneticDataWeightInfo = ();
+}
+
+impl genetic_analyst_services::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticAnalystServiceOwner = GeneticAnalysts;
+	type WeightInfo = ();
+}
+
+impl genetic_analyst_qualifications::Config for Test {
+	type Event = Event;
+	type GeneticAnalystQualificationOwner = GeneticAnalysts;
+	type WeightInfo = ();
+}
+
+impl genetic_analysis_orders::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
+	type GeneticAnalysis = GeneticAnalysis;
+	type GeneticAnalystServices = GeneticAnalystServices;
+	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
+}
+
+impl user_profile::Config for Test {
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
+	type WeightInfo = ();
+}
+
+type Balance = u128;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
-	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
-	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_balances::Config for Test {
@@ -103,81 +164,18 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-impl genetic_data::Config for Test {
-	type Event = Event;
-	type GeneticDataWeightInfo = ();
-}
-
-impl genetic_analysts::Config for Test {
-	type Event = Event;
-	type Currency = Balances;
-	type PalletId = GeneticAnalystPalletId;
-	type GeneticAnalysisOrders = GeneticAnalysisOrders;
-	type GeneticAnalystServices = GeneticAnalystServices;
-	type GeneticAnalystQualifications = GeneticAnalystQualifications;
-	type EthereumAddress = EthereumAddress;
-	type UserProfile = UserProfile;
-	type GeneticAnalystWeightInfo = ();
-}
-
-impl genetic_analyst_services::Config for Test {
-	type Event = Event;
-	type Currency = Balances;
-	type GeneticAnalystServiceOwner = GeneticAnalysts;
-	type WeightInfo = ();
-}
-
-impl genetic_analyst_qualifications::Config for Test {
-	type Event = Event;
-	type GeneticAnalystQualificationOwner = GeneticAnalysts;
-	type WeightInfo = ();
-}
-
-impl genetic_analysis::Config for Test {
-	type Event = Event;
-	type RandomnessSource = RandomnessCollectiveFlip;
-	type GeneticAnalysisOrders = GeneticAnalysisOrders;
-	type GeneticAnalysisWeightInfo = ();
-}
-
-impl genetic_analysis_orders::Config for Test {
-	type Event = Event;
-	type Currency = Balances;
-	type GeneticData = GeneticData;
-	type GeneticAnalysts = GeneticAnalysts;
-	type GeneticAnalysis = GeneticAnalysis;
-	type GeneticAnalystServices = GeneticAnalystServices;
-	type GeneticAnalysisOrdersWeightInfo = ();
-	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress(pub [u8; 20]);
-
-impl user_profile::Config for Test {
-	type Event = Event;
-	type EthereumAddress = EthereumAddress;
-	type WeightInfo = ();
-}
-
-#[cfg(test)]
-use sp_io::TestExternalities;
-
-#[cfg(test)]
 pub struct ExternalityBuilder {
-	existential_deposit: u64,
+	existential_deposit: u128,
 }
 
-#[cfg(test)]
 impl Default for ExternalityBuilder {
 	fn default() -> Self {
 		Self { existential_deposit: 1 }
 	}
 }
 
-#[cfg(test)]
 impl ExternalityBuilder {
-	pub fn existential_deposit(mut self, existential_deposit: u64) -> Self {
+	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
 		self.existential_deposit = existential_deposit;
 		self
 	}
@@ -186,7 +184,7 @@ impl ExternalityBuilder {
 	}
 	pub fn build(&self) -> TestExternalities {
 		self.set_associated_consts();
-		let mut storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
 		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
 			.assimilate_storage(&mut storage)
 			.unwrap();

@@ -1,10 +1,8 @@
-use crate as genetic_analysts;
 use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
-use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
@@ -26,10 +24,15 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
+		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
 
@@ -66,6 +69,8 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
+impl pallet_randomness_collective_flip::Config for Test {}
+
 pub type Moment = u64;
 pub const MILLISECS_PER_BLOCK: Moment = 6000;
 pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
@@ -73,6 +78,7 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -87,11 +93,24 @@ impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
+}
+
+impl genetic_analysis::Config for Test {
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
+	type GeneticAnalysisWeightInfo = ();
+}
+
+impl genetic_data::Config for Test {
+	type Event = Event;
+	type GeneticDataWeightInfo = ();
 }
 
 impl genetic_analyst_services::Config for Test {
@@ -105,6 +124,17 @@ impl genetic_analyst_qualifications::Config for Test {
 	type Event = Event;
 	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
+}
+
+impl genetic_analysis_orders::Config for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
+	type GeneticAnalysis = GeneticAnalysis;
+	type GeneticAnalystServices = GeneticAnalystServices;
+	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
 impl user_profile::Config for Test {
@@ -133,16 +163,22 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+#[cfg(test)]
+use sp_io::TestExternalities;
+
+#[cfg(test)]
 pub struct ExternalityBuilder {
 	existential_deposit: u128,
 }
 
+#[cfg(test)]
 impl Default for ExternalityBuilder {
 	fn default() -> Self {
 		Self { existential_deposit: 1 }
 	}
 }
 
+#[cfg(test)]
 impl ExternalityBuilder {
 	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
 		self.existential_deposit = existential_deposit;

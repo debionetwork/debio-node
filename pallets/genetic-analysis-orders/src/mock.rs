@@ -115,6 +115,7 @@ impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
@@ -146,6 +147,7 @@ impl genetic_analysis_orders::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();

@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// target/release/debio
+// ./target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -43,14 +43,14 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataById (r:0 w:1)
 	fn add_genetic_data() -> Weight {
-		49_807_000_u64
+		76_109_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticData GeneticDataById (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn update_genetic_data() -> Weight {
-		35_026_000_u64
+		31_251_000_u64
 			.saturating_add(T::DbWeight::get().reads(2_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -59,7 +59,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
 	fn remove_genetic_data() -> Weight {
-		52_219_000_u64
+		47_950_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
@@ -73,14 +73,14 @@ impl WeightInfo for () {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataById (r:0 w:1)
 	fn add_genetic_data() -> Weight {
-		49_807_000_u64
+		76_109_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}
 	// Storage: GeneticData GeneticDataById (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn update_genetic_data() -> Weight {
-		35_026_000_u64
+		31_251_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -89,7 +89,7 @@ impl WeightInfo for () {
 	// Storage: GeneticData GeneticDataCount (r:1 w:1)
 	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
 	fn remove_genetic_data() -> Weight {
-		52_219_000_u64
+		47_950_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
 	}

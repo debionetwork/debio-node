@@ -25,6 +25,7 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -42,6 +43,7 @@ user-profile = { path = '../../user-profile', default-features = false }
 primitives-duration = { path = '../../../primitives/duration', default-features = false }
 primitives-tracking-id = { path = '../../../primitives/tracking-id', default-features = false }
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
+primitives-availability-status = { path = '../../../primitives/availability-status', default-features = false }
 
 traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analysis = { path = '../../genetic-analysis/traits', default-features = false }
@@ -67,6 +69,7 @@ std = [
 
 	'pallet-timestamp/std',
 	'pallet-balances/std',
+	'pallet-randomness-collective-flip/std',
 
     'genetic-analysts/std',
     'genetic-analyst-services/std',
@@ -79,6 +82,7 @@ std = [
     'primitives-duration/std',
     'primitives-tracking-id/std',
     'primitives-price-and-currency/std',
+    'primitives-availability-status/std',
 
     'traits-genetic-analyst-services/std',
     'traits-genetic-analysis/std',

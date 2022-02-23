@@ -8,7 +8,7 @@ check:
 
 .PHONY: test
 test:
-	SKIP_WASM_BUILD=1 cargo test --release --all
+	.maintain/run-test-locally.sh
 
 .PHONY: run
 run:
@@ -27,3 +27,9 @@ build:
 clean:
 	cargo +nightly fmt
 	cargo +nightly clippy
+
+.PHONY: prepush
+prepush:
+	cargo +nightly fmt
+	cargo +nightly clippy
+	.maintain/run-test-locally.sh

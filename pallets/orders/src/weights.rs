@@ -5,7 +5,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// target/release/debio
+// ./target/release/debio
 // benchmark
 // --chain=dev
 // --execution=wasm
@@ -52,7 +52,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Orders Orders (r:0 w:1)
 	// Storage: Orders LastOrderByCustomer (r:0 w:1)
 	fn create_order() -> Weight {
-		103_059_000_u64
+		94_460_000_u64
 			.saturating_add(T::DbWeight::get().reads(9_u64))
 			.saturating_add(T::DbWeight::get().writes(7_u64))
 	}
@@ -60,7 +60,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaSamples (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn cancel_order() -> Weight {
-		46_703_000_u64
+		40_988_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
@@ -68,7 +68,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Orders Orders (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_order_paid() -> Weight {
-		40_030_000_u64
+		36_014_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -76,7 +76,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaSamples (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn fulfill_order() -> Weight {
-		46_345_000_u64
+		39_697_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -85,13 +85,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticTesting DnaSamples (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_order_refunded() -> Weight {
-		51_803_000_u64
+		44_464_000_u64
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: Orders EscrowKey (r:1 w:1)
 	fn update_escrow_key() -> Weight {
-		22_245_000_u64
+		19_670_000_u64
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -111,7 +111,7 @@ impl WeightInfo for () {
 	// Storage: Orders Orders (r:0 w:1)
 	// Storage: Orders LastOrderByCustomer (r:0 w:1)
 	fn create_order() -> Weight {
-		103_059_000_u64
+		94_460_000_u64
 			.saturating_add(RocksDbWeight::get().reads(9_u64))
 			.saturating_add(RocksDbWeight::get().writes(7_u64))
 	}
@@ -119,7 +119,7 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaSamples (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn cancel_order() -> Weight {
-		46_703_000_u64
+		40_988_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(2_u64))
 	}
@@ -127,7 +127,7 @@ impl WeightInfo for () {
 	// Storage: Orders Orders (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_order_paid() -> Weight {
-		40_030_000_u64
+		36_014_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -135,7 +135,7 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaSamples (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn fulfill_order() -> Weight {
-		46_345_000_u64
+		39_697_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -144,13 +144,13 @@ impl WeightInfo for () {
 	// Storage: GeneticTesting DnaSamples (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_order_refunded() -> Weight {
-		51_803_000_u64
+		44_464_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: Orders EscrowKey (r:1 w:1)
 	fn update_escrow_key() -> Weight {
-		22_245_000_u64
+		19_670_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}

@@ -6,6 +6,7 @@ pub trait GeneticAnalystInterface<T: frame_system::Config> {
 	type GeneticAnalystInfo;
 	type GeneticAnalyst;
 	type VerificationStatus;
+	type AvailabilityStatus;
 
 	/// Get genetic_analyst by associated account_id
 	fn genetic_analyst_by_account_id(account_id: &T::AccountId) -> Option<Self::GeneticAnalyst>;
@@ -26,8 +27,17 @@ pub trait GeneticAnalystInterface<T: frame_system::Config> {
 		account_id: &T::AccountId,
 		status: &Self::VerificationStatus,
 	) -> Result<Self::GeneticAnalyst, Self::Error>;
+	/// Update a GeneticAnalyst availability status
+	fn update_genetic_analyst_availability_status(
+		account_id: &T::AccountId,
+		status: &Self::AvailabilityStatus,
+	) -> Result<Self::GeneticAnalyst, Self::Error>;
 	/// Stake GeneticAnalyst
 	fn stake_genetic_analyst(
+		account_id: &T::AccountId,
+	) -> Result<Self::GeneticAnalyst, Self::Error>;
+	/// Unstake GeneticAnalyst
+	fn unstake_genetic_analyst(
 		account_id: &T::AccountId,
 	) -> Result<Self::GeneticAnalyst, Self::Error>;
 	/// Delete GeneticAnalyst

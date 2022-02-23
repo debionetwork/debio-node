@@ -9,7 +9,7 @@ use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::traits::{AccountIdConversion, Hash},
 	sp_std::convert::TryInto,
-	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	traits::{Currency, ExistenceRequirement},
 	PalletId,
 };
 pub use pallet::*;
@@ -22,6 +22,7 @@ use traits_genetic_analysis_orders::{
 	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,
 };
 use traits_genetic_analyst_services::{GeneticAnalystServiceInfo, GeneticAnalystServicesProvider};
+use traits_genetic_analysts::GeneticAnalystsProvider;
 use traits_genetic_data::{GeneticData, GeneticDataProvider};
 pub use weights::WeightInfo;
 
@@ -62,6 +63,7 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 	pub status: GeneticAnalysisOrderStatus,
 	pub created_at: Moment,
 	pub updated_at: Moment,
+	pub genetic_link: Vec<u8>,
 }
 #[allow(clippy::too_many_arguments)]
 impl<Hash, AccountId, Balance, Moment: Default>
@@ -75,6 +77,7 @@ impl<Hash, AccountId, Balance, Moment: Default>
 		seller_id: AccountId,
 		genetic_data_id: Hash,
 		genetic_analysis_tracking_id: TrackingId,
+		genetic_link: Vec<u8>,
 		currency: CurrencyType,
 		prices: Vec<Price<Balance>>,
 		additional_prices: Vec<Price<Balance>>,
@@ -89,6 +92,7 @@ impl<Hash, AccountId, Balance, Moment: Default>
 			seller_id,
 			genetic_data_id,
 			genetic_analysis_tracking_id,
+			genetic_link,
 			currency,
 			prices,
 			additional_prices,
@@ -121,6 +125,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type GeneticAnalysts: GeneticAnalystsProvider<Self>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticData: GeneticDataProvider<Self>;
 		type GeneticAnalysis: GeneticAnalysisProvider<Self>;
@@ -167,6 +172,11 @@ pub mod pallet {
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, GeneticAnalysisOrderIdsOf<T>>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn pending_genetic_analysis_orders_by_genetic_analyst_id)]
+	pub type PendingGeneticAnalysisOrdersBySeller<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, GeneticAnalysisOrderIdsOf<T>>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn last_genetic_analysis_order_by_customer_id)]
 	pub type LastGeneticAnalysisOrderByCustomer<T> =
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, HashOf<T>>;
@@ -201,7 +211,7 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			EscrowKey::<T>::put(&self.escrow_key);
-			PalletAccount::<T>::put(<Pallet<T>>::account_id());
+			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 		}
 	}
 	// ----------------------------------------
@@ -263,8 +273,8 @@ pub mod pallet {
 		SellerEthAddressNotFound,
 		/// GeneticAnalystService Price Index not found
 		PriceIndexNotFound,
-		// Bad signature
-		BadSignature,
+		// GeneticAnalyst is unavailable
+		GeneticAnalystUnavailable,
 		/// Insufficient pallet funds
 		InsufficientPalletFunds,
 	}
@@ -278,6 +288,7 @@ pub mod pallet {
 			service_id: T::Hash,
 			price_index: u32,
 			customer_box_public_key: T::Hash,
+			genetic_link: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -287,6 +298,7 @@ pub mod pallet {
 				&service_id,
 				price_index,
 				&customer_box_public_key,
+				&genetic_link,
 			) {
 				Ok(genetic_analysis_order) => {
 					Self::deposit_event(Event::<T>::GeneticAnalysisOrderCreated(
@@ -426,11 +438,19 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		genetic_analyst_service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
+		genetic_link: &[u8],
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		let genetic_analyst_service =
-			T::GeneticAnalystServices::genetic_analyst_service_by_id(genetic_analyst_service_id);
-		if genetic_analyst_service.is_none() {
-			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
+		let genetic_analyst_service = match T::GeneticAnalystServices::genetic_analyst_service_by_id(
+			genetic_analyst_service_id,
+		) {
+			Some(_genetic_analyst_service) => _genetic_analyst_service,
+			None => return Err(Error::<T>::GeneticAnalystServiceDoesNotExist),
+		};
+
+		let seller_id = genetic_analyst_service.get_owner_id();
+		if !T::GeneticAnalysts::is_genetic_analyst_available(seller_id).unwrap() {
+			// If _bool is false, then genetic analyst is unavailable
+			return Err(Error::<T>::GeneticAnalystUnavailable)
 		}
 
 		let genetic_data = T::GeneticData::genetic_data_by_id(genetic_data_id);
@@ -443,13 +463,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::NotOwnerOfGeneticData)
 		}
 
-		let genetic_analyst_service = genetic_analyst_service.unwrap();
-		let genetic_analysis_order_id =
-			Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
-
-		let seller_id = genetic_analyst_service.get_owner_id();
 		let prices_by_currency = genetic_analyst_service.get_prices_by_currency();
-
 		if prices_by_currency.is_empty() ||
 			prices_by_currency.len() - 1 < price_index.try_into().unwrap()
 		{
@@ -466,6 +480,8 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 
 		// Initialize GeneticAnalysis
+		let genetic_analysis_order_id =
+			Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
 		let genetic_analysis = T::GeneticAnalysis::register_genetic_analysis(
 			seller_id,
 			customer_id,
@@ -484,6 +500,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			seller_id.clone(),
 			*genetic_data_id,
 			genetic_analysis.get_genetic_analysis_tracking_id().clone(),
+			genetic_link.to_vec(),
 			currency.clone(),
 			prices.clone(),
 			additional_prices.clone(),
@@ -544,18 +561,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		let _ = Self::transfer_balance(
 			&genetic_analysis_order.customer_id,
+			&Self::account_id(),
 			genetic_analysis_order.total_price,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&Self::account_id(), imb);
-				Self::set_escrow_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -591,18 +601,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		let _ = Self::transfer_balance(
 			&Self::account_id(),
+			&genetic_analysis_order.seller_id,
 			genetic_analysis_order.total_price,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&genetic_analysis_order.seller_id, imb);
-				Self::set_escrow_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -636,18 +639,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		let _ = Self::transfer_balance(
 			&Self::account_id(),
+			&genetic_analysis_order.customer_id,
 			genetic_analysis_order.total_price,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&genetic_analysis_order.customer_id, imb);
-				Self::set_escrow_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -667,6 +663,13 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		EscrowKey::<T>::put(escrow_key);
 
 		Ok(())
+	}
+
+	fn is_pending_genetic_analysis_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool {
+		match PendingGeneticAnalysisOrdersBySeller::<T>::get(account_id) {
+			Some(_arr) => !_arr.is_empty(),
+			None => false,
+		}
 	}
 }
 
@@ -714,6 +717,9 @@ impl<T: Config> Pallet<T> {
 		Self::insert_genetic_analysis_order_id_into_genetic_analysis_orders_by_seller(
 			genetic_analysis_order,
 		);
+		Self::insert_genetic_analysis_order_id_into_pending_genetic_analysis_orders_by_seller(
+			genetic_analysis_order,
+		);
 		Self::insert_genetic_analysis_order_id_into_genetic_analysis_orders_by_customer(
 			genetic_analysis_order,
 		);
@@ -759,24 +765,34 @@ impl<T: Config> Pallet<T> {
 		}
 	}
 
-	pub fn remove_genetic_analysis_order_id_from_genetic_analysis_orders_by_seller(
+	pub fn insert_genetic_analysis_order_id_into_pending_genetic_analysis_orders_by_seller(
+		genetic_analysis_order: &GeneticAnalysisOrderOf<T>,
+	) {
+		match PendingGeneticAnalysisOrdersBySeller::<T>::get(&genetic_analysis_order.seller_id) {
+			None => {
+				PendingGeneticAnalysisOrdersBySeller::<T>::insert(
+					&genetic_analysis_order.seller_id,
+					vec![genetic_analysis_order.id],
+				);
+			},
+			Some(mut genetic_analysis_orders) => {
+				genetic_analysis_orders.push(genetic_analysis_order.id);
+				PendingGeneticAnalysisOrdersBySeller::<T>::insert(
+					&genetic_analysis_order.seller_id,
+					genetic_analysis_orders,
+				);
+			},
+		}
+	}
+
+	pub fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 		seller_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) {
 		let mut genetic_analysis_orders =
-			GeneticAnalysisOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
+			PendingGeneticAnalysisOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
 		genetic_analysis_orders.retain(|o_id| o_id != genetic_analysis_order_id);
-		GeneticAnalysisOrdersBySeller::<T>::insert(seller_id, genetic_analysis_orders);
-	}
-
-	pub fn remove_genetic_analysis_order_id_from_genetic_analysis_orders_by_customer(
-		customer_id: &T::AccountId,
-		genetic_analysis_order_id: &T::Hash,
-	) {
-		let mut genetic_analysis_orders =
-			GeneticAnalysisOrdersByCustomer::<T>::get(customer_id).unwrap_or_default();
-		genetic_analysis_orders.retain(|o_id| o_id != genetic_analysis_order_id);
-		GeneticAnalysisOrdersByCustomer::<T>::insert(customer_id, genetic_analysis_orders);
+		PendingGeneticAnalysisOrdersBySeller::<T>::insert(seller_id, genetic_analysis_orders);
 	}
 
 	pub fn genetic_analysis_order_can_be_refunded(
@@ -793,21 +809,25 @@ impl<T: Config> Pallet<T> {
 		true
 	}
 
-	/// The account ID that holds the funds
-	pub fn account_id() -> AccountIdOf<T> {
+	/// The injected pallet ID
+	pub fn get_pallet_id() -> AccountIdOf<T> {
 		T::PalletId::get().into_account()
 	}
 
-	/// Payment
-	pub fn make_payment(account_id: &AccountIdOf<T>, balance: BalanceOf<T>) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(
-			account_id,
-			&Self::account_id(),
-			balance,
-			ExistenceRequirement::AllowDeath,
-		);
+	/// The account ID that holds the funds
+	pub fn account_id() -> AccountIdOf<T> {
+		<PalletAccount<T>>::get()
+	}
+
+	/// Transfer balance
+	pub fn transfer_balance(
+		source: &AccountIdOf<T>,
+		dest: &AccountIdOf<T>,
+		amount: BalanceOf<T>,
+	) -> BalanceOf<T> {
+		let _ = T::Currency::transfer(source, dest, amount, ExistenceRequirement::KeepAlive);
 		Self::set_escrow_amount();
-		balance
+		amount
 	}
 
 	/// Is the balance sufficient for payment
@@ -852,5 +872,19 @@ impl<T: Config> GeneticAnalysisOrderStatusUpdater<T> for Pallet<T> {
 				);
 			},
 		}
+	}
+
+	fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
+		seller_id: &AccountIdOf<T>,
+		genetic_analysis_order_id: &HashOf<T>,
+	) {
+		Self::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
+			seller_id,
+			genetic_analysis_order_id,
+		);
+	}
+
+	fn is_pending_genetic_analysis_order_by_seller_exist(seller_id: &AccountIdOf<T>) -> bool {
+		Self::is_pending_genetic_analysis_order_ids_by_seller_exist(seller_id)
 	}
 }

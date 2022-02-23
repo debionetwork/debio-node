@@ -34,9 +34,11 @@ sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkado
 primitives-duration = { path = '../../primitives/duration', default-features = false }
 primitives-tracking-id = { path = '../../primitives/tracking-id', default-features = false }
 primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
+primitives-availability-status = { path = '../../primitives/availability-status', default-features = false }
 
 traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analysis = { path = '../genetic-analysis/traits', default-features = false }
+traits-genetic-analysts = { path = '../genetic-analysts/traits', default-features = false }
 traits-genetic-data = { path = '../genetic-data/traits', default-features = false }
 traits-genetic-analysis-orders = { path = './traits', default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
@@ -86,9 +88,11 @@ std = [
     'primitives-duration/std',
     'primitives-tracking-id/std',
     'primitives-price-and-currency/std',
+    'primitives-availability-status/std',
 
     'traits-genetic-analyst-services/std',
     'traits-genetic-analysis/std',
+    'traits-genetic-analysts/std',
     'traits-genetic-data/std',
     'traits-genetic-analysis-orders/std',
     'traits-user-profile/std',

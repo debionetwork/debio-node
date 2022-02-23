@@ -8,6 +8,7 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		service_id: &T::Hash,
 		price_index: u32,
 		customer_box_public_key: &T::Hash,
+		genetic_link: &[u8],
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error>;
 	fn cancel_genetic_analysis_order(
 		customer_id: &T::AccountId,
@@ -29,4 +30,5 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		account_id: &T::AccountId,
 		escrow_key: &T::AccountId,
 	) -> Result<(), Self::Error>;
+	fn is_pending_genetic_analysis_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool;
 }

@@ -1282,7 +1282,7 @@ dependencies = [
 
 [[package]]
 name = "debio"
-version = "0.1.0"
+version = "2.0.0"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -1343,7 +1343,7 @@ dependencies = [
 
 [[package]]
 name = "debio-runtime"
-version = "0.1.0"
+version = "2.0.0"
 dependencies = [
  "beefy-primitives",
  "certifications",
@@ -1367,6 +1367,7 @@ dependencies = [
  "genetic-analyst-services",
  "genetic-analyst-services-benchmarking",
  "genetic-analysts",
+ "genetic-analysts-benchmarking",
  "genetic-data",
  "genetic-testing",
  "genetic-testing-benchmarking",
@@ -2247,8 +2248,10 @@ dependencies = [
  "genetic-analysts",
  "genetic-data",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",
@@ -2281,6 +2284,7 @@ dependencies = [
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",
@@ -2293,6 +2297,7 @@ dependencies = [
  "traits-genetic-analysis",
  "traits-genetic-analysis-orders",
  "traits-genetic-analyst-services",
+ "traits-genetic-analysts",
  "traits-genetic-data",
  "traits-user-profile",
  "user-profile",
@@ -2315,6 +2320,7 @@ dependencies = [
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",
@@ -2348,6 +2354,7 @@ dependencies = [
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",
@@ -2409,10 +2416,14 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "scale-info",
@@ -2476,10 +2487,14 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-duration",
@@ -2506,6 +2521,7 @@ dependencies = [
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
+ "primitives-availability-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -2513,8 +2529,78 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-genetic-analysis-orders",
  "traits-genetic-analyst-qualifications",
  "traits-genetic-analyst-services",
+ "traits-genetic-analysts",
+ "traits-user-profile",
+ "user-profile",
+]
+
+[[package]]
+name = "genetic-analysts-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
+ "genetic-analyst-qualifications",
+ "genetic-analyst-services",
+ "genetic-analysts",
+ "genetic-data",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analysis-orders",
+ "traits-genetic-analyst-qualifications",
+ "traits-genetic-analyst-services",
+ "traits-genetic-analysts",
+ "traits-user-profile",
+ "user-profile",
+]
+
+[[package]]
+name = "genetic-analysts-tests"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
+ "genetic-analyst-qualifications",
+ "genetic-analyst-services",
+ "genetic-analysts",
+ "genetic-data",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-duration",
+ "primitives-price-and-currency",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-analysis-orders",
+ "traits-genetic-analyst-qualifications",
+ "traits-genetic-analyst-services",
+ "traits-genetic-analysts",
  "traits-user-profile",
  "user-profile",
 ]
@@ -5440,6 +5526,15 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-std",
+]
+
+[[package]]
+name = "primitives-availability-status"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -8600,6 +8695,16 @@ dependencies = [
  "primitives-price-and-currency",
  "scale-info",
  "sp-std",
+]
+
+[[package]]
+name = "traits-genetic-analysts"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]

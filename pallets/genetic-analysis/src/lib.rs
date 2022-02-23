@@ -310,6 +310,10 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 		T::GeneticAnalysisOrders::emit_event_genetic_analysis_order_failed(
 			&genetic_analysis.genetic_analysis_order_id,
 		);
+		T::GeneticAnalysisOrders::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
+			&genetic_analysis.genetic_analyst_id,
+			&genetic_analysis.genetic_analysis_order_id
+		);
 		T::GeneticAnalysisOrders::update_status_failed(&genetic_analysis.genetic_analysis_order_id);
 
 		Ok(genetic_analysis)
@@ -338,6 +342,10 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 			if result.is_empty() {
 				return Err(Error::<T>::GeneticAnalysisNotYetSubmitted)
 			}
+			T::GeneticAnalysisOrders::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
+				&genetic_analysis.genetic_analyst_id,
+				&genetic_analysis.genetic_analysis_order_id
+			);
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();

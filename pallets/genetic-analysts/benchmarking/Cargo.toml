@@ -1,5 +1,5 @@
 [package]
-name = 'genetic-analysts'
+name = 'genetic-analysts-benchmarking'
 version = '0.1.0'
 repository = ''
 edition = '2018'
@@ -24,25 +24,30 @@ frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 
 frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
-frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
-primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
-primitives-availability-status = { path = '../../primitives/availability-status', default-features = false }
+primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
+primitives-availability-status = { path = '../../../primitives/availability-status', default-features = false }
 
-traits-user-profile = { path = '../../traits/user-profile', default-features = false }
-traits-genetic-analysts = { path = './traits', default-features = false }
-traits-genetic-analysis-orders = { path = '../genetic-analysis-orders/traits', default-features = false }
-traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits', default-features = false }
-traits-genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications/traits', default-features = false }
+traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
+traits-genetic-analysts = { path = '../traits', default-features = false }
+traits-genetic-analysis-orders = { path = '../../genetic-analysis-orders/traits', default-features = false }
+traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
+traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 ## Local Dependencies
-genetic-analyst-services = { path = '../genetic-analyst-services', default-features = false }
-genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications', default-features = false }
-user-profile = { path = '../user-profile', default-features = false }
+genetic-analysts = { path = '../../genetic-analysts', default-features = false }
+genetic-analyst-services = { path = '../../genetic-analyst-services', default-features = false }
+genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
+genetic-analysis = { path = '../../genetic-analysis', default-features = false }
+genetic-analysis-orders = { path = '../../genetic-analysis-orders', default-features = false }
+genetic-data = { path = '../../genetic-data', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
@@ -56,6 +61,7 @@ std = [
 	'scale-info/std',
     'frame-support/std',
     'frame-system/std',
+    'frame-benchmarking/std',
     'sp-std/std',
     'sp-io/std',
     
@@ -70,12 +76,14 @@ std = [
 
 	'pallet-balances/std',
     'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
     
+    'genetic-analysts/std',
     'genetic-analyst-services/std',
 	'genetic-analyst-qualifications/std',
+	'genetic-analysis/std',
+	'genetic-analysis-orders/std',
+	'genetic-data/std',
 	'user-profile/std',
-]
-runtime-benchmarks = [
-	'frame-benchmarking'
 ]
 try-runtime = ['frame-support/try-runtime']
