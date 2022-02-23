@@ -44,6 +44,7 @@ use genetic_analysis_orders::Call;
 
 use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::PriceByCurrency;
+use primitives_availability_status::AvailabilityStatus;
 
 benchmarks! {
 	create_genetic_analysis_order {
@@ -63,6 +64,8 @@ benchmarks! {
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+
+		let _ = GeneticAnalysts::<T>::update_genetic_analyst_availability_status(caller_origin.clone(), AvailabilityStatus::Available);
 
 		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
@@ -120,6 +123,8 @@ benchmarks! {
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+
+		let _ = GeneticAnalysts::<T>::update_genetic_analyst_availability_status(caller_origin.clone(), AvailabilityStatus::Available);
 
 		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
@@ -188,6 +193,8 @@ benchmarks! {
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
 
+		let _ = GeneticAnalysts::<T>::update_genetic_analyst_availability_status(caller_origin.clone(), AvailabilityStatus::Available);
+
 		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
 
@@ -251,6 +258,8 @@ benchmarks! {
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+
+		let _ = GeneticAnalysts::<T>::update_genetic_analyst_availability_status(caller_origin.clone(), AvailabilityStatus::Available);
 
 		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
@@ -333,6 +342,8 @@ benchmarks! {
 			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
 		};
 		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin.clone(), genetic_analyst);
+
+		let _ = GeneticAnalysts::<T>::update_genetic_analyst_availability_status(caller_origin.clone(), AvailabilityStatus::Available);
 
 		let eth_address = <T as UserProfileConfig>::EthereumAddress::default();
 		let _set_eth_address = UserProfile::<T>::set_eth_address(caller_origin.clone(), eth_address);
