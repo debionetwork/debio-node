@@ -158,6 +158,8 @@ pub mod pallet {
 		GeneticAnalystQualificationDoesNotExist,
 		/// Creating a qualification without experience
 		GeneticAnalystExperienceCannotBeEmpty,
+		// Cannot create more than twenty qualifications at once
+		CannotCreateMoreThanTwentyQualificationsAtOnce,
 	}
 
 	#[pallet::call]
@@ -171,13 +173,37 @@ pub mod pallet {
 
 			match <Self as GeneticAnalystQualificationInterface<T>>::create_qualification(
 				&who,
-				&qualification_info,
+				&[qualification_info],
 			) {
-				Ok(qualification) => {
+				Ok(qualifications) => {
 					Self::deposit_event(Event::GeneticAnalystQualificationCreated(
-						qualification,
+						qualifications.first().unwrap().clone(),
 						who.clone(),
 					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::WeightInfo::bulk_create_qualification())]
+		pub fn bulk_create_qualification(
+			origin: OriginFor<T>,
+			qualification_infos: Vec<GeneticAnalystQualificationInfoOf>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystQualificationInterface<T>>::create_qualification(
+				&who,
+				&qualification_infos,
+			) {
+				Ok(qualifications) => {
+					for qualification in qualifications {
+						Self::deposit_event(Event::GeneticAnalystQualificationCreated(
+							qualification,
+							who.clone(),
+						));
+					}
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -258,41 +284,53 @@ impl<T: Config> GeneticAnalystQualificationInterface<T> for Pallet<T> {
 	/// Increment Counts
 	fn create_qualification(
 		owner_id: &T::AccountId,
-		qualification_info: &Self::GeneticAnalystQualificationInfo,
-	) -> Result<Self::GeneticAnalystQualification, Self::Error> {
+		qualification_infos: &[Self::GeneticAnalystQualificationInfo],
+	) -> Result<Vec<Self::GeneticAnalystQualification>, Self::Error> {
 		// Check if user can create_qualification
 		let can_create_qualification =
 			T::GeneticAnalystQualificationOwner::can_create_qualification(owner_id);
 		if !can_create_qualification {
 			return Err(Error::<T>::NotAllowedToCreate)
 		}
-		if !qualification_info.does_experience_exist() {
-			return Err(Error::<T>::GeneticAnalystExperienceCannotBeEmpty)
+
+		if qualification_infos.len() > 20 {
+			return Err(Error::<T>::CannotCreateMoreThanTwentyQualificationsAtOnce)
 		}
 
-		let owner_qualification_count =
-			<Self as GeneticAnalystQualificationInterface<T>>::qualification_count_by_owner(
-				owner_id,
+		// Create vector
+		let mut qualifications = vec![];
+		for qualification_info in qualification_infos {
+			if !qualification_info.does_experience_exist() {
+				return Err(Error::<T>::GeneticAnalystExperienceCannotBeEmpty)
+			}
+
+			let owner_qualification_count =
+				<Self as GeneticAnalystQualificationInterface<T>>::qualification_count_by_owner(
+					owner_id,
+				);
+			let qualification_id =
+				Self::generate_qualification_id(owner_id, owner_qualification_count);
+
+			let qualification = GeneticAnalystQualification::new(
+				qualification_id,
+				owner_id.clone(),
+				qualification_info.clone(),
 			);
-		let qualification_id = Self::generate_qualification_id(owner_id, owner_qualification_count);
+			// Store to GeneticAnalystQualifications storage
+			GeneticAnalystQualifications::<T>::insert(&qualification_id, &qualification);
 
-		let qualification = GeneticAnalystQualification::new(
-			qualification_id,
-			owner_id.clone(),
-			qualification_info.clone(),
-		);
-		// Store to GeneticAnalystQualifications storage
-		GeneticAnalystQualifications::<T>::insert(&qualification_id, &qualification);
+			// Increment GeneticAnalystQualifications Count
+			Self::add_qualifications_count();
+			// Increment GeneticAnalystQualificationsCountByOwner
+			Self::add_qualification_count_by_owner(&qualification.owner_id);
 
-		// Increment GeneticAnalystQualifications Count
-		Self::add_qualifications_count();
-		// Increment GeneticAnalystQualificationsCountByOwner
-		Self::add_qualification_count_by_owner(&qualification.owner_id);
+			// Associate created qualification to the owner
+			T::GeneticAnalystQualificationOwner::associate(owner_id, &qualification_id);
 
-		// Associate created qualification to the owner
-		T::GeneticAnalystQualificationOwner::associate(owner_id, &qualification_id);
+			qualifications.push(qualification);
+		}
 
-		Ok(qualification)
+		Ok(qualifications)
 	}
 
 	/// Update GeneticAnalystQualification information

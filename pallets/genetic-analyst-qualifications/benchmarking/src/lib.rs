@@ -63,6 +63,288 @@ benchmarks! {
 		};
 	}: create_qualification(RawOrigin::Signed(caller), qualification)
 
+	bulk_create_qualification {
+		let caller: T::AccountId = whitelisted_caller();
+		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+
+		let genetic_analyst = GeneticAnalystInfo {
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+		};
+		let _add_genetic_analysts = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, genetic_analyst);
+
+		let qualifications = vec![
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			},
+			GeneticAnalystQualificationInfo {
+				experience: vec![GeneticAnalystExperience {
+					title: "DeBio title".as_bytes().to_vec(),
+				}],
+				certification: Some(vec![GeneticAnalystCertification {
+					title: "DeBio title".as_bytes().to_vec(),
+					issuer: "DeBio issuer".as_bytes().to_vec(),
+					month: "DeBio month".as_bytes().to_vec(),
+					year: "DeBio year".as_bytes().to_vec(),
+					description: "DeBio description".as_bytes().to_vec(),
+					supporting_document: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+				}]),
+			}
+		];
+	}: bulk_create_qualification(RawOrigin::Signed(caller), qualifications)
+
 	update_qualification {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));

@@ -1,4 +1,4 @@
-//use sp_std::prelude::*;
+use sp_std::vec::Vec;
 
 pub trait GeneticAnalystQualificationInterface<T: frame_system::Config> {
 	type Error;
@@ -13,8 +13,8 @@ pub trait GeneticAnalystQualificationInterface<T: frame_system::Config> {
 
 	fn create_qualification(
 		owner_id: &T::AccountId,
-		qualification: &Self::GeneticAnalystQualificationInfo,
-	) -> Result<Self::GeneticAnalystQualification, Self::Error>;
+		qualification: &[Self::GeneticAnalystQualificationInfo],
+	) -> Result<Vec<Self::GeneticAnalystQualification>, Self::Error>;
 	fn update_qualification(
 		owner_id: &T::AccountId,
 		qualification_id: &Self::GeneticAnalystQualificationId,

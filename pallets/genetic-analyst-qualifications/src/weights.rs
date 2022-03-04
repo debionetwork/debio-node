@@ -30,6 +30,7 @@ use sp_std::marker::PhantomData;
 /// Weight functions needed for genetic_analyst_qualifications.
 pub trait WeightInfo {
 	fn create_qualification() -> Weight;
+	fn bulk_create_qualification() -> Weight;
 	fn update_qualification() -> Weight;
 	fn delete_qualification() -> Weight;
 }
@@ -42,6 +43,11 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
 	fn create_qualification() -> Weight {
+		58_358_000_u64
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
+	}
+	fn bulk_create_qualification() -> Weight {
 		58_358_000_u64
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(4_u64))
@@ -70,6 +76,11 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
 	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
 	fn create_qualification() -> Weight {
+		58_358_000_u64
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	fn bulk_create_qualification() -> Weight {
 		58_358_000_u64
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
