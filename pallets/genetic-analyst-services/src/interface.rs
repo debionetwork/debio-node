@@ -1,3 +1,5 @@
+use sp_std::vec::Vec;
+
 pub trait GeneticAnalystServiceInterface<T: frame_system::Config> {
 	type Error;
 	type GeneticAnalystServiceId;
@@ -11,8 +13,8 @@ pub trait GeneticAnalystServiceInterface<T: frame_system::Config> {
 
 	fn create_genetic_analyst_service(
 		owner_id: &T::AccountId,
-		genetic_analyst_service: &Self::GeneticAnalystServiceInfo,
-	) -> Result<Self::GeneticAnalystService, Self::Error>;
+		genetic_analyst_services: &[Self::GeneticAnalystServiceInfo],
+	) -> Result<Vec<Self::GeneticAnalystService>, Self::Error>;
 	fn update_genetic_analyst_service(
 		owner_id: &T::AccountId,
 		genetic_analyst_service_id: &Self::GeneticAnalystServiceId,

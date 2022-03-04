@@ -52,6 +52,207 @@ benchmarks! {
 		};
 	}: create_genetic_analyst_service(RawOrigin::Signed(caller), genetic_analyst_service_info)
 
+	bulk_create_genetic_analyst_service {
+		let caller: T::AccountId = whitelisted_caller();
+		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let genetic_analyst = GeneticAnalystInfo {
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			first_name: "First Name".as_bytes().to_vec(),
+			last_name: "Last Name".as_bytes().to_vec(),
+			gender: "Gender".as_bytes().to_vec(),
+			date_of_birth: <T as pallet_timestamp::pallet::Config>::Moment::default(),
+			email: "Email".as_bytes().to_vec(),
+			phone_number: "+6893026516".as_bytes().to_vec(),
+			specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+			profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+			profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+		};
+		let _ = GeneticAnalysts::<T>::register_genetic_analyst(caller_origin, genetic_analyst);
+
+		let twenty_services = vec![
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			},
+			GeneticAnalystServiceInfo {
+				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+				prices_by_currency: vec![PriceByCurrency::default()],
+				expected_duration: ExpectedDuration::default(),
+				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+					.as_bytes()
+					.to_vec(),
+			}
+		];
+	}: bulk_create_genetic_analyst_service(RawOrigin::Signed(caller), twenty_services)
+
 	update_genetic_analyst_service {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
