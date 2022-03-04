@@ -163,7 +163,7 @@ pub mod pallet {
 
 			match <Self as GeneticAnalystServiceInterface<T>>::create_genetic_analyst_service(
 				&who,
-				&vec![genetic_analyst_service_info],
+				&[genetic_analyst_service_info],
 			) {
 				Ok(genetic_analyst_services) => {
 					Self::deposit_event(Event::GeneticAnalystServiceCreated(
@@ -175,11 +175,11 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
-		
+
 		#[pallet::weight(T::WeightInfo::create_genetic_analyst_service())]
 		pub fn bulk_create_genetic_analyst_service(
 			origin: OriginFor<T>,
-			genetic_analyst_service_infos: Vec<GeneticAnalystServiceInfoOf<T>>
+			genetic_analyst_service_infos: Vec<GeneticAnalystServiceInfoOf<T>>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -325,7 +325,10 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 				genetic_analyst_service_info_mut,
 			);
 			// Store to GeneticAnalystServices storage
-			GeneticAnalystServices::<T>::insert(&genetic_analyst_service_id, &genetic_analyst_service);
+			GeneticAnalystServices::<T>::insert(
+				&genetic_analyst_service_id,
+				&genetic_analyst_service,
+			);
 
 			// Increment GeneticAnalystServices Count
 			Self::add_genetic_analyst_services_count();

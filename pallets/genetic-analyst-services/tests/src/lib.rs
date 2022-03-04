@@ -195,23 +195,21 @@ mod tests {
 				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
 					.as_bytes()
 					.to_vec(),
-			}
+			},
 		]
 	}
 
 	fn create_twenty_one_services() -> Vec<GeneticAnalystServiceInfo<u64>> {
 		let mut twenty_services = create_twenty_services();
-		twenty_services.push(
-			GeneticAnalystServiceInfo {
-				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-				prices_by_currency: vec![PriceByCurrency::default()],
-				expected_duration: ExpectedDuration::default(),
-				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
-				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
-					.as_bytes()
-					.to_vec(),
-			}
-		);
+		twenty_services.push(GeneticAnalystServiceInfo {
+			name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
+			prices_by_currency: vec![PriceByCurrency::default()],
+			expected_duration: ExpectedDuration::default(),
+			description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
+			test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
+				.as_bytes()
+				.to_vec(),
+		});
 		twenty_services
 	}
 
@@ -331,7 +329,10 @@ mod tests {
 				})
 			);
 
-			assert_eq!(GeneticAnalystServices::genetic_analyst_services_count_by_owner(1), Some(20));
+			assert_eq!(
+				GeneticAnalystServices::genetic_analyst_services_count_by_owner(1),
+				Some(20)
+			);
 		})
 	}
 
