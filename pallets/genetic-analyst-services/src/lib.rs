@@ -176,7 +176,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::WeightInfo::create_genetic_analyst_service())]
+		#[pallet::weight(T::WeightInfo::bulk_create_genetic_analyst_service())]
 		pub fn bulk_create_genetic_analyst_service(
 			origin: OriginFor<T>,
 			genetic_analyst_service_infos: Vec<GeneticAnalystServiceInfoOf<T>>,
