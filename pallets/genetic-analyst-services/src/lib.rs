@@ -148,6 +148,8 @@ pub mod pallet {
 		NotGeneticAnalystServiceOwner,
 		/// Ordering a genetic_analyst_service that does not exist
 		GeneticAnalystServiceDoesNotExist,
+		// Cannot create more than twenty services at once
+		CannotCreateMoreThanTwentyServicesAtOnce,
 	}
 
 	#[pallet::call]
@@ -161,13 +163,37 @@ pub mod pallet {
 
 			match <Self as GeneticAnalystServiceInterface<T>>::create_genetic_analyst_service(
 				&who,
-				&genetic_analyst_service_info,
+				&vec![genetic_analyst_service_info],
 			) {
-				Ok(genetic_analyst_service) => {
+				Ok(genetic_analyst_services) => {
 					Self::deposit_event(Event::GeneticAnalystServiceCreated(
-						genetic_analyst_service,
+						genetic_analyst_services.first().unwrap().clone(),
 						who.clone(),
 					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+		
+		#[pallet::weight(T::WeightInfo::create_genetic_analyst_service())]
+		pub fn bulk_create_genetic_analyst_service(
+			origin: OriginFor<T>,
+			genetic_analyst_service_infos: Vec<GeneticAnalystServiceInfoOf<T>>
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystServiceInterface<T>>::create_genetic_analyst_service(
+				&who,
+				&genetic_analyst_service_infos,
+			) {
+				Ok(genetic_analyst_services) => {
+					for genetic_analyst_service in genetic_analyst_services {
+						Self::deposit_event(Event::GeneticAnalystServiceCreated(
+							genetic_analyst_service,
+							who.clone(),
+						));
+					}
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -248,8 +274,8 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 	/// Increment Counts
 	fn create_genetic_analyst_service(
 		owner_id: &T::AccountId,
-		genetic_analyst_service_info: &Self::GeneticAnalystServiceInfo,
-	) -> Result<Self::GeneticAnalystService, Self::Error> {
+		genetic_analyst_service_infos: &[Self::GeneticAnalystServiceInfo],
+	) -> Result<Vec<Self::GeneticAnalystService>, Self::Error> {
 		// Check if user can create_genetic_analyst_service
 		let can_create_genetic_analyst_service =
 			T::GeneticAnalystServiceOwner::can_create_genetic_analyst_service(owner_id);
@@ -257,52 +283,62 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 			return Err(Error::<T>::NotAllowedToCreate)
 		}
 
-		let owner_genetic_analyst_service_count =
-			<Self as GeneticAnalystServiceInterface<T>>::genetic_analyst_services_count_by_owner(
-				owner_id,
-			);
-		let genetic_analyst_service_id = Self::generate_genetic_analyst_service_id(
-			owner_id,
-			owner_genetic_analyst_service_count,
-		);
-
-		// Calculate total price
-		let mut genetic_analyst_service_info_mut = genetic_analyst_service_info.clone();
-		for (idx, price_by_currency) in
-			genetic_analyst_service_info.prices_by_currency.iter().enumerate()
-		{
-			// Remove total price before sum
-			genetic_analyst_service_info_mut.prices_by_currency[idx].total_price =
-				0u128.saturated_into();
-
-			for price_component in price_by_currency.price_components.iter() {
-				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
-					price_component.value;
-			}
-
-			for additional_price in price_by_currency.additional_prices.iter() {
-				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
-					additional_price.value;
-			}
+		if genetic_analyst_service_infos.len() > 20 {
+			return Err(Error::<T>::CannotCreateMoreThanTwentyServicesAtOnce)
 		}
 
-		let genetic_analyst_service = GeneticAnalystService::new(
-			genetic_analyst_service_id,
-			owner_id.clone(),
-			genetic_analyst_service_info_mut,
-		);
-		// Store to GeneticAnalystServices storage
-		GeneticAnalystServices::<T>::insert(&genetic_analyst_service_id, &genetic_analyst_service);
+		// Create vector
+		let mut genetic_analyst_services = vec![];
+		for genetic_analyst_service_info in genetic_analyst_service_infos {
+			let owner_genetic_analyst_service_count =
+				<Self as GeneticAnalystServiceInterface<T>>::genetic_analyst_services_count_by_owner(
+					owner_id,
+				);
+			let genetic_analyst_service_id = Self::generate_genetic_analyst_service_id(
+				owner_id,
+				owner_genetic_analyst_service_count,
+			);
 
-		// Increment GeneticAnalystServices Count
-		Self::add_genetic_analyst_services_count();
-		// Increment GeneticAnalystServicesCountByOwner
-		Self::add_genetic_analyst_services_count_by_owner(&genetic_analyst_service.owner_id);
+			// Calculate total price
+			let mut genetic_analyst_service_info_mut = genetic_analyst_service_info.clone();
+			for (idx, price_by_currency) in
+				genetic_analyst_service_info.prices_by_currency.iter().enumerate()
+			{
+				// Remove total price before sum
+				genetic_analyst_service_info_mut.prices_by_currency[idx].total_price =
+					0u128.saturated_into();
 
-		// Associate created genetic_analyst_service to the owner
-		T::GeneticAnalystServiceOwner::associate(owner_id, &genetic_analyst_service_id);
+				for price_component in price_by_currency.price_components.iter() {
+					genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
+						price_component.value;
+				}
 
-		Ok(genetic_analyst_service)
+				for additional_price in price_by_currency.additional_prices.iter() {
+					genetic_analyst_service_info_mut.prices_by_currency[idx].total_price +=
+						additional_price.value;
+				}
+			}
+
+			let genetic_analyst_service = GeneticAnalystService::new(
+				genetic_analyst_service_id,
+				owner_id.clone(),
+				genetic_analyst_service_info_mut,
+			);
+			// Store to GeneticAnalystServices storage
+			GeneticAnalystServices::<T>::insert(&genetic_analyst_service_id, &genetic_analyst_service);
+
+			// Increment GeneticAnalystServices Count
+			Self::add_genetic_analyst_services_count();
+			// Increment GeneticAnalystServicesCountByOwner
+			Self::add_genetic_analyst_services_count_by_owner(&genetic_analyst_service.owner_id);
+
+			// Associate created genetic_analyst_service to the owner
+			T::GeneticAnalystServiceOwner::associate(owner_id, &genetic_analyst_service_id);
+
+			genetic_analyst_services.push(genetic_analyst_service)
+		}
+
+		Ok(genetic_analyst_services)
 	}
 
 	/// Update GeneticAnalystService information
