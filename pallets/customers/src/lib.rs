@@ -38,14 +38,12 @@ pub struct CustomerInfo {
 // Customer Struct
 // the fields (excluding account_id) come from CustomerInfo struct
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct Customer<AccountId>
-{
+pub struct Customer<AccountId> {
 	pub account_id: AccountId,
 	pub info: CustomerInfo,
 }
 
-impl<AccountId> Customer<AccountId>
-{
+impl<AccountId> Customer<AccountId> {
 	pub fn new(account_id: AccountId, info: CustomerInfo) -> Self {
 		Self { account_id, info }
 	}
@@ -204,7 +202,7 @@ impl<T: Config> CustomerInterface<T> for Pallet<T> {
 			return Err(Error::<T>::CustomerAlreadyRegistered)
 		}
 		let customer = Customer::new(account_id.clone(), customer_info.clone());
-		
+
 		// Insert to Storage
 		Customers::<T>::insert(account_id, &customer);
 
@@ -237,7 +235,7 @@ impl<T: Config> CustomerInterface<T> for Pallet<T> {
 			return Err(Error::<T>::CustomerDoesNotExist)
 		}
 		let customer = customer.unwrap();
-		
+
 		Customers::<T>::remove(&customer.account_id);
 		Self::sub_customer_count();
 
