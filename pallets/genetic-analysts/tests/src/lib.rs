@@ -563,7 +563,7 @@ mod tests {
 					stake_amount: 0u128.saturated_into(),
 					stake_status: StakeStatus::Unstaked,
 					verification_status: VerificationStatus::Rejected,
-					availability_status: AvailabilityStatus::default(),
+					availability_status: AvailabilityStatus::Unavailable,
 					info: GeneticAnalystInfo {
 						box_public_key: Keccak256::hash(
 							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -882,6 +882,48 @@ mod tests {
 					}
 				})
 			);
+
+			assert_noop!(
+				GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
+				Error::<Test>::GeneticAnalystAlreadyStaked
+			);
+		})
+	}
+
+	#[test]
+	fn cant_stake_genetic_analyst_when_waiting_for_unstake() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
 
 			assert_noop!(
 				GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
@@ -1237,9 +1279,9 @@ mod tests {
 					services: Vec::new(),
 					qualifications: Vec::new(),
 					stake_amount: 0u128.saturated_into(),
-					stake_status: StakeStatus::Unstaked,
+					stake_status: StakeStatus::WaitingForUnstaked,
 					verification_status: VerificationStatus::default(),
-					availability_status: AvailabilityStatus::default(),
+					availability_status: AvailabilityStatus::Unavailable,
 					info: GeneticAnalystInfo {
 						box_public_key: Keccak256::hash(
 							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1295,57 +1337,6 @@ mod tests {
 			assert_noop!(
 				GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),),
 				Error::<Test>::GeneticAnalystIsNotStaked
-			);
-		})
-	}
-
-	#[test]
-	fn cant_unstake_genetic_analyst_when_insufficient_pallet_funds() {
-		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			GeneticAnalystVerifierKey::<Test>::put(2);
-
-			assert_ok!(Balances::set_balance(
-				RawOrigin::Root.into(),
-				1,
-				60000000000000000000000u128.saturated_into(),
-				0
-			));
-
-			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
-				60000000000000000000000u128.saturated_into(),
-			));
-
-			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
-				GeneticAnalystInfo {
-					box_public_key: Keccak256::hash(
-						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-					),
-					first_name: "First Name".as_bytes().to_vec(),
-					last_name: "Last Name".as_bytes().to_vec(),
-					gender: "Gender".as_bytes().to_vec(),
-					date_of_birth: 0,
-					email: "Email".as_bytes().to_vec(),
-					phone_number: "+6893026516".as_bytes().to_vec(),
-					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
-					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
-				}
-			));
-
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
-
-			assert_ok!(Balances::set_balance(
-				RawOrigin::Root.into(),
-				PalletAccount::<Test>::get(),
-				0u128.saturated_into(),
-				0
-			));
-
-			assert_noop!(
-				GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),),
-				Error::<Test>::InsufficientPalletFunds
 			);
 		})
 	}
@@ -1923,6 +1914,198 @@ mod tests {
 			assert_eq!(_genetic_analysis_info.process_success(), true);
 
 			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+		})
+	}
+
+	#[test]
+	fn retrieve_unstake_amount_works() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+
+			assert_eq!(
+				GeneticAnalysts::genetic_analyst_by_account_id(1),
+				Some(GeneticAnalyst {
+					account_id: 1,
+					services: Vec::new(),
+					qualifications: Vec::new(),
+					stake_amount: 50000000000000000000000u128.saturated_into(),
+					stake_status: StakeStatus::WaitingForUnstaked,
+					verification_status: VerificationStatus::default(),
+					availability_status: AvailabilityStatus::Unavailable,
+					info: GeneticAnalystInfo {
+						box_public_key: Keccak256::hash(
+							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+						),
+						first_name: "First Name".as_bytes().to_vec(),
+						last_name: "Last Name".as_bytes().to_vec(),
+						gender: "Gender".as_bytes().to_vec(),
+						date_of_birth: 0,
+						email: "Email".as_bytes().to_vec(),
+						phone_number: "+6893026516".as_bytes().to_vec(),
+						specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+						profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+						profile_image: Some(
+							"DeBio Genetic Analyst profile_image".as_bytes().to_vec()
+						),
+					}
+				})
+			);
+
+			assert_ok!(GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,));
+
+			assert_eq!(
+				GeneticAnalysts::genetic_analyst_by_account_id(1),
+				Some(GeneticAnalyst {
+					account_id: 1,
+					services: Vec::new(),
+					qualifications: Vec::new(),
+					stake_amount: 0u128.saturated_into(),
+					stake_status: StakeStatus::Unstaked,
+					verification_status: VerificationStatus::default(),
+					availability_status: AvailabilityStatus::Unavailable,
+					info: GeneticAnalystInfo {
+						box_public_key: Keccak256::hash(
+							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+						),
+						first_name: "First Name".as_bytes().to_vec(),
+						last_name: "Last Name".as_bytes().to_vec(),
+						gender: "Gender".as_bytes().to_vec(),
+						date_of_birth: 0,
+						email: "Email".as_bytes().to_vec(),
+						phone_number: "+6893026516".as_bytes().to_vec(),
+						specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+						profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+						profile_image: Some(
+							"DeBio Genetic Analyst profile_image".as_bytes().to_vec()
+						),
+					}
+				})
+			);
+		})
+	}
+
+	#[test]
+	fn cant_retrieve_unstake_amount_when_not_exist() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_noop!(
+				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Error::<Test>::GeneticAnalystDoesNotExist
+			);
+		})
+	}
+
+	#[test]
+	fn cant_retrieve_unstake_amount_when_not_waiting_for_unstake() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_noop!(
+				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Error::<Test>::GeneticAnalystIsNotWaitingForUnstake
+			);
+		})
+	}
+
+	#[test]
+	fn cant_unstake_genetic_analyst_when_insufficient_pallet_funds() {
+		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			GeneticAnalystVerifierKey::<Test>::put(2);
+
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				1,
+				60000000000000000000000u128.saturated_into(),
+				0
+			));
+
+			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
+				Origin::signed(2),
+				60000000000000000000000u128.saturated_into(),
+			));
+
+			assert_ok!(GeneticAnalysts::register_genetic_analyst(
+				Origin::signed(1),
+				GeneticAnalystInfo {
+					box_public_key: Keccak256::hash(
+						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+					),
+					first_name: "First Name".as_bytes().to_vec(),
+					last_name: "Last Name".as_bytes().to_vec(),
+					gender: "Gender".as_bytes().to_vec(),
+					date_of_birth: 0,
+					email: "Email".as_bytes().to_vec(),
+					phone_number: "+6893026516".as_bytes().to_vec(),
+					specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+					profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+					profile_image: Some("DeBio Genetic Analyst profile_image".as_bytes().to_vec()),
+				}
+			));
+
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+
+			assert_ok!(Balances::set_balance(
+				RawOrigin::Root.into(),
+				PalletAccount::<Test>::get(),
+				0u128.saturated_into(),
+				0
+			));
+
+			assert_noop!(
+				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Error::<Test>::InsufficientPalletFunds
+			);
 		})
 	}
 }
