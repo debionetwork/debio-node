@@ -14,7 +14,7 @@ pub enum AvailabilityStatus {
 }
 impl Default for AvailabilityStatus {
 	fn default() -> Self {
-		Self::Unavailable
+		Self::Available
 	}
 }
 

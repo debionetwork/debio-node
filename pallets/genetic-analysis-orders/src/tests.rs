@@ -661,6 +661,11 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_unavailable() {
 			}
 		));
 
+		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
+			Origin::signed(1),
+			AvailabilityStatus::Unavailable,
+		));
+
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 			Origin::signed(1),
 			GeneticAnalystServiceInfo {

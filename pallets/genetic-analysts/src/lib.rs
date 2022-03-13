@@ -39,14 +39,14 @@ impl Default for StakeStatus {
 }
 pub trait StakeStatusTrait {
 	fn is_staked(&self) -> bool;
-	fn is_waiting_for_staked(&self) -> bool;
+	fn is_waiting_for_unstaked(&self) -> bool;
 	fn is_unstaked(&self) -> bool;
 }
 impl StakeStatusTrait for StakeStatus {
 	fn is_staked(&self) -> bool {
 		matches!(*self, StakeStatus::Staked)
 	}
-	fn is_waiting_for_staked(&self) -> bool {
+	fn is_waiting_for_unstaked(&self) -> bool {
 		matches!(*self, StakeStatus::WaitingForUnstaked)
 	}
 	fn is_unstaked(&self) -> bool {
@@ -299,6 +299,9 @@ pub mod pallet {
 		/// GeneticAnalyst unstake successful
 		/// parameters. [GeneticAnalyst, who]
 		GeneticAnalystUnstakeSuccessful(GeneticAnalystOf<T>, AccountIdOf<T>),
+		/// GeneticAnalyst retrive unstake amount
+		/// parameters. [GeneticAnalyst, who]
+		GeneticAnalystRetrieveUnstakeAmount(GeneticAnalystOf<T>, AccountIdOf<T>),
 		/// Update GeneticAnalyst minimum stake successful
 		/// parameters. [who]
 		UpdateGeneticAnalystMinimumStakeSuccessful(AccountIdOf<T>),
@@ -333,6 +336,8 @@ pub mod pallet {
 		Unauthorized,
 		// GeneticAnalyst has pending orders
 		GeneticAnalystHasPendingOrders,
+		// GeneticAnalyst not waiting for unstake
+		GeneticAnalystIsNotWaitingForUnstake,
 	}
 
 	#[pallet::call]
@@ -461,6 +466,25 @@ pub mod pallet {
 			match <Self as GeneticAnalystInterface<T>>::unstake_genetic_analyst(&who) {
 				Ok(genetic_analyst) => {
 					Self::deposit_event(Event::GeneticAnalystUnstakeSuccessful(
+						genetic_analyst,
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::GeneticAnalystWeightInfo::retrieve_unstake_amount())]
+		pub fn retrieve_unstake_amount(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystInterface<T>>::retrieve_unstake_amount(&who, &account_id) {
+				Ok(genetic_analyst) => {
+					Self::deposit_event(Event::GeneticAnalystRetrieveUnstakeAmount(
 						genetic_analyst,
 						who.clone(),
 					));
@@ -644,7 +668,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 
 		let mut genetic_analyst = genetic_analyst.unwrap();
 		if genetic_analyst.stake_status.is_staked() ||
-			genetic_analyst.stake_status.is_waiting_for_staked()
+			genetic_analyst.stake_status.is_waiting_for_unstaked()
 		{
 			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
 		}
@@ -682,6 +706,32 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalystHasPendingOrders)
 		}
 
+		genetic_analyst.stake_status = StakeStatus::WaitingForUnstaked;
+		genetic_analyst.availability_status = AvailabilityStatus::Unavailable;
+
+		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
+
+		Ok(genetic_analyst)
+	}
+
+	fn retrieve_unstake_amount(
+		admin_key: &T::AccountId,
+		account_id: &T::AccountId,
+	) -> Result<Self::GeneticAnalyst, Self::Error> {
+		if admin_key.clone() != GeneticAnalystVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		let genetic_analyst = GeneticAnalysts::<T>::get(account_id);
+		if genetic_analyst == None {
+			return Err(Error::<T>::GeneticAnalystDoesNotExist)
+		}
+
+		let mut genetic_analyst = genetic_analyst.unwrap();
+		if !genetic_analyst.stake_status.is_waiting_for_unstaked() {
+			return Err(Error::<T>::GeneticAnalystIsNotWaitingForUnstake)
+		}
+
 		if !Self::is_pallet_balance_sufficient_for_refund(genetic_analyst.stake_amount) {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
@@ -691,7 +741,6 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 
 		genetic_analyst.stake_amount = 0u128.saturated_into();
 		genetic_analyst.stake_status = StakeStatus::Unstaked;
-		genetic_analyst.availability_status = AvailabilityStatus::Unavailable;
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
 
