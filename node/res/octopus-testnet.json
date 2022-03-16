@@ -3,10 +3,10 @@
   "id": "debio_testnet",
   "chainType": "Live",
   "bootNodes": [
-    "/dns/node-0.debionetwork.testnet.octopus.network/tcp/30333/p2p/12D3KooWAxYKgdmTczLioD1jkzMyaDuV2Q5VHBsJxPr5zEmHr8nY",
-    "/dns/node-1.debionetwork.testnet.octopus.network/tcp/30333/p2p/12D3KooWSmLVShww4w9PVW17cCAS5C1JnXBU4NbY7FcGGjMyUGiq",
-    "/dns/node-2.debionetwork.testnet.octopus.network/tcp/30333/p2p/12D3KooWT2umkS7F8GzUTLrfUzVBJPKn6YwCcuv6LBFQ27UPoo2Y",
-    "/dns/node-3.debionetwork.testnet.octopus.network/tcp/30333/p2p/12D3KooWHNf9JxUZKHoF7rrsmorv86gonXSb2ZU44CbMsnBNFSAJ"
+    "/dns/bootnode-v1-0.debionetwork.testnet.octopus.network/tcp/30333/ws/p2p/12D3KooWJtEB96UQdJXncxz1xKk1xDZPGKHZ5Q3iKYJfpruPFGio",
+    "/dns/bootnode-v1-1.debionetwork.testnet.octopus.network/tcp/30333/ws/p2p/12D3KooWQCmzt5fotZ1M8PCMyDX7AZibVo77vPMcz22kcnzoWLVs",
+    "/dns/bootnode-v1-2.debionetwork.testnet.octopus.network/tcp/30333/ws/p2p/12D3KooWGqvhWNHj5jFwjsbaqfZ4REGM4LikgnKN1zbazEAGiF4f",
+    "/dns/bootnode-v1-3.debionetwork.testnet.octopus.network/tcp/30333/ws/p2p/12D3KooWJQFJ4GvXZbg8FTV6gimUwArJVB4tLwud3j99YxjpfUB4"
   ],
   "telemetryEndpoints": null,
   "protocolId": "debio-testnet",
