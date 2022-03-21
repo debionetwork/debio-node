@@ -2,6 +2,7 @@
 /// Defines the functionalities of GeneticAnalyst Pallet
 pub trait GeneticAnalystInterface<T: frame_system::Config> {
 	type Error;
+	type Moment;
 	type Balance;
 	type GeneticAnalystInfo;
 	type GeneticAnalyst;
@@ -58,5 +59,10 @@ pub trait GeneticAnalystInterface<T: frame_system::Config> {
 	fn update_admin_key(
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
+	) -> Result<(), Self::Error>;
+	/// Update genetic analyst unstake time
+	fn update_unstake_time(
+		account_id: &T::AccountId,
+		moment: Self::Moment,
 	) -> Result<(), Self::Error>;
 }

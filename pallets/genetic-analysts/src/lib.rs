@@ -88,9 +88,11 @@ where
 	pub stake_status: StakeStatus,
 	pub verification_status: VerificationStatus,
 	pub availability_status: AvailabilityStatus,
+	pub unstake_at: Moment,
+	pub retrieve_unstake_at: Moment,
 }
 
-impl<AccountId, Hash, Moment, Balance: Default> GeneticAnalyst<AccountId, Hash, Moment, Balance>
+impl<AccountId, Hash, Moment: Default, Balance: Default> GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 {
@@ -104,6 +106,8 @@ where
 			stake_status: StakeStatus::default(),
 			verification_status: VerificationStatus::default(),
 			availability_status: AvailabilityStatus::default(),
+			unstake_at: Moment::default(),
+			retrieve_unstake_at: Moment::default(),
 		}
 	}
 
@@ -140,7 +144,7 @@ where
 	}
 }
 
-impl<T, AccountId, Hash, Moment, Balance: Default> GeneticAnalystServiceOwnerInfo<T>
+impl<T, AccountId, Hash, Moment: Default, Balance: Default> GeneticAnalystServiceOwnerInfo<T>
 	for GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
@@ -151,7 +155,7 @@ where
 	}
 }
 
-impl<T, AccountId, Hash, Moment, Balance: Default> GeneticAnalystQualificationOwnerInfo<T>
+impl<T, AccountId, Hash, Moment: Default, Balance: Default> GeneticAnalystQualificationOwnerInfo<T>
 	for GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
@@ -250,6 +254,10 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn minimum_stake_amount)]
 	pub type MinimumStakeAmount<T> = StorageValue<_, BalanceOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn unstake_time)]
+	pub type UnstakeTime<T> = StorageValue<_, MomentOf<T>>;
 	// -----------------------------------------
 
 	// ----- Genesis Configs ------------------
@@ -268,6 +276,7 @@ pub mod pallet {
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
+			UnstakeTime::<T>::put(MomentOf::<T>::default());
 			GeneticAnalystVerifierKey::<T>::put(&self.genetic_analyst_verifier_key);
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 			<Pallet<T>>::set_minimum_stake_amount(50000000000000000000000u128.saturated_into());
@@ -338,6 +347,8 @@ pub mod pallet {
 		GeneticAnalystHasPendingOrders,
 		// GeneticAnalyst not waiting for unstake
 		GeneticAnalystIsNotWaitingForUnstake,
+		// GeneticAnalyst cannot unstake now
+		GeneticAnalystCannotUnstakeNow,
 	}
 
 	#[pallet::call]
@@ -512,6 +523,24 @@ pub mod pallet {
 			}
 		}
 
+		#[pallet::weight(T::GeneticAnalystWeightInfo::update_minimum_stake_amount())]
+		pub fn update_unstake_time(
+			origin: OriginFor<T>,
+			amount: MomentOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalystInterface<T>>::update_unstake_time(&who, amount) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateGeneticAnalystMinimumStakeSuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
 		#[pallet::weight(T::GeneticAnalystWeightInfo::update_admin_key())]
 		pub fn update_admin_key(
 			origin: OriginFor<T>,
@@ -546,6 +575,7 @@ pub mod pallet {
 
 impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 	type Error = Error<T>;
+	type Moment = MomentOf<T>;
 	type Balance = BalanceOf<T>;
 	type GeneticAnalystInfo = GeneticAnalystInfo<HashOf<T>, MomentOf<T>>;
 	type GeneticAnalyst = GeneticAnalystOf<T>;
@@ -667,8 +697,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		}
 
 		let mut genetic_analyst = genetic_analyst.unwrap();
-		if genetic_analyst.stake_status.is_staked() ||
-			genetic_analyst.stake_status.is_waiting_for_unstaked()
+		if genetic_analyst.stake_status.is_staked()
 		{
 			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
 		}
@@ -677,12 +706,17 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 
-		genetic_analyst.stake_amount = Self::transfer_balance(
-			account_id,
-			&Self::account_id(),
-			Self::get_required_stake_balance(),
-		);
+		if genetic_analyst.stake_status.is_waiting_for_unstaked()
+		{
+			genetic_analyst.stake_amount = Self::transfer_balance(
+				account_id,
+				&Self::account_id(),
+				Self::get_required_stake_balance(),
+			);
+		}
 		genetic_analyst.stake_status = StakeStatus::Staked;
+		genetic_analyst.unstake_at = MomentOf::<T>::default();
+		genetic_analyst.retrieve_unstake_at = MomentOf::<T>::default();
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
 
@@ -706,8 +740,11 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalystHasPendingOrders)
 		}
 
+		let now = pallet_timestamp::Pallet::<T>::get();
 		genetic_analyst.stake_status = StakeStatus::WaitingForUnstaked;
 		genetic_analyst.availability_status = AvailabilityStatus::Unavailable;
+		genetic_analyst.unstake_at = now.clone();
+		genetic_analyst.retrieve_unstake_at = Self::get_unstake_time(now);
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
 
@@ -732,6 +769,10 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalystIsNotWaitingForUnstake)
 		}
 
+		if !Self::check_if_unstake_time(genetic_analyst.retrieve_unstake_at) {
+			return Err(Error::<T>::GeneticAnalystCannotUnstakeNow)
+		}
+
 		if !Self::is_pallet_balance_sufficient_for_refund(genetic_analyst.stake_amount) {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
@@ -741,6 +782,8 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 
 		genetic_analyst.stake_amount = 0u128.saturated_into();
 		genetic_analyst.stake_status = StakeStatus::Unstaked;
+		genetic_analyst.unstake_at = MomentOf::<T>::default();
+		genetic_analyst.retrieve_unstake_at = MomentOf::<T>::default();
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
 
@@ -775,6 +818,19 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		}
 
 		Self::set_minimum_stake_amount(amount);
+
+		Ok(())
+	}
+
+	fn update_unstake_time(
+		account_id: &T::AccountId,
+		moment: Self::Moment,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		Self::set_unstake_time(moment);
 
 		Ok(())
 	}
@@ -857,6 +913,25 @@ impl<T: Config> Pallet<T> {
 	/// Set current total stake amount
 	pub fn set_minimum_stake_amount(amount: BalanceOf<T>) {
 		MinimumStakeAmount::<T>::put(amount);
+	}
+
+	/// Set unstake time
+	pub fn set_unstake_time(moment: MomentOf<T>) {
+		UnstakeTime::<T>::put(moment);
+	}
+
+	/// Get unstake time
+	pub fn get_unstake_time(moment: MomentOf<T>) -> MomentOf<T> {
+		if let Some(time) = UnstakeTime::<T>::get() {
+			return time + moment;
+		}
+		moment
+	}
+
+	/// Check unstake time
+	pub fn check_if_unstake_time(moment: MomentOf<T>) -> bool {
+		let now = pallet_timestamp::Pallet::<T>::get();
+		moment <= now
 	}
 
 	/// Set current total staked amount
