@@ -745,7 +745,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 		genetic_analyst.stake_status = StakeStatus::WaitingForUnstaked;
 		genetic_analyst.availability_status = AvailabilityStatus::Unavailable;
-		genetic_analyst.unstake_at = now.clone();
+		genetic_analyst.unstake_at = now;
 		genetic_analyst.retrieve_unstake_at = Self::get_unstake_time(now);
 
 		GeneticAnalysts::<T>::insert(account_id, &genetic_analyst);
