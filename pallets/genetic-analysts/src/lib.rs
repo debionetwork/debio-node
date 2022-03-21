@@ -523,7 +523,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::GeneticAnalystWeightInfo::update_minimum_stake_amount())]
+		#[pallet::weight(T::GeneticAnalystWeightInfo::update_unstake_time())]
 		pub fn update_unstake_time(
 			origin: OriginFor<T>,
 			amount: MomentOf<T>,
