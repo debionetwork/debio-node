@@ -92,7 +92,8 @@ where
 	pub retrieve_unstake_at: Moment,
 }
 
-impl<AccountId, Hash, Moment: Default, Balance: Default> GeneticAnalyst<AccountId, Hash, Moment, Balance>
+impl<AccountId, Hash, Moment: Default, Balance: Default>
+	GeneticAnalyst<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 {
@@ -700,13 +701,11 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		}
 
 		let mut genetic_analyst = genetic_analyst.unwrap();
-		if genetic_analyst.stake_status.is_staked()
-		{
+		if genetic_analyst.stake_status.is_staked() {
 			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
 		}
 
-		if !genetic_analyst.stake_status.is_waiting_for_unstaked()
-		{
+		if !genetic_analyst.stake_status.is_waiting_for_unstaked() {
 			if !Self::is_balance_sufficient_for_staking(account_id) {
 				return Err(Error::<T>::InsufficientFunds)
 			}
@@ -926,7 +925,7 @@ impl<T: Config> Pallet<T> {
 	/// Get unstake time
 	pub fn get_unstake_time(moment: MomentOf<T>) -> MomentOf<T> {
 		if let Some(time) = UnstakeTime::<T>::get() {
-			return time + moment;
+			return time + moment
 		}
 		moment
 	}

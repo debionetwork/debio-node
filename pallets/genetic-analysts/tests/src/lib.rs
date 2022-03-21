@@ -1083,10 +1083,7 @@ mod tests {
 				1000u64.saturated_into(),
 			));
 
-			assert_eq!(
-				GeneticAnalysts::unstake_time(),
-				Some(1000u64.saturated_into())
-			);
+			assert_eq!(GeneticAnalysts::unstake_time(), Some(1000u64.saturated_into()));
 		})
 	}
 
@@ -1096,10 +1093,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(3);
 
 			assert_noop!(
-				GeneticAnalysts::update_unstake_time(
-					Origin::signed(2),
-					1000u64.saturated_into(),
-				),
+				GeneticAnalysts::update_unstake_time(Origin::signed(2), 1000u64.saturated_into(),),
 				Error::<Test>::Unauthorized
 			);
 		})
