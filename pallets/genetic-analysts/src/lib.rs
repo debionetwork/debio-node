@@ -314,6 +314,9 @@ pub mod pallet {
 		/// Update GeneticAnalyst minimum stake successful
 		/// parameters. [who]
 		UpdateGeneticAnalystMinimumStakeSuccessful(AccountIdOf<T>),
+		/// Update GeneticAnalyst unstake time successful
+		/// parameters. [who]
+		UpdateGeneticAnalystUnstakeTimeSuccessful(AccountIdOf<T>),
 		/// Update GeneticAnalyst admin key
 		/// parameters. [who]
 		UpdateGeneticAnalystAdminKeySuccessful(AccountIdOf<T>),
@@ -348,7 +351,7 @@ pub mod pallet {
 		// GeneticAnalyst not waiting for unstake
 		GeneticAnalystIsNotWaitingForUnstake,
 		// GeneticAnalyst cannot unstake now
-		GeneticAnalystCannotUnstakeNow,
+		GeneticAnalystCannotUnstakeBeforeUnstakeTime,
 	}
 
 	#[pallet::call]
@@ -532,7 +535,7 @@ pub mod pallet {
 
 			match <Self as GeneticAnalystInterface<T>>::update_unstake_time(&who, amount) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateGeneticAnalystMinimumStakeSuccessful(
+					Self::deposit_event(Event::UpdateGeneticAnalystUnstakeTimeSuccessful(
 						who.clone(),
 					));
 					Ok(().into())
@@ -702,12 +705,12 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalystAlreadyStaked)
 		}
 
-		if !Self::is_balance_sufficient_for_staking(account_id) {
-			return Err(Error::<T>::InsufficientFunds)
-		}
-
-		if genetic_analyst.stake_status.is_waiting_for_unstaked()
+		if !genetic_analyst.stake_status.is_waiting_for_unstaked()
 		{
+			if !Self::is_balance_sufficient_for_staking(account_id) {
+				return Err(Error::<T>::InsufficientFunds)
+			}
+
 			genetic_analyst.stake_amount = Self::transfer_balance(
 				account_id,
 				&Self::account_id(),
@@ -770,7 +773,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		}
 
 		if !Self::check_if_unstake_time(genetic_analyst.retrieve_unstake_at) {
-			return Err(Error::<T>::GeneticAnalystCannotUnstakeNow)
+			return Err(Error::<T>::GeneticAnalystCannotUnstakeBeforeUnstakeTime)
 		}
 
 		if !Self::is_pallet_balance_sufficient_for_refund(genetic_analyst.stake_amount) {
