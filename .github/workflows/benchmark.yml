@@ -14,7 +14,7 @@ jobs:
     if: ${{ github.event.issue.pull_request && github.event.comment.body == '/benchmark'}}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Set up Cloud SDK
@@ -48,7 +48,7 @@ jobs:
               core.setFailed(`Request failed with error ${err}`)
             }
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
           ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }} # or .head.sha, .head.ref for branch name
@@ -94,7 +94,7 @@ jobs:
     needs: [self-host]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Set up Cloud SDK
