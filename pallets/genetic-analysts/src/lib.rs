@@ -1,5 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub mod interface;
+pub mod migrations;
 pub mod weights;
 
 /// Edit this file to define custom logic or remove it if it is not needed.
@@ -9,7 +11,6 @@ pub use pallet::*;
 pub use scale_info::TypeInfo;
 pub use weights::WeightInfo;
 
-pub mod interface;
 pub use crate::interface::GeneticAnalystInterface;
 use frame_support::{
 	pallet_prelude::*,

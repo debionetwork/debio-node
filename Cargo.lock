@@ -2518,6 +2518,7 @@ dependencies = [
  "frame-system",
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
+ "log",
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
