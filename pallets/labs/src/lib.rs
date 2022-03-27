@@ -338,7 +338,9 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::WeightInfo::deregister_lab())]
-		pub fn deregister_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+		pub fn deregister_lab(
+			origin: OriginFor<T>
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// Check if user is a lab
 			let lab = Self::lab_by_account_id(&who);

@@ -332,7 +332,10 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::ServiceRequestWeightInfo::unstake())]
-		pub fn unstake(origin: OriginFor<T>, request_id: HashOf<T>) -> DispatchResultWithPostInfo {
+		pub fn unstake(
+			origin: OriginFor<T>, 
+			request_id: HashOf<T>
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::unstake(who.clone(), request_id) {

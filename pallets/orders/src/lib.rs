@@ -263,7 +263,10 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::OrdersWeightInfo::cancel_order())]
-		pub fn cancel_order(origin: OriginFor<T>, order_id: T::Hash) -> DispatchResultWithPostInfo {
+		pub fn cancel_order(
+			origin: OriginFor<T>, 
+			order_id: T::Hash
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as OrderInterface<T>>::cancel_order(&who, &order_id) {
