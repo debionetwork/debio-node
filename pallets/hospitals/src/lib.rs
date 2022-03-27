@@ -246,9 +246,7 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::WeightInfo::deregister_hospital())]
-		pub fn deregister_hospital(
-			origin: OriginFor<T>
-		) -> DispatchResultWithPostInfo {
+		pub fn deregister_hospital(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// Check if user is a hospital
 			let hospital = Self::hospital_by_account_id(&who);

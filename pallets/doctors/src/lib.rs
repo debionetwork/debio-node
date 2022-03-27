@@ -246,9 +246,7 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::WeightInfo::deregister_doctor())]
-		pub fn deregister_doctor(
-			origin: OriginFor<T>
-		) -> DispatchResultWithPostInfo {
+		pub fn deregister_doctor(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// Check if user is a doctor
 			let doctor = Self::doctor_by_account_id(&who);

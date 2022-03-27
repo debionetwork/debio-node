@@ -397,9 +397,7 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::GeneticAnalystWeightInfo::deregister_genetic_analyst())]
-		pub fn deregister_genetic_analyst(
-			origin: OriginFor<T>
-		) -> DispatchResultWithPostInfo {
+		pub fn deregister_genetic_analyst(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// Check if user is a genetic_analyst
 			let genetic_analyst = Self::genetic_analyst_by_account_id(&who);
@@ -462,9 +460,7 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::GeneticAnalystWeightInfo::stake_genetic_analyst())]
-		pub fn stake_genetic_analyst(
-			origin: OriginFor<T>
-		) -> DispatchResultWithPostInfo {
+		pub fn stake_genetic_analyst(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as GeneticAnalystInterface<T>>::stake_genetic_analyst(&who) {
@@ -480,9 +476,7 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::GeneticAnalystWeightInfo::unstake_genetic_analyst())]
-		pub fn unstake_genetic_analyst(
-			origin: OriginFor<T>
-		) -> DispatchResultWithPostInfo {
+		pub fn unstake_genetic_analyst(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as GeneticAnalystInterface<T>>::unstake_genetic_analyst(&who) {
