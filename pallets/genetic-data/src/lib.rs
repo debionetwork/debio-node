@@ -173,6 +173,7 @@ pub mod pallet {
 				Err(error) => Err(error.into()),
 			}
 		}
+
 		#[pallet::weight(T::GeneticDataWeightInfo::update_genetic_data())]
 		pub fn update_genetic_data(
 			origin: OriginFor<T>,

@@ -33,3 +33,7 @@ prepush:
 	cargo +nightly fmt
 	cargo +nightly clippy
 	.maintain/run-test-locally.sh
+
+.PHONY: install-hooks
+install-hooks:
+	.maintain/install-hooks.sh

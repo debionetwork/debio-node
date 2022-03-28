@@ -231,6 +231,13 @@ benchmarks! {
 		60000000000000000000000u128.saturated_into()
 	)
 
+	update_unstake_time {
+		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get();
+	}: update_unstake_time(
+		RawOrigin::Signed(caller),
+		0u64.saturated_into()
+	)
+
 	update_admin_key {
 		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get();
 		let caller2: T::AccountId = whitelisted_caller();
