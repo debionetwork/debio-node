@@ -30,6 +30,8 @@ use frame_support::{
 use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode};
 use primitives_stake_status::{StakeStatus, StakeStatusTrait};
 use primitives_verification_status::VerificationStatus;
+
+use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_certifications::CertificationOwnerInfo;
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
@@ -176,6 +178,8 @@ pub mod pallet {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type Currency: Currency<Self::AccountId>;
 		type Services: ServicesProvider<Self, BalanceOf<Self>>;
+		type Orders: OrderEventEmitter<Self>
+			+ OrderStatusUpdater<Self>;
 		type Certifications: CertificationsProvider<Self>;
 		type EthereumAddress: Clone
 			+ Copy
@@ -677,9 +681,9 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 			return Err(Error::<T>::LabIsNotStaked)
 		}
 
-		// if T::GeneticAnalysisOrders::is_pending_genetic_analysis_order_by_seller_exist(account_id) {
-		// 	return Err(Error::<T>::LabHasPendingOrders)
-		// }
+		if T::Orders::is_pending_order_by_seller_exist(account_id) {
+			return Err(Error::<T>::LabHasPendingOrders)
+		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 		lab.stake_status = StakeStatus::WaitingForUnstaked;

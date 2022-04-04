@@ -128,7 +128,7 @@ pub mod pallet {
 	// --------------------------------------------------------
 
 	// ---- Types --------------------------------------------
-	type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
@@ -149,6 +149,11 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn orders_by_lab_id)]
 	pub type OrdersBySeller<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn pending_genetic_analysis_orders_by_genetic_analyst_id)]
+	pub type PendingOrdersBySeller<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, OrderIdsOf<T>>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn last_order_by_customer_id)]
@@ -513,6 +518,13 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 
 		Ok(())
 	}
+
+	fn is_pending_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool {
+		match PendingOrdersBySeller::<T>::get(account_id) {
+			Some(_arr) => !_arr.is_empty(),
+			None => false,
+		}
+	}
 }
 
 use frame_support::{sp_runtime::traits::Hash, sp_std::convert::TryInto};
@@ -546,6 +558,7 @@ impl<T: Config> Pallet<T> {
 		Orders::<T>::insert(&order.id, order);
 		LastOrderByCustomer::<T>::insert(&order.customer_id, &order.id);
 		Self::insert_order_id_into_orders_by_seller(order);
+		Self::insert_order_id_into_pending_orders_by_seller(order);
 		Self::insert_order_id_into_orders_by_customer(order);
 	}
 
@@ -571,6 +584,36 @@ impl<T: Config> Pallet<T> {
 				OrdersByCustomer::<T>::insert(&order.customer_id, orders);
 			},
 		}
+	}
+
+	pub fn insert_order_id_into_pending_orders_by_seller(
+		order: &OrderOf<T>,
+	) {
+		match PendingOrdersBySeller::<T>::get(&order.seller_id) {
+			None => {
+				PendingOrdersBySeller::<T>::insert(
+					&order.seller_id,
+					vec![order.id],
+				);
+			},
+			Some(mut orders) => {
+				orders.push(order.id);
+				PendingOrdersBySeller::<T>::insert(
+					&order.seller_id,
+					orders,
+				);
+			},
+		}
+	}
+
+	pub fn remove_order_id_from_pending_orders_by_seller(
+		seller_id: &T::AccountId,
+		order_id: &T::Hash,
+	) {
+		let mut orders =
+			PendingOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
+		orders.retain(|o_id| o_id != order_id);
+		PendingOrdersBySeller::<T>::insert(seller_id, orders);
 	}
 
 	pub fn remove_order_id_from_orders_by_seller(seller_id: &T::AccountId, order_id: &T::Hash) {
@@ -612,5 +655,19 @@ impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
 				Self::update_order_status(&order.id, OrderStatus::Failed);
 			},
 		}
+	}
+
+	fn remove_order_id_from_pending_orders_by_seller(
+		seller_id: &AccountIdOf<T>,
+		order_id: &HashOf<T>,
+	) {
+		Self::remove_order_id_from_pending_orders_by_seller(
+			seller_id,
+			order_id,
+		);
+	}
+
+	fn is_pending_order_by_seller_exist(seller_id: &AccountIdOf<T>) -> bool {
+		Self::is_pending_order_ids_by_seller_exist(seller_id)
 	}
 }

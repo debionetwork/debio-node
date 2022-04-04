@@ -404,6 +404,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 		dna_sample.updated_at = now;
 		DnaSamples::<T>::insert(tracking_id, &dna_sample);
 		T::Orders::emit_event_order_failed(&dna_sample.order_id);
+		T::Orders::remove_order_id_from_pending_orders_by_seller(
+			&dna_sample.lab_id,
+			&dna_sample.order_id
+		);
 		T::Orders::update_status_failed(&dna_sample.order_id);
 
 		Ok(dna_sample)
@@ -429,6 +433,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 			if result.is_none() {
 				return Err(Error::<T>::DnaTestResultNotYetSubmitted)
 			}
+			T::Orders::remove_order_id_from_pending_orders_by_seller(
+				&dna_sample.lab_id,
+				&dna_sample.order_id
+			);
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
@@ -583,6 +591,8 @@ impl<T: Config> GeneticTestingProvider<T> for Pallet<T> {
 		<Self as GeneticTestingInterface<T>>::delete_dna_sample(tracking_id)
 	}
 }
+
+use sp_std::vec;
 
 impl<T: Config> Pallet<T> {
 	pub fn generate_random_seed(creator_id: &T::AccountId, owner_id: &T::AccountId) -> Vec<u8> {
