@@ -6,7 +6,7 @@ mod tests {
 
 	use genetic_analysts::{
 		Error, Event as EventC, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey,
-		PalletAccount, StakeStatus,
+		PalletAccount,
 	};
 
 	use frame_support::{
@@ -22,10 +22,11 @@ mod tests {
 	use genetic_analysis_orders::{GeneticAnalysisOrder, GeneticAnalysisOrderStatus};
 	use genetic_analyst_services::GeneticAnalystServiceInfo;
 
-	use primitives_availability_status::AvailabilityStatus;
+	use primitives_stake_status::StakeStatus;
 	use primitives_duration::ExpectedDuration;
-	use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
+	use primitives_availability_status::AvailabilityStatus;
 	use primitives_verification_status::VerificationStatus;
+	use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
 
 	#[test]
 	fn register_genetic_analyst_works() {
