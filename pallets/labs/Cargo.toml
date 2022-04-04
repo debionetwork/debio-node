@@ -31,6 +31,7 @@ primitives-stake-status = { path = '../../primitives/stake-status', default-feat
 primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
 
+traits-labs = { path = './traits', default-features = false }
 traits-order = { path = '../../traits/order', default-features = false }
 traits-services = { path = '../../traits/services', default-features = false }
 traits-certifications = { path = '../../traits/certifications', default-features = false }
@@ -59,6 +60,8 @@ std = [
     'sp-std/std',
     'sp-io/std',
     'primitives-area-code/std',
+    
+    'traits-labs/std',
     'traits-services/std',
     'traits-certifications/std',
     'traits-user-profile/std',

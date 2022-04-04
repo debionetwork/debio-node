@@ -90,7 +90,3 @@ std = [
 	'certifications/std',
 	'user-profile/std',
 ]
-runtime-benchmarks = [
-	'frame-benchmarking'
-]
-try-runtime = ['frame-support/try-runtime']

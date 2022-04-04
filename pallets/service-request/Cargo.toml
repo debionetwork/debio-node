@@ -30,16 +30,25 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
-pallet-timestamp = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies
 labs = { path = '../labs', default-features = false }
+orders = { path = '../orders', default-features = false }
 services = { path = '../services', default-features = false }
-certifications = { path = '../certifications', default-features = false }
 user-profile = { path = '../user-profile', default-features = false }
+certifications = { path = '../certifications', default-features = false }
+genetic-testing = { path = '../genetic-testing', default-features = false }
+
+traits-labs = { path = '../labs/traits', default-features = false }
 
 primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
+
+[dev-dependencies]
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 [features]
 default = ['std']
@@ -57,13 +66,16 @@ std = [
 	'frame-benchmarking/std',
 	'primitives-area-code/std',
 
+    'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
 	'pallet-balances/std',
-	'pallet-timestamp/std',
 
 	'labs/std',
-	'services/std',
+    'orders/std',
+    'services/std',
 	'certifications/std',
-	'user-profile/std'
+	'user-profile/std',
+	'genetic-testing/std',
 ]
 runtime-benchmarks = ['frame-benchmarking']
 try-runtime = ['frame-support/try-runtime']

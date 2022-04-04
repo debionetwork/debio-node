@@ -34,24 +34,27 @@ primitives-area-code = { path = '../../../primitives/area-code', default-feature
 primitives-stake-status = { path = '../../../primitives/stake-status', default-features = false }
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
 
+traits-order = { path = '../../../traits/order', default-features = false }
 traits-services = { path = '../../../traits/services', default-features = false }
-traits-certifications = { path = '../../../traits/certifications', default-features = false }
 traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
+traits-certifications = { path = '../../../traits/certifications', default-features = false }
+traits-genetic-testing = { path = '../../../traits/genetic-testing', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies
 labs = { path = '../../labs', default-features = false }
+orders = { path = '../../orders', default-features = false }
 services = { path = '../../services', default-features = false }
-certifications = { path = '../../certifications', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
+certifications = { path = '../../certifications', default-features = false }
+genetic-testing = { path = '../../genetic-testing', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
-sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
-sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 [features]
 default = ['std']
@@ -67,20 +70,25 @@ std = [
     'sp-runtime/std',
     'sp-io/std',
     
+	'pallet-balances/std',
+	'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
+    
     'primitives-area-code/std',
     'primitives-stake-status/std',
     'primitives-verification-status/std',
-    
+
+    'traits-order/std',
     'traits-services/std',
-    'traits-certifications/std',
     'traits-user-profile/std',
+    'traits-certifications/std',
+    'traits-genetic-testing/std',
 
     'labs/std',
+    'orders/std',
 	'services/std',
 	'certifications/std',
 	'user-profile/std',
-
-	'pallet-balances/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'

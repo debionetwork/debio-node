@@ -1,5 +1,5 @@
 use crate as service_request;
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -22,13 +22,16 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+		Orders: orders::{Pallet, Call, Storage, Event<T>},
+		Labs: labs::{Pallet, Call, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		ServiceRequest: service_request::{Pallet, Call, Storage, Event<T>},
-		Labs: labs::{Pallet, Call, Storage, Event<T>},
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		Services: services::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
 
@@ -36,8 +39,10 @@ parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
 	pub BlockWeights: frame_system::limits::BlockWeights =
-	frame_system::limits::BlockWeights::simple_max(1024);
+		frame_system::limits::BlockWeights::simple_max(1024);
 }
+
+impl pallet_randomness_collective_flip::Config for Test {}
 
 impl frame_system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
@@ -65,10 +70,27 @@ impl frame_system::Config for Test {
 	type OnSetCode = ();
 }
 
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
+}
+
 type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_balances::Config for Test {
@@ -99,8 +121,10 @@ impl labs::Config for Test {
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type Services = Services;
+	type Orders = Orders;
 	type UserProfile = UserProfile;
-	type WeightInfo = ();
+	type PalletId = LabPalletId;
+	type LabWeightInfo = ();
 }
 
 impl services::Config for Test {
@@ -108,6 +132,21 @@ impl services::Config for Test {
 	type Currency = Balances;
 	type ServiceOwner = Labs;
 	type WeightInfo = ();
+}
+
+impl orders::Config for Test {
+	type Event = Event;
+	type Services = Services;
+	type GeneticTesting = GeneticTesting;
+	type Currency = Balances;
+	type OrdersWeightInfo = ();
+}
+
+impl genetic_testing::Config for Test {
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticTestingWeightInfo = ();
 }
 
 impl certifications::Config for Test {
@@ -122,22 +161,6 @@ pub struct EthereumAddress(pub [u8; 20]);
 impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
-	type WeightInfo = ();
-}
-
-pub type Moment = u64;
-pub const MILLISECS_PER_BLOCK: Moment = 6000;
-pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
-
-parameter_types! {
-	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
-}
-
-impl pallet_timestamp::Config for Test {
-	/// A timestamp: milliseconds since the unix epoch.
-	type Moment = Moment;
-	type OnTimestampSet = ();
-	type MinimumPeriod = MinimumPeriod;
 	type WeightInfo = ();
 }
 

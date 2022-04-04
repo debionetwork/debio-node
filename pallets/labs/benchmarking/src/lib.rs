@@ -131,6 +131,103 @@ benchmarks! {
 		RawOrigin::Signed(caller)
 	)
 
+	stake_lab {
+		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+
+		let _ = <T as labs::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
+
+		let old_lab = LabInfo {
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		};
+		let _ = Labs::<T>::register_lab(caller_origin, old_lab);
+	}: stake_lab(
+		RawOrigin::Signed(caller)
+	)
+
+	unstake_lab {
+		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+
+		let _ = <T as labs::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
+
+		let old_lab = LabInfo {
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		};
+		let _ = Labs::<T>::register_lab(caller_origin.clone(), old_lab);
+
+		let _ = Labs::<T>::stake_lab(caller_origin);
+	}: unstake_lab(
+		RawOrigin::Signed(caller)
+	)
+
+	retrieve_unstake_amount {
+		let caller_admin: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = whitelisted_caller();
+		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+
+		let _ = <T as labs::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
+
+		let old_lab = LabInfo {
+			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
+			name: "DeBio Lab".as_bytes().to_vec(),
+			email: "DeBio Email".as_bytes().to_vec(),
+			country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+			region: RegionCode::from_vec("DBIO".as_bytes().to_vec()),
+			city: CityCode::from_vec("City".as_bytes().to_vec()),
+			address: "DeBio Address".as_bytes().to_vec(),
+			phone_number: "+6281394653625".as_bytes().to_vec(),
+			website: "DeBio Website".as_bytes().to_vec(),
+			latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+		};
+		let _ = Labs::<T>::register_lab(caller_origin.clone(), old_lab);
+
+		let _ = Labs::<T>::stake_lab(caller_origin.clone());
+
+		let _ = Labs::<T>::unstake_lab(caller_origin);
+	}: retrieve_unstake_amount(
+		RawOrigin::Signed(caller_admin),
+		caller
+	)
+
+	update_minimum_stake_amount {
+		let caller: T::AccountId = LabVerifierKey::<T>::get();
+	}: update_minimum_stake_amount(
+		RawOrigin::Signed(caller),
+		60000000000000000000000u128.saturated_into()
+	)
+
+	update_unstake_time {
+		let caller: T::AccountId = LabVerifierKey::<T>::get();
+	}: update_unstake_time(
+		RawOrigin::Signed(caller),
+		0u64.saturated_into()
+	)
+
 	update_admin_key {
 		let caller: T::AccountId = LabVerifierKey::<T>::get();
 		let caller2: T::AccountId = whitelisted_caller();

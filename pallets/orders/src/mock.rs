@@ -1,5 +1,5 @@
 use crate as orders;
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -102,6 +102,7 @@ type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_balances::Config for Test {
@@ -122,10 +123,12 @@ impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type Orders = Orders;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
-	type WeightInfo = ();
+	type LabWeightInfo = ();
+	type PalletId = LabPalletId;
 }
 
 impl services::Config for Test {

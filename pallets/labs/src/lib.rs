@@ -23,6 +23,7 @@ use primitives_stake_status::{StakeStatus, StakeStatusTrait};
 use primitives_verification_status::VerificationStatus;
 
 use traits_certifications::CertificationOwnerInfo;
+use traits_labs::LabsProvider;
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
@@ -772,15 +773,6 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 	fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab> {
 		Self::lab_by_account_id(account_id)
 	}
-
-	fn lab_verification_status(account_id: &T::AccountId) -> Option<Self::VerificationStatus> {
-		let lab = Self::lab_by_account_id(account_id);
-
-		lab.as_ref()?;
-
-		let lab = lab.unwrap();
-		Some(lab.verification_status)
-	}
 }
 
 use frame_support::{sp_runtime::SaturatedConversion, traits::ExistenceRequirement::KeepAlive};
@@ -930,6 +922,15 @@ impl<T: Config> Pallet<T> {
 		let balance = T::Currency::free_balance(&Self::account_id());
 		TotalStakedAmount::<T>::put(balance);
 	}
+
+	fn lab_verification_status(account_id: &T::AccountId) -> Option<VerificationStatus> {
+		let lab = Self::lab_by_account_id(account_id);
+
+		lab.as_ref()?;
+
+		let lab = lab.unwrap();
+		Some(lab.verification_status)
+	}
 }
 
 impl<T: Config> ServiceOwner<T> for Pallet<T> {
@@ -995,5 +996,11 @@ impl<T: Config> CertificationOwner<T> for Pallet<T> {
 				lab.remove_certification(*certification_id);
 			},
 		});
+	}
+}
+
+impl<T: Config> LabsProvider<T> for Pallet<T> {
+	fn lab_verification_status(account_id: &AccountIdOf<T>) -> Option<VerificationStatus> {
+		Self::lab_verification_status(account_id)
 	}
 }

@@ -19,8 +19,6 @@ pub trait LabInterface<T: frame_system::Config> {
 
 	/// Get lab by associated account_id
 	fn lab_by_account_id(account_id: &T::AccountId) -> Option<Self::Lab>;
-	/// Get lab verification status
-	fn lab_verification_status(account_id: &T::AccountId) -> Option<Self::VerificationStatus>;
 	/// Get the account_ids of labs in a location
 	fn labs_by_country_region_city(
 		country_region_code: &CountryRegionCode,
