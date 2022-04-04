@@ -224,6 +224,8 @@ pub mod pallet {
 		UnauthorizedOrderFulfillment,
 		/// Unauthorized to cancel order - user is not the customer who created the order
 		UnauthorizedOrderCancellation,
+		// Genetic Testing is ongoing, cannot be cancelled
+		OngoingOrderCannotBeCancelled,
 		/// Can not fulfill order before Specimen is processed
 		DnaSampleNotSuccessfullyProcessed,
 		/// Refund not allowed, Order is not expired yet
@@ -433,9 +435,14 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		if order.customer_id != customer_id.clone() {
 			return Err(Error::<T>::UnauthorizedOrderCancellation)
 		}
+		
+		let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
+		if !dna_sample.is_registered() {
+			return Err(Error::<T>::OngoingOrderCannotBeCancelled)
+		}
 
 		// Delete dna sample associated with the order
-		let _dna_sample = T::GeneticTesting::delete_dna_sample(&order.dna_sample_tracking_id);
+		let _ = T::GeneticTesting::delete_dna_sample(&order.dna_sample_tracking_id);
 
 		let order = Self::update_order_status(order_id, OrderStatus::Cancelled).unwrap();
 

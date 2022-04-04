@@ -69,6 +69,9 @@ impl<AccountId, Hash, Moment> DnaSampleTracking for DnaSample<AccountId, Hash, M
 	fn get_tracking_id(&self) -> &DnaSampleTrackingId {
 		&self.tracking_id
 	}
+	fn is_registered(&self) -> bool {
+		self.status == DnaSampleStatus::Registered
+	}
 	fn process_success(&self) -> bool {
 		self.status == DnaSampleStatus::ResultReady
 	}
