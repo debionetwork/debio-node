@@ -435,8 +435,9 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		if order.customer_id != customer_id.clone() {
 			return Err(Error::<T>::UnauthorizedOrderCancellation)
 		}
-		
-		let dna_sample = T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
+
+		let dna_sample =
+			T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
 		if !dna_sample.is_registered() {
 			return Err(Error::<T>::OngoingOrderCannotBeCancelled)
 		}
