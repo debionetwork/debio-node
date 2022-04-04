@@ -72,9 +72,11 @@ pallet-octopus-upward-messages = { git = 'https://github.com/octopus-network/oct
 
 # Local dependencies
 labs = { path = '../pallets/labs', default-features = false }
+labs-benchmarking = { path = '../pallets/labs/benchmarking', default-features = false, optional = true }
 rewards = { path = '../pallets/rewards', default-features = false }
 services = { path = '../pallets/services', default-features = false }
 service-request = { path = '../pallets/service-request', default-features = false }
+service-request-benchmarking = { path = '../pallets/service-request/benchmarking', default-features = false, optional = true }
 services-benchmarking = { path = '../pallets/services/benchmarking', default-features = false, optional = true }
 orders = { path = '../pallets/orders', default-features = false }
 orders-benchmarking = { path = '../pallets/orders/benchmarking', default-features = false, optional = true }
@@ -187,7 +189,7 @@ runtime-benchmarks = [
 	'pallet-im-online/runtime-benchmarks',
 	'pallet-mmr/runtime-benchmarks',
 
-	'labs/runtime-benchmarks',
+	'labs-benchmarking',
 	'services-benchmarking',
 	'certifications-benchmarking',
 	'orders-benchmarking',
@@ -203,7 +205,7 @@ runtime-benchmarks = [
 	'genetic-analysis-benchmarking',
 	'user-profile/runtime-benchmarks',
 	'rewards/runtime-benchmarks',
-	'service-request/runtime-benchmarks',
+	'service-request-benchmarking',
 	'genetic-analysis-orders-benchmarking',
 	'genetic-data/runtime-benchmarks',
 	'genetic-analysts-benchmarking',

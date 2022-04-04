@@ -1,23 +1,31 @@
-use super::*;
+#![cfg_attr(not(feature = "std"), no_std)]
+mod mock;
 
-#[allow(unused)]
-use crate::{
-	AdminKey, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId,
-};
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
-use frame_support::sp_runtime::{traits::Hash, SaturatedConversion};
+use frame_support::{
+	sp_runtime::{traits::Hash, SaturatedConversion},
+	traits::Currency,
+};
 use frame_system::RawOrigin;
-use labs::{LabInfo, LabVerifierKey, Pallet as PalletLab};
+use labs::{Config as LabsConfig, LabInfo, LabVerifierKey, Pallet as Labs};
+#[allow(unused)]
+use service_request::{
+	AdminKey, Call, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId,
+};
 
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
-use primitives_verification_status::VerificationStatusTrait;
+use primitives_verification_status::VerificationStatus;
+
+pub trait Config: ServiceRequestConfig + LabsConfig {}
+
+pub struct Pallet<T: Config>(ServiceRequest<T>);
 
 const SEED: u32 = 0;
 
 benchmarks! {
 	create_request {
 		let caller: T::AccountId = whitelisted_caller();
-		let _ = <T as pallet::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
+		let _ = <T as service_request::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
 
 		let country = "Indonesia".as_bytes().to_vec();
 		let region = "West Java".as_bytes().to_vec();
@@ -37,7 +45,7 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let _ = <T as pallet::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
+		let _ = <T as service_request::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
 
 		let _new_request = ServiceRequest::<T>::create_request(
 			caller_origin,
@@ -63,7 +71,7 @@ benchmarks! {
 		let customer: T::AccountId = account("customer", 0, SEED);
 		let customer_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
 
-		let _ = <T as pallet::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
+		let _ = <T as service_request::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
 
 		let _new_request = ServiceRequest::<T>::create_request(
 			customer_origin.clone(),
@@ -74,13 +82,13 @@ benchmarks! {
 			10000000000000000000u128.saturated_into()
 		);
 
-		let request_ids = RequestByAccountId::<T>::get(customer.clone());
+		let request_ids = RequestByAccountId::<T>::get(customer);
 		let request_id = request_ids[0];
 
-		let _request_unstake = ServiceRequest::<T>::unstake(customer_origin.clone(), request_id.clone());
+		let _request_unstake = ServiceRequest::<T>::unstake(customer_origin, request_id);
 	}: retrieve_unstaked_amount (
 		RawOrigin::Signed(caller),
-		request_id.clone()
+		request_id
 	)
 
 	claim_request {
@@ -104,17 +112,17 @@ benchmarks! {
 		};
 
 		// register lab
-		let _add_labs = PalletLab::<T>::register_lab(caller_origin.clone(), lab);
+		let _add_labs = Labs::<T>::register_lab(caller_origin, lab);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get();
-		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key.clone()));
-		let _verified_labs = PalletLab::<T>::update_lab_verification_status(admin_key_origin, caller.clone(), LabVerificationStatus::Verified);
+		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, caller.clone(), VerificationStatus::Verified);
 
 		// Create request
 		let customer: T::AccountId = account("recepient", 0, SEED);
 		let customer_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
-		let _ = <T as pallet::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
+		let _ = <T as service_request::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
 
 		let _new_request = ServiceRequest::<T>::create_request(
 			customer_origin,
@@ -125,7 +133,7 @@ benchmarks! {
 			10000000000000000000u128.saturated_into()
 		);
 
-		let request_ids = RequestByAccountId::<T>::get(customer.clone());
+		let request_ids = RequestByAccountId::<T>::get(customer);
 
 		let request_id = request_ids[0];
 		let service_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
@@ -143,7 +151,7 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let _ = <T as pallet::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
+		let _ = <T as service_request::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
 
 		let _new_request = ServiceRequest::<T>::create_request(
 			caller_origin,
@@ -178,17 +186,17 @@ benchmarks! {
 			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_lab = PalletLab::<T>::register_lab(lab_origin.clone(), lab);
+		let _add_lab = Labs::<T>::register_lab(lab_origin.clone(), lab);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get();
-		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key.clone()));
-		let _verified_labs = PalletLab::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), LabVerificationStatus::Verified);
+		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), VerificationStatus::Verified);
 
 		let _claim_request = ServiceRequest::<T>::claim_request(
-			lab_origin.clone(),
-			request_id.clone(),
-			service_id.clone(),
+			lab_origin,
+			request_id,
+			service_id,
 			testing_price,
 			qc_price
 		);
@@ -230,14 +238,14 @@ benchmarks! {
 			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_lab = PalletLab::<T>::register_lab(lab_id_origin.clone(), lab);
+		let _add_lab = Labs::<T>::register_lab(lab_id_origin.clone(), lab);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get();
-		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key.clone()));
-		let _verified_labs = PalletLab::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), LabVerificationStatus::Verified);
+		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), VerificationStatus::Verified);
 
-		let _ = <T as pallet::Config>::Currency::deposit_creating(&customer_id, 1000000000000000000000u128.saturated_into());
+		let _ = <T as service_request::Config>::Currency::deposit_creating(&customer_id, 1000000000000000000000u128.saturated_into());
 
 		// Create request
 		let _new_request = ServiceRequest::<T>::create_request(
@@ -249,7 +257,7 @@ benchmarks! {
 			10000000000000000000u128.saturated_into()
 		);
 
-		let request_ids = RequestByAccountId::<T>::get(customer_id.clone());
+		let request_ids = RequestByAccountId::<T>::get(customer_id);
 		let request_id = request_ids[0];
 
 		// claim request
@@ -257,9 +265,9 @@ benchmarks! {
 		let testing_price = 1000000000000000000u128.saturated_into();
 		let qc_price = 1000000000000000000u128.saturated_into();
 		let _claim_request = ServiceRequest::<T>::claim_request(
-			lab_id_origin.clone(),
-			request_id.clone(),
-			service_id.clone(),
+			lab_id_origin,
+			request_id,
+			service_id,
 			testing_price,
 			qc_price
 		);
@@ -271,7 +279,7 @@ benchmarks! {
 		let _process_request = ServiceRequest::<T>::process_request(
 			customer_id_origin,
 			lab_id,
-			request_id.clone(),
+			request_id,
 			order_id,
 			dna_sample_tracking_id,
 			additional_staking_amount

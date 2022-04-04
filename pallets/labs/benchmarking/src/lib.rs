@@ -3,9 +3,7 @@ mod mock;
 
 #[allow(unused)]
 use labs::Pallet as Labs;
-use labs::{
-	Call, Config as LabsConfig, LabInfo, LabVerifierKey,
-};
+use labs::{Call, Config as LabsConfig, LabInfo, LabVerifierKey};
 
 pub struct Pallet<T: Config>(Labs<T>);
 
@@ -18,8 +16,8 @@ use frame_support::{
 	sp_runtime::{traits::Hash, SaturatedConversion},
 	traits::Currency,
 };
-use primitives_verification_status::VerificationStatus;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
+use primitives_verification_status::VerificationStatus;
 
 benchmarks! {
 	register_lab {
@@ -61,7 +59,7 @@ benchmarks! {
 			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), old_lab);
+		let _add_labs = Labs::<T>::register_lab(caller_origin, old_lab);
 
 		let new_lab = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -100,11 +98,11 @@ benchmarks! {
 			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), old_lab);
+		let _add_labs = Labs::<T>::register_lab(caller_origin, old_lab);
 	}: update_lab_verification_status(
 		RawOrigin::Signed(caller),
 		caller.clone(),
-		LabVerificationStatus::default()
+		VerificationStatus::default()
 	)
 
 	deregister_lab {
@@ -126,7 +124,7 @@ benchmarks! {
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
 
-		let _add_labs = Labs::<T>::register_lab(caller_origin.clone(), lab);
+		let _add_labs = Labs::<T>::register_lab(caller_origin, lab);
 	}: deregister_lab(
 		RawOrigin::Signed(caller)
 	)
