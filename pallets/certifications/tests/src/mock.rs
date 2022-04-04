@@ -23,11 +23,16 @@ frame_support::construct_runtime!(
 		Labs: labs::{Pallet, Call, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
+		Orders: orders::{Pallet, Call, Storage, Event<T>},
+		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
+
+impl pallet_randomness_collective_flip::Config for Test {}
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
@@ -101,6 +106,7 @@ impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type Orders = Orders;
 	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
@@ -119,6 +125,21 @@ impl certifications::Config for Test {
 	type Event = Event;
 	type CertificationOwner = Labs;
 	type WeightInfo = ();
+}
+
+impl genetic_testing::Config for Test {
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticTestingWeightInfo = ();
+}
+
+impl orders::Config for Test {
+	type Event = Event;
+	type Services = Services;
+	type GeneticTesting = GeneticTesting;
+	type Currency = Balances;
+	type OrdersWeightInfo = ();
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]

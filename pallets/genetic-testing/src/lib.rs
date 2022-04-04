@@ -406,7 +406,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 		T::Orders::emit_event_order_failed(&dna_sample.order_id);
 		T::Orders::remove_order_id_from_pending_orders_by_seller(
 			&dna_sample.lab_id,
-			&dna_sample.order_id
+			&dna_sample.order_id,
 		);
 		T::Orders::update_status_failed(&dna_sample.order_id);
 
@@ -435,7 +435,7 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 			}
 			T::Orders::remove_order_id_from_pending_orders_by_seller(
 				&dna_sample.lab_id,
-				&dna_sample.order_id
+				&dna_sample.order_id,
 			);
 		}
 

@@ -586,22 +586,14 @@ impl<T: Config> Pallet<T> {
 		}
 	}
 
-	pub fn insert_order_id_into_pending_orders_by_seller(
-		order: &OrderOf<T>,
-	) {
+	pub fn insert_order_id_into_pending_orders_by_seller(order: &OrderOf<T>) {
 		match PendingOrdersBySeller::<T>::get(&order.seller_id) {
 			None => {
-				PendingOrdersBySeller::<T>::insert(
-					&order.seller_id,
-					vec![order.id],
-				);
+				PendingOrdersBySeller::<T>::insert(&order.seller_id, vec![order.id]);
 			},
 			Some(mut orders) => {
 				orders.push(order.id);
-				PendingOrdersBySeller::<T>::insert(
-					&order.seller_id,
-					orders,
-				);
+				PendingOrdersBySeller::<T>::insert(&order.seller_id, orders);
 			},
 		}
 	}
@@ -610,8 +602,7 @@ impl<T: Config> Pallet<T> {
 		seller_id: &T::AccountId,
 		order_id: &T::Hash,
 	) {
-		let mut orders =
-			PendingOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
+		let mut orders = PendingOrdersBySeller::<T>::get(seller_id).unwrap_or_default();
 		orders.retain(|o_id| o_id != order_id);
 		PendingOrdersBySeller::<T>::insert(seller_id, orders);
 	}
@@ -661,10 +652,7 @@ impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
 		seller_id: &AccountIdOf<T>,
 		order_id: &HashOf<T>,
 	) {
-		Self::remove_order_id_from_pending_orders_by_seller(
-			seller_id,
-			order_id,
-		);
+		Self::remove_order_id_from_pending_orders_by_seller(seller_id, order_id);
 	}
 
 	fn is_pending_order_by_seller_exist(seller_id: &AccountIdOf<T>) -> bool {

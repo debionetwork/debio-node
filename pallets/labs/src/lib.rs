@@ -2,15 +2,6 @@
 
 pub use scale_info::TypeInfo;
 
-#[cfg(test)]
-mod mock;
-
-#[cfg(test)]
-mod tests;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
-
 pub mod weights;
 
 /// Edit this file to define custom logic or remove it if it is not needed.
@@ -31,8 +22,8 @@ use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode}
 use primitives_stake_status::{StakeStatus, StakeStatusTrait};
 use primitives_verification_status::VerificationStatus;
 
-use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_certifications::CertificationOwnerInfo;
+use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
 
@@ -178,8 +169,7 @@ pub mod pallet {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type Currency: Currency<Self::AccountId>;
 		type Services: ServicesProvider<Self, BalanceOf<Self>>;
-		type Orders: OrderEventEmitter<Self>
-			+ OrderStatusUpdater<Self>;
+		type Orders: OrderEventEmitter<Self> + OrderStatusUpdater<Self>;
 		type Certifications: CertificationsProvider<Self>;
 		type EthereumAddress: Clone
 			+ Copy

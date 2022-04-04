@@ -120,6 +120,7 @@ impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type Orders = Orders;
 	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;

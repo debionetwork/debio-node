@@ -78,12 +78,14 @@ std = [
     'primitives-stake-status/std',
     'primitives-verification-status/std',
 
-    'traits-services/std',
-    'traits-genetic-testing/std',
-    'traits-user-profile/std',
     'traits-order/std',
+    'traits-services/std',
+    'traits-user-profile/std',
+    'traits-certifications/std',
+    'traits-genetic-testing/std',
 
     'labs/std',
+    'orders/std',
 	'services/std',
 	'certifications/std',
 	'user-profile/std',

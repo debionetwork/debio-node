@@ -654,6 +654,7 @@ impl labs::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type Orders = Orders;
 	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
