@@ -830,6 +830,7 @@ dependencies = [
  "frame-system",
  "labs",
  "pallet-balances",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
@@ -2523,6 +2524,7 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-availability-status",
+ "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -2556,6 +2558,7 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-availability-status",
+ "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -2591,6 +2594,7 @@ dependencies = [
  "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
+ "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -3479,8 +3483,11 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-balances",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-stake-status",
+ "primitives-verification-status",
  "scale-info",
  "serde",
  "services",
@@ -5558,6 +5565,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "primitives-stake-status"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
 name = "primitives-tracking-id"
 version = "0.1.0"
 dependencies = [
@@ -7273,6 +7289,7 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-verification-status",
  "scale-info",
  "services",
  "sp-core",
@@ -7329,6 +7346,7 @@ dependencies = [
  "frame-system",
  "labs",
  "pallet-balances",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",

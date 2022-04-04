@@ -37,6 +37,8 @@ labs = { path = '../labs', default-features = false }
 services = { path = '../services', default-features = false }
 certifications = { path = '../certifications', default-features = false }
 user-profile = { path = '../user-profile', default-features = false }
+
+primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
 
 [features]

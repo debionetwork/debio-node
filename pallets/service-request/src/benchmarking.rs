@@ -7,8 +7,9 @@ use crate::{
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::sp_runtime::{traits::Hash, SaturatedConversion};
 use frame_system::RawOrigin;
-use labs::{LabInfo, LabVerificationStatus, LabVerifierKey, Pallet as PalletLab};
+use labs::{LabInfo, LabVerifierKey, Pallet as PalletLab};
 
+use primitives_verification_status::VerificationStatusTrait;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 const SEED: u32 = 0;

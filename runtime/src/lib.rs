@@ -643,20 +643,22 @@ impl pallet_sudo::Config for Runtime {
 // ------------------------------
 // Debio Pallets
 // ------------------------------
-impl labs::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type Services = Services;
-	type Certifications = Certifications;
-	type EthereumAddress = EthereumAddress;
-	type UserProfile = UserProfile;
-	type WeightInfo = ();
-}
-
 parameter_types! {
 	pub const RewardPalletId: PalletId = PalletId(*b"dbio/rwd");
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+}
+
+impl labs::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type Services = Services;
+	type PalletId = LabPalletId;
+	type Certifications = Certifications;
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
+	type LabWeightInfo = ();
 }
 
 impl rewards::Config for Runtime {

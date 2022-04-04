@@ -1,5 +1,5 @@
 use crate as labs;
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -26,6 +26,7 @@ frame_support::construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
 	}
 );
@@ -65,6 +66,15 @@ type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
 }
 
 impl pallet_balances::Config for Test {
@@ -85,10 +95,11 @@ impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
-	type WeightInfo = ();
+	type LabWeightInfo = ();
 }
 
 impl services::Config for Test {

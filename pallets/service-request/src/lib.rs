@@ -14,7 +14,8 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
-use labs::interface::{LabInterface, LabVerificationStatusTrait};
+use primitives_verification_status::VerificationStatusTrait;
+use labs::interface::LabInterface;
 pub use pallet::*;
 
 #[cfg(test)]

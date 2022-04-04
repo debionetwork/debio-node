@@ -18,6 +18,7 @@ use frame_support::{
 	traits::Currency,
 	PalletId,
 };
+use primitives_stake_status::{StakeStatus, StakeStatusTrait};
 use primitives_availability_status::{AvailabilityStatus, AvailabilityStatusTrait};
 use primitives_verification_status::{VerificationStatus, VerificationStatusTrait};
 pub use traits_genetic_analysis_orders::{
@@ -26,34 +27,6 @@ pub use traits_genetic_analysis_orders::{
 use traits_genetic_analyst_qualifications::GeneticAnalystQualificationOwnerInfo;
 use traits_genetic_analyst_services::GeneticAnalystServiceOwnerInfo;
 use traits_genetic_analysts::GeneticAnalystsProvider;
-
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub enum StakeStatus {
-	Staked,
-	WaitingForUnstaked,
-	Unstaked,
-}
-impl Default for StakeStatus {
-	fn default() -> Self {
-		StakeStatus::Unstaked
-	}
-}
-pub trait StakeStatusTrait {
-	fn is_staked(&self) -> bool;
-	fn is_waiting_for_unstaked(&self) -> bool;
-	fn is_unstaked(&self) -> bool;
-}
-impl StakeStatusTrait for StakeStatus {
-	fn is_staked(&self) -> bool {
-		matches!(*self, StakeStatus::Staked)
-	}
-	fn is_waiting_for_unstaked(&self) -> bool {
-		matches!(*self, StakeStatus::WaitingForUnstaked)
-	}
-	fn is_unstaked(&self) -> bool {
-		matches!(*self, StakeStatus::Unstaked)
-	}
-}
 
 // GeneticAnalystInfo Struct
 // Used as parameter of dispatchable calls
@@ -324,7 +297,7 @@ pub mod pallet {
 		UpdateGeneticAnalystAdminKeySuccessful(AccountIdOf<T>),
 		/// GeneticAnalyst verification failed
 		/// parameters. [GeneticAnalyst, who]
-		GeneticAnalystverificationFailed(GeneticAnalystOf<T>, AccountIdOf<T>),
+		GeneticAnalystVerificationFailed(GeneticAnalystOf<T>, AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -339,7 +312,7 @@ pub mod pallet {
 		/// GeneticAnalyst is not the owner of the qualification
 		GeneticAnalystIsNotOwner,
 		/// GeneticAnalyst verification failed
-		GeneticAnalystverificationFailed,
+		GeneticAnalystVerificationFailed,
 		/// Insufficient funds
 		InsufficientFunds,
 		/// Insufficient pallet funds

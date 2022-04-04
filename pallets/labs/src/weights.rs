@@ -33,6 +33,11 @@ pub trait WeightInfo {
 	fn update_lab() -> Weight;
 	fn update_lab_verification_status() -> Weight;
 	fn deregister_lab() -> Weight;
+	fn stake_lab() -> Weight;
+	fn unstake_lab() -> Weight;
+	fn retrieve_unstake_amount() -> Weight;
+	fn update_minimum_stake_amount() -> Weight;
+	fn update_unstake_time() -> Weight;
 	fn update_admin_key() -> Weight;
 }
 
@@ -78,6 +83,48 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: System Account (r:1 w:0)
+	// Storage: Labs MinimumStakeAmount (r:1 w:0)
+	fn stake_lab() -> Weight {
+		38_180_000_u64
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:1 w:0)
+	fn unstake_lab() -> Weight {
+		38_972_000_u64
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs GeneticAnalystVerifierKey (r:1 w:0)
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs PalletAccount (r:1 w:0)
+	// Storage: System Account (r:1 w:0)
+	// Storage: Labs TotalStakedAmount (r:0 w:1)
+	fn retrieve_unstake_amount() -> Weight {
+		50_746_000_u64
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
+	}
+	// Storage: Labs GeneticAnalystVerifierKey (r:1 w:0)
+	// Storage: Labs MinimumStakeAmount (r:0 w:1)
+	fn update_minimum_stake_amount() -> Weight {
+		20_197_000_u64
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs GeneticAnalystVerifierKey (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:0 w:1)
+	fn update_unstake_time() -> Weight {
+		19_855_000_u64
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -114,6 +161,48 @@ impl WeightInfo for () {
 		66_317_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: System Account (r:1 w:0)
+	// Storage: Labs MinimumStakeAmount (r:1 w:0)
+	fn stake_lab() -> Weight {
+		38_180_000_u64
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:1 w:0)
+	fn unstake_lab() -> Weight {
+		38_972_000_u64
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs GeneticAnalystVerifierKey (r:1 w:0)
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs PalletAccount (r:1 w:0)
+	// Storage: System Account (r:1 w:0)
+	// Storage: Labs TotalStakedAmount (r:0 w:1)
+	fn retrieve_unstake_amount() -> Weight {
+		50_746_000_u64
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: Labs GeneticAnalystVerifierKey (r:1 w:0)
+	// Storage: Labs MinimumStakeAmount (r:0 w:1)
+	fn update_minimum_stake_amount() -> Weight {
+		20_197_000_u64
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs GeneticAnalystVerifierKey (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:0 w:1)
+	fn update_unstake_time() -> Weight {
+		19_855_000_u64
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: Labs LabVerifierKey (r:1 w:1)
 	fn update_admin_key() -> Weight {

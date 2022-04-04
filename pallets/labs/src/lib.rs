@@ -20,9 +20,16 @@ pub use pallet::*;
 pub use weights::WeightInfo;
 
 pub mod interface;
-pub use crate::interface::{LabInterface, LabVerificationStatus};
-use frame_support::pallet_prelude::*;
+pub use crate::interface::LabInterface;
+use frame_support::{
+	pallet_prelude::*,
+	sp_runtime::{traits::AccountIdConversion, RuntimeDebug},
+	traits::Currency,
+	PalletId,
+};
 use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode};
+use primitives_stake_status::{StakeStatus, StakeStatusTrait};
+use primitives_verification_status::VerificationStatus;
 use traits_certifications::CertificationOwnerInfo;
 use traits_services::ServiceOwnerInfo;
 use traits_user_profile::UserProfileProvider;
@@ -51,18 +58,22 @@ where
 // Lab Struct
 // the fields (excluding account_id and services) come from LabInfo struct
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct Lab<AccountId, Hash>
+pub struct Lab<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 {
 	pub account_id: AccountId,
 	pub services: Vec<Hash>,
 	pub certifications: Vec<Hash>,
-	pub verification_status: LabVerificationStatus,
+	pub verification_status: VerificationStatus,
 	pub info: LabInfo<Hash>,
+	pub stake_amount: Balance,
+	pub stake_status: StakeStatus,
+	pub unstake_at: Moment,
+	pub retrieve_unstake_at: Moment,
 }
 
-impl<AccountId, Hash> Lab<AccountId, Hash>
+impl<AccountId, Hash, Moment: Default, Balance: Default> Lab<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 {
@@ -71,8 +82,12 @@ where
 			account_id,
 			services: Vec::<Hash>::new(),
 			certifications: Vec::<Hash>::new(),
-			verification_status: LabVerificationStatus::default(),
+			verification_status: VerificationStatus::default(),
 			info,
+			unstake_at: Moment::default(),
+			retrieve_unstake_at: Moment::default(),
+			stake_amount: Balance::default(),
+			stake_status: StakeStatus::default(),
 		}
 	}
 
@@ -122,7 +137,7 @@ where
 	}
 }
 
-impl<T, AccountId, Hash> ServiceOwnerInfo<T> for Lab<AccountId, Hash>
+impl<T, AccountId, Hash, Moment: Default, Balance: Default> ServiceOwnerInfo<T> for Lab<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 	T: frame_system::Config<AccountId = AccountId>,
@@ -132,7 +147,7 @@ where
 	}
 }
 
-impl<T, AccountId, Hash> CertificationOwnerInfo<T> for Lab<AccountId, Hash>
+impl<T, AccountId, Hash, Moment: Default, Balance: Default> CertificationOwnerInfo<T> for Lab<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 	T: frame_system::Config<AccountId = AccountId>,
@@ -154,7 +169,7 @@ pub mod pallet {
 
 	#[pallet::config]
 	/// Configure the pallet by specifying the parameters and types on which it depends.
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type Currency: Currency<Self::AccountId>;
@@ -171,7 +186,9 @@ pub mod pallet {
 			+ TypeInfo
 			+ sp_std::fmt::Debug;
 		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
-		type WeightInfo: WeightInfo;
+		type LabWeightInfo: WeightInfo;
+		/// Currency type for this pallet.
+		type PalletId: Get<PalletId>;
 	}
 
 	// ----- This is template code, every pallet needs this ---
@@ -186,7 +203,8 @@ pub mod pallet {
 	// ---- Types ----------------------
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
-	pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>>;
+	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
+	pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>, MomentOf<T>, BalanceOf<T>>;
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
 	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 
@@ -226,6 +244,22 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
 	pub type LabVerifierKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn pallet_id)]
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn total_staked_amount)]
+	pub type TotalStakedAmount<T> = StorageValue<_, BalanceOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn minimum_stake_amount)]
+	pub type MinimumStakeAmount<T> = StorageValue<_, BalanceOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn unstake_time)]
+	pub type UnstakeTime<T> = StorageValue<_, MomentOf<T>>;
 	// -----------------------------------------
 
 	// ----- Genesis Configs ------------------
@@ -245,6 +279,10 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			LabVerifierKey::<T>::put(&self.lab_verifier_key);
+			UnstakeTime::<T>::put(MomentOf::<T>::default());
+			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
+			<Pallet<T>>::set_minimum_stake_amount(50000000000000000000000u128.saturated_into());
+			<Pallet<T>>::set_total_staked_amount();
 		}
 	}
 	// ----------------------------------------
@@ -261,12 +299,27 @@ pub mod pallet {
 		/// Lab verification updated
 		/// parameters. [Lab, who]
 		LabUpdateVerificationStatus(LabOf<T>, AccountIdOf<T>),
-		/// Update Lab admin key
-		/// parameters. [who]
-		UpdateLabAdminKeySuccessful(AccountIdOf<T>),
 		/// Lab deregistered
 		/// parameters. [Lab, who]
 		LabDeregistered(LabOf<T>, AccountIdOf<T>),
+		/// Lab stake successful
+		/// parameters. [Lab, who]
+		LabStakeSuccessful(LabOf<T>, AccountIdOf<T>),
+		/// Lab unstake successful
+		/// parameters. [Lab, who]
+		LabUnstakeSuccessful(LabOf<T>, AccountIdOf<T>),
+		/// Lab retrive unstake amount
+		/// parameters. [Lab, who]
+		LabRetrieveUnstakeAmount(LabOf<T>, AccountIdOf<T>),
+		/// Update Lab minimum stake successful
+		/// parameters. [who]
+		UpdateLabMinimumStakeSuccessful(AccountIdOf<T>),
+		/// Update Lab unstake time successful
+		/// parameters. [who]
+		UpdateLabUnstakeTimeSuccessful(AccountIdOf<T>),
+		/// Update Lab admin key
+		/// parameters. [who]
+		UpdateLabAdminKeySuccessful(AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -278,13 +331,27 @@ pub mod pallet {
 		LabDoesNotExist,
 		/// Lab is not the owner of the service
 		LabIsNotOwner,
+		/// Account already has genetic_analyst staked
+		LabAlreadyStaked,
+		/// Insufficient funds
+		InsufficientFunds,
+		/// Insufficient pallet funds
+		InsufficientPalletFunds,
+		/// Account has not staked
+		LabIsNotStaked,
 		/// Unauthorized access to extrinsic
 		Unauthorized,
+		// Lab has pending orders
+		LabHasPendingOrders,
+		// Lab not waiting for unstake
+		LabIsNotWaitingForUnstake,
+		// Lab cannot unstake now
+		LabCannotUnstakeBeforeUnstakeTime,
 	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		#[pallet::weight(T::WeightInfo::register_lab())]
+		#[pallet::weight(T::LabWeightInfo::register_lab())]
 		pub fn register_lab(
 			origin: OriginFor<T>,
 			lab_info: LabInfo<HashOf<T>>,
@@ -300,7 +367,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::WeightInfo::update_lab())]
+		#[pallet::weight(T::LabWeightInfo::update_lab())]
 		pub fn update_lab(
 			origin: OriginFor<T>,
 			lab_info: LabInfo<HashOf<T>>,
@@ -316,11 +383,11 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::WeightInfo::update_lab_verification_status())]
+		#[pallet::weight(T::LabWeightInfo::update_lab_verification_status())]
 		pub fn update_lab_verification_status(
 			origin: OriginFor<T>,
 			account_id: T::AccountId,
-			lab_verification_status: LabVerificationStatus,
+			lab_verification_status: VerificationStatus,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -337,7 +404,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::WeightInfo::deregister_lab())]
+		#[pallet::weight(T::LabWeightInfo::deregister_lab())]
 		pub fn deregister_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// Check if user is a lab
@@ -355,7 +422,94 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::WeightInfo::update_admin_key())]
+		#[pallet::weight(T::LabWeightInfo::stake_lab())]
+		pub fn stake_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as LabInterface<T>>::stake_lab(&who) {
+				Ok(lab) => {
+					Self::deposit_event(Event::LabStakeSuccessful(
+						lab,
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::LabWeightInfo::unstake_lab())]
+		pub fn unstake_lab(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as LabInterface<T>>::unstake_lab(&who) {
+				Ok(lab) => {
+					Self::deposit_event(Event::LabUnstakeSuccessful(
+						lab,
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::LabWeightInfo::retrieve_unstake_amount())]
+		pub fn retrieve_unstake_amount(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as LabInterface<T>>::retrieve_unstake_amount(&who, &account_id) {
+				Ok(lab) => {
+					Self::deposit_event(Event::LabRetrieveUnstakeAmount(
+						lab,
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::LabWeightInfo::update_minimum_stake_amount())]
+		pub fn update_minimum_stake_amount(
+			origin: OriginFor<T>,
+			amount: BalanceOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as LabInterface<T>>::update_minimum_stake_amount(&who, amount) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateLabMinimumStakeSuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::LabWeightInfo::update_unstake_time())]
+		pub fn update_unstake_time(
+			origin: OriginFor<T>,
+			amount: MomentOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as LabInterface<T>>::update_unstake_time(&who, amount) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateLabUnstakeTimeSuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::LabWeightInfo::update_admin_key())]
 		pub fn update_admin_key(
 			origin: OriginFor<T>,
 			account_id: T::AccountId,
@@ -389,9 +543,11 @@ pub mod pallet {
 
 impl<T: Config> LabInterface<T> for Pallet<T> {
 	type Error = Error<T>;
+	type Moment = MomentOf<T>;
+	type Balance = BalanceOf<T>;
 	type LabInfo = LabInfo<HashOf<T>>;
 	type Lab = LabOf<T>;
-	type LabVerificationStatus = LabVerificationStatus;
+	type VerificationStatus = VerificationStatus;
 
 	fn create_lab(
 		account_id: &T::AccountId,
@@ -452,7 +608,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 	fn update_lab_verification_status(
 		lab_verifier_key: &T::AccountId,
 		account_id: &T::AccountId,
-		status: &Self::LabVerificationStatus,
+		status: &Self::VerificationStatus,
 	) -> Result<Self::Lab, Self::Error> {
 		if lab_verifier_key.clone() != LabVerifierKey::<T>::get() {
 			return Err(Error::<T>::Unauthorized)
@@ -490,6 +646,131 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		Ok(lab)
 	}
 
+	fn stake_lab(
+		account_id: &T::AccountId,
+	) -> Result<Self::Lab, Self::Error> {
+		let lab = Labs::<T>::get(account_id);
+		if lab == None {
+			return Err(Error::<T>::LabDoesNotExist)
+		}
+
+		let mut lab = lab.unwrap();
+		if lab.stake_status.is_staked() {
+			return Err(Error::<T>::LabAlreadyStaked)
+		}
+
+		if !lab.stake_status.is_waiting_for_unstaked() {
+			if !Self::is_balance_sufficient_for_staking(account_id) {
+				return Err(Error::<T>::InsufficientFunds)
+			}
+
+			lab.stake_amount = Self::transfer_balance(
+				account_id,
+				&Self::account_id(),
+				Self::get_required_stake_balance(),
+			);
+		}
+		lab.stake_status = StakeStatus::Staked;
+		lab.unstake_at = MomentOf::<T>::default();
+		lab.retrieve_unstake_at = MomentOf::<T>::default();
+
+		Labs::<T>::insert(account_id, &lab);
+
+		Ok(lab)
+	}
+
+	fn unstake_lab(
+		account_id: &T::AccountId,
+	) -> Result<Self::Lab, Self::Error> {
+		let lab = Labs::<T>::get(account_id);
+		if lab == None {
+			return Err(Error::<T>::LabDoesNotExist)
+		}
+
+		let mut lab = lab.unwrap();
+		if !lab.stake_status.is_staked() {
+			return Err(Error::<T>::LabIsNotStaked)
+		}
+
+		// if T::GeneticAnalysisOrders::is_pending_genetic_analysis_order_by_seller_exist(account_id) {
+		// 	return Err(Error::<T>::LabHasPendingOrders)
+		// }
+
+		let now = pallet_timestamp::Pallet::<T>::get();
+		lab.stake_status = StakeStatus::WaitingForUnstaked;
+		lab.unstake_at = now;
+		lab.retrieve_unstake_at = Self::get_unstake_time(now);
+
+		Labs::<T>::insert(account_id, &lab);
+
+		Ok(lab)
+	}
+
+	fn retrieve_unstake_amount(
+		admin_key: &T::AccountId,
+		account_id: &T::AccountId,
+	) -> Result<Self::Lab, Self::Error> {
+		if admin_key.clone() != LabVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		let lab = Labs::<T>::get(account_id);
+		if lab == None {
+			return Err(Error::<T>::LabDoesNotExist)
+		}
+
+		let mut lab = lab.unwrap();
+		if !lab.stake_status.is_waiting_for_unstaked() {
+			return Err(Error::<T>::LabIsNotWaitingForUnstake)
+		}
+
+		if !Self::check_if_unstake_time(lab.retrieve_unstake_at) {
+			return Err(Error::<T>::LabCannotUnstakeBeforeUnstakeTime)
+		}
+
+		if !Self::is_pallet_balance_sufficient_for_refund(lab.stake_amount) {
+			return Err(Error::<T>::InsufficientPalletFunds)
+		}
+
+		let _ =
+			Self::transfer_balance(&Self::account_id(), account_id, lab.stake_amount);
+
+		lab.stake_amount = 0u128.saturated_into();
+		lab.stake_status = StakeStatus::Unstaked;
+		lab.unstake_at = MomentOf::<T>::default();
+		lab.retrieve_unstake_at = MomentOf::<T>::default();
+
+		Labs::<T>::insert(account_id, &lab);
+
+		Ok(lab)
+	}
+
+	fn update_minimum_stake_amount(
+		account_id: &T::AccountId,
+		amount: Self::Balance,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != LabVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		Self::set_minimum_stake_amount(amount);
+
+		Ok(())
+	}
+
+	fn update_unstake_time(
+		account_id: &T::AccountId,
+		moment: Self::Moment,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != LabVerifierKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		Self::set_unstake_time(moment);
+
+		Ok(())
+	}
+
 	fn update_admin_key(
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
@@ -514,7 +795,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		Self::lab_by_account_id(account_id)
 	}
 
-	fn lab_verification_status(account_id: &T::AccountId) -> Option<Self::LabVerificationStatus> {
+	fn lab_verification_status(account_id: &T::AccountId) -> Option<Self::VerificationStatus> {
 		let lab = Self::lab_by_account_id(account_id);
 
 		lab.as_ref()?;
@@ -523,6 +804,8 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		Some(lab.verification_status)
 	}
 }
+
+use frame_support::{sp_runtime::SaturatedConversion, traits::ExistenceRequirement::KeepAlive};
 
 impl<T: Config> Pallet<T> {
 	pub fn insert_lab_id_to_location(lab: &LabOf<T>) {
@@ -597,10 +880,82 @@ impl<T: Config> Pallet<T> {
 			lab_count - 1,
 		);
 	}
+
+	/// The injected pallet ID
+	pub fn get_pallet_id() -> AccountIdOf<T> {
+		T::PalletId::get().into_account()
+	}
+
+	/// The account ID that holds the funds
+	pub fn account_id() -> AccountIdOf<T> {
+		<PalletAccount<T>>::get()
+	}
+
+	pub fn get_balance_by_account_id(account_id: &AccountIdOf<T>) -> BalanceOf<T> {
+		T::Currency::free_balance(account_id)
+	}
+
+	pub fn get_required_stake_balance() -> BalanceOf<T> {
+		<MinimumStakeAmount<T>>::get()
+			.unwrap_or_else(|| 50000000000000000000000u128.saturated_into())
+	}
+
+	/// Is the balance sufficient for staking
+	pub fn is_balance_sufficient_for_staking(account_id: &AccountIdOf<T>) -> bool {
+		let balance = T::Currency::free_balance(account_id);
+		balance >= Self::get_required_stake_balance()
+	}
+
+	/// Transfer balance
+	pub fn transfer_balance(
+		source: &AccountIdOf<T>,
+		dest: &AccountIdOf<T>,
+		amount: BalanceOf<T>,
+	) -> BalanceOf<T> {
+		let _ = T::Currency::transfer(source, dest, amount, KeepAlive);
+		Self::set_total_staked_amount();
+		amount
+	}
+
+	/// Is the pallet balance sufficient for refund
+	pub fn is_pallet_balance_sufficient_for_refund(refund_amount: BalanceOf<T>) -> bool {
+		let balance = T::Currency::free_balance(&Self::account_id());
+		balance >= refund_amount
+	}
+
+	/// Set current total stake amount
+	pub fn set_minimum_stake_amount(amount: BalanceOf<T>) {
+		MinimumStakeAmount::<T>::put(amount);
+	}
+
+	/// Set unstake time
+	pub fn set_unstake_time(moment: MomentOf<T>) {
+		UnstakeTime::<T>::put(moment);
+	}
+
+	/// Get unstake time
+	pub fn get_unstake_time(moment: MomentOf<T>) -> MomentOf<T> {
+		if let Some(time) = UnstakeTime::<T>::get() {
+			return time + moment
+		}
+		moment
+	}
+
+	/// Check unstake time
+	pub fn check_if_unstake_time(moment: MomentOf<T>) -> bool {
+		let now = pallet_timestamp::Pallet::<T>::get();
+		moment <= now
+	}
+
+	/// Set current total staked amount
+	pub fn set_total_staked_amount() {
+		let balance = T::Currency::free_balance(&Self::account_id());
+		TotalStakedAmount::<T>::put(balance);
+	}
 }
 
-impl<T: Config> ServiceOwner<T> for Pallet<T> {
-	type Owner = Lab<T::AccountId, T::Hash>;
+impl<T: Config> ServiceOwner<T> for Pallet	<T> {
+	type Owner = Lab<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
 	/// User can create service if he/she is a lab and has set ethereum address
 	fn can_create_service(user_id: &T::AccountId) -> bool {
@@ -633,7 +988,7 @@ impl<T: Config> ServiceOwner<T> for Pallet<T> {
 }
 
 impl<T: Config> CertificationOwner<T> for Pallet<T> {
-	type Owner = Lab<T::AccountId, T::Hash>;
+	type Owner = Lab<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
 	/// User can create certification if he/she is a lab
 	fn can_create_certification(user_id: &T::AccountId) -> bool {

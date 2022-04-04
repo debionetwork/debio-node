@@ -26,12 +26,17 @@ sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkad
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
+
+primitives-stake-status = { path = '../../primitives/stake-status', default-features = false }
+primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
+
 traits-services = { path = '../../traits/services', default-features = false }
 traits-certifications = { path = '../../traits/certifications', default-features = false }
 traits-user-profile = { path = '../../traits/user-profile', default-features = false }
 
 ## Substrate Pallet Dependencies
+pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies

@@ -4,7 +4,8 @@ use frame_support::{
 	sp_runtime::traits::{Hash, Keccak256},
 };
 use frame_system::RawOrigin;
-use labs::{LabInfo, LabVerificationStatus, LabVerifierKey};
+use labs::{LabInfo, LabVerifierKey};
+use primitives_verification_status::VerificationStatusTrait;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 #[test]
