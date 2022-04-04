@@ -18,8 +18,8 @@ use frame_support::{
 	traits::Currency,
 	PalletId,
 };
-use primitives_stake_status::{StakeStatus, StakeStatusTrait};
 use primitives_availability_status::{AvailabilityStatus, AvailabilityStatusTrait};
+use primitives_stake_status::{StakeStatus, StakeStatusTrait};
 use primitives_verification_status::{VerificationStatus, VerificationStatusTrait};
 pub use traits_genetic_analysis_orders::{
 	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,

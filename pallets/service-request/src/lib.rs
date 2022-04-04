@@ -14,9 +14,9 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
-use primitives_verification_status::VerificationStatusTrait;
 use labs::interface::LabInterface;
 pub use pallet::*;
+use primitives_verification_status::VerificationStatusTrait;
 
 #[cfg(test)]
 mod mock;

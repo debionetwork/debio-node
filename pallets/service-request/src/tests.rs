@@ -5,8 +5,8 @@ use frame_support::{
 };
 use frame_system::RawOrigin;
 use labs::{LabInfo, LabVerifierKey};
-use primitives_verification_status::VerificationStatusTrait;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
+use primitives_verification_status::VerificationStatusTrait;
 
 #[test]
 fn create_request_works() {

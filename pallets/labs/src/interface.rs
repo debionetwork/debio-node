@@ -4,8 +4,8 @@ pub use scale_info::TypeInfo;
 
 use sp_std::prelude::*;
 
-use primitives_verification_status::VerificationStatusTrait;
 use primitives_area_code::{CityCode, CountryRegionCode};
+use primitives_verification_status::VerificationStatusTrait;
 
 /// Interface for Lab Pallet
 /// Defines the functionalities of Lab Pallet
@@ -44,13 +44,9 @@ pub trait LabInterface<T: frame_system::Config> {
 		status: &Self::VerificationStatus,
 	) -> Result<Self::Lab, Self::Error>;
 	/// Stake Lab
-	fn stake_lab(
-		account_id: &T::AccountId,
-	) -> Result<Self::Lab, Self::Error>;
+	fn stake_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error>;
 	/// Unstake Lab
-	fn unstake_lab(
-		account_id: &T::AccountId,
-	) -> Result<Self::Lab, Self::Error>;
+	fn unstake_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error>;
 	/// Retrieve Unstake Amount
 	fn retrieve_unstake_amount(
 		admin_key: &T::AccountId,

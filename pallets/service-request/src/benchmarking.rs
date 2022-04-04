@@ -9,8 +9,8 @@ use frame_support::sp_runtime::{traits::Hash, SaturatedConversion};
 use frame_system::RawOrigin;
 use labs::{LabInfo, LabVerifierKey, Pallet as PalletLab};
 
-use primitives_verification_status::VerificationStatusTrait;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
+use primitives_verification_status::VerificationStatusTrait;
 
 const SEED: u32 = 0;
 

@@ -137,7 +137,8 @@ where
 	}
 }
 
-impl<T, AccountId, Hash, Moment: Default, Balance: Default> ServiceOwnerInfo<T> for Lab<AccountId, Hash, Moment, Balance>
+impl<T, AccountId, Hash, Moment: Default, Balance: Default> ServiceOwnerInfo<T>
+	for Lab<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 	T: frame_system::Config<AccountId = AccountId>,
@@ -147,7 +148,8 @@ where
 	}
 }
 
-impl<T, AccountId, Hash, Moment: Default, Balance: Default> CertificationOwnerInfo<T> for Lab<AccountId, Hash, Moment, Balance>
+impl<T, AccountId, Hash, Moment: Default, Balance: Default> CertificationOwnerInfo<T>
+	for Lab<AccountId, Hash, Moment, Balance>
 where
 	Hash: PartialEq + Eq,
 	T: frame_system::Config<AccountId = AccountId>,
@@ -428,10 +430,7 @@ pub mod pallet {
 
 			match <Self as LabInterface<T>>::stake_lab(&who) {
 				Ok(lab) => {
-					Self::deposit_event(Event::LabStakeSuccessful(
-						lab,
-						who.clone(),
-					));
+					Self::deposit_event(Event::LabStakeSuccessful(lab, who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -444,10 +443,7 @@ pub mod pallet {
 
 			match <Self as LabInterface<T>>::unstake_lab(&who) {
 				Ok(lab) => {
-					Self::deposit_event(Event::LabUnstakeSuccessful(
-						lab,
-						who.clone(),
-					));
+					Self::deposit_event(Event::LabUnstakeSuccessful(lab, who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -463,10 +459,7 @@ pub mod pallet {
 
 			match <Self as LabInterface<T>>::retrieve_unstake_amount(&who, &account_id) {
 				Ok(lab) => {
-					Self::deposit_event(Event::LabRetrieveUnstakeAmount(
-						lab,
-						who.clone(),
-					));
+					Self::deposit_event(Event::LabRetrieveUnstakeAmount(lab, who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -482,9 +475,7 @@ pub mod pallet {
 
 			match <Self as LabInterface<T>>::update_minimum_stake_amount(&who, amount) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateLabMinimumStakeSuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateLabMinimumStakeSuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -500,9 +491,7 @@ pub mod pallet {
 
 			match <Self as LabInterface<T>>::update_unstake_time(&who, amount) {
 				Ok(_) => {
-					Self::deposit_event(Event::UpdateLabUnstakeTimeSuccessful(
-						who.clone(),
-					));
+					Self::deposit_event(Event::UpdateLabUnstakeTimeSuccessful(who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -646,9 +635,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		Ok(lab)
 	}
 
-	fn stake_lab(
-		account_id: &T::AccountId,
-	) -> Result<Self::Lab, Self::Error> {
+	fn stake_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error> {
 		let lab = Labs::<T>::get(account_id);
 		if lab == None {
 			return Err(Error::<T>::LabDoesNotExist)
@@ -679,9 +666,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		Ok(lab)
 	}
 
-	fn unstake_lab(
-		account_id: &T::AccountId,
-	) -> Result<Self::Lab, Self::Error> {
+	fn unstake_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error> {
 		let lab = Labs::<T>::get(account_id);
 		if lab == None {
 			return Err(Error::<T>::LabDoesNotExist)
@@ -732,8 +717,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		let _ =
-			Self::transfer_balance(&Self::account_id(), account_id, lab.stake_amount);
+		let _ = Self::transfer_balance(&Self::account_id(), account_id, lab.stake_amount);
 
 		lab.stake_amount = 0u128.saturated_into();
 		lab.stake_status = StakeStatus::Unstaked;
@@ -954,7 +938,7 @@ impl<T: Config> Pallet<T> {
 	}
 }
 
-impl<T: Config> ServiceOwner<T> for Pallet	<T> {
+impl<T: Config> ServiceOwner<T> for Pallet<T> {
 	type Owner = Lab<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
 	/// User can create service if he/she is a lab and has set ethereum address
