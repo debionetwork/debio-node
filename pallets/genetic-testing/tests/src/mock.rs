@@ -1,4 +1,4 @@
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
@@ -68,6 +68,7 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -119,10 +120,12 @@ impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type Orders = Orders;
+	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
-	type WeightInfo = ();
+	type LabWeightInfo = ();
 }
 
 impl services::Config for Test {

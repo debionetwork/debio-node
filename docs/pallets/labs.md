@@ -44,3 +44,36 @@ pub fn sudo_update_admin_key(
     account_id: T::AccountId,
 ) -> DispatchResultWithPostInfo
 ```
+### Stake Genetic Analysts
+```rust
+pub fn stake_genetic_analyst(
+    origin: OriginFor<T>
+) -> DispatchResultWithPostInfo
+```
+### Unstake Genetic Analysts
+```rust
+pub fn unstake_genetic_analyst(
+    origin: OriginFor<T>
+) -> DispatchResultWithPostInfo
+```
+### Retrieve Genetic Analysts Unstake Amount
+```rust
+pub fn retrieve_unstake_amount(
+    origin: OriginFor<T>,
+    account_id: T::AccountId,
+) -> DispatchResultWithPostInfo
+```
+### Update Minimum Stake Amount (Admin Only)
+```rust
+pub fn update_minimum_stake_amount(
+    origin: OriginFor<T>,
+    amount: BalanceOf<T>,
+) -> DispatchResultWithPostInfo
+```
+### Update Unstake Duration (Admin Only)
+```rust
+pub fn update_unstake_time(
+    origin: OriginFor<T>,
+    amount: MomentOf<T>,
+) -> DispatchResultWithPostInfo
+```

@@ -36,6 +36,7 @@ frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', bran
 
 primitives-duration = { path = '../../../primitives/duration', default-features = false }
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
+primitives-stake-status = { path = '../../../primitives/stake-status', default-features = false }
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
 primitives-availability-status = { path = '../../../primitives/availability-status', default-features = false }
 

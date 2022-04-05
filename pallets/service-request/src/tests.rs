@@ -4,8 +4,9 @@ use frame_support::{
 	sp_runtime::traits::{Hash, Keccak256},
 };
 use frame_system::RawOrigin;
-use labs::{LabInfo, LabVerificationStatus, LabVerifierKey};
+use labs::{LabInfo, LabVerifierKey};
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
+use primitives_verification_status::VerificationStatus;
 
 #[test]
 fn create_request_works() {
@@ -97,7 +98,7 @@ fn claim_request_works_when_lab_is_verified() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -248,7 +249,7 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -361,7 +362,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -475,7 +476,7 @@ fn finalize_request_works_when_test_result_success() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -575,7 +576,7 @@ fn finalize_request_works_when_test_result_not_success() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -731,7 +732,7 @@ fn cant_claim_request_when_already_claimed() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -836,13 +837,13 @@ fn cant_claim_process_request_when_lab_not_exists() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(2),
 			3,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(2),
 			4,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -965,7 +966,7 @@ fn cant_process_request_when_unathorized_customer() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -1086,7 +1087,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -1208,7 +1209,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(
@@ -1321,7 +1322,7 @@ fn call_event_should_work() {
 		assert_ok!(Labs::update_lab_verification_status(
 			Origin::signed(3),
 			2,
-			LabVerificationStatus::Verified
+			VerificationStatus::Verified
 		));
 
 		assert_ok!(ServiceRequest::claim_request(

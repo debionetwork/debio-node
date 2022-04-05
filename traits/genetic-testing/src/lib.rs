@@ -25,6 +25,7 @@ pub trait DnaSampleTracking {
 	fn get_tracking_id(&self) -> &DnaSampleTrackingId;
 	fn process_success(&self) -> bool;
 	fn is_rejected(&self) -> bool;
+	fn is_registered(&self) -> bool;
 }
 
 pub trait GeneticTestingProvider<T: frame_system::Config> {

@@ -7,6 +7,7 @@ use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
@@ -24,26 +25,29 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Labs: labs::{Pallet, Call, Storage, Event<T>},
-		Services: services::{Pallet, Call, Storage, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Event<T>},
-		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
+		Labs: labs::{Pallet, Call, Storage, Event<T>},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		ServiceRequest: service_request::{Pallet, Call, Storage, Event<T>},
+		Services: services::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
 
-impl pallet_randomness_collective_flip::Config for Test {}
-
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
+	pub BlockWeights: frame_system::limits::BlockWeights =
+		frame_system::limits::BlockWeights::simple_max(1024);
 }
 
-impl system::Config for Test {
+impl pallet_randomness_collective_flip::Config for Test {}
+
+impl frame_system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type BlockWeights = ();
 	type BlockLength = ();
@@ -75,7 +79,6 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
-	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -90,6 +93,7 @@ type Balance = u64;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_balances::Config for Test {
@@ -106,15 +110,23 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+impl service_request::Config for Test {
+	type Event = Event;
+	type TimeProvider = Timestamp;
+	type Currency = Balances;
+	type Labs = Labs;
+	type ServiceRequestWeightInfo = ();
+}
+
 impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
-	type Services = Services;
-	type Orders = Orders;
-	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
+	type Services = Services;
+	type Orders = Orders;
 	type UserProfile = UserProfile;
+	type PalletId = LabPalletId;
 	type LabWeightInfo = ();
 }
 
@@ -125,10 +137,12 @@ impl services::Config for Test {
 	type WeightInfo = ();
 }
 
-impl certifications::Config for Test {
+impl orders::Config for Test {
 	type Event = Event;
-	type CertificationOwner = Labs;
-	type WeightInfo = ();
+	type Services = Services;
+	type GeneticTesting = GeneticTesting;
+	type Currency = Balances;
+	type OrdersWeightInfo = ();
 }
 
 impl genetic_testing::Config for Test {
@@ -138,12 +152,10 @@ impl genetic_testing::Config for Test {
 	type GeneticTestingWeightInfo = ();
 }
 
-impl orders::Config for Test {
+impl certifications::Config for Test {
 	type Event = Event;
-	type Services = Services;
-	type GeneticTesting = GeneticTesting;
-	type Currency = Balances;
-	type OrdersWeightInfo = ();
+	type CertificationOwner = Labs;
+	type WeightInfo = ();
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
@@ -155,11 +167,32 @@ impl user_profile::Config for Test {
 	type WeightInfo = ();
 }
 
-pub struct ExternalityBuilder;
+pub struct ExternalityBuilder {
+	existential_deposit: u64,
+}
+
+impl Default for ExternalityBuilder {
+	fn default() -> Self {
+		Self { existential_deposit: 1 }
+	}
+}
 
 impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+	pub fn existential_deposit(mut self, existential_deposit: u64) -> Self {
+		self.existential_deposit = existential_deposit;
+		self
+	}
+	pub fn set_associated_consts(&self) {
+		EXISTENTIAL_DEPOSIT.with(|v| *v.borrow_mut() = self.existential_deposit);
+	}
+	pub fn build(&self) -> TestExternalities {
+		self.set_associated_consts();
+		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
+			.assimilate_storage(&mut storage)
+			.unwrap();
+		let mut ext = sp_io::TestExternalities::new(storage);
+		ext.execute_with(|| System::set_block_number(1));
+		ext
 	}
 }

@@ -6,7 +6,7 @@ mod tests {
 
 	use genetic_analysts::{
 		Error, Event as EventC, GeneticAnalyst, GeneticAnalystInfo, GeneticAnalystVerifierKey,
-		PalletAccount, StakeStatus,
+		PalletAccount,
 	};
 
 	use frame_support::{
@@ -25,6 +25,7 @@ mod tests {
 	use primitives_availability_status::AvailabilityStatus;
 	use primitives_duration::ExpectedDuration;
 	use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
+	use primitives_stake_status::StakeStatus;
 	use primitives_verification_status::VerificationStatus;
 
 	#[test]

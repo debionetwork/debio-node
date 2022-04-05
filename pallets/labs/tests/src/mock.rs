@@ -1,7 +1,3 @@
-#![cfg(test)]
-
-use super::*;
-
 use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
@@ -15,6 +11,9 @@ use sp_runtime::{
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
+#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
+pub struct EthereumAddress(pub [u8; 20]);
+
 pub type AccountId = u64;
 
 frame_support::construct_runtime!(
@@ -27,21 +26,23 @@ frame_support::construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Labs: labs::{Pallet, Call, Storage, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
+		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
-		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
 	}
 );
-
-impl pallet_randomness_collective_flip::Config for Test {}
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
+	pub BlockWeights: frame_system::limits::BlockWeights =
+		frame_system::limits::BlockWeights::simple_max(1024);
 }
+
+impl pallet_randomness_collective_flip::Config for Test {}
 
 impl system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
@@ -75,7 +76,6 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
-	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -86,10 +86,11 @@ impl pallet_timestamp::Config for Test {
 	type WeightInfo = ();
 }
 
-type Balance = u64;
+type Balance = u128;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl pallet_balances::Config for Test {
@@ -111,11 +112,11 @@ impl labs::Config for Test {
 	type Currency = Balances;
 	type Services = Services;
 	type Orders = Orders;
-	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
 	type LabWeightInfo = ();
+	type PalletId = LabPalletId;
 }
 
 impl services::Config for Test {
@@ -146,20 +147,44 @@ impl orders::Config for Test {
 	type OrdersWeightInfo = ();
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress(pub [u8; 20]);
-
 impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
 	type WeightInfo = ();
 }
 
-pub struct ExternalityBuilder;
+#[cfg(test)]
+use sp_io::TestExternalities;
 
+#[cfg(test)]
+pub struct ExternalityBuilder {
+	existential_deposit: u128,
+}
+
+#[cfg(test)]
+impl Default for ExternalityBuilder {
+	fn default() -> Self {
+		Self { existential_deposit: 1 }
+	}
+}
+
+#[cfg(test)]
 impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
+		self.existential_deposit = existential_deposit;
+		self
+	}
+	pub fn set_associated_consts(&self) {
+		EXISTENTIAL_DEPOSIT.with(|v| *v.borrow_mut() = self.existential_deposit);
+	}
+	pub fn build(&self) -> TestExternalities {
+		self.set_associated_consts();
+		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
+			.assimilate_storage(&mut storage)
+			.unwrap();
+		let mut ext = sp_io::TestExternalities::new(storage);
+		ext.execute_with(|| System::set_block_number(1));
+		ext
 	}
 }

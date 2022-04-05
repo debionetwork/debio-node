@@ -2,7 +2,7 @@
 
 use super::*;
 
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
@@ -35,6 +35,7 @@ frame_support::construct_runtime!(
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
 impl frame_system::Config for Test {
@@ -84,10 +85,13 @@ impl pallet_balances::Config for Test {
 impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
-	type Services = ();
+	type Services = Services;
+	type Orders = Orders;
 	type Certifications = Certifications;
-	type EthereumAddress = ();
-	type UserProfile = ();
+	type EthereumAddress = EthereumAddress;
+	type UserProfile = UserProfile;
+	type LabWeightInfo = ();
+	type PalletId = LabPalletId;
 }
 
 impl services::Config for Test {

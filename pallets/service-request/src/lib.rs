@@ -14,17 +14,15 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
-use labs::interface::{LabInterface, LabVerificationStatusTrait};
 pub use pallet::*;
+use primitives_verification_status::VerificationStatusTrait;
+use traits_labs::LabsProvider;
 
 #[cfg(test)]
 mod mock;
 
 #[cfg(test)]
 mod tests;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
 
 pub mod interface;
 pub use interface::SeviceRequestInterface;
@@ -152,7 +150,7 @@ impl<AccountId, Balance, Hash> ServiceInvoice<AccountId, Balance, Hash> {
 
 #[frame_support::pallet]
 pub mod pallet {
-	use super::*;
+	use crate::*;
 
 	pub const PALLET_ID: PalletId = PalletId(*b"reqsrvc!");
 
@@ -176,11 +174,11 @@ pub mod pallet {
 	pub type DNASampleTrackingIdOf = Vec<u8>;
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config + labs::Config {
+	pub trait Config: frame_system::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
-		type Labs: LabInterface<Self>;
+		type Labs: LabsProvider<Self>;
 		type ServiceRequestWeightInfo: WeightInfo;
 	}
 

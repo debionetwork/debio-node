@@ -28,6 +28,7 @@ sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkad
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
 
+primitives-stake-status = { path = '../../primitives/stake-status', default-features = false }
 primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
 primitives-availability-status = { path = '../../primitives/availability-status', default-features = false }
 

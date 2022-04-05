@@ -29,16 +29,25 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
 
 ## Substrate Pallet Dependencies
+pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 pallet-balances = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies
 labs = { path = '../../labs', default-features = false }
+orders = { path = '../../orders', default-features = false }
 services = { path = '../../services', default-features = false }
-certifications = { path = '../../certifications', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
+certifications = { path = '../../certifications', default-features = false }
+genetic-testing = { path = '../../genetic-testing', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
+
+traits-order = { path = '../../../traits/order', default-features = false }
+traits-services = { path = '../../../traits/services', default-features = false }
+traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
 traits-certifications = { path = '../../../traits/certifications', default-features = false }
+traits-genetic-testing = { path = '../../../traits/genetic-testing', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.119" }
@@ -47,21 +56,31 @@ serde = { default-features = false, version = "1.0.119" }
 default = ['std']
 std = [
     'codec/std',
-
-    'sp-io/std',
+    
     'sp-core/std',
     'sp-runtime/std',
+    'sp-io/std',
 
     'frame-benchmarking/std',
     'frame-support/std',
     'frame-system/std',
 
 	'pallet-balances/std',
+	'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
+
+    'traits-order/std',
+    'traits-services/std',
+    'traits-user-profile/std',
+    'traits-certifications/std',
+    'traits-genetic-testing/std',
 
     'labs/std',
+    'orders/std',
     'services/std',
-    'certifications/std',
     'user-profile/std',
+    'certifications/std',
+    'genetic-testing/std',
 
     'primitives-area-code/std',
     'traits-certifications/std',

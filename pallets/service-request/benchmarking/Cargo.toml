@@ -1,11 +1,12 @@
 [package]
-name = 'service-request'
+name = 'service-request-benchmarking'
 version = '0.1.0'
+repository = ''
 edition = '2018'
+authors = ['agustinustheoo <agustinustheoo@gmail.com>']
+description = ''
+homepage = ''
 license = 'AGPL-3.0'
-authors = ['DeBio Dev Team <debio.dev@blocksphere.id>']
-homepage = 'https://debio.network/'
-repository = 'https://github.com/debionetwork/debio-node'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -26,7 +27,7 @@ sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'po
 ## Substrate Frame Dependencies
 frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
-frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false, optional = true }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.12', default-features = false }
@@ -34,17 +35,18 @@ pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/subst
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
 
 # Local Dependencies
-labs = { path = '../labs', default-features = false }
-orders = { path = '../orders', default-features = false }
-services = { path = '../services', default-features = false }
-user-profile = { path = '../user-profile', default-features = false }
-certifications = { path = '../certifications', default-features = false }
-genetic-testing = { path = '../genetic-testing', default-features = false }
+labs = { path = '../../labs', default-features = false }
+orders = { path = '../../orders', default-features = false }
+services = { path = '../../services', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
+certifications = { path = '../../certifications', default-features = false }
+genetic-testing = { path = '../../genetic-testing', default-features = false }
+service-request = { path = '../../service-request', default-features = false }
 
-traits-labs = { path = '../labs/traits', default-features = false }
+traits-labs = { path = '../../labs/traits', default-features = false }
 
-primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
-primitives-area-code = { path = '../../primitives/area-code', default-features = false }
+primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
+primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 
 [dev-dependencies]
 sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
@@ -63,7 +65,8 @@ std = [
 
     'frame-support/std',
     'frame-system/std',
-	
+	'frame-benchmarking/std',
+
 	'primitives-area-code/std',
 
     'pallet-timestamp/std',
@@ -76,6 +79,5 @@ std = [
 	'certifications/std',
 	'user-profile/std',
 	'genetic-testing/std',
+	'service-request/std',
 ]
-runtime-benchmarks = ['frame-benchmarking']
-try-runtime = ['frame-support/try-runtime']

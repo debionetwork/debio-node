@@ -1,4 +1,4 @@
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -23,10 +23,16 @@ frame_support::construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Labs: labs::{Pallet, Call, Storage, Event<T>},
 		Services: services::{Pallet, Call, Storage, Event<T>},
+		Orders: orders::{Pallet, Call, Storage, Event<T>},
+		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 	}
 );
+
+impl pallet_randomness_collective_flip::Config for Test {}
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
@@ -59,6 +65,23 @@ impl system::Config for Test {
 	type OnSetCode = ();
 }
 
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
+}
+
 type Balance = u64;
 
 parameter_types! {
@@ -83,10 +106,12 @@ impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Services = Services;
+	type Orders = Orders;
+	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
 	type UserProfile = UserProfile;
-	type WeightInfo = ();
+	type LabWeightInfo = ();
 }
 
 impl services::Config for Test {
@@ -100,6 +125,21 @@ impl certifications::Config for Test {
 	type Event = Event;
 	type CertificationOwner = Labs;
 	type WeightInfo = ();
+}
+
+impl genetic_testing::Config for Test {
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticTestingWeightInfo = ();
+}
+
+impl orders::Config for Test {
+	type Event = Event;
+	type Services = Services;
+	type GeneticTesting = GeneticTesting;
+	type Currency = Balances;
+	type OrdersWeightInfo = ();
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]

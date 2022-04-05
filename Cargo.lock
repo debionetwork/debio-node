@@ -828,8 +828,12 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "labs",
+ "orders",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
@@ -839,6 +843,10 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "traits-certifications",
+ "traits-genetic-testing",
+ "traits-order",
+ "traits-services",
+ "traits-user-profile",
  "user-profile",
 ]
 
@@ -1376,6 +1384,7 @@ dependencies = [
  "hospital-certifications-benchmarking",
  "hospitals",
  "labs",
+ "labs-benchmarking",
  "log",
  "orders",
  "orders-benchmarking",
@@ -1403,6 +1412,7 @@ dependencies = [
  "scale-info",
  "serde",
  "service-request",
+ "service-request-benchmarking",
  "services",
  "services-benchmarking",
  "sp-api",
@@ -2523,6 +2533,7 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-availability-status",
+ "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -2556,6 +2567,7 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-availability-status",
+ "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -2591,6 +2603,7 @@ dependencies = [
  "primitives-availability-status",
  "primitives-duration",
  "primitives-price-and-currency",
+ "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
  "serde",
@@ -3479,8 +3492,11 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-balances",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-stake-status",
+ "primitives-verification-status",
  "scale-info",
  "serde",
  "services",
@@ -3489,6 +3505,74 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-certifications",
+ "traits-labs",
+ "traits-order",
+ "traits-services",
+ "traits-user-profile",
+ "user-profile",
+]
+
+[[package]]
+name = "labs-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-testing",
+ "labs",
+ "orders",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-certifications",
+ "traits-genetic-testing",
+ "traits-order",
+ "traits-services",
+ "traits-user-profile",
+ "user-profile",
+]
+
+[[package]]
+name = "labs-tests"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-testing",
+ "labs",
+ "orders",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-certifications",
+ "traits-genetic-testing",
+ "traits-order",
  "traits-services",
  "traits-user-profile",
  "user-profile",
@@ -5558,6 +5642,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "primitives-stake-status"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
 name = "primitives-tracking-id"
 version = "0.1.0"
 dependencies = [
@@ -7267,18 +7360,52 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "hex-literal",
  "labs",
+ "orders",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-verification-status",
  "scale-info",
  "services",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "traits-labs",
+ "user-profile",
+]
+
+[[package]]
+name = "service-request-benchmarking"
+version = "0.1.0"
+dependencies = [
+ "certifications",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-testing",
+ "hex-literal",
+ "labs",
+ "orders",
+ "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-area-code",
+ "primitives-verification-status",
+ "scale-info",
+ "service-request",
+ "services",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-labs",
  "user-profile",
 ]
 
@@ -7327,8 +7454,12 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "labs",
+ "orders",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "scale-info",
@@ -7337,7 +7468,11 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "traits-certifications",
+ "traits-genetic-testing",
+ "traits-order",
  "traits-services",
+ "traits-user-profile",
  "user-profile",
 ]
 
@@ -8739,6 +8874,17 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-std",
+]
+
+[[package]]
+name = "traits-labs"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "primitives-verification-status",
+ "scale-info",
 ]
 
 [[package]]
