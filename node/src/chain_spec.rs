@@ -1,23 +1,28 @@
+use sc_chain_spec::ChainSpecExtension;
+use sc_client_api::{BadBlocks, ForkBlocks};
+use sc_service::{ChainType, GenericChainSpec, Properties};
+use sc_sync_state_rpc::LightSyncStateExtension;
+
 use beefy_primitives::crypto::AuthorityId as BeefyId;
+use sp_consensus_babe::AuthorityId as BabeId;
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
+use sp_finality_grandpa::AuthorityId as GrandpaId;
+use sp_runtime::traits::{IdentifyAccount, Verify};
+
+use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
+use pallet_octopus_appchain::AuthorityId as OctopusId;
+
 use debio_runtime::{
-	currency::{OCT, UNITS as DBIO},
+	currency::{OCTS, UNITS as DBIO},
 	opaque::{Block, SessionKeys},
 	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GeneticAnalysisOrdersConfig,
 	GeneticAnalystsConfig, LabsConfig, OctopusAppchainConfig, OctopusLposConfig, OrdersConfig,
 	RewardsConfig, ServiceRequestConfig, SessionConfig, Signature, SudoConfig, SystemConfig,
 	UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
-use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_octopus_appchain::AuthorityId as OctopusId;
-use sc_chain_spec::ChainSpecExtension;
-use sc_service::{ChainType, Properties};
-use serde::{Deserialize, Serialize};
-use sp_consensus_babe::AuthorityId as BabeId;
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
-use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::traits::{IdentifyAccount, Verify};
 
 use hex_literal::hex;
+use serde::{Deserialize, Serialize};
 
 /// Node `ChainSpec` extensions.
 ///
@@ -27,25 +32,16 @@ use hex_literal::hex;
 #[serde(rename_all = "camelCase")]
 pub struct Extensions {
 	/// Block numbers with known hashes.
-	pub fork_blocks: sc_client_api::ForkBlocks<Block>,
+	pub fork_blocks: ForkBlocks<Block>,
 	/// Known bad block hashes.
-	pub bad_blocks: sc_client_api::BadBlocks<Block>,
+	pub bad_blocks: BadBlocks<Block>,
 	/// The light sync state extension used by the sync-state rpc.
-	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
+	pub light_sync_state: LightSyncStateExtension,
 }
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
-pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
-
-fn session_keys(
-	babe: BabeId,
-	grandpa: GrandpaId,
-	im_online: ImOnlineId,
-	beefy: BeefyId,
-	octopus: OctopusId,
-) -> SessionKeys {
-	SessionKeys { babe, grandpa, im_online, beefy, octopus }
-}
+pub type ChainSpec = GenericChainSpec<GenesisConfig, Extensions>;
+pub type AccountPublic = <Signature as Verify>::Signer;
 
 /// Generate a crypto pair from seed.
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -53,8 +49,6 @@ pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Pu
 		.expect("static values are valid; qed")
 		.public()
 }
-
-type AccountPublic = <Signature as Verify>::Signer;
 
 /// Generate an account ID from seed.
 pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
@@ -80,6 +74,27 @@ pub fn authority_keys_from_seed(
 	)
 }
 
+/// Helper function for session keys
+pub fn session_keys(
+	babe: BabeId,
+	grandpa: GrandpaId,
+	im_online: ImOnlineId,
+	beefy: BeefyId,
+	octopus: OctopusId,
+) -> SessionKeys {
+	SessionKeys { babe, grandpa, im_online, beefy, octopus }
+}
+
+/// Helper function to generate appchain config
+pub fn appchain_config(
+	relay_contract: &str,
+	asset_id_by_name: &str,
+	premined_amount: Balance,
+	era_payout: Balance,
+) -> (String, String, Balance, Balance) {
+	(relay_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
+}
+
 /// Helper function to generate an properties
 pub fn get_properties(symbol: &str, decimals: u32, ss58format: u32) -> Properties {
 	let mut properties = Properties::new();
@@ -88,16 +103,6 @@ pub fn get_properties(symbol: &str, decimals: u32, ss58format: u32) -> Propertie
 	properties.insert("ss58Format".into(), ss58format.into());
 
 	properties
-}
-
-/// Helper function to generate appchain config
-pub fn appchain_config(
-	anchor_contract: &str,
-	asset_id_by_name: &str,
-	premined_amount: Balance,
-	era_payout: Balance,
-) -> (String, String, Balance, Balance) {
-	(anchor_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
 }
 
 pub fn mainnet_config() -> Result<ChainSpec, String> {
@@ -147,7 +152,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["4044558c867f510c90406c029d4132552cff769af982df767536607126f20b3e"]
 							.unchecked_into(),
 						// Stash amount
-						50_000 * OCT,
+						50_000 * OCTS,
 					),
 					(
 						// 5CaJm3bpWi3ieWYHcbz4xd7MrF8Njma4p7tGTBwemRbYnknT
@@ -169,7 +174,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 						hex!["16939c61baa637549e3a90277790655b5c5ce0e60ea9688559f9da587b2cb419"]
 							.unchecked_into(),
 						// Stash amount
-						50_000 * OCT,
+						50_000 * OCTS,
 					),
 				],
 				// Pre-funded accounts
@@ -267,7 +272,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
 							.unchecked_into(),
 						// Stash amount
-						50_000 * OCT,
+						50_000 * OCTS,
 					),
 					(
 						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
@@ -289,7 +294,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
 							.unchecked_into(),
 						// Stash amount
-						50_000 * OCT,
+						50_000 * OCTS,
 					),
 				],
 				// Pre-funded accounts
@@ -368,9 +373,9 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				// Initial PoA authorities
 				vec![
 					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					authority_keys_from_seed("Alice", 50_000 * OCT),
+					authority_keys_from_seed("Alice", 50_000 * OCTS),
 					// 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
-					authority_keys_from_seed("Bob", 50_000 * OCT),
+					authority_keys_from_seed("Bob", 50_000 * OCTS),
 				],
 				// Pre-funded accounts
 				vec![
@@ -438,7 +443,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				// Initial PoA authorities
 				vec![
 					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					authority_keys_from_seed("Alice", 50_000 * OCT),
+					authority_keys_from_seed("Alice", 50_000 * OCTS),
 				],
 				// Pre-funded accounts
 				vec![(
@@ -495,18 +500,7 @@ fn genesis(
 	api_admin_key: AccountId,
 ) -> GenesisConfig {
 	GenesisConfig {
-		system: SystemConfig {
-			code: wasm_binary.to_vec(),
-			changes_trie_config: Default::default(),
-		},
-		sudo: SudoConfig { key: root_key },
-		babe: BabeConfig {
-			authorities: Default::default(),
-			epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG),
-		},
-		grandpa: Default::default(),
-		im_online: Default::default(),
-		beefy: Default::default(),
+		system: SystemConfig { code: wasm_binary.to_vec() },
 		balances: BalancesConfig {
 			balances: endowed_accounts.iter().map(|x| (x.0.clone(), x.1)).collect(),
 		},
@@ -528,6 +522,13 @@ fn genesis(
 				})
 				.collect(),
 		},
+		babe: BabeConfig {
+			authorities: Default::default(),
+			epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG),
+		},
+		grandpa: Default::default(),
+		beefy: Default::default(),
+		im_online: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
 			anchor_contract: appchain_config.0,
 			asset_id_by_name: vec![(appchain_config.1, 0)],
@@ -536,6 +537,7 @@ fn genesis(
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
 		octopus_assets: Default::default(),
+		sudo: SudoConfig { key: root_key },
 		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
 		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
 		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },

@@ -291,9 +291,7 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 		let mut genetic_analyst_services = vec![];
 		for genetic_analyst_service_info in genetic_analyst_service_infos {
 			let owner_genetic_analyst_service_count =
-				<Self as GeneticAnalystServiceInterface<T>>::genetic_analyst_services_count_by_owner(
-					owner_id,
-				);
+				<Self as GeneticAnalystServiceInterface<T>>::genetic_analyst_services_count_by_owner(owner_id);
 			let genetic_analyst_service_id = Self::generate_genetic_analyst_service_id(
 				owner_id,
 				owner_genetic_analyst_service_count,
@@ -388,8 +386,8 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 
 	/// Delete GeneticAnalystService
 	/// Delete from GeneticAnalystServices Storage
-	/// Remove the genetic_analyst_service id reference in GeneticAnalystServicesByCountryCity storage
-	/// Disassociate genetic_analyst_service id from the owner
+	/// Remove the genetic_analyst_service id reference in GeneticAnalystServicesByCountryCity
+	/// storage Disassociate genetic_analyst_service id from the owner
 	/// Decrement Counts
 	fn delete_genetic_analyst_service(
 		owner_id: &T::AccountId,
