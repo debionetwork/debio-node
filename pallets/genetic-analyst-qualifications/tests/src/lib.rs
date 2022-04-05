@@ -321,7 +321,7 @@ mod tests {
 				Origin::signed(1),
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title".as_bytes().to_vec(),
+						title: "DeBio title".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title".as_bytes().to_vec(),
@@ -345,7 +345,7 @@ mod tests {
 					owner_id: 1,
 					info: GeneticAnalystQualificationInfo {
 						experience: vec![GeneticAnalystExperience {
-							title: "DeBio title".as_bytes().to_vec(),
+							title: "DeBio title".as_bytes().to_vec()
 						}],
 						certification: Some(vec![GeneticAnalystCertification {
 							title: "DeBio title".as_bytes().to_vec(),
@@ -402,7 +402,7 @@ mod tests {
 					owner_id: 1,
 					info: GeneticAnalystQualificationInfo {
 						experience: vec![GeneticAnalystExperience {
-							title: "DeBio title".as_bytes().to_vec(),
+							title: "DeBio title".as_bytes().to_vec()
 						}],
 						certification: Some(vec![GeneticAnalystCertification {
 							title: "DeBio title".as_bytes().to_vec(),
@@ -447,7 +447,7 @@ mod tests {
 				Origin::signed(1),
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title".as_bytes().to_vec(),
+						title: "DeBio title".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title".as_bytes().to_vec(),
@@ -467,7 +467,7 @@ mod tests {
 				genetic_analyst.qualifications[0],
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title 2".as_bytes().to_vec(),
+						title: "DeBio title 2".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title 2".as_bytes().to_vec(),
@@ -489,7 +489,7 @@ mod tests {
 					owner_id: 1,
 					info: GeneticAnalystQualificationInfo {
 						experience: vec![GeneticAnalystExperience {
-							title: "DeBio title 2".as_bytes().to_vec(),
+							title: "DeBio title 2".as_bytes().to_vec()
 						}],
 						certification: Some(vec![GeneticAnalystCertification {
 							title: "DeBio title 2".as_bytes().to_vec(),
@@ -534,7 +534,7 @@ mod tests {
 				Origin::signed(1),
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title".as_bytes().to_vec(),
+						title: "DeBio title".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title".as_bytes().to_vec(),
@@ -566,7 +566,7 @@ mod tests {
 					Origin::signed(1),
 					GeneticAnalystQualificationInfo {
 						experience: vec![GeneticAnalystExperience {
-							title: "DeBio title".as_bytes().to_vec(),
+							title: "DeBio title".as_bytes().to_vec()
 						}],
 						certification: Some(vec![GeneticAnalystCertification {
 							title: "DeBio title".as_bytes().to_vec(),
@@ -742,7 +742,7 @@ mod tests {
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					GeneticAnalystQualificationInfo {
 						experience: vec![GeneticAnalystExperience {
-							title: "DeBio title 2".as_bytes().to_vec(),
+							title: "DeBio title 2".as_bytes().to_vec()
 						}],
 						certification: Some(vec![GeneticAnalystCertification {
 							title: "DeBio title 2".as_bytes().to_vec(),
@@ -786,7 +786,7 @@ mod tests {
 				Origin::signed(1),
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title".as_bytes().to_vec(),
+						title: "DeBio title".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title".as_bytes().to_vec(),
@@ -807,7 +807,7 @@ mod tests {
 					genetic_analyst.qualifications[0],
 					GeneticAnalystQualificationInfo {
 						experience: vec![GeneticAnalystExperience {
-							title: "DeBio title 2".as_bytes().to_vec(),
+							title: "DeBio title 2".as_bytes().to_vec()
 						}],
 						certification: Some(vec![GeneticAnalystCertification {
 							title: "DeBio title 2".as_bytes().to_vec(),
@@ -851,7 +851,7 @@ mod tests {
 				Origin::signed(1),
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title".as_bytes().to_vec(),
+						title: "DeBio title".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title".as_bytes().to_vec(),
@@ -945,7 +945,7 @@ mod tests {
 				Origin::signed(1),
 				GeneticAnalystQualificationInfo {
 					experience: vec![GeneticAnalystExperience {
-						title: "DeBio title".as_bytes().to_vec(),
+						title: "DeBio title".as_bytes().to_vec()
 					}],
 					certification: Some(vec![GeneticAnalystCertification {
 						title: "DeBio title".as_bytes().to_vec(),

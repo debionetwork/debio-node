@@ -92,10 +92,7 @@ pub struct ExternalityBuilder;
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
 		GenesisConfig {
-			system: frame_system::GenesisConfig {
-				code: vec![],
-				changes_trie_config: Default::default(),
-			},
+			system: frame_system::GenesisConfig { code: vec![] },
 			balances: pallet_balances::GenesisConfig::<Test> { balances: vec![] },
 			rewards: rewards::GenesisConfig::<Test> { rewarder_key: 1 },
 		}
