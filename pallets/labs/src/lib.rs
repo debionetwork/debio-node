@@ -2,6 +2,8 @@
 
 pub use scale_info::TypeInfo;
 
+pub mod interface;
+pub mod migrations;
 pub mod weights;
 
 /// Edit this file to define custom logic or remove it if it is not needed.
@@ -10,12 +12,11 @@ pub mod weights;
 pub use pallet::*;
 pub use weights::WeightInfo;
 
-pub mod interface;
 pub use crate::interface::LabInterface;
 use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::{traits::AccountIdConversion, RuntimeDebug},
-	traits::Currency,
+	traits::{Currency, StorageVersion},
 	PalletId,
 };
 use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode};
@@ -153,6 +154,9 @@ where
 	}
 }
 
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
+
 #[frame_support::pallet]
 pub mod pallet {
 	use crate::{interface::LabInterface, Lab, LabInfo, *};
@@ -190,11 +194,16 @@ pub mod pallet {
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ---- Types ----------------------
