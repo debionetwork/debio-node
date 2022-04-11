@@ -2,6 +2,8 @@
 
 pub use scale_info::TypeInfo;
 
+pub mod interface;
+pub mod migrations;
 pub mod weights;
 
 /// Edit this file to define custom logic or remove it if it is not needed.
@@ -10,7 +12,6 @@ pub mod weights;
 pub use pallet::*;
 pub use weights::WeightInfo;
 
-pub mod interface;
 pub use crate::interface::LabInterface;
 use frame_support::{
 	pallet_prelude::*,
