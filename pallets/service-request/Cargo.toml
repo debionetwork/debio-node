@@ -1,6 +1,6 @@
 [package]
 name = 'service-request'
-version = '0.1.0'
+version = "2.0.1"
 edition = '2018'
 license = 'AGPL-3.0'
 authors = ['DeBio Dev Team <debio.dev@blocksphere.id>']
@@ -63,7 +63,7 @@ std = [
 
     'frame-support/std',
     'frame-system/std',
-	
+
 	'primitives-area-code/std',
 
     'pallet-timestamp/std',

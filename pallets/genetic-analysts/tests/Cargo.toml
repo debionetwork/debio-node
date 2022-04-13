@@ -1,6 +1,6 @@
 [package]
 name = 'genetic-analysts-tests'
-version = '0.1.0'
+version = "2.0.1"
 repository = ''
 edition = '2018'
 authors = ['agustinustheoo <agustinustheoo@gmail.com>']
@@ -74,7 +74,7 @@ std = [
     'frame-system/std',
     'sp-std/std',
     'sp-io/std',
-    
+
     'primitives-duration/std',
     'primitives-price-and-currency/std',
     'primitives-verification-status/std',
@@ -89,7 +89,7 @@ std = [
 	'pallet-balances/std',
     'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
-    
+
     'genetic-analysts/std',
     'genetic-analyst-services/std',
 	'genetic-analyst-qualifications/std',

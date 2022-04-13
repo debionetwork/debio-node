@@ -1,6 +1,6 @@
 [package]
 name = "genetic-analysis-tests"
-version = "0.1.0"
+version = "2.0.1"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
 description = ''
@@ -82,7 +82,7 @@ std = [
 	'genetic-analysis-orders/std',
 	'genetic-data/std',
     'user-profile/std',
-    
+
     'primitives-duration/std',
     'primitives-tracking-id/std',
     'primitives-price-and-currency/std',

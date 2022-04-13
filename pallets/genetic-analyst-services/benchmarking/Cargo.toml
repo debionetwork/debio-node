@@ -1,6 +1,6 @@
 [package]
 name = "genetic-analyst-services-benchmarking"
-version = "0.1.0"
+version = "2.0.1"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
 description = ''
@@ -68,7 +68,7 @@ std = [
     'genetic-analyst-services/std',
     'genetic-analyst-qualifications/std',
     'user-profile/std',
-    
+
     'primitives-duration/std',
     'primitives-price-and-currency/std',
 

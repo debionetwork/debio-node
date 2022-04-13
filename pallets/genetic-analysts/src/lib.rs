@@ -928,7 +928,8 @@ impl<T: Config> Pallet<T> {
 impl<T: Config> GeneticAnalystServiceOwner<T> for Pallet<T> {
 	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
-	/// User can create genetic_analyst_service if he/she is a genetic_analyst and has set ethereum address
+	/// User can create genetic_analyst_service if he/she is a genetic_analyst and has set ethereum
+	/// address
 	fn can_create_genetic_analyst_service(user_id: &T::AccountId) -> bool {
 		GeneticAnalysts::<T>::contains_key(user_id)
 	}
