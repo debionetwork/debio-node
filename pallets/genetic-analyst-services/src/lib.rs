@@ -388,7 +388,8 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 
 	/// Delete GeneticAnalystService
 	/// Delete from GeneticAnalystServices Storage
-	/// Remove the genetic_analyst_service id reference in GeneticAnalystServicesByCountryCity storage
+	/// Remove the genetic_analyst_service id reference in GeneticAnalystServicesByCountryCity
+	/// storage
 	/// Disassociate genetic_analyst_service id from the owner
 	/// Decrement Counts
 	fn delete_genetic_analyst_service(
