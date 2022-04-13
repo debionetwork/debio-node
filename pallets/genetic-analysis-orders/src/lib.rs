@@ -257,6 +257,8 @@ pub mod pallet {
 		GeneticAnalysisOrderNotFound,
 		/// Unauthorized to cancel genetic_analysis_order - user is not the customer who created the genetic_analysis_order
 		UnauthorizedGeneticAnalysisOrderCancellation,
+		// Genetic Analysis is ongoing, cannot be cancelled
+		OngoingGeneticAnalysisOrderCannotBeCancelled,
 		/// Can not fulfill genetic_analysis_order before Specimen is processed
 		GeneticAnalysisNotSuccessfullyProcessed,
 		/// Refund not allowed, GeneticAnalysisOrder is not expired yet
@@ -524,6 +526,24 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		if genetic_analysis_order.customer_id != customer_id.clone() {
 			return Err(Error::<T>::UnauthorizedGeneticAnalysisOrderCancellation)
+		}
+
+		let genetic_analysis =
+			T::GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(&genetic_analysis_order.genetic_analysis_tracking_id).unwrap();
+		if !genetic_analysis.is_registered() {
+			return Err(Error::<T>::OngoingGeneticAnalysisOrderCannotBeCancelled)
+		}
+
+		if genetic_analysis_order.status == GeneticAnalysisOrderStatus::Paid {
+			if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price) {
+				return Err(Error::<T>::InsufficientPalletFunds)
+			}
+	
+			let _ = Self::transfer_balance(
+				&Self::account_id(),
+				&genetic_analysis_order.customer_id,
+				genetic_analysis_order.total_price,
+			);
 		}
 
 		// Delete dna sample associated with the genetic_analysis_order
