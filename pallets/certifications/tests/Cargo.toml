@@ -1,6 +1,6 @@
 [package]
 name = "certifications-tests"
-version = "0.1.0"
+version = "2.0.1"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
 description = ''
@@ -56,7 +56,7 @@ serde = { default-features = false, version = "1.0.119" }
 default = ['std']
 std = [
     'codec/std',
-    
+
     'sp-core/std',
     'sp-runtime/std',
     'sp-io/std',

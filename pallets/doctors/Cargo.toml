@@ -1,6 +1,6 @@
 [package]
 name = 'doctors'
-version = '0.1.0'
+version = "2.0.1"
 repository = ''
 edition = '2018'
 authors = ['agustinustheoo <agustinustheoo@gmail.com>']
