@@ -15,7 +15,7 @@ pub use crate::interface::GeneticAnalystInterface;
 use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::{traits::AccountIdConversion, RuntimeDebug},
-	traits::Currency,
+	traits::{Currency, StorageVersion},
 	PalletId,
 };
 use primitives_availability_status::{AvailabilityStatus, AvailabilityStatusTrait};
@@ -141,6 +141,9 @@ where
 	}
 }
 
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
+
 #[frame_support::pallet]
 pub mod pallet {
 	use crate::{interface::GeneticAnalystInterface, GeneticAnalyst, GeneticAnalystInfo, *};
@@ -184,11 +187,16 @@ pub mod pallet {
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ---- Types ----------------------
@@ -920,7 +928,8 @@ impl<T: Config> Pallet<T> {
 impl<T: Config> GeneticAnalystServiceOwner<T> for Pallet<T> {
 	type Owner = GeneticAnalyst<T::AccountId, T::Hash, MomentOf<T>, BalanceOf<T>>;
 
-	/// User can create genetic_analyst_service if he/she is a genetic_analyst and has set ethereum address
+	/// User can create genetic_analyst_service if he/she is a genetic_analyst and has set ethereum
+	/// address
 	fn can_create_genetic_analyst_service(user_id: &T::AccountId) -> bool {
 		GeneticAnalysts::<T>::contains_key(user_id)
 	}

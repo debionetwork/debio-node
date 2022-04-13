@@ -255,7 +255,8 @@ pub mod pallet {
 		GeneticAnalystServiceDoesNotExist,
 		/// GeneticAnalysisOrder does not exist
 		GeneticAnalysisOrderNotFound,
-		/// Unauthorized to cancel genetic_analysis_order - user is not the customer who created the genetic_analysis_order
+		/// Unauthorized to cancel genetic_analysis_order - user is not the customer who created
+		/// the genetic_analysis_order
 		UnauthorizedGeneticAnalysisOrderCancellation,
 		// Genetic Analysis is ongoing, cannot be cancelled
 		OngoingGeneticAnalysisOrderCannotBeCancelled,

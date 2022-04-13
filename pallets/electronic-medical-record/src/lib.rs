@@ -452,7 +452,8 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
 			ElectronicMedicalRecordById::<T>::get(electronic_medical_record_id).unwrap();
 
 		for emr_file_id in &electronic_medical_record.files {
-			// disassociate electronic_medical_record_file reference from the electronic_medical_record
+			// disassociate electronic_medical_record_file reference from the
+			// electronic_medical_record
 			T::ElectronicMedicalRecord::disassociate(electronic_medical_record_id, emr_file_id);
 
 			// Remove electronic_medical_record_file from storage

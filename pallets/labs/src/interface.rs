@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-
 pub use scale_info::TypeInfo;
 
 use sp_std::prelude::*;

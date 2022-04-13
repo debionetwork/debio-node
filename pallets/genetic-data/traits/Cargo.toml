@@ -1,6 +1,6 @@
 [package]
 name = "traits-genetic-data"
-version = "0.1.0"
+version = "2.0.1"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
 

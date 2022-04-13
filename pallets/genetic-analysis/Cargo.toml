@@ -1,6 +1,6 @@
 [package]
 name = "genetic-analysis"
-version = "0.1.0"
+version = "2.0.1"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
 license = 'AGPL-3.0'
@@ -40,7 +40,7 @@ std = [
     'codec/std',
     'sp-std/std',
 	'scale-info/std',
-    
+
     'frame-support/std',
     'frame-system/std',
 

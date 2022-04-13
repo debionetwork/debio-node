@@ -1,6 +1,6 @@
 [package]
 name = "services-tests"
-version = "0.1.0"
+version = "2.0.1"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = "2018"
 description = ''
@@ -77,6 +77,6 @@ std = [
     'genetic-testing/std',
 
     'primitives-area-code/std',
-    
+
     'traits-services/std',
 ]
