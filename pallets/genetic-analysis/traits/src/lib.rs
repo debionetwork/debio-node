@@ -5,6 +5,7 @@ use primitives_tracking_id::TrackingId;
 pub trait GeneticAnalysisTracking {
 	fn get_genetic_analysis_tracking_id(&self) -> &TrackingId;
 	fn process_success(&self) -> bool;
+	fn is_registered(&self) -> bool;
 	fn is_rejected(&self) -> bool;
 	fn is_empty(&self) -> bool;
 }

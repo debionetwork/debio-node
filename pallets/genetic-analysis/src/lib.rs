@@ -76,6 +76,9 @@ impl<AccountId, Hash, Moment> GeneticAnalysisTracking for GeneticAnalysis<Accoun
 	fn process_success(&self) -> bool {
 		self.status == GeneticAnalysisStatus::ResultReady
 	}
+	fn is_registered(&self) -> bool {
+		self.status == GeneticAnalysisStatus::Registered
+	}
 	fn is_rejected(&self) -> bool {
 		self.status == GeneticAnalysisStatus::Rejected
 	}
