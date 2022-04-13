@@ -529,16 +529,20 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		}
 
 		let genetic_analysis =
-			T::GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(&genetic_analysis_order.genetic_analysis_tracking_id).unwrap();
+			T::GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(
+				&genetic_analysis_order.genetic_analysis_tracking_id,
+			)
+			.unwrap();
 		if !genetic_analysis.is_registered() {
 			return Err(Error::<T>::OngoingGeneticAnalysisOrderCannotBeCancelled)
 		}
 
 		if genetic_analysis_order.status == GeneticAnalysisOrderStatus::Paid {
-			if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price) {
+			if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price)
+			{
 				return Err(Error::<T>::InsufficientPalletFunds)
 			}
-	
+
 			let _ = Self::transfer_balance(
 				&Self::account_id(),
 				&genetic_analysis_order.customer_id,

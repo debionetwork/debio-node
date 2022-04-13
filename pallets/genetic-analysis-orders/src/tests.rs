@@ -1071,7 +1071,10 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 		));
 
 		assert_noop!(
-			GeneticAnalysisOrders::cancel_genetic_analysis_order(Origin::signed(1), _genetic_analysis_order_id),
+			GeneticAnalysisOrders::cancel_genetic_analysis_order(
+				Origin::signed(1),
+				_genetic_analysis_order_id
+			),
 			Error::<Test>::OngoingGeneticAnalysisOrderCannotBeCancelled
 		);
 	})
