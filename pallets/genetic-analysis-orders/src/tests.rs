@@ -358,7 +358,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 				prices: _price_by_currency.price_components,
 				additional_prices: _price_by_currency.additional_prices,
 				total_price: _price_by_currency.total_price,
-				status: GeneticAnalysisOrderStatus::Cancelled,
+				status: GeneticAnalysisOrderStatus::Refunded,
 				created_at: 0,
 				updated_at: 0
 			})
