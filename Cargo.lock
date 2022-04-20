@@ -778,7 +778,7 @@ dependencies = [
 
 [[package]]
 name = "certifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -795,7 +795,7 @@ dependencies = [
 
 [[package]]
 name = "certifications-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -815,7 +815,7 @@ dependencies = [
 
 [[package]]
 name = "certifications-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -1283,7 +1283,7 @@ dependencies = [
 
 [[package]]
 name = "debio"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -1344,7 +1344,7 @@ dependencies = [
 
 [[package]]
 name = "debio-runtime"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "beefy-primitives",
  "certifications",
@@ -1508,7 +1508,7 @@ dependencies = [
 
 [[package]]
 name = "doctor-certifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -1524,7 +1524,7 @@ dependencies = [
 
 [[package]]
 name = "doctor-certifications-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "doctor-certifications",
  "doctors",
@@ -1544,7 +1544,7 @@ dependencies = [
 
 [[package]]
 name = "doctor-certifications-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "doctor-certifications",
  "doctors",
@@ -1565,7 +1565,7 @@ dependencies = [
 
 [[package]]
 name = "doctors"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "doctor-certifications",
  "frame-benchmarking",
@@ -1655,7 +1655,7 @@ checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
 name = "electronic-medical-record"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2227,7 +2227,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysis"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -2246,7 +2246,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysis-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2280,7 +2280,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysis-orders"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "chrono",
  "frame-support",
@@ -2315,7 +2315,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysis-orders-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2349,7 +2349,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysis-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2384,7 +2384,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-qualifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -2400,7 +2400,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-qualifications-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2421,7 +2421,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-qualifications-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2448,7 +2448,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-services"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -2466,7 +2466,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-services-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2492,7 +2492,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analyst-services-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2521,7 +2521,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysts"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2551,7 +2551,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysts-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2585,7 +2585,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-analysts-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2621,7 +2621,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-data"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2639,7 +2639,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-testing"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -2657,7 +2657,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-testing-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2683,7 +2683,7 @@ dependencies = [
 
 [[package]]
 name = "genetic-testing-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -2925,7 +2925,7 @@ dependencies = [
 
 [[package]]
 name = "hospital-certifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -2941,7 +2941,7 @@ dependencies = [
 
 [[package]]
 name = "hospital-certifications-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2961,7 +2961,7 @@ dependencies = [
 
 [[package]]
 name = "hospital-certifications-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -2982,7 +2982,7 @@ dependencies = [
 
 [[package]]
 name = "hospitals"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -3501,7 +3501,7 @@ dependencies = [
 
 [[package]]
 name = "labs"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -3531,7 +3531,7 @@ dependencies = [
 
 [[package]]
 name = "labs-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -3564,7 +3564,7 @@ dependencies = [
 
 [[package]]
 name = "labs-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -4791,7 +4791,7 @@ checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
 
 [[package]]
 name = "orders"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "chrono",
@@ -4820,7 +4820,7 @@ dependencies = [
 
 [[package]]
 name = "orders-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -5636,7 +5636,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-area-code"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5646,7 +5646,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-availability-status"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5655,7 +5655,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-duration"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5664,7 +5664,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-price-and-currency"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5674,7 +5674,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-stake-status"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5683,7 +5683,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-tracking-id"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5693,7 +5693,7 @@ dependencies = [
 
 [[package]]
 name = "primitives-verification-status"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -6115,7 +6115,7 @@ checksum = "8c31b5c4033f8fdde8700e4657be2c497e7288f01515be52168c631e2e4d4086"
 
 [[package]]
 name = "rewards"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7382,7 +7382,7 @@ dependencies = [
 
 [[package]]
 name = "service-request"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -7410,7 +7410,7 @@ dependencies = [
 
 [[package]]
 name = "service-request-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -7439,7 +7439,7 @@ dependencies = [
 
 [[package]]
 name = "services"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -7455,7 +7455,7 @@ dependencies = [
 
 [[package]]
 name = "services-benchmarking"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7476,7 +7476,7 @@ dependencies = [
 
 [[package]]
 name = "services-tests"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "certifications",
  "frame-benchmarking",
@@ -8831,7 +8831,7 @@ dependencies = [
 
 [[package]]
 name = "traits-certifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8842,7 +8842,7 @@ dependencies = [
 
 [[package]]
 name = "traits-doctor-certifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8853,7 +8853,7 @@ dependencies = [
 
 [[package]]
 name = "traits-electronic-medical-record"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8865,7 +8865,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-analysis"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-system",
  "parity-scale-codec",
@@ -8875,7 +8875,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-analysis-orders"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8886,7 +8886,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-analyst-qualifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8897,7 +8897,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-analyst-services"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8909,7 +8909,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-analysts"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8919,7 +8919,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-data"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8930,7 +8930,7 @@ dependencies = [
 
 [[package]]
 name = "traits-genetic-testing"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8941,7 +8941,7 @@ dependencies = [
 
 [[package]]
 name = "traits-hospital-certifications"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8952,7 +8952,7 @@ dependencies = [
 
 [[package]]
 name = "traits-labs"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8963,7 +8963,7 @@ dependencies = [
 
 [[package]]
 name = "traits-order"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8974,7 +8974,7 @@ dependencies = [
 
 [[package]]
 name = "traits-services"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -8985,7 +8985,7 @@ dependencies = [
 
 [[package]]
 name = "traits-user-profile"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -9219,7 +9219,7 @@ dependencies = [
 
 [[package]]
 name = "user-profile"
-version = "2.0.1"
+version = "2.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
