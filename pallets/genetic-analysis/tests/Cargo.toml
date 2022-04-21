@@ -52,7 +52,7 @@ traits-genetic-analyst-services = { path = '../../genetic-analyst-services/trait
 traits-genetic-analysis = { path = '../../genetic-analysis/traits', default-features = false }
 traits-genetic-analysis-orders = { path = '../../genetic-analysis-orders/traits', default-features = false }
 traits-genetic-data = { path = '../../genetic-data/traits', default-features = false }
-traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
+traits-user-profile = { path = '../../user-profile/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }

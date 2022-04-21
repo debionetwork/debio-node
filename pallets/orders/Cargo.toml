@@ -31,10 +31,10 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 
-traits-services = { path = '../../traits/services', default-features = false }
-traits-genetic-testing = { path = '../../traits/genetic-testing', default-features = false }
-traits-user-profile = { path = '../../traits/user-profile', default-features = false }
-traits-order = { path = '../../traits/order', default-features = false }
+traits-services = { path = '../services/traits', default-features = false }
+traits-genetic-testing = { path = '../genetic-testing/traits', default-features = false }
+traits-user-profile = { path = '../user-profile/traits', default-features = false }
+traits-order = { path = './traits', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.13', default-features = false }

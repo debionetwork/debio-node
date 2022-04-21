@@ -26,8 +26,8 @@ sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkad
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false, optional = true }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
-traits-user-profile = { path = '../../traits/user-profile', default-features = false }
-traits-hospital-certifications = { path = '../../traits/hospital-certifications', default-features = false }
+traits-user-profile = { path = '../user-profile/traits', default-features = false }
+traits-hospital-certifications = { path = '../hospital-certifications/traits', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.13', default-features = false }

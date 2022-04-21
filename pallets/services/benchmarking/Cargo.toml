@@ -35,7 +35,7 @@ services = { path = '../../services', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
-traits-services = { path = '../../../traits/services', default-features = false }
+traits-services = { path = '../../services/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }
