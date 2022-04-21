@@ -1,8 +1,8 @@
 [package]
 name = "traits-labs"
-version = "2.0.1"
+version = "2.1.0"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 # alias "parity-scale-code" to "codec"
@@ -14,8 +14,8 @@ version = '2.0.0'
 
 [dependencies]
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
-frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
-frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.12', default-features = false }
+frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
 
 [features]

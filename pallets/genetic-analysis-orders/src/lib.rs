@@ -541,6 +541,9 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::OngoingGeneticAnalysisOrderCannotBeCancelled)
 		}
 
+		// Default status would be cancelled
+		let mut genetic_analysis_order_status = GeneticAnalysisOrderStatus::Cancelled;
+
 		if genetic_analysis_order.status == GeneticAnalysisOrderStatus::Paid {
 			if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price)
 			{
@@ -552,6 +555,9 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				&genetic_analysis_order.customer_id,
 				genetic_analysis_order.total_price,
 			);
+
+			// If code reaches here change status to Refunded
+			genetic_analysis_order_status = GeneticAnalysisOrderStatus::Refunded;
 		}
 
 		// Delete dna sample associated with the genetic_analysis_order
@@ -561,7 +567,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
-			GeneticAnalysisOrderStatus::Cancelled,
+			genetic_analysis_order_status,
 		)
 		.unwrap();
 

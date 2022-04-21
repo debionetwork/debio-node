@@ -1,5 +1,4 @@
-//! Debio Node CLI library.
-#![warn(missing_docs)]
+use sc_cli::Result;
 
 mod chain_spec;
 #[macro_use]
@@ -8,6 +7,6 @@ mod cli;
 mod command;
 mod rpc;
 
-fn main() -> sc_cli::Result<()> {
+fn main() -> Result<()> {
 	command::run()
 }

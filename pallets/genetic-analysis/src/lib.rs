@@ -315,7 +315,7 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 		);
 		T::GeneticAnalysisOrders::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 			&genetic_analysis.genetic_analyst_id,
-			&genetic_analysis.genetic_analysis_order_id
+			&genetic_analysis.genetic_analysis_order_id,
 		);
 		T::GeneticAnalysisOrders::update_status_failed(&genetic_analysis.genetic_analysis_order_id);
 
@@ -347,7 +347,7 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 			}
 			T::GeneticAnalysisOrders::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 				&genetic_analysis.genetic_analyst_id,
-				&genetic_analysis.genetic_analysis_order_id
+				&genetic_analysis.genetic_analysis_order_id,
 			);
 		}
 

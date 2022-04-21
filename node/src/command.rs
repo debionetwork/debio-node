@@ -3,9 +3,15 @@ use crate::{
 	cli::{Cli, Subcommand},
 	service,
 };
-use debio_runtime::Block;
-use sc_cli::{ChainSpec, Role, RuntimeVersion, SubstrateCli};
+
+use std::path::PathBuf;
+
+use sc_cli::{
+	ChainSpec, Error::Service as CliErrorService, Result as CliResult, RuntimeVersion, SubstrateCli,
+};
 use sc_service::PartialComponents;
+
+use debio_runtime::{Block, VERSION};
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
@@ -32,7 +38,7 @@ impl SubstrateCli for Cli {
 		2021
 	}
 
-	fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
+	fn load_spec(&self, id: &str) -> Result<Box<dyn ChainSpec>, String> {
 		Ok(match id {
 			"dev" => Box::new(chain_spec::development_config()?),
 			"local" | "" => Box::new(chain_spec::local_config()?),
@@ -42,18 +48,17 @@ impl SubstrateCli for Cli {
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			"octopus-testnet" => Box::new(chain_spec::testnet_config()?),
 			"octopus-mainnet" => Box::new(chain_spec::mainnet_config()?),
-			path =>
-				Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
+			path => Box::new(chain_spec::ChainSpec::from_json_file(PathBuf::from(path))?),
 		})
 	}
 
 	fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		&debio_runtime::VERSION
+		&VERSION
 	}
 }
 
 /// Parse and run command line arguments
-pub fn run() -> sc_cli::Result<()> {
+pub fn run() -> CliResult<()> {
 	let cli = Cli::from_args();
 
 	match &cli.subcommand {
@@ -107,7 +112,6 @@ pub fn run() -> sc_cli::Result<()> {
 		Some(Subcommand::Benchmark(cmd)) =>
 			if cfg!(feature = "runtime-benchmarks") {
 				let runner = cli.create_runner(cmd)?;
-
 				runner.sync_run(|config| cmd.run::<Block, service::ExecutorDispatch>(config))
 			} else {
 				Err("Benchmarking wasn't enabled when building the node. You can enable it with \
@@ -117,11 +121,7 @@ pub fn run() -> sc_cli::Result<()> {
 		None => {
 			let runner = cli.create_runner(&cli.run)?;
 			runner.run_node_until_exit(|config| async move {
-				match config.role {
-					Role::Light => service::new_light(config),
-					_ => service::new_full(config),
-				}
-				.map_err(sc_cli::Error::Service)
+				service::new_full(config).map_err(CliErrorService)
 			})
 		},
 	}
