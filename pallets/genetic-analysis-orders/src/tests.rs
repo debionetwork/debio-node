@@ -495,7 +495,7 @@ fn set_genetic_analysis_order_paid_works() {
 #[test]
 fn fulfill_genetic_analysis_order_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000, 0));
 
 		EscrowKey::<Test>::put(1);
 
@@ -522,11 +522,23 @@ fn fulfill_genetic_analysis_order_works() {
 			AvailabilityStatus::Available
 		));
 
+		let _price = Price {
+			component: "Price Component".as_bytes().to_vec(),
+			value: 500u128.saturated_into(),
+		};
+
+		let _price_by_currency = PriceByCurrency {
+			currency: CurrencyType::default(),
+			total_price: 1000u128.saturated_into(),
+			price_components: vec![_price.clone()],
+			additional_prices: vec![_price.clone()],
+		};
+
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
 			Origin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
-				prices_by_currency: vec![PriceByCurrency::default()],
+				prices_by_currency: vec![_price_by_currency],
 				expected_duration: ExpectedDuration::default(),
 				description: "DeBio Genetic Analyst Service description".as_bytes().to_vec(),
 				test_result_sample: "DeBio Genetic Analyst Service test_result_sample"
@@ -557,6 +569,12 @@ fn fulfill_genetic_analysis_order_works() {
 
 		let _genetic_analysis_order_id =
 			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+			Origin::signed(1),
+			_genetic_analysis_order_id.clone()
+		));
+
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysis::submit_genetic_analysis(
@@ -572,10 +590,14 @@ fn fulfill_genetic_analysis_order_works() {
 			GeneticAnalysisStatus::ResultReady,
 		));
 
+		assert_eq!(Balances::free_balance(1), 9000);
+
 		assert_ok!(GeneticAnalysisOrders::fulfill_genetic_analysis_order(
 			Origin::signed(1),
 			_genetic_analysis_order_id
 		));
+
+		assert_eq!(Balances::free_balance(1), 9975);
 
 		assert_eq!(
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
@@ -591,9 +613,32 @@ fn fulfill_genetic_analysis_order_works() {
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				currency: CurrencyType::default(),
-				prices: PriceByCurrency::default().price_components,
-				additional_prices: PriceByCurrency::default().additional_prices,
-				total_price: PriceByCurrency::default().total_price,
+				prices: vec![_price.clone()],
+				additional_prices: vec![_price.clone()],
+				total_price: 1000u128.saturated_into(),
+				status: GeneticAnalysisOrderStatus::Fulfilled,
+				created_at: 0,
+				updated_at: 0
+			})
+		);
+
+		assert_eq!(
+			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
+			Some(GeneticAnalysisOrder {
+				id: _genetic_analysis_order_id,
+				genetic_data_id: _genetic_data_ids[0],
+				service_id: _genetic_analyst.services[0],
+				customer_id: 1,
+				customer_box_public_key: Keccak256::hash(
+					"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
+				),
+				seller_id: 1,
+				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
+				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				currency: CurrencyType::default(),
+				prices: vec![_price.clone()],
+				additional_prices: vec![_price],
+				total_price: 1000u128.saturated_into(),
 				status: GeneticAnalysisOrderStatus::Fulfilled,
 				created_at: 0,
 				updated_at: 0

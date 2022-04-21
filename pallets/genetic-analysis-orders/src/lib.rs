@@ -7,7 +7,10 @@ use interface::GeneticAnalysisOrderInterface;
 use frame_support::{
 	codec::{Decode, Encode},
 	pallet_prelude::*,
-	sp_runtime::traits::{AccountIdConversion, Hash},
+	sp_runtime::{
+		traits::{AccountIdConversion, Hash},
+		SaturatedConversion,
+	},
 	sp_std::convert::TryInto,
 	traits::{Currency, ExistenceRequirement},
 	PalletId,
@@ -626,10 +629,21 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
+		// Calculate 5% of the price_component_value
+		let mut price_component_substracted_value: BalanceOf<T> = 0u128.saturated_into();
+		for analysis_order in genetic_analysis_order.prices.iter() {
+			price_component_substracted_value += analysis_order.value / 20u128.saturated_into();
+		}
+
+		// 5% of the price_component_value is substracted
+		let total_price_paid =
+			genetic_analysis_order.total_price - price_component_substracted_value;
+
+		// Withhold 5% for DBIO
 		let _ = Self::transfer_balance(
 			&Self::account_id(),
 			&genetic_analysis_order.seller_id,
-			genetic_analysis_order.total_price,
+			total_price_paid,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
