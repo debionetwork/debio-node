@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-LABEL network.debio.image.authors="debio.dev@blocksphere.id"
+LABEL network.debio.image.authors="debio_dev@blocksphere.id"
 # Create user and set ownership and permissions as required
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y \

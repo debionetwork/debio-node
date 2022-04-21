@@ -291,9 +291,7 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 		let mut genetic_analyst_services = vec![];
 		for genetic_analyst_service_info in genetic_analyst_service_infos {
 			let owner_genetic_analyst_service_count =
-				<Self as GeneticAnalystServiceInterface<T>>::genetic_analyst_services_count_by_owner(
-					owner_id,
-				);
+				<Self as GeneticAnalystServiceInterface<T>>::genetic_analyst_services_count_by_owner(owner_id);
 			let genetic_analyst_service_id = Self::generate_genetic_analyst_service_id(
 				owner_id,
 				owner_genetic_analyst_service_count,
