@@ -14,9 +14,12 @@ use user_profile::Config as UserProfileConfig;
 use user_profile::Pallet as UserProfile;
 
 use traits_services::types::{
-	ExpectedDuration, PriceByCurrency, ServiceFlow,
+	ServiceFlow,
 	ServiceFlow::{RequestTest, StakingRequestService},
 };
+
+use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::PriceByCurrency;
 
 #[allow(unused)]
 use orders::Pallet as Orders;

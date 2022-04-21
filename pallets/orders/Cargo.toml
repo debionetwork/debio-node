@@ -36,6 +36,8 @@ traits-genetic-testing = { path = '../genetic-testing/traits', default-features 
 traits-user-profile = { path = '../user-profile/traits', default-features = false }
 traits-order = { path = './traits', default-features = false }
 
+primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
+
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.13', default-features = false }
 pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.13', default-features = false }

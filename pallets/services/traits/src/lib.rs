@@ -2,6 +2,7 @@
 
 use frame_system::Config;
 use sp_std::prelude::*;
+use primitives_price_and_currency::PriceByCurrency;
 
 pub mod types {
 	use frame_support::{
@@ -21,55 +22,12 @@ pub mod types {
 			ServiceFlow::RequestTest
 		}
 	}
-
-	#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-	pub enum CurrencyType {
-		DAI,
-		ETH,
-	}
-	impl Default for CurrencyType {
-		fn default() -> Self {
-			CurrencyType::DAI
-		}
-	}
-
-	#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-	pub struct Price<Balance> {
-		pub component: Vec<u8>,
-		pub value: Balance,
-	}
-
-	#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-	pub struct PriceByCurrency<Balance> {
-		pub currency: CurrencyType,
-		pub total_price: Balance,
-		pub price_components: Vec<Price<Balance>>,
-		pub additional_prices: Vec<Price<Balance>>,
-	}
-
-	#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-	pub enum DurationType {
-		WorkingDays,
-		Hours,
-		Days,
-	}
-	impl Default for DurationType {
-		fn default() -> Self {
-			DurationType::WorkingDays
-		}
-	}
-
-	#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-	pub struct ExpectedDuration {
-		pub duration: i8,
-		pub duration_type: DurationType,
-	}
 }
 
 pub trait ServiceInfo<T: Config, Balance> {
 	fn get_id(&self) -> &T::Hash;
 	fn get_owner_id(&self) -> &T::AccountId;
-	fn get_prices_by_currency(&self) -> &Vec<types::PriceByCurrency<Balance>>;
+	fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>>;
 	fn get_service_flow(&self) -> &types::ServiceFlow;
 }
 

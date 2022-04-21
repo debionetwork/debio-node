@@ -15,9 +15,10 @@ use sp_std::{prelude::*, vec};
 use traits_genetic_testing::{DnaSampleTracking, DnaSampleTrackingId, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 use traits_services::{
-	types::{CurrencyType, Price, ServiceFlow},
+	types::ServiceFlow,
 	ServiceInfo, ServicesProvider,
 };
+use primitives_price_and_currency::{CurrencyType, Price};
 pub use weights::WeightInfo;
 
 #[cfg(test)]
