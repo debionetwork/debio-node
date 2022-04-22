@@ -36,12 +36,14 @@ user-profile = { path = '../../user-profile', default-features = false }
 orders = { path = '../../orders', default-features = false }
 genetic-testing = { path = '../../genetic-testing', default-features = false }
 
-
+primitives-duration = { path = '../../../primitives/duration', default-features = false }
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
-traits-services = { path = '../../../traits/services', default-features = false }
-traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
-traits-order = { path = '../../../traits/order', default-features = false }
-traits-genetic-testing = { path = '../../../traits/genetic-testing', default-features = false }
+primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
+
+traits-services = { path = '../../services/traits', default-features = false }
+traits-user-profile = { path = '../../user-profile/traits', default-features = false }
+traits-order = { path = '../../orders/traits', default-features = false }
+traits-genetic-testing = { path = '../../genetic-testing/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }
@@ -66,7 +68,10 @@ std = [
     'user-profile/std',
     'genetic-testing/std',
 
+    'primitives-duration/std',
     'primitives-area-code/std',
+    'primitives-price-and-currency/std',
+
     'traits-services/std',
     'traits-user-profile/std',
     'traits-order/std',

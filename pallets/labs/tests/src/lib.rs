@@ -23,7 +23,10 @@ mod tests {
 	use primitives_stake_status::StakeStatus;
 	use primitives_verification_status::VerificationStatus;
 
-	use traits_services::types::{CurrencyType, ExpectedDuration, PriceByCurrency, ServiceFlow};
+	use traits_services::types::ServiceFlow;
+
+	use primitives_duration::ExpectedDuration;
+	use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
 
 	#[test]
 	fn register_lab_works() {

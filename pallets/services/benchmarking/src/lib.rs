@@ -13,7 +13,9 @@ use user_profile::Config as UserProfileConfig;
 #[allow(unused)]
 use user_profile::Pallet as UserProfile;
 
-use traits_services::types::{ExpectedDuration, PriceByCurrency, ServiceFlow};
+use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::PriceByCurrency;
+use traits_services::types::ServiceFlow;
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;

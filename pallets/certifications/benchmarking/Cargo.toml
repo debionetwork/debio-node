@@ -34,7 +34,7 @@ labs = { path = '../../labs', default-features = false }
 certifications = { path = '../../certifications', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
-traits-certifications = { path = '../../../traits/certifications', default-features = false }
+traits-certifications = { path = '../../certifications/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }

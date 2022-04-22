@@ -33,10 +33,10 @@ primitives-verification-status = { path = '../../primitives/verification-status'
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
 
 traits-labs = { path = './traits', default-features = false }
-traits-order = { path = '../../traits/order', default-features = false }
-traits-services = { path = '../../traits/services', default-features = false }
-traits-certifications = { path = '../../traits/certifications', default-features = false }
-traits-user-profile = { path = '../../traits/user-profile', default-features = false }
+traits-order = { path = '../orders/traits', default-features = false }
+traits-services = { path = '../services/traits', default-features = false }
+traits-certifications = { path = '../certifications/traits', default-features = false }
+traits-user-profile = { path = '../user-profile/traits', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }

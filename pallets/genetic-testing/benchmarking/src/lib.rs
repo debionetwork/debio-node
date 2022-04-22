@@ -6,9 +6,12 @@ use services::Pallet as Services;
 use services::{Config as ServicesConfig, ServiceInfo};
 
 use traits_services::types::{
-	ExpectedDuration, PriceByCurrency, ServiceFlow,
+	ServiceFlow,
 	ServiceFlow::{RequestTest, StakingRequestService},
 };
+
+use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::PriceByCurrency;
 
 #[allow(unused)]
 use labs::Pallet as Labs;

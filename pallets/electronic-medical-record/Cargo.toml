@@ -31,7 +31,7 @@ sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'po
 pallet-timestamp = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 
 # Local Dependencies
-traits-electronic-medical-record = { path = '../../traits/electronic-medical-record', default-features = false }
+traits-electronic-medical-record = { path = './traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }

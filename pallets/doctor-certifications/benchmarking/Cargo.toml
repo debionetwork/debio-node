@@ -34,7 +34,7 @@ doctors = { path = '../../doctors', default-features = false }
 doctor-certifications = { path = '../../doctor-certifications', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
-traits-doctor-certifications = { path = '../../../traits/doctor-certifications', default-features = false }
+traits-doctor-certifications = { path = '../../doctor-certifications/traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }

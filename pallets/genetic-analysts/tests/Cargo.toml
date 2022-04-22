@@ -40,7 +40,7 @@ primitives-stake-status = { path = '../../../primitives/stake-status', default-f
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
 primitives-availability-status = { path = '../../../primitives/availability-status', default-features = false }
 
-traits-user-profile = { path = '../../../traits/user-profile', default-features = false }
+traits-user-profile = { path = '../../user-profile/traits', default-features = false }
 traits-genetic-analysts = { path = '../traits', default-features = false }
 traits-genetic-analysis-orders = { path = '../../genetic-analysis-orders/traits', default-features = false }
 traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }

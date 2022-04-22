@@ -25,7 +25,10 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
 
-traits-services = { path = '../../traits/services', default-features = false }
+traits-services = { path = './traits', default-features = false }
+
+primitives-duration = { path = '../../primitives/duration', default-features = false }
+primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.130" }
@@ -42,6 +45,8 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'traits-services/std',
+    'primitives-duration/std',
+    'primitives-price-and-currency/std',
 ]
 runtime-benchmarks = []
 try-runtime = ["frame-support/try-runtime"]

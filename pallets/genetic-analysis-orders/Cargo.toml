@@ -41,7 +41,7 @@ traits-genetic-analysis = { path = '../genetic-analysis/traits', default-feature
 traits-genetic-analysts = { path = '../genetic-analysts/traits', default-features = false }
 traits-genetic-data = { path = '../genetic-data/traits', default-features = false }
 traits-genetic-analysis-orders = { path = './traits', default-features = false }
-traits-user-profile = { path = '../../traits/user-profile', default-features = false }
+traits-user-profile = { path = '../user-profile/traits', default-features = false }
 
 ## Substrate Pallet Dependencies
 pallet-balances = { git = 'https://github.com/paritytech/substrate', branch = 'polkadot-v0.9.13', default-features = false }

@@ -8,9 +8,11 @@ use frame_support::{
 pub use pallet::*;
 pub use scale_info::TypeInfo;
 use traits_services::{
-	types::{ExpectedDuration, PriceByCurrency, ServiceFlow},
-	ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
+	types::ServiceFlow, ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
 };
+
+use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::PriceByCurrency;
 
 pub mod interface;
 pub mod weights;
