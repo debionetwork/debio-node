@@ -6,7 +6,10 @@ mod tests {
 
 	use labs::LabInfo;
 	use services::{Error, Service, ServiceInfo};
-	use traits_services::types::{ExpectedDuration, PriceByCurrency, ServiceFlow};
+	use traits_services::types::ServiceFlow;
+
+	use primitives_duration::ExpectedDuration;
+	use primitives_price_and_currency::PriceByCurrency;
 
 	use frame_support::{
 		assert_noop, assert_ok,

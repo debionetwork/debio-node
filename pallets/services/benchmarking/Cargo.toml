@@ -34,8 +34,8 @@ labs = { path = '../../labs', default-features = false }
 services = { path = '../../services', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
-primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 primitives-duration = { path = '../../../primitives/duration', default-features = false }
+primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
 
 traits-services = { path = '../../services/traits', default-features = false }
@@ -62,6 +62,9 @@ std = [
     'services/std',
     'user-profile/std',
 
+    'primitives-duration/std',
     'primitives-area-code/std',
+    'primitives-price-and-currency/std',
+
     'traits-services/std',
 ]

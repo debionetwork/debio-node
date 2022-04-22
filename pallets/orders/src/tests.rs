@@ -8,7 +8,10 @@ use genetic_testing::{DnaSampleStatus, DnaTestResultSubmission};
 use labs::LabInfo;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
 use services::ServiceInfo;
-use traits_services::types::{CurrencyType, ExpectedDuration, PriceByCurrency, ServiceFlow};
+use traits_services::types::ServiceFlow;
+
+use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::{CurrencyType, PriceByCurrency};
 
 #[test]
 fn create_order() {

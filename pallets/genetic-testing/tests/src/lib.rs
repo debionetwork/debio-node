@@ -15,7 +15,10 @@ mod tests {
 
 	use primitives_area_code::{CityCode, CountryCode, RegionCode};
 	use traits_genetic_testing::{DnaSampleTracking, DnaSampleTrackingId};
-	use traits_services::types::{ExpectedDuration, PriceByCurrency, ServiceFlow};
+	use traits_services::types::ServiceFlow;
+
+	use primitives_duration::ExpectedDuration;
+	use primitives_price_and_currency::PriceByCurrency;
 
 	#[test]
 	fn reject_dna_sample_works() {
