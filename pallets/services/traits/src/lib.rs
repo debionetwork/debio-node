@@ -1,8 +1,8 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_system::Config;
-use sp_std::prelude::*;
 use primitives_price_and_currency::PriceByCurrency;
+use sp_std::prelude::*;
 
 pub mod types {
 	use frame_support::{

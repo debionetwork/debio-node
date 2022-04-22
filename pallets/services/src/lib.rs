@@ -8,8 +8,7 @@ use frame_support::{
 pub use pallet::*;
 pub use scale_info::TypeInfo;
 use traits_services::{
-	types::ServiceFlow,
-	ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
+	types::ServiceFlow, ServiceInfo as ServiceInfoT, ServiceOwner, ServicesProvider,
 };
 
 use primitives_duration::ExpectedDuration;

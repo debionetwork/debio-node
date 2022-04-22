@@ -10,15 +10,12 @@ use frame_support::{
 	traits::Currency,
 };
 pub use pallet::*;
+use primitives_price_and_currency::{CurrencyType, Price};
 pub use scale_info::TypeInfo;
 use sp_std::{prelude::*, vec};
 use traits_genetic_testing::{DnaSampleTracking, DnaSampleTrackingId, GeneticTestingProvider};
 use traits_order::{OrderEventEmitter, OrderStatusUpdater};
-use traits_services::{
-	types::ServiceFlow,
-	ServiceInfo, ServicesProvider,
-};
-use primitives_price_and_currency::{CurrencyType, Price};
+use traits_services::{types::ServiceFlow, ServiceInfo, ServicesProvider};
 pub use weights::WeightInfo;
 
 #[cfg(test)]
