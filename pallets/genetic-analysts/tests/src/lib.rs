@@ -561,8 +561,6 @@ mod tests {
 
 			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
 
-			println!("{:?}", Balances::free_balance(4));
-
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
 				Origin::signed(2),
 				1,
