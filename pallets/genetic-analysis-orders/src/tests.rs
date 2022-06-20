@@ -363,6 +363,11 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 				updated_at: 0
 			})
 		);
+
+		assert_eq!(
+			GeneticAnalysisOrders::pending_genetic_analysis_orders_by_genetic_analyst_id(1),
+			Some(Vec::new())
+		);
 	})
 }
 

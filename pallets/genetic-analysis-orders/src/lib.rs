@@ -560,6 +560,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			genetic_analysis_order_status = GeneticAnalysisOrderStatus::Refunded;
 		}
 
+		Self::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
+			&genetic_analysis_order.seller_id,
+			&genetic_analysis_order_id,
+		);
+
 		// Delete dna sample associated with the genetic_analysis_order
 		let _genetic_analysis = T::GeneticAnalysis::delete_genetic_analysis(
 			&genetic_analysis_order.genetic_analysis_tracking_id,
