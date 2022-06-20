@@ -562,7 +562,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		Self::remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 			&genetic_analysis_order.seller_id,
-			&genetic_analysis_order_id,
+			genetic_analysis_order_id,
 		);
 
 		// Delete dna sample associated with the genetic_analysis_order
