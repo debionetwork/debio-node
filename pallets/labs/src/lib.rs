@@ -31,7 +31,7 @@ use traits_user_profile::UserProfileProvider;
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, TypeInfo)]
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct LabInfo<Hash>
 where
 	Hash: PartialEq + Eq,
