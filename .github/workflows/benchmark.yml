@@ -24,7 +24,7 @@ jobs:
           service_account_key: ${{ secrets.DEV_GCP_SA_KEY }}
           export_default_credentials: true
       - name: start runner
-        run: gcloud compute instances start github-runner --zone=asia-southeast1-b
+        run: gcloud compute instances start gh-runner --zone=asia-southeast1-b
 
   self-host:
     runs-on: [self-hosted, blockchain]
@@ -104,4 +104,4 @@ jobs:
           service_account_key: ${{ secrets.DEV_GCP_SA_KEY }}
           export_default_credentials: true
       - name: stop runner
-        run: gcloud compute instances stop github-runner --zone=asia-southeast1-b
+        run: gcloud compute instances stop gh-runner --zone=asia-southeast1-b
