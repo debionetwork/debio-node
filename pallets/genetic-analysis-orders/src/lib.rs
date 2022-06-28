@@ -189,6 +189,10 @@ pub mod pallet {
 	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn treasury_key)]
+	pub type TreasuryKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn pallet_id)]
 	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
@@ -201,12 +205,13 @@ pub mod pallet {
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
 		pub escrow_key: T::AccountId,
+		pub treasury_key: T::AccountId,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { escrow_key: Default::default() }
+			Self { escrow_key: Default::default(), treasury_key: Default::default() }
 		}
 	}
 
@@ -214,6 +219,7 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			EscrowKey::<T>::put(&self.escrow_key);
+			TreasuryKey::<T>::put(&self.treasury_key);
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 		}
 	}
@@ -554,6 +560,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				&Self::account_id(),
 				&genetic_analysis_order.customer_id,
 				genetic_analysis_order.total_price,
+				ExistenceRequirement::AllowDeath,
 			);
 
 			// If code reaches here change status to Refunded
@@ -604,6 +611,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&genetic_analysis_order.customer_id,
 			&Self::account_id(),
 			genetic_analysis_order.total_price,
+			ExistenceRequirement::AllowDeath,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -655,6 +663,15 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&Self::account_id(),
 			&genetic_analysis_order.seller_id,
 			total_price_paid,
+			ExistenceRequirement::KeepAlive,
+		);
+
+		// Transfer 5% to DBIO Treasury
+		let _ = Self::transfer_balance(
+			&Self::account_id(),
+			&TreasuryKey::<T>::get(),
+			price_component_substracted_value,
+			ExistenceRequirement::AllowDeath,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -693,6 +710,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&Self::account_id(),
 			&genetic_analysis_order.customer_id,
 			genetic_analysis_order.total_price,
+			ExistenceRequirement::AllowDeath,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -874,8 +892,9 @@ impl<T: Config> Pallet<T> {
 		source: &AccountIdOf<T>,
 		dest: &AccountIdOf<T>,
 		amount: BalanceOf<T>,
+		existence: ExistenceRequirement,
 	) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(source, dest, amount, ExistenceRequirement::KeepAlive);
+		let _ = T::Currency::transfer(source, dest, amount, existence);
 		Self::set_escrow_amount();
 		amount
 	}

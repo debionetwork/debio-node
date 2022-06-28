@@ -1,5 +1,6 @@
 use crate::{
 	mock::*, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrderStatus, PalletAccount,
+	TreasuryKey,
 };
 use frame_support::{
 	assert_noop, assert_ok,
@@ -503,6 +504,7 @@ fn fulfill_genetic_analysis_order_works() {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000, 0));
 
 		EscrowKey::<Test>::put(1);
+		TreasuryKey::<Test>::put(2);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -603,6 +605,7 @@ fn fulfill_genetic_analysis_order_works() {
 		));
 
 		assert_eq!(Balances::free_balance(1), 9975);
+		assert_eq!(Balances::free_balance(2), 25);
 
 		assert_eq!(
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
