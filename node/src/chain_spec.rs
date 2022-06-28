@@ -559,7 +559,7 @@ fn genesis(
 		},
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig {
 			escrow_key: api_admin_key.clone(),
-			treasury_key: treasury_key.clone(),
+			treasury_key,
 		},
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
 		user_profile: UserProfileConfig { admin_key: api_admin_key },

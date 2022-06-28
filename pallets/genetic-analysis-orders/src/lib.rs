@@ -448,7 +448,8 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as GeneticAnalysisOrderInterface<T>>::update_treasury_key(&who, &account_id) {
+			match <Self as GeneticAnalysisOrderInterface<T>>::update_treasury_key(&who, &account_id)
+			{
 				Ok(_) => {
 					Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(
 						who.clone(),
