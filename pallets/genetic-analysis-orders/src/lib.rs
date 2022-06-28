@@ -246,6 +246,9 @@ pub mod pallet {
 		/// Update GeneticAnalysisOrder escrow key
 		/// parameters. [who]
 		UpdateGeneticAnalysisOrderEscrowKeySuccessful(AccountIdOf<T>),
+		/// Update GeneticAnalysisOrder treasury key
+		/// parameters. [who]
+		UpdateGeneticAnalysisOrderTreasuryKeySuccessful(AccountIdOf<T>),
 		/// GeneticAnalysisOrder Not Found
 		/// parameters, []
 		GeneticAnalysisOrderNotFound,
@@ -434,6 +437,38 @@ pub mod pallet {
 			EscrowKey::<T>::put(&account_id);
 
 			Self::deposit_event(Event::UpdateGeneticAnalysisOrderEscrowKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
+
+		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::update_treasury_key())]
+		pub fn update_treasury_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalysisOrderInterface<T>>::update_treasury_key(&who, &account_id) {
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_treasury_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			TreasuryKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(account_id));
 
 			Ok(Pays::No.into())
 		}
@@ -729,6 +764,19 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		}
 
 		EscrowKey::<T>::put(escrow_key);
+
+		Ok(())
+	}
+
+	fn update_treasury_key(
+		account_id: &T::AccountId,
+		treasury_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != TreasuryKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		TreasuryKey::<T>::put(treasury_key);
 
 		Ok(())
 	}

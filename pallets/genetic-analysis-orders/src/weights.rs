@@ -35,6 +35,7 @@ pub trait WeightInfo {
 	fn fulfill_genetic_analysis_order() -> Weight;
 	fn set_genetic_analysis_order_refunded() -> Weight;
 	fn update_escrow_key() -> Weight;
+	fn update_treasury_key() -> Weight;
 }
 
 /// Weights for genetic_analysis_orders using the Substrate node and recommended hardware.
@@ -108,6 +109,11 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
+	fn update_treasury_key() -> Weight {
+		23_012_000_u64
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -176,6 +182,11 @@ impl WeightInfo for () {
 	}
 	// Storage: GeneticAnalysisOrders EscrowKey (r:1 w:1)
 	fn update_escrow_key() -> Weight {
+		23_012_000_u64
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	fn update_treasury_key() -> Weight {
 		23_012_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))

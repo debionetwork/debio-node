@@ -2113,3 +2113,25 @@ fn sudo_update_escrow_key_works() {
 		assert_eq!(GeneticAnalysisOrders::admin_key(), 1);
 	})
 }
+
+#[test]
+fn update_treasury_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		TreasuryKey::<Test>::put(2);
+
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), 2);
+
+		assert_ok!(GeneticAnalysisOrders::update_treasury_key(Origin::signed(2), 1,));
+
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), 1);
+	})
+}
+
+#[test]
+fn sudo_update_treasury_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(GeneticAnalysisOrders::sudo_update_treasury_key(Origin::root(), 1));
+
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), 1);
+	})
+}
