@@ -634,7 +634,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			&Self::staking_account_id(request_id),
 			request.staking_amount,
 			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
+			ExistenceRequirement::AllowDeath,
 		) {
 			Ok(imb) => {
 				CurrencyOf::<T>::resolve_creating(&requester_id, imb);
