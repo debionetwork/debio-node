@@ -218,6 +218,9 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5ELYNFhFz9tauMxfjgTGhd6sRbnndddEXqh3UxWsPi6Rjajg
 				hex!["648c728f7fcf0ae26a44410cf0ba4ea15b27b3169a4f809a14097680b8d0bc53"].into(),
+				// Treasury account
+				// 5ELYNFhFz9tauMxfjgTGhd6sRbnndddEXqh3UxWsPi6Rjajg
+				hex!["648c728f7fcf0ae26a44410cf0ba4ea15b27b3169a4f809a14097680b8d0bc53"].into(),
 			)
 		},
 		// Bootnodes
@@ -338,6 +341,9 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
 				hex!["02c2cffef38fbf56b32d6a49eeeecc0e3345a1e0549cd8817d52f6cf2e414152"].into(),
+				// Treasury account
+				// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
+				hex!["02c2cffef38fbf56b32d6a49eeeecc0e3345a1e0549cd8817d52f6cf2e414152"].into(),
 			)
 		},
 		// Bootnodes
@@ -408,6 +414,9 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				// Treasury account
+				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
 			)
 		},
 		// Bootnodes
@@ -467,6 +476,9 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				// API admin account
 				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				// Treasury account
+				// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
 			)
 		},
 		// Bootnodes
@@ -498,6 +510,7 @@ fn genesis(
 	endowed_accounts: Vec<(AccountId, Balance)>,
 	appchain_config: (String, String, Balance, Balance),
 	api_admin_key: AccountId,
+	treasury_key: AccountId,
 ) -> GenesisConfig {
 	GenesisConfig {
 		system: SystemConfig { code: wasm_binary.to_vec() },
@@ -544,7 +557,10 @@ fn genesis(
 		genetic_analysts: GeneticAnalystsConfig {
 			genetic_analyst_verifier_key: api_admin_key.clone(),
 		},
-		genetic_analysis_orders: GeneticAnalysisOrdersConfig { escrow_key: api_admin_key.clone() },
+		genetic_analysis_orders: GeneticAnalysisOrdersConfig {
+			escrow_key: api_admin_key.clone(),
+			treasury_key,
+		},
 		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
 		user_profile: UserProfileConfig { admin_key: api_admin_key },
 	}

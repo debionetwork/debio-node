@@ -15,7 +15,7 @@ use user_profile::Pallet as UserProfile;
 
 #[allow(unused)]
 use genetic_analysis_orders::Pallet as GeneticAnalysisOrders;
-use genetic_analysis_orders::{Config as GeneticAnalysisOrdersConfig, EscrowKey};
+use genetic_analysis_orders::{Config as GeneticAnalysisOrdersConfig, EscrowKey, TreasuryKey};
 
 #[allow(unused)]
 use genetic_analysis::Pallet as GeneticAnalysis;
@@ -407,6 +407,14 @@ benchmarks! {
 		let caller: T::AccountId = EscrowKey::<T>::get();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_escrow_key(
+		RawOrigin::Signed(caller),
+		caller2
+	)
+
+	update_treasury_key {
+		let caller: T::AccountId = TreasuryKey::<T>::get();
+		let caller2: T::AccountId = whitelisted_caller();
+	}: update_treasury_key(
 		RawOrigin::Signed(caller),
 		caller2
 	)

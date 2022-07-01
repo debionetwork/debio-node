@@ -1,5 +1,6 @@
 use crate::{
 	mock::*, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrderStatus, PalletAccount,
+	TreasuryKey,
 };
 use frame_support::{
 	assert_noop, assert_ok,
@@ -503,6 +504,7 @@ fn fulfill_genetic_analysis_order_works() {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000, 0));
 
 		EscrowKey::<Test>::put(1);
+		TreasuryKey::<Test>::put(2);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -603,6 +605,7 @@ fn fulfill_genetic_analysis_order_works() {
 		));
 
 		assert_eq!(Balances::free_balance(1), 9975);
+		assert_eq!(Balances::free_balance(2), 25);
 
 		assert_eq!(
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
@@ -2108,5 +2111,27 @@ fn sudo_update_escrow_key_works() {
 		assert_ok!(GeneticAnalysisOrders::sudo_update_escrow_key(Origin::root(), 1));
 
 		assert_eq!(GeneticAnalysisOrders::admin_key(), 1);
+	})
+}
+
+#[test]
+fn update_treasury_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		TreasuryKey::<Test>::put(2);
+
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), 2);
+
+		assert_ok!(GeneticAnalysisOrders::update_treasury_key(Origin::signed(2), 1,));
+
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), 1);
+	})
+}
+
+#[test]
+fn sudo_update_treasury_key_works() {
+	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		assert_ok!(GeneticAnalysisOrders::sudo_update_treasury_key(Origin::root(), 1));
+
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), 1);
 	})
 }

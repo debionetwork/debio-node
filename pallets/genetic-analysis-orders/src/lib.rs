@@ -189,6 +189,10 @@ pub mod pallet {
 	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn treasury_key)]
+	pub type TreasuryKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn pallet_id)]
 	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
 
@@ -201,12 +205,13 @@ pub mod pallet {
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
 		pub escrow_key: T::AccountId,
+		pub treasury_key: T::AccountId,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { escrow_key: Default::default() }
+			Self { escrow_key: Default::default(), treasury_key: Default::default() }
 		}
 	}
 
@@ -214,6 +219,7 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			EscrowKey::<T>::put(&self.escrow_key);
+			TreasuryKey::<T>::put(&self.treasury_key);
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 		}
 	}
@@ -240,6 +246,9 @@ pub mod pallet {
 		/// Update GeneticAnalysisOrder escrow key
 		/// parameters. [who]
 		UpdateGeneticAnalysisOrderEscrowKeySuccessful(AccountIdOf<T>),
+		/// Update GeneticAnalysisOrder treasury key
+		/// parameters. [who]
+		UpdateGeneticAnalysisOrderTreasuryKeySuccessful(AccountIdOf<T>),
 		/// GeneticAnalysisOrder Not Found
 		/// parameters, []
 		GeneticAnalysisOrderNotFound,
@@ -431,6 +440,39 @@ pub mod pallet {
 
 			Ok(Pays::No.into())
 		}
+
+		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::update_treasury_key())]
+		pub fn update_treasury_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as GeneticAnalysisOrderInterface<T>>::update_treasury_key(&who, &account_id)
+			{
+				Ok(_) => {
+					Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(
+						who.clone(),
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_treasury_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			TreasuryKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
 	}
 }
 
@@ -554,6 +596,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				&Self::account_id(),
 				&genetic_analysis_order.customer_id,
 				genetic_analysis_order.total_price,
+				ExistenceRequirement::AllowDeath,
 			);
 
 			// If code reaches here change status to Refunded
@@ -604,6 +647,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&genetic_analysis_order.customer_id,
 			&Self::account_id(),
 			genetic_analysis_order.total_price,
+			ExistenceRequirement::AllowDeath,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -655,6 +699,15 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&Self::account_id(),
 			&genetic_analysis_order.seller_id,
 			total_price_paid,
+			ExistenceRequirement::KeepAlive,
+		);
+
+		// Transfer 5% to DBIO Treasury
+		let _ = Self::transfer_balance(
+			&Self::account_id(),
+			&TreasuryKey::<T>::get(),
+			price_component_substracted_value,
+			ExistenceRequirement::AllowDeath,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -693,6 +746,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&Self::account_id(),
 			&genetic_analysis_order.customer_id,
 			genetic_analysis_order.total_price,
+			ExistenceRequirement::AllowDeath,
 		);
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -711,6 +765,19 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		}
 
 		EscrowKey::<T>::put(escrow_key);
+
+		Ok(())
+	}
+
+	fn update_treasury_key(
+		account_id: &T::AccountId,
+		treasury_key: &T::AccountId,
+	) -> Result<(), Self::Error> {
+		if account_id.clone() != TreasuryKey::<T>::get() {
+			return Err(Error::<T>::Unauthorized)
+		}
+
+		TreasuryKey::<T>::put(treasury_key);
 
 		Ok(())
 	}
@@ -874,8 +941,9 @@ impl<T: Config> Pallet<T> {
 		source: &AccountIdOf<T>,
 		dest: &AccountIdOf<T>,
 		amount: BalanceOf<T>,
+		existence: ExistenceRequirement,
 	) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(source, dest, amount, ExistenceRequirement::KeepAlive);
+		let _ = T::Currency::transfer(source, dest, amount, existence);
 		Self::set_escrow_amount();
 		amount
 	}
