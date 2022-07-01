@@ -6,10 +6,11 @@ use interface::GeneticAnalysisOrderInterface;
 
 use frame_support::{
 	codec::{Decode, Encode},
+	log,
 	pallet_prelude::*,
 	sp_runtime::{
 		traits::{AccountIdConversion, Hash},
-		SaturatedConversion,
+		RuntimeDebug, SaturatedConversion,
 	},
 	sp_std::convert::TryInto,
 	traits::{Currency, ExistenceRequirement},
@@ -292,6 +293,15 @@ pub mod pallet {
 		GeneticAnalystUnavailable,
 		/// Insufficient pallet funds
 		InsufficientPalletFunds,
+		// Dispatch Errors
+		Module,
+		Other,
+		BadOrigin,
+		CannotLookup,
+		ConsumerRemaining,
+		NoProviders,
+		Token,
+		Arithmetic,
 	}
 
 	#[pallet::call]
@@ -592,12 +602,30 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				return Err(Error::<T>::InsufficientPalletFunds)
 			}
 
-			let _ = Self::transfer_balance(
+			match CurrencyOf::<T>::transfer(
 				&Self::account_id(),
 				&genetic_analysis_order.customer_id,
 				genetic_analysis_order.total_price,
 				ExistenceRequirement::AllowDeath,
-			);
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+						log::error!("Module Error: {:?}", m);
+						return Err(Error::<T>::Module)
+					},
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+						return Err(Error::<T>::Arithmetic),
+				},
+			}
 
 			// If code reaches here change status to Refunded
 			genetic_analysis_order_status = GeneticAnalysisOrderStatus::Refunded;
@@ -643,12 +671,30 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 
-		let _ = Self::transfer_balance(
+		match CurrencyOf::<T>::transfer(
 			&genetic_analysis_order.customer_id,
 			&Self::account_id(),
 			genetic_analysis_order.total_price,
 			ExistenceRequirement::AllowDeath,
-		);
+		) {
+			Ok(_) => (),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
+			},
+		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -695,20 +741,56 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			genetic_analysis_order.total_price - price_component_substracted_value;
 
 		// Withhold 5% for DBIO
-		let _ = Self::transfer_balance(
+		match CurrencyOf::<T>::transfer(
 			&Self::account_id(),
 			&genetic_analysis_order.seller_id,
 			total_price_paid,
 			ExistenceRequirement::KeepAlive,
-		);
+		) {
+			Ok(_) => (),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
+			},
+		}
 
 		// Transfer 5% to DBIO Treasury
-		let _ = Self::transfer_balance(
+		match CurrencyOf::<T>::transfer(
 			&Self::account_id(),
 			&TreasuryKey::<T>::get(),
 			price_component_substracted_value,
 			ExistenceRequirement::AllowDeath,
-		);
+		) {
+			Ok(_) => (),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
+			},
+		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -742,12 +824,30 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		let _ = Self::transfer_balance(
+		match CurrencyOf::<T>::transfer(
 			&Self::account_id(),
 			&genetic_analysis_order.customer_id,
 			genetic_analysis_order.total_price,
 			ExistenceRequirement::AllowDeath,
-		);
+		) {
+			Ok(_) => (),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
+			},
+		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
 			genetic_analysis_order_id,
@@ -934,18 +1034,6 @@ impl<T: Config> Pallet<T> {
 	/// The account ID that holds the funds
 	pub fn account_id() -> AccountIdOf<T> {
 		<PalletAccount<T>>::get()
-	}
-
-	/// Transfer balance
-	pub fn transfer_balance(
-		source: &AccountIdOf<T>,
-		dest: &AccountIdOf<T>,
-		amount: BalanceOf<T>,
-		existence: ExistenceRequirement,
-	) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(source, dest, amount, existence);
-		Self::set_escrow_amount();
-		amount
 	}
 
 	/// Is the balance sufficient for payment

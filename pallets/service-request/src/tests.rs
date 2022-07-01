@@ -143,7 +143,7 @@ fn claim_request_works_when_lab_is_verified() {
 #[test]
 fn claim_request_works_when_lab_is_unverified() {
 	<ExternalityBuilder>::default().existential_deposit(2).build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000000000000000000, 0));
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -152,7 +152,7 @@ fn claim_request_works_when_lab_is_unverified() {
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
 			String::from("Vaksin").into_bytes(),
-			1
+			1000000000000000000
 		));
 
 		let request_id = ServiceRequest::request_by_account_id(1)[0];
@@ -194,7 +194,7 @@ fn claim_request_works_when_lab_is_unverified() {
 				region: String::from("West Java").into_bytes(),
 				city: String::from("Bogor").into_bytes(),
 				service_category: String::from("Vaksin").into_bytes(),
-				staking_amount: 1,
+				staking_amount: 1000000000000000000,
 				status: RequestStatus::Open,
 				created_at: 0,
 				updated_at: None,
@@ -324,7 +324,7 @@ fn process_request_works_when_stacking_amount_greater_than_total_payment() {
 #[test]
 fn process_request_works_when_stacking_amount_less_than_total_payment() {
 	<ExternalityBuilder>::default().existential_deposit(2).build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000000000000000000, 0));
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -333,7 +333,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
 			String::from("Vaksin").into_bytes(),
-			1
+			1000000000000000000
 		));
 
 		let request_id = ServiceRequest::request_by_account_id(1)[0];
@@ -369,8 +369,8 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 			Origin::signed(2),
 			request_id,
 			Keccak256::hash("service_id".as_bytes()),
-			1,
-			1
+			1000000000000000000,
+			1000000000000000000
 		));
 
 		assert_ok!(ServiceRequest::process_request(
@@ -379,7 +379,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 			request_id,
 			Keccak256::hash("order_id".as_bytes()),
 			String::from("dnasample").into_bytes(),
-			1
+			1000000000000000000
 		));
 
 		assert_eq!(
@@ -392,7 +392,7 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 				region: String::from("West Java").into_bytes(),
 				city: String::from("Bogor").into_bytes(),
 				service_category: String::from("Vaksin").into_bytes(),
-				staking_amount: 1,
+				staking_amount: 1000000000000000000,
 				status: RequestStatus::Processed,
 				created_at: 0,
 				updated_at: Some(0),
@@ -409,9 +409,9 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 				customer_address: 1,
 				seller_address: 2,
 				dna_sample_tracking_id: String::from("dnasample").into_bytes(),
-				testing_price: 1,
-				qc_price: 1,
-				pay_amount: 2
+				testing_price: 1000000000000000000,
+				qc_price: 1000000000000000000,
+				pay_amount: 2000000000000000000
 			})
 		);
 
@@ -424,13 +424,13 @@ fn process_request_works_when_stacking_amount_less_than_total_payment() {
 				customer_address: 1,
 				seller_address: 2,
 				dna_sample_tracking_id: String::from("dnasample").into_bytes(),
-				testing_price: 1,
-				qc_price: 1,
-				pay_amount: 2
+				testing_price: 1000000000000000000,
+				qc_price: 1000000000000000000,
+				pay_amount: 2000000000000000000
 			})
 		);
 
-		assert_eq!(Balances::free_balance(1), 98);
+		assert_eq!(Balances::free_balance(1), 8000000000000000000);
 	})
 }
 
@@ -655,7 +655,7 @@ fn cant_create_request_when_balance_not_enough() {
 				String::from("Vaksin").into_bytes(),
 				10
 			),
-			Error::<Test>::BadSignature
+			Error::<Test>::Module
 		);
 	})
 }
@@ -871,7 +871,7 @@ fn cant_claim_process_request_when_lab_not_exists() {
 #[test]
 fn cant_put_in_claim_list_when_already_exists() {
 	<ExternalityBuilder>::default().existential_deposit(2).build().execute_with(|| {
-		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000000000000000000, 0));
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -880,7 +880,7 @@ fn cant_put_in_claim_list_when_already_exists() {
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
 			String::from("Vaksin").into_bytes(),
-			1
+			1000000000000000000
 		));
 
 		let request_id = ServiceRequest::request_by_account_id(1)[0];

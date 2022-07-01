@@ -3,6 +3,7 @@
 use frame_support::{
 	codec::{Decode, Encode},
 	dispatch::DispatchResultWithPostInfo,
+	log,
 	pallet_prelude::*,
 	scale_info::TypeInfo,
 	sp_runtime::{
@@ -12,7 +13,6 @@ use frame_support::{
 	sp_std::prelude::*,
 	traits::{Currency, ExistenceRequirement, UnixTime, WithdrawReasons},
 	PalletId,
-	log,
 };
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
@@ -562,7 +562,6 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				let mut request_ids = RequestByAccountId::<T>::get(requester_id.clone());
 				request_ids.push(request_id);
 
-
 				StakingAccountIdByRequestId::<T>::insert(
 					request_id,
 					Self::staking_account_id(request_id),
@@ -585,18 +584,20 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				Ok(request)
 			},
 			Err(dispatch) => match dispatch {
-				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
-				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Other(_) => Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
 				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
 					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
+					Err(Error::<T>::Module)
 				},
-				sp_runtime::DispatchError::ConsumerRemaining => return Err(Error::<T>::ConsumerRemaining),
-				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
-				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					Err(Error::<T>::Arithmetic),
 			},
 		}
 	}
@@ -688,11 +689,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					log::error!("Module Error: {:?}", m);
 					return Err(Error::<T>::Module)
 				},
-				sp_runtime::DispatchError::ConsumerRemaining => return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
 			},
 		}
 	}
