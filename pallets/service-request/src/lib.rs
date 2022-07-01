@@ -12,6 +12,7 @@ use frame_support::{
 	sp_std::prelude::*,
 	traits::{Currency, ExistenceRequirement, UnixTime, WithdrawReasons},
 	PalletId,
+	log,
 };
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
@@ -237,6 +238,14 @@ pub mod pallet {
 		ServiceOfferNotFound,
 		ServiceInvoiceNotFound,
 		LabNotFound,
+		Module,
+		Other,
+		BadOrigin,
+		CannotLookup,
+		ConsumerRemaining,
+		NoProviders,
+		Token,
+		Arithmetic,
 	}
 
 	#[pallet::hooks]
@@ -249,6 +258,12 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
 	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
+	/// Get Staking Account Id by Request Id
+	#[pallet::storage]
+	#[pallet::getter(fn staking_account_id_by_request_id)]
+	pub type StakingAccountIdByRequestId<T> =
+		StorageMap<_, Blake2_128Concat, RequestIdOf<T>, AccountIdOf<T>, ValueQuery>;
 
 	/// Get Request by Account Id
 	#[pallet::storage]
@@ -526,15 +541,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let now = T::TimeProvider::now().as_millis();
 
-		match CurrencyOf::<T>::withdraw(
+		match CurrencyOf::<T>::transfer(
 			&requester_id,
+			&Self::staking_account_id(request_id),
 			staking_amount,
-			WithdrawReasons::TRANSFER,
 			ExistenceRequirement::KeepAlive,
 		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&Self::staking_account_id(request_id), imb);
-
+			Ok(_) => {
 				let request = Request::new(
 					request_id,
 					requester_id.clone(),
@@ -549,6 +562,11 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				let mut request_ids = RequestByAccountId::<T>::get(requester_id.clone());
 				request_ids.push(request_id);
 
+
+				StakingAccountIdByRequestId::<T>::insert(
+					request_id,
+					Self::staking_account_id(request_id),
+				);
 				RequestByAccountId::<T>::insert(requester_id.clone(), request_ids);
 				RequestById::<T>::insert(request_id, request.clone());
 
@@ -566,7 +584,20 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 				Ok(request)
 			},
-			_ => Err(Error::<T>::BadSignature),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining => return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } => return Err(Error::<T>::Arithmetic),
+			},
 		}
 	}
 
@@ -630,15 +661,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			return Err(Error::<T>::RequestWaitingForUnstaked)
 		}
 
-		match CurrencyOf::<T>::withdraw(
+		match CurrencyOf::<T>::transfer(
 			&Self::staking_account_id(request_id),
+			&requester_id,
 			request.staking_amount,
-			WithdrawReasons::TRANSFER,
 			ExistenceRequirement::AllowDeath,
 		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&requester_id, imb);
-
+			Ok(_) => {
 				Self::deposit_event(Event::StakingAmountRefunded(
 					requester_id,
 					request_id,
@@ -651,7 +680,20 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 				Ok(request)
 			},
-			_ => Err(Error::<T>::BadSignature),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining => return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } => return Err(Error::<T>::Arithmetic),
+			},
 		}
 	}
 
