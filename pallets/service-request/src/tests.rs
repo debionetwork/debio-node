@@ -1138,6 +1138,53 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 }
 
 #[test]
+fn cant_retrieve_unstake_when_not_unstaked() {
+	<ExternalityBuilder>::default().existential_deposit(2).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
+
+		AdminKey::<Test>::put(1);
+
+		// Customer create request
+		assert_ok!(ServiceRequest::create_request(
+			Origin::signed(1),
+			String::from("Indonesia").into_bytes(),
+			String::from("West Java").into_bytes(),
+			String::from("Bogor").into_bytes(),
+			String::from("Vaksin").into_bytes(),
+			10
+		));
+
+		let request_id = ServiceRequest::request_by_account_id(1)[0];
+
+		// Register lab
+		assert_ok!(Labs::register_lab(
+			Origin::signed(2),
+			LabInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
+				),
+				name: "DeBio Lab".as_bytes().to_vec(),
+				email: "DeBio Email".as_bytes().to_vec(),
+				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+				region: RegionCode::from_vec("DB".as_bytes().to_vec()),
+				city: CityCode::from_vec("CITY".as_bytes().to_vec()),
+				address: "DeBio Address".as_bytes().to_vec(),
+				phone_number: "+6281394653625".as_bytes().to_vec(),
+				website: "DeBio Website".as_bytes().to_vec(),
+				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			}
+		));
+
+		assert_noop!(
+			ServiceRequest::retrieve_unstaked_amount(Origin::signed(1), request_id,),
+			Error::<Test>::RequestUnableToRetrieveUnstake
+		);
+	})
+}
+
+#[test]
 fn cant_finalize_request_when_unauthorized() {
 	<ExternalityBuilder>::default().existential_deposit(0).build().execute_with(|| {
 		assert_noop!(
