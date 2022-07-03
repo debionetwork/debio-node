@@ -1,0 +1,48 @@
+[package]
+name = "user-profile"
+version = "2.1.0"
+authors = ["Kevin <kevin.janada@gmail.com>"]
+edition = '2021'
+license = 'AGPL-3.0'
+
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+# alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
+[dependencies]
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+serde = { default-features = false, version = "1.0.130", features = ["derive"] }
+rustc-hex = { version = "2.1.0", default-features = false }
+frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+sp-std = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+sp-io = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false, optional = true }
+traits-user-profile = { path = './traits', default-features = false }
+
+[dev-dependencies]
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13', default-features = false }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+	'scale-info/std',
+    'frame-support/std',
+    'frame-system/std',
+    'sp-std/std',
+    'sp-io/std',
+    'serde/std',
+    'rustc-hex/std',
+    'traits-user-profile/std',
+]
+runtime-benchmarks = [
+	'frame-benchmarking'
+]
