@@ -13,9 +13,10 @@ pub use weights::WeightInfo;
 
 pub use crate::interface::GeneticAnalystInterface;
 use frame_support::{
+	log,
 	pallet_prelude::*,
-	sp_runtime::{traits::AccountIdConversion, RuntimeDebug},
-	traits::{Currency, StorageVersion},
+	sp_runtime::{traits::AccountIdConversion, RuntimeDebug, SaturatedConversion},
+	traits::{Currency, ExistenceRequirement, StorageVersion},
 	PalletId,
 };
 use primitives_availability_status::{AvailabilityStatus, AvailabilityStatusTrait};
@@ -335,6 +336,15 @@ pub mod pallet {
 		GeneticAnalystIsNotWaitingForUnstake,
 		// GeneticAnalyst cannot unstake now
 		GeneticAnalystCannotUnstakeBeforeUnstakeTime,
+		// Dispatch Errors
+		Module,
+		Other,
+		BadOrigin,
+		CannotLookup,
+		ConsumerRemaining,
+		NoProviders,
+		Token,
+		Arithmetic,
 	}
 
 	#[pallet::call]
@@ -634,11 +644,30 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 				return Err(Error::<T>::InsufficientPalletFunds)
 			}
 
-			let _ = Self::transfer_balance(
+			match CurrencyOf::<T>::transfer(
 				&Self::account_id(),
 				account_id,
 				genetic_analyst.stake_amount,
-			);
+				ExistenceRequirement::AllowDeath,
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+						log::error!("Module Error: {:?}", m);
+						return Err(Error::<T>::Module)
+					},
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+						return Err(Error::<T>::Arithmetic),
+				},
+			}
 
 			genetic_analyst.stake_amount = 0u128.saturated_into();
 			genetic_analyst.stake_status = StakeStatus::Unstaked;
@@ -692,11 +721,32 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 				return Err(Error::<T>::InsufficientFunds)
 			}
 
-			genetic_analyst.stake_amount = Self::transfer_balance(
+			match CurrencyOf::<T>::transfer(
 				account_id,
 				&Self::account_id(),
 				Self::get_required_stake_balance(),
-			);
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(_) => {
+					genetic_analyst.stake_amount = Self::get_required_stake_balance();
+				},
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+						log::error!("Module Error: {:?}", m);
+						return Err(Error::<T>::Module)
+					},
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+						return Err(Error::<T>::Arithmetic),
+				},
+			}
 		}
 		genetic_analyst.stake_status = StakeStatus::Staked;
 		genetic_analyst.unstake_at = MomentOf::<T>::default();
@@ -761,8 +811,30 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		let _ =
-			Self::transfer_balance(&Self::account_id(), account_id, genetic_analyst.stake_amount);
+		match CurrencyOf::<T>::transfer(
+			&Self::account_id(),
+			account_id,
+			genetic_analyst.stake_amount,
+			ExistenceRequirement::AllowDeath,
+		) {
+			Ok(_) => (),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
+			},
+		}
 
 		genetic_analyst.stake_amount = 0u128.saturated_into();
 		genetic_analyst.stake_status = StakeStatus::Unstaked;
@@ -837,8 +909,6 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 	}
 }
 
-use frame_support::{sp_runtime::SaturatedConversion, traits::ExistenceRequirement::KeepAlive};
-
 impl<T: Config> Pallet<T> {
 	// Add genetic_analyst count
 	pub fn add_genetic_analyst_count() {
@@ -875,17 +945,6 @@ impl<T: Config> Pallet<T> {
 	pub fn is_balance_sufficient_for_staking(account_id: &AccountIdOf<T>) -> bool {
 		let balance = T::Currency::free_balance(account_id);
 		balance >= Self::get_required_stake_balance()
-	}
-
-	/// Transfer balance
-	pub fn transfer_balance(
-		source: &AccountIdOf<T>,
-		dest: &AccountIdOf<T>,
-		amount: BalanceOf<T>,
-	) -> BalanceOf<T> {
-		let _ = T::Currency::transfer(source, dest, amount, KeepAlive);
-		Self::set_total_staked_amount();
-		amount
 	}
 
 	/// Is the pallet balance sufficient for refund
