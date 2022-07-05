@@ -11,7 +11,7 @@ use frame_support::{
 		RuntimeDebug,
 	},
 	sp_std::prelude::*,
-	traits::{Currency, ExistenceRequirement, UnixTime, WithdrawReasons},
+	traits::{Currency, ExistenceRequirement, UnixTime},
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
