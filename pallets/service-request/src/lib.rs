@@ -866,7 +866,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					},
 					Err(dispatch) => match dispatch {
 						sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-						sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+						sp_runtime::DispatchError::CannotLookup =>
+							return Err(Error::<T>::CannotLookup),
 						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
 						sp_runtime::DispatchError::Module {
 							index: _,
@@ -878,9 +879,11 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 						},
 						sp_runtime::DispatchError::ConsumerRemaining =>
 							return Err(Error::<T>::ConsumerRemaining),
-						sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+						sp_runtime::DispatchError::NoProviders =>
+							return Err(Error::<T>::NoProviders),
 						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-						sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Arithmetic(_) =>
+							return Err(Error::<T>::Arithmetic),
 						sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
 							return Err(Error::<T>::Arithmetic),
 					},
@@ -988,7 +991,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					log::error!("Module Error: {:?}", m);
 					return Err(Error::<T>::Module)
 				},
-				sp_runtime::DispatchError::ConsumerRemaining => return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
