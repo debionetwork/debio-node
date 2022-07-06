@@ -11,7 +11,7 @@ use frame_support::{
 		RuntimeDebug,
 	},
 	sp_std::prelude::*,
-	traits::{Currency, ExistenceRequirement, UnixTime, WithdrawReasons},
+	traits::{Currency, ExistenceRequirement, UnixTime},
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
@@ -815,22 +815,35 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		}
 
 		if !excess.is_zero() {
-			match CurrencyOf::<T>::withdraw(
+			match CurrencyOf::<T>::transfer(
 				&Self::staking_account_id(request_id),
+				&requester_id,
 				excess,
-				WithdrawReasons::TRANSFER,
 				ExistenceRequirement::KeepAlive,
 			) {
-				Ok(imb) => {
-					CurrencyOf::<T>::resolve_creating(&requester_id, imb);
-
+				Ok(_) => {
 					Self::deposit_event(Event::StakingAmountExcessRefunded(
 						requester_id.clone(),
 						request_id,
 						excess,
 					));
 				},
-				_ => return Err(Error::<T>::BadSignature),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+						log::error!("Module Error: {:?}", m);
+						return Err(Error::<T>::Module)
+					},
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+						return Err(Error::<T>::Arithmetic),
+				},
 			}
 		} else {
 			final_pay_amount = request.staking_amount + additional_staking_amount;
@@ -838,25 +851,42 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			if final_pay_amount != total_price {
 				return Err(Error::<T>::NotValidAmount)
 			} else {
-				match CurrencyOf::<T>::withdraw(
+				match CurrencyOf::<T>::transfer(
 					&requester_id,
+					&Self::staking_account_id(request_id),
 					additional_staking_amount,
-					WithdrawReasons::TRANSFER,
 					ExistenceRequirement::KeepAlive,
 				) {
-					Ok(imb) => {
-						CurrencyOf::<T>::resolve_creating(
-							&Self::staking_account_id(request_id),
-							imb,
-						);
-
+					Ok(_) => {
 						Self::deposit_event(Event::StakingAmountIncreased(
 							requester_id.clone(),
 							request_id,
 							additional_staking_amount,
 						));
 					},
-					_ => return Err(Error::<T>::BadSignature),
+					Err(dispatch) => match dispatch {
+						sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+						sp_runtime::DispatchError::CannotLookup =>
+							return Err(Error::<T>::CannotLookup),
+						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+						sp_runtime::DispatchError::Module {
+							index: _,
+							error: _,
+							message: Some(m),
+						} => {
+							log::error!("Module Error: {:?}", m);
+							return Err(Error::<T>::Module)
+						},
+						sp_runtime::DispatchError::ConsumerRemaining =>
+							return Err(Error::<T>::ConsumerRemaining),
+						sp_runtime::DispatchError::NoProviders =>
+							return Err(Error::<T>::NoProviders),
+						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+						sp_runtime::DispatchError::Arithmetic(_) =>
+							return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+							return Err(Error::<T>::Arithmetic),
+					},
 				}
 			}
 		}
@@ -919,30 +949,56 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			let testing_price = service_invoice.testing_price;
 
 			// Transfer testing price back to customer
-			match CurrencyOf::<T>::withdraw(
+			match CurrencyOf::<T>::transfer(
 				&Self::staking_account_id(request_id),
+				&requester_id,
 				testing_price,
-				WithdrawReasons::TRANSFER,
-				ExistenceRequirement::KeepAlive,
+				ExistenceRequirement::AllowDeath,
 			) {
-				Ok(imb) => {
-					CurrencyOf::<T>::resolve_creating(&requester_id, imb);
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+						log::error!("Module Error: {:?}", m);
+						return Err(Error::<T>::Module)
+					},
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+						return Err(Error::<T>::Arithmetic),
 				},
-				_ => return Err(Error::<T>::BadSignature),
 			}
 		}
 
 		// Transfer to lab_id
-		match CurrencyOf::<T>::withdraw(
+		match CurrencyOf::<T>::transfer(
 			&Self::staking_account_id(request_id),
+			&lab_id,
 			pay_amount,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
+			ExistenceRequirement::AllowDeath,
 		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(&lab_id, imb);
+			Ok(_) => (),
+			Err(dispatch) => match dispatch {
+				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
+					log::error!("Module Error: {:?}", m);
+					return Err(Error::<T>::Module)
+				},
+				sp_runtime::DispatchError::ConsumerRemaining =>
+					return Err(Error::<T>::ConsumerRemaining),
+				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					return Err(Error::<T>::Arithmetic),
 			},
-			_ => return Err(Error::<T>::BadSignature),
 		}
 
 		let now = T::TimeProvider::now().as_millis();
