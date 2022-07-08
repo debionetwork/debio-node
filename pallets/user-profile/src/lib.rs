@@ -103,6 +103,11 @@ pub mod pallet {
 	#[pallet::getter(fn account_id_by_eth_address)]
 	pub type AccountIdByEthAddress<T> =
 		StorageMap<_, Blake2_128Concat, EthereumAddressOf<T>, AccountIdOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn register_account_id)]
+	pub type RegisteredAccountId<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, AccountIdOf<T>>;
 	// -----------------------------------
 
 	#[pallet::event]
@@ -204,6 +209,12 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 		eth_address: &EthereumAddressOf<T>,
 	) {
 		EthAddressByAccountId::<T>::insert(account_id, eth_address);
+		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
+	}
+
+	fn register_account_id(
+		account_id: &T::AccountId,
+	) {
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
 	}
 
