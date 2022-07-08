@@ -1283,7 +1283,7 @@ dependencies = [
 
 [[package]]
 name = "debio"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -1344,7 +1344,7 @@ dependencies = [
 
 [[package]]
 name = "debio-runtime"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "beefy-primitives",
  "certifications",
@@ -2528,7 +2528,6 @@ dependencies = [
  "frame-system",
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
- "log",
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
@@ -3511,7 +3510,6 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "log",
  "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",

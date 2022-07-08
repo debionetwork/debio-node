@@ -672,7 +672,7 @@ mod tests {
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
-				60000000000000000000000u128.saturated_into(),
+				70000000000000000000000u128.saturated_into(),
 				0
 			));
 
@@ -1674,7 +1674,7 @@ mod tests {
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
-				60000000000000000000000u128.saturated_into(),
+				70000000000000000000000u128.saturated_into(),
 				0
 			));
 
