@@ -119,6 +119,8 @@ pub mod pallet {
 		/// Update user profile admin key successful
 		/// parameters. [who]
 		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
+		RegisteredAccountId(AccountIdOf<T>, AccountIdOf<T>),
+
 	}
 
 	// Errors inform users that something went wrong.
@@ -142,6 +144,21 @@ pub mod pallet {
 			);
 
 			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who));
+
+			Ok(().into())
+		}
+
+		pub fn registered_account_id(
+			origin: OriginFor<T>,
+			account_id: AccountIdOf<T>,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			<Self as UserProfileInterface<T, AccountIdOf<T>>>::register_account_id(
+				&who,
+			);
+
+			Self::deposit_event(Event::<T>::RegisteredAccountId(account_id, who));
 
 			Ok(().into())
 		}
@@ -215,7 +232,7 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 	fn register_account_id(
 		account_id: &T::AccountId,
 	) {
-		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
+		RegisteredAccountId::<T>::insert(account_id, account_id);
 	}
 
 	fn update_admin_key(
@@ -233,6 +250,10 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
 		EthAddressByAccountId::<T>::get(account_id)
+	}
+
+	fn get_register_account_id(account_id: &T::AccountId) -> Option<AccountIdOf<T>> {
+		RegisteredAccountId::<T>::get(account_id)
 	}
 
 	fn get_account_id_by_eth_address(eth_address: &EthereumAddressOf<T>) -> Option<AccountIdOf<T>> {
