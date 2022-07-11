@@ -148,6 +148,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
+		#[pallet::weight(0)]
 		pub fn registered_account_id(
 			origin: OriginFor<T>,
 			account_id: AccountIdOf<T>,
