@@ -38,8 +38,150 @@ jobs:
           echo $version
           echo "::set-output name=latest_tag::$version"
 
-  deploy-beta-release:
+  deploy-dev:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-20.04
+    needs: [compute-build-info]
+    env:
+      DEPLOY: ${{ secrets.DEV_DEPLOY }}
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout code
+        if: "${{ env.DEPLOY == 'true' }}"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Authenticate to Google Cloud
+        if: "${{ env.DEPLOY == 'true' }}"
+        id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: ${{ secrets.DEV_GOOGLE_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.DEV_SERVICE_ACCOUNT_EMAIL }}
+          project_id: ${{ secrets.DEV_GCP_PROJECT_ID }}
+      - name: Set up Cloud SDK
+        if: "${{ env.DEPLOY == 'true' }}"
+        uses: google-github-actions/setup-gcloud@v0
+      - name: Get secrets
+        if: "${{ env.DEPLOY == 'true' }}"
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@main
+        with:
+          secrets: |-
+            SSH_HOST:${{ secrets.DEV_GCP_PROJECT_ID }}/SSH_HOST
+            SSH_USERNAME:${{ secrets.DEV_GCP_PROJECT_ID }}/SSH_USERNAME
+            SSH_KEY:${{ secrets.DEV_GCP_PROJECT_ID }}/SSH_KEY
+            SSH_PORT:${{ secrets.DEV_GCP_PROJECT_ID }}/SSH_PORT
+            NODE_KEY_PRIVATE_1:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PRIVATE_1
+            NODE_KEY_PUBLIC_1:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PUBLIC_1
+            NODE_KEY_PRIVATE_2:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PRIVATE_2
+            NODE_KEY_PUBLIC_2:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PUBLIC_2
+            NODE_KEY_PRIVATE_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PRIVATE_VALIDATOR_1
+            NODE_KEY_PUBLIC_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PUBLIC_VALIDATOR_1
+            NODE_KEY_PRIVATE_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PRIVATE_VALIDATOR_2
+            NODE_KEY_PUBLIC_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/NODE_KEY_PUBLIC_VALIDATOR_2
+            SESSION_KEY_SEED_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_SEED_VALIDATOR_1
+            SESSION_KEY_GRANDPA_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_GRANDPA_VALIDATOR_1
+            SESSION_KEY_BABE_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_BABE_VALIDATOR_1
+            SESSION_KEY_IMONLINE_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_IMONLINE_VALIDATOR_1
+            SESSION_KEY_BEEFY_VALIDATOR_1:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_BEEFY_VALIDATOR_1
+            SESSION_KEY_SEED_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_SEED_VALIDATOR_2
+            SESSION_KEY_GRANDPA_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_GRANDPA_VALIDATOR_2
+            SESSION_KEY_BABE_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_BABE_VALIDATOR_2
+            SESSION_KEY_IMONLINE_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_IMONLINE_VALIDATOR_2
+            SESSION_KEY_BEEFY_VALIDATOR_2:${{ secrets.DEV_GCP_PROJECT_ID }}/SESSION_KEY_BEEFY_VALIDATOR_2
+      - name: Deploy
+        if: "${{ env.DEPLOY == 'true' }}"
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ steps.secrets.outputs.SSH_HOST }}
+          username: ${{ steps.secrets.outputs.SSH_USERNAME }}
+          key: ${{ steps.secrets.outputs.SSH_KEY }}
+          port: ${{ steps.secrets.outputs.SSH_PORT }}
+          script: |
+            ./connect.sh
+            helm repo add debio https://charts.debio.network
+            helm repo update
+            helm upgrade debio-node debio/debio-node \
+              --install \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.sha_short }} \
+              --set-string config.chain=dev-testnet \
+              --set-string config.nodes[0].name=full1 \
+              --set config.nodes[0].bootnode=true \
+              --set config.nodes[0].archive=false \
+              --set config.nodes[0].validator=false \
+              --set-string config.nodes[0].keys.private=${{ steps.secrets.outputs.NODE_KEY_PRIVATE_1 }} \
+              --set-string config.nodes[0].keys.public=${{ steps.secrets.outputs.NODE_KEY_PUBLIC_1 }} \
+              --set config.nodes[0].sessionInjectionEnabled=false \
+              --set-string config.nodes[1].name=archive1 \
+              --set config.nodes[1].bootnode=true \
+              --set config.nodes[1].archive=true \
+              --set config.nodes[1].validator=false \
+              --set-string config.nodes[1].keys.private=${{ steps.secrets.outputs.NODE_KEY_PRIVATE_2 }} \
+              --set-string config.nodes[1].keys.public=${{ steps.secrets.outputs.NODE_KEY_PUBLIC_2 }} \
+              --set config.nodes[1].sessionInjectionEnabled=false \
+              --set-string config.nodes[2].name=validator1 \
+              --set config.nodes[2].bootnode=true \
+              --set config.nodes[2].archive=false \
+              --set config.nodes[2].validator=true \
+              --set-string config.nodes[2].keys.private=${{ steps.secrets.outputs.NODE_KEY_PRIVATE_VALIDATOR_1 }} \
+              --set-string config.nodes[2].keys.public=${{ steps.secrets.outputs.NODE_KEY_PUBLIC_VALIDATOR_1 }} \
+              --set config.nodes[2].sessionInjectionEnabled=true \
+              --set-string config.nodes[2].sessionKeys.keySeed="${{ steps.secrets.outputs.SESSION_KEY_SEED_VALIDATOR_1 }}" \
+              --set-string config.nodes[2].sessionKeys.grandpa=${{ steps.secrets.outputs.SESSION_KEY_GRANDPA_VALIDATOR_1 }} \
+              --set-string config.nodes[2].sessionKeys.babe=${{ steps.secrets.outputs.SESSION_KEY_BABE_VALIDATOR_1 }} \
+              --set-string config.nodes[2].sessionKeys.imonline=${{ steps.secrets.outputs.SESSION_KEY_IMONLINE_VALIDATOR_1 }} \
+              --set-string config.nodes[2].sessionKeys.beefy=${{ steps.secrets.outputs.SESSION_KEY_BEEFY_VALIDATOR_1 }} \
+              --set-string config.nodes[3].name=validator2 \
+              --set config.nodes[3].bootnode=true \
+              --set config.nodes[3].archive=false \
+              --set config.nodes[3].validator=true \
+              --set-string config.nodes[3].keys.private=${{ steps.secrets.outputs.NODE_KEY_PRIVATE_VALIDATOR_2 }} \
+              --set-string config.nodes[3].keys.public=${{ steps.secrets.outputs.NODE_KEY_PUBLIC_VALIDATOR_2 }} \
+              --set config.nodes[3].sessionInjectionEnabled=true \
+              --set-string config.nodes[3].sessionKeys.keySeed="${{ steps.secrets.outputs.SESSION_KEY_SEED_VALIDATOR_2 }}" \
+              --set-string config.nodes[3].sessionKeys.grandpa=${{ steps.secrets.outputs.SESSION_KEY_GRANDPA_VALIDATOR_2 }} \
+              --set-string config.nodes[3].sessionKeys.babe=${{ steps.secrets.outputs.SESSION_KEY_BABE_VALIDATOR_2 }} \
+              --set-string config.nodes[3].sessionKeys.imonline=${{ steps.secrets.outputs.SESSION_KEY_IMONLINE_VALIDATOR_2 }} \
+              --set-string config.nodes[3].sessionKeys.beefy=${{ steps.secrets.outputs.SESSION_KEY_BEEFY_VALIDATOR_2 }} \
+              --set services.httpRPC.enabled=true \
+              --set services.websocketRPC.enabled=true \
+              --set ingress.httpRPC.enabled=true \
+              --set-string ingress.httpRPC.annotations."kubernetes\.io/ingress\.class"=nginx \
+              --set-string ingress.httpRPC.annotations."cert-manager\.io/cluster-issuer"=letsencrypt \
+              --set-string ingress.httpRPC.annotations."nginx\.ingress\.kubernetes\.io/limit-rps"="10" \
+              --set-string ingress.httpRPC.hosts[0].host=http-rpc.dev.debio.network \
+              --set-string ingress.httpRPC.hosts[0].paths[0].path=/ \
+              --set-string ingress.httpRPC.hosts[0].paths[0].pathType=ImplementationSpecific \
+              --set-string ingress.httpRPC.tls[0].secretName=debio-node-http-rpc-tls \
+              --set-string ingress.httpRPC.tls[0].hosts[0]=http-rpc.dev.debio.network \
+              --set ingress.websocketRPC.enabled=true \
+              --set-string ingress.websocketRPC.annotations."kubernetes\.io/ingress\.class"=nginx \
+              --set-string ingress.websocketRPC.annotations."cert-manager\.io/cluster-issuer"=letsencrypt \
+              --set-string ingress.websocketRPC.annotations."nginx\.ingress\.kubernetes\.io/limit-rps"="10" \
+              --set-string ingress.websocketRPC.annotations."nginx\.ingress\.kubernetes\.io/proxy-read-timeout"="3600" \
+              --set-string ingress.websocketRPC.annotations."nginx\.ingress\.kubernetes\.io/proxy-send-timeout"="3600" \
+              --set-string ingress.websocketRPC.hosts[0].host=ws-rpc.dev.debio.network \
+              --set-string ingress.websocketRPC.hosts[0].paths[0].path=/ \
+              --set-string ingress.websocketRPC.hosts[0].paths[0].pathType=ImplementationSpecific \
+              --set-string ingress.websocketRPC.tls[0].secretName=debio-node-websocket-rpc-tls \
+              --set-string ingress.websocketRPC.tls[0].hosts[0]=ws-rpc.dev.debio.network \
+              --set-string volume.storageClassName=premium-rwo \
+              --set-string volume.dataSize=50Gi \
+              --set-string nodeSelector.pool=blockchain
+            kubectl rollout status statefulset/debio-node-full1
+      - name: Sleuth webhook
+        if: "${{ env.DEPLOY == 'true' }}"
+        shell: bash
+        run: |
+          curl -X POST -d api_key=${{ secrets.SLEUTH_API_KEY }} \
+          -d environment=${{ secrets.DEV_SLEUTH_ENVIRONMENT }} \
+          -d sha=$GITHUB_SHA ${{ secrets.NODE_SLEUTH_WEBHOOK }}
+
+  deploy-beta-release:
+    if: "github.event.release.prerelease && contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
     runs-on: ubuntu-20.04
     needs: [compute-build-info]
     env:
@@ -95,7 +237,7 @@ jobs:
             helm repo update
             helm upgrade debio-node-${{ needs.compute-build-info.outputs.sha_short }} debio/debio-node \
               --install \
-              --set-string image.tag=${{ needs.compute-build-info.outputs.sha_short }} \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.latest_tag }} \
               --set-string config.chain=octopus-testnet \
               --set-string config.nodes[0].name=full1 \
               --set config.nodes[0].bootnode=true \
