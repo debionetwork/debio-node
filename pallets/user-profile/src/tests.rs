@@ -15,6 +15,15 @@ fn set_eth_address_works() {
 }
 
 #[test]
+fn register_account_id_works() {
+	ExternalityBuilder::build().execute_with(|| {
+		assert_ok!(UserProfile::register_account_id(Origin::signed(1)));
+
+		assert_eq!(UserProfile::registered_account_id(1), Some(true));
+	});
+}
+
+#[test]
 fn admin_set_eth_address() {
 	ExternalityBuilder::build().execute_with(|| {
 		AdminKey::<Test>::put(1);

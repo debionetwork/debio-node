@@ -103,6 +103,10 @@ pub mod pallet {
 	#[pallet::getter(fn account_id_by_eth_address)]
 	pub type AccountIdByEthAddress<T> =
 		StorageMap<_, Blake2_128Concat, EthereumAddressOf<T>, AccountIdOf<T>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn registered_account_id)]
+	pub type RegisteredAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, bool>;
 	// -----------------------------------
 
 	#[pallet::event]
@@ -114,6 +118,7 @@ pub mod pallet {
 		/// Update user profile admin key successful
 		/// parameters. [who]
 		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
+		RegisteredAccountId(AccountIdOf<T>, bool),
 	}
 
 	// Errors inform users that something went wrong.
@@ -137,6 +142,17 @@ pub mod pallet {
 			);
 
 			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who));
+
+			Ok(().into())
+		}
+
+		#[pallet::weight(T::WeightInfo::register_account_id())]
+		pub fn register_account_id(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::register_account_id(&who);
+
+			Self::deposit_event(Event::<T>::RegisteredAccountId(who, true));
 
 			Ok(().into())
 		}
@@ -207,6 +223,10 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
 	}
 
+	fn register_account_id(account_id: &T::AccountId) {
+		RegisteredAccountId::<T>::insert(account_id, true);
+	}
+
 	fn update_admin_key(
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
@@ -227,11 +247,20 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 	fn get_account_id_by_eth_address(eth_address: &EthereumAddressOf<T>) -> Option<AccountIdOf<T>> {
 		AccountIdByEthAddress::<T>::get(eth_address)
 	}
+
+	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool> {
+		RegisteredAccountId::<T>::get(account_id)
+	}
 }
 
 impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>> for Pallet<T> {
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
 		<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::get_eth_address_by_account_id(
+			account_id,
+		)
+	}
+	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool> {
+		<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::get_registered_account_id(
 			account_id,
 		)
 	}

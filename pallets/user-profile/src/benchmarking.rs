@@ -14,6 +14,12 @@ benchmarks! {
 		eth_address
 	)
 
+	register_account_id {
+		let caller: T::AccountId = whitelisted_caller();
+	}: register_account_id(
+		RawOrigin::Signed(caller)
+	)
+
 	admin_set_eth_address {
 		let eth_address = T::EthereumAddress::default();
 		let caller: T::AccountId = AdminKey::<T>::get();
