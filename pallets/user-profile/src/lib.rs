@@ -106,8 +106,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn registered_account_id)]
-	pub type RegisteredAccountId<T> =
-		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, bool>;
+	pub type RegisteredAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, bool>;
 	// -----------------------------------
 
 	#[pallet::event]
@@ -120,7 +119,6 @@ pub mod pallet {
 		/// parameters. [who]
 		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
 		RegisteredAccountId(AccountIdOf<T>, bool),
-
 	}
 
 	// Errors inform users that something went wrong.
@@ -149,14 +147,10 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::WeightInfo::register_account_id())]
-		pub fn register_account_id(
-			origin: OriginFor<T>,
-		) -> DispatchResultWithPostInfo {
+		pub fn register_account_id(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::register_account_id(
-				&who,
-			);
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::register_account_id(&who);
 
 			Self::deposit_event(Event::<T>::RegisteredAccountId(who, true));
 
@@ -229,9 +223,7 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
 	}
 
-	fn register_account_id(
-		account_id: &T::AccountId,
-	) {
+	fn register_account_id(account_id: &T::AccountId) {
 		RegisteredAccountId::<T>::insert(account_id, true);
 	}
 

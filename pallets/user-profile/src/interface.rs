@@ -8,7 +8,7 @@ pub trait UserProfileInterface<T: frame_system::Config, EthAddress> {
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
 	) -> Result<(), Self::Error>;
-	
+
 	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool>;
 
 	fn get_account_id_by_eth_address(eth_address: &EthAddress) -> Option<T::AccountId>;
