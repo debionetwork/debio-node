@@ -2,5 +2,5 @@
 
 pub trait UserProfileProvider<T: frame_system::Config, EthAddress> {
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthAddress>;
-	fn get_register_account_id(account_id: &T::AccountId) -> Option<AccountId>;
+	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool>;
 }

@@ -30,6 +30,7 @@ use sp_std::marker::PhantomData;
 /// Weight functions needed for user_profile.
 pub trait WeightInfo {
 	fn set_eth_address() -> Weight;
+	fn register_account_id() -> Weight;
 	fn admin_set_eth_address() -> Weight;
 	fn update_admin_key() -> Weight;
 }
@@ -57,6 +58,11 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
+	fn register_account_id() -> Weight {
+		22_363_000_u64
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
+	}
 }
 
 // For backwards compatibility and tests
@@ -77,6 +83,11 @@ impl WeightInfo for () {
 	}
 	// Storage: UserProfile AdminKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
+		22_363_000_u64
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	fn register_account_id() -> Weight {
 		22_363_000_u64
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
