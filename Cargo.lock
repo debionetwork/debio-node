@@ -815,7 +815,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec 2.3.1",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -860,7 +860,7 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec 2.3.1",
  "primitives-area-code",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "services",
  "sp-core",
@@ -1456,6 +1456,7 @@ dependencies = [
  "frame-system",
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
  "genetic-analysis",
  "genetic-analysis-benchmarking",
  "genetic-analysis-orders",
@@ -1671,7 +1672,7 @@ dependencies = [
  "pallet-balances",
  "parity-scale-codec 2.3.1",
  "primitives-area-code",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -2201,6 +2202,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "frame-try-runtime"
+version = "0.10.0-dev"
+source = "git+https://github.com/paritytech/substrate.git?branch=polkadot-v0.9.18#fc3fd073d3a0acf9933c3994b660ebd7b5833f65"
+dependencies = [
+ "frame-support",
+ "sp-api",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "fs-swap"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2547,7 +2559,7 @@ dependencies = [
  "primitives-duration",
  "primitives-price-and-currency",
  "primitives-tracking-id",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -2615,7 +2627,7 @@ dependencies = [
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec 2.3.1",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -2658,7 +2670,7 @@ dependencies = [
  "parity-scale-codec 2.3.1",
  "primitives-duration",
  "primitives-price-and-currency",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -2688,7 +2700,7 @@ dependencies = [
  "parity-scale-codec 2.3.1",
  "primitives-duration",
  "primitives-price-and-currency",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -2879,7 +2891,7 @@ dependencies = [
  "primitives-area-code",
  "primitives-duration",
  "primitives-price-and-currency",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "services",
  "sp-core",
@@ -3167,7 +3179,7 @@ dependencies = [
  "pallet-balances",
  "parity-scale-codec 2.3.1",
  "primitives-area-code",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -5904,7 +5916,7 @@ dependencies = [
  "fixed-hash",
  "impl-codec",
  "impl-serde",
- "scale-info 2.1.2",
+ "scale-info 1.0.0",
  "uint",
 ]
 
@@ -6392,7 +6404,7 @@ dependencies = [
  "hex-literal",
  "pallet-balances",
  "parity-scale-codec 2.3.1",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "sp-core",
  "sp-io",
@@ -7455,19 +7467,6 @@ dependencies = [
 
 [[package]]
 name = "scale-info"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c55b744399c25532d63a0d2789b109df8d46fc93752d46b0782991a931a782f"
-dependencies = [
- "bitvec 0.20.4",
- "cfg-if 1.0.0",
- "derive_more",
- "parity-scale-codec 2.3.1",
- "scale-info-derive 1.0.0",
-]
-
-[[package]]
-name = "scale-info"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c46be926081c9f4dd5dd9b6f1d3e3229f2360bc6502dd8836f84a93b7c75e99a"
@@ -7478,18 +7477,6 @@ dependencies = [
  "parity-scale-codec 3.1.5",
  "scale-info-derive 2.1.2",
  "serde",
-]
-
-[[package]]
-name = "scale-info-derive"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baeb2780690380592f86205aa4ee49815feb2acad8c2f59e6dd207148c3f1fcd"
-dependencies = [
- "proc-macro-crate 1.1.3",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -7735,7 +7722,7 @@ dependencies = [
  "parity-scale-codec 2.3.1",
  "primitives-area-code",
  "primitives-verification-status",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "services",
  "sp-core",
  "sp-io",
@@ -7763,7 +7750,7 @@ dependencies = [
  "parity-scale-codec 2.3.1",
  "primitives-area-code",
  "primitives-verification-status",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "service-request",
  "services",
  "sp-core",
@@ -7833,7 +7820,7 @@ dependencies = [
  "primitives-area-code",
  "primitives-duration",
  "primitives-price-and-currency",
- "scale-info 1.0.0",
+ "scale-info 2.1.2",
  "serde",
  "services",
  "sp-core",

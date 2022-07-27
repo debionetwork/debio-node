@@ -15,7 +15,7 @@ targets = ['x86_64-unknown-linux-gnu']
 # External Dependencies
 hex-literal = '0.3.3'
 codec = { package = 'parity-scale-codec', version = '2.0.0', default-features = false, features = ['derive'] }
-scale-info = { version = '1.0', default-features = false, features = ['derive'] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 
 # Substrate packages
 ## Substrate Primitive Dependencies
