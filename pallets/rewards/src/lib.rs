@@ -38,8 +38,8 @@ pub mod pallet {
 	pub trait Config: frame_system::Config + Sized {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		/// Currency type for this pallet.
-		type PalletId: Get<PalletId>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
+		type PalletId: Get<PalletId>;
 		type WeightInfo: WeightInfo;
 	}
 	// -----------------------------------------
@@ -53,11 +53,11 @@ pub mod pallet {
 	// ------ Storage --------------------------
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
-	pub type RewarderKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type RewarderKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn pallet_id)]
-	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn total_reward_amount)]
@@ -73,7 +73,7 @@ pub mod pallet {
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { rewarder_key: Default::default() }
+			Self { rewarder_key: <Pallet<T>>::get_pallet_id() }
 		}
 	}
 
@@ -110,6 +110,7 @@ pub mod pallet {
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
@@ -177,7 +178,7 @@ impl<T: Config> Pallet<T> {
 
 	/// The account ID that holds the funds
 	pub fn account_id() -> AccountIdOf<T> {
-		<PalletAccount<T>>::get()
+		<PalletAccount<T>>::get().unwrap()
 	}
 
 	/// Set current total reward amount
@@ -197,7 +198,7 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 		reward: Self::Balance,
 	) -> Result<(), Self::Error> {
 		let pallet_id = Self::account_id();
-		if rewarder_account_id.clone() != RewarderKey::<T>::get() {
+		if rewarder_account_id.clone() != RewarderKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -221,7 +222,7 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != RewarderKey::<T>::get() {
+		if account_id.clone() != RewarderKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 

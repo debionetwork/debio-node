@@ -3,7 +3,6 @@
 use frame_support::{
 	codec::{Decode, Encode},
 	dispatch::DispatchResultWithPostInfo,
-	log,
 	pallet_prelude::*,
 	scale_info::TypeInfo,
 	sp_runtime::{
@@ -185,21 +184,19 @@ pub mod pallet {
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub admin_key: T::AccountId,
+		pub phantom: PhantomData<T>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { admin_key: Default::default() }
+			Self { phantom: PhantomData }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-		fn build(&self) {
-			AdminKey::<T>::put(&self.admin_key);
-		}
+		fn build(&self) {}
 	}
 
 	#[pallet::event]
@@ -243,6 +240,7 @@ pub mod pallet {
 		BadOrigin,
 		CannotLookup,
 		ConsumerRemaining,
+		TooManyConsumers,
 		NoProviders,
 		Token,
 		Arithmetic,
@@ -253,17 +251,18 @@ pub mod pallet {
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
-	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	/// Get Staking Account Id by Request Id
 	#[pallet::storage]
 	#[pallet::getter(fn staking_account_id_by_request_id)]
 	pub type StakingAccountIdByRequestId<T> =
-		StorageMap<_, Blake2_128Concat, RequestIdOf<T>, AccountIdOf<T>, ValueQuery>;
+		StorageMap<_, Blake2_128Concat, RequestIdOf<T>, AccountIdOf<T>, OptionQuery>;
 
 	/// Get Request by Account Id
 	#[pallet::storage]
@@ -587,15 +586,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining => Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+				sp_runtime::DispatchError::Module(_) =>
 					Err(Error::<T>::Arithmetic),
 			},
 		}
@@ -634,7 +631,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		admin: Self::Admin,
 		request_id: Self::RequestId,
 	) -> Result<Self::Request, Self::Error> {
-		if admin != AdminKey::<T>::get() {
+		if admin != AdminKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -684,15 +681,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining => Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+				sp_runtime::DispatchError::Module(_) =>
 					Err(Error::<T>::Arithmetic),
 			},
 		}
@@ -832,16 +827,14 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-						log::error!("Module Error: {:?}", m);
-						return Err(Error::<T>::Module)
-					},
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
 					sp_runtime::DispatchError::ConsumerRemaining =>
 						return Err(Error::<T>::ConsumerRemaining),
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					sp_runtime::DispatchError::Module(_) =>
 						return Err(Error::<T>::Arithmetic),
 				},
 			}
@@ -869,14 +862,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 						sp_runtime::DispatchError::CannotLookup =>
 							return Err(Error::<T>::CannotLookup),
 						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-						sp_runtime::DispatchError::Module {
-							index: _,
-							error: _,
-							message: Some(m),
-						} => {
-							log::error!("Module Error: {:?}", m);
-							return Err(Error::<T>::Module)
-						},
+						sp_runtime::DispatchError::TooManyConsumers =>
+							return Err(Error::<T>::TooManyConsumers),
 						sp_runtime::DispatchError::ConsumerRemaining =>
 							return Err(Error::<T>::ConsumerRemaining),
 						sp_runtime::DispatchError::NoProviders =>
@@ -884,7 +871,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 						sp_runtime::DispatchError::Arithmetic(_) =>
 							return Err(Error::<T>::Arithmetic),
-						sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+						sp_runtime::DispatchError::Module(_) =>
 							return Err(Error::<T>::Arithmetic),
 					},
 				}
@@ -920,7 +907,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		request_id: Self::RequestId,
 		test_result_success: bool,
 	) -> Result<Self::ServiceInvoice, Self::Error> {
-		if admin != AdminKey::<T>::get() {
+		if admin != AdminKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -960,16 +947,14 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-						log::error!("Module Error: {:?}", m);
-						return Err(Error::<T>::Module)
-					},
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
 					sp_runtime::DispatchError::ConsumerRemaining =>
 						return Err(Error::<T>::ConsumerRemaining),
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+					sp_runtime::DispatchError::Module(_) =>
 						return Err(Error::<T>::Arithmetic),
 				},
 			}
@@ -987,16 +972,14 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining =>
 					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
+				sp_runtime::DispatchError::Module(_) =>
 					return Err(Error::<T>::Arithmetic),
 			},
 		}
@@ -1031,7 +1014,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != AdminKey::<T>::get() {
+		if account_id.clone() != AdminKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 

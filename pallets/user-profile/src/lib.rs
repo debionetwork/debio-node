@@ -59,26 +59,25 @@ pub mod pallet {
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub admin_key: T::AccountId,
+		pub phantom: PhantomData<T>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { admin_key: Default::default() }
+			Self { phantom: PhantomData }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-		fn build(&self) {
-			AdminKey::<T>::put(&self.admin_key);
-		}
+		fn build(&self) {}
 	}
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(PhantomData<T>);
 
 	#[pallet::hooks]
@@ -92,7 +91,7 @@ pub mod pallet {
 	// ----- Storage ------------------
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
-	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn eth_address_by_account_id)]
@@ -165,7 +164,7 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let admin = ensure_signed(origin)?;
 
-			ensure!(admin == AdminKey::<T>::get(), Error::<T>::Unauthorized);
+			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
 
 			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
 				&account_id,
@@ -231,7 +230,7 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != AdminKey::<T>::get() {
+		if account_id.clone() != AdminKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
