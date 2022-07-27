@@ -55,7 +55,7 @@ genetic-data = { path = '../../genetic-data', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.130" }
+serde = { default-features = false, version = "1.0.136" }
 sp-core = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 sp-runtime = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 

@@ -5,12 +5,12 @@ use sc_sync_state_rpc::LightSyncStateExtension;
 
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use sp_consensus_babe::AuthorityId as BabeId;
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
+use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_octopus_appchain::AuthorityId as OctopusId;
+use pallet_octopus_appchain::sr25519::AuthorityId as OctopusId;
 
 use debio_runtime::{
 	currency::{OCTS, UNITS as DBIO},
@@ -87,12 +87,12 @@ pub fn session_keys(
 
 /// Helper function to generate appchain config
 pub fn appchain_config(
-	relay_contract: &str,
-	asset_id_by_name: &str,
+	anchor_contract: &str,
+	asset_id_by_token_id: &str,
 	premined_amount: Balance,
 	era_payout: Balance,
 ) -> (String, String, Balance, Balance) {
-	(relay_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
+	(anchor_contract.to_string(), asset_id_by_token_id.to_string(), premined_amount, era_payout)
 }
 
 /// Helper function to generate an properties
@@ -544,7 +544,7 @@ fn genesis(
 		im_online: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
 			anchor_contract: appchain_config.0,
-			asset_id_by_name: vec![(appchain_config.1, 0)],
+			asset_id_by_token_id: vec![(appchain_config.1, 0)],
 			premined_amount: appchain_config.2,
 			validators: initial_authorities.iter().map(|x| (x.0.clone(), x.6)).collect(),
 		},

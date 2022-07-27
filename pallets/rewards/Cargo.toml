@@ -33,7 +33,7 @@ frame-benchmarking = { version = "4.0.0-dev", default-features = false, git = "h
 pallet-balances = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.130" }
+serde = { default-features = false, version = "1.0.136" }
 
 [features]
 default = ['std']

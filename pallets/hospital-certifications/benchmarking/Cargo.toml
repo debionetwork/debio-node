@@ -31,7 +31,7 @@ primitives-area-code = { path = '../../../primitives/area-code', default-feature
 traits-hospital-certifications = { path = '../../hospital-certifications/traits', default-features = false }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.130" }
+serde = { default-features = false, version = "1.0.136" }
 
 [features]
 default = ['std']

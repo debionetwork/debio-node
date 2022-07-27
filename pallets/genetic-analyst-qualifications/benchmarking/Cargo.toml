@@ -32,7 +32,7 @@ primitives-area-code = { path = '../../../primitives/area-code', default-feature
 traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.130" }
+serde = { default-features = false, version = "1.0.136" }
 
 [features]
 default = ['std']

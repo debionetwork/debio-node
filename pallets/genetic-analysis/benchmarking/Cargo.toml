@@ -46,7 +46,7 @@ traits-genetic-data = { path = '../../genetic-data/traits', default-features = f
 traits-user-profile = { path = '../../user-profile/traits', default-features = false }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.130" }
+serde = { default-features = false, version = "1.0.136" }
 
 [features]
 default = ['std']
