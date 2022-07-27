@@ -7,6 +7,21 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use beefy_primitives::{crypto::AuthorityId as BeefyId, mmr::MmrLeafVersion};
+use codec::Encode;
+use frame_support::{
+	construct_runtime, parameter_types,
+	traits::{Everything, KeyOwnerProofSystem},
+	weights::{
+		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
+		DispatchClass, IdentityFee, Weight,
+	},
+	PalletId,
+};
+use frame_system::{
+	limits::{BlockLength, BlockWeights},
+	offchain, ChainContext, CheckEra, CheckGenesis, CheckNonce, CheckSpecVersion, CheckTxVersion,
+	CheckWeight, EnsureRoot,
+};
 use sp_api::impl_runtime_apis;
 use sp_consensus_babe::{
 	AllowedSlots::PrimaryAndSecondaryVRFSlots, BabeEpochConfiguration, BabeGenesisConfiguration,
@@ -29,21 +44,6 @@ use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
-use codec::Encode;
-use frame_support::{
-	construct_runtime, parameter_types,
-	traits::{Everything, KeyOwnerProofSystem},
-	weights::{
-		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
-		DispatchClass, IdentityFee, Weight,
-	},
-	PalletId,
-};
-use frame_system::{
-	limits::{BlockLength, BlockWeights},
-	offchain, ChainContext, CheckEra, CheckGenesis, CheckNonce, CheckSpecVersion, CheckTxVersion,
-	CheckWeight, EnsureRoot,
-};
 
 use pallet_babe::{
 	AuthorityId as BabeId, EquivocationHandler as BabeEquivocationHandler, ExternalTrigger,

@@ -592,8 +592,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) =>
-					Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
 			},
 		}
 	}
@@ -687,8 +686,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) =>
-					Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
 			},
 		}
 	}
@@ -834,8 +832,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module(_) =>
-						return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 				},
 			}
 		} else {
@@ -871,8 +868,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 						sp_runtime::DispatchError::Arithmetic(_) =>
 							return Err(Error::<T>::Arithmetic),
-						sp_runtime::DispatchError::Module(_) =>
-							return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 					},
 				}
 			}
@@ -954,8 +950,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module(_) =>
-						return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 				},
 			}
 		}
@@ -979,8 +974,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) =>
-					return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
