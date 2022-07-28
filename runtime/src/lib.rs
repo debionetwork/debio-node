@@ -56,7 +56,7 @@ use pallet_grandpa::{
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_mmr_primitives as mmr;
-use pallet_octopus_appchain::AuthorityId as OctopusId;
+use pallet_octopus_appchain::sr25519::AuthorityId as OctopusId;
 use pallet_octopus_lpos::{EraIndex, ExposureOf};
 use pallet_session::{historical as pallet_session_historical, FindAccountFromAuthorIndex};
 use pallet_session_historical::NoteHistoricalRoot;
@@ -110,6 +110,7 @@ pub type Executive = frame_executive::Executive<
 >;
 pub type ClassId = u128;
 pub type InstanceId = u128;
+pub type OctopusAssetId = u32;
 pub type OctopusAssetBalance = u128;
 
 pub struct OctopusAppCrypto;
@@ -142,6 +143,25 @@ mod benches {
 		[genetic_analysis, GeneticAnalysis]
 		[service_request, ServiceRequest]
 		[genetic_analysis_orders, GeneticAnalysisOrders]
+		[labs, LabsBench::<Runtime>]
+		[services, ServicesBench::<Runtime>]
+		[certifications, CertificationsBench::<Runtime>]
+		[orders, OrdersBench::<Runtime>]
+		[electronic_medical_record, ElectronicMedicalRecord]
+		[hospitals, Hospitals]
+		[hospital_certifications, HospitalCertificationsBench::<Runtime>]
+		[doctors, Doctors]
+		[doctor_certifications, DoctorCertificationsBench::<Runtime>]
+		[genetic_analysts, GeneticAnalystsBench::<Runtime>]
+		[genetic_analyst_services, GeneticAnalystServicesBench::<Runtime>]
+		[genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>]
+		[user_profile, UserProfile]
+		[rewards, Rewards]
+		[service_request, ServiceRequestBench::<Runtime>]
+		[genetic_data, GeneticData]
+		[genetic_testing, GeneticTestingBench::<Runtime>]
+		[genetic_analysis_orders, GeneticAnalysisOrdersBench::<Runtime>]
+		[genetic_analysis, GeneticAnalysisBench::<Runtime>]
 	);
 }
 
@@ -540,6 +560,7 @@ impl pallet_octopus_appchain::Config for Runtime {
 	type Assets = OctopusAssets;
 	type AssetBalance = OctopusAssetBalance;
 	type AssetIdByTokenId = OctopusAppchain;
+	type AssetId = OctopusAssetId;
 	type AuthorityId = OctopusId;
 	type AppCrypto = OctopusAppCrypto;
 	type Call = Call;

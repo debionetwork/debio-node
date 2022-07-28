@@ -48,7 +48,7 @@ certifications = { path = '../../certifications', default-features = false }
 genetic-testing = { path = '../../genetic-testing', default-features = false }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.119" }
+serde = { default-features = false, version = "1.0.136" }
 
 [features]
 default = ['std']
