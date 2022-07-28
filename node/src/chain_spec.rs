@@ -5,7 +5,7 @@ use sc_sync_state_rpc::LightSyncStateExtension;
 
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use sp_consensus_babe::AuthorityId as BabeId;
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
@@ -229,6 +229,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-staging-testnet"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -352,6 +353,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-development-testnet"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -425,6 +427,7 @@ pub fn local_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-local"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -487,6 +490,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-development"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -550,18 +554,18 @@ fn genesis(
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
 		octopus_assets: Default::default(),
-		sudo: SudoConfig { key: root_key },
-		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
-		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
+		sudo: SudoConfig { key: Some(root_key) },
+		labs: LabsConfig { lab_verifier_key: Some(api_admin_key.clone()) },
+		orders: OrdersConfig { escrow_key: Some(api_admin_key.clone()) },
 		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
 		genetic_analysts: GeneticAnalystsConfig {
-			genetic_analyst_verifier_key: api_admin_key.clone(),
+			genetic_analyst_verifier_key: Some(api_admin_key.clone()),
 		},
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig {
-			escrow_key: api_admin_key.clone(),
-			treasury_key,
+			escrow_key: Some(api_admin_key.clone()),
+			treasury_key: Some(treasury_key),
 		},
-		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
-		user_profile: UserProfileConfig { admin_key: api_admin_key },
+		service_request: ServiceRequestConfig { admin_key: Some(api_admin_key.clone()) },
+		user_profile: UserProfileConfig { admin_key: Some(api_admin_key) },
 	}
 }

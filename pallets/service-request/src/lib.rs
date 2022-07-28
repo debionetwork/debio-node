@@ -184,19 +184,23 @@ pub mod pallet {
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub phantom: PhantomData<T>,
+		pub admin_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { phantom: PhantomData }
+			Self { admin_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-		fn build(&self) {}
+		fn build(&self) {
+			if let Some(ref admin_key) = self.admin_key {
+				AdminKey::<T>::put(admin_key);
+			}
+		}
 	}
 
 	#[pallet::event]
@@ -586,8 +590,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::TooManyConsumers =>
-					return Err(Error::<T>::TooManyConsumers),
+				sp_runtime::DispatchError::TooManyConsumers => Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining => Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),
@@ -680,8 +683,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::TooManyConsumers =>
-					return Err(Error::<T>::TooManyConsumers),
+				sp_runtime::DispatchError::TooManyConsumers => Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining => Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => Err(Error::<T>::Token),

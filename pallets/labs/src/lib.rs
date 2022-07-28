@@ -273,19 +273,22 @@ pub mod pallet {
 	// ----- Genesis Configs ------------------
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub phantom: PhantomData<T>,
+		pub lab_verifier_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { phantom: PhantomData }
+			Self { lab_verifier_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
+			if let Some(ref lab_verifier_key) = self.lab_verifier_key {
+				LabVerifierKey::<T>::put(lab_verifier_key);
+			}
 			UnstakeTime::<T>::put(MomentOf::<T>::default());
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 			<Pallet<T>>::set_minimum_stake_amount(50000000000000000000000u128.saturated_into());

@@ -6,9 +6,7 @@ use crate::{
 
 use std::path::PathBuf;
 
-use sc_cli::{
-	ChainSpec, Error::Service as CliErrorService, Result as CliResult, RuntimeVersion, SubstrateCli,
-};
+use sc_cli::{ChainSpec, Result as CliResult, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
 
 use debio_runtime::{Block, VERSION};
@@ -138,7 +136,7 @@ pub fn run() -> CliResult<()> {
 		None => {
 			let runner = cli.create_runner(&cli.run.base)?;
 			runner.run_node_until_exit(|config| async move {
-				service::new_full(config, &cli).map_err(sc_cli::Error::Service)
+				service::new_full(config).map_err(sc_cli::Error::Service)
 			})
 		},
 	}

@@ -59,19 +59,23 @@ pub mod pallet {
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub phantom: PhantomData<T>,
+		pub admin_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { phantom: PhantomData }
+			Self { admin_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-		fn build(&self) {}
+		fn build(&self) {
+			if let Some(ref admin_key) = self.admin_key {
+				AdminKey::<T>::put(admin_key);
+			}
+		}
 	}
 
 	// ----- This is template code, every pallet needs this ---

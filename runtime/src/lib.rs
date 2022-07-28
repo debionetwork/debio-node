@@ -7,10 +7,9 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use beefy_primitives::{crypto::AuthorityId as BeefyId, mmr::MmrLeafVersion};
-use codec::Encode;
 use frame_support::{
 	construct_runtime, parameter_types,
-	traits::{ConstU128, ConstU16, ConstU32, Everything, KeyOwnerProofSystem},
+	traits::{ConstU128, ConstU16, Everything, KeyOwnerProofSystem},
 	weights::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 		DispatchClass, IdentityFee, Weight,
@@ -23,12 +22,8 @@ use frame_system::{
 	CheckSpecVersion, CheckTxVersion, CheckWeight, EnsureRoot,
 };
 use sp_api::impl_runtime_apis;
-use sp_consensus_babe::{
-	AllowedSlots::PrimaryAndSecondaryVRFSlots, BabeEpochConfiguration, BabeGenesisConfiguration,
-	Epoch, EquivocationProof, OpaqueKeyOwnershipProof, Slot,
-};
+use sp_consensus_babe::{AllowedSlots::PrimaryAndSecondaryVRFSlots, BabeEpochConfiguration};
 use sp_core::{crypto::KeyTypeId, sr25519, Decode, Encode, OpaqueMetadata, RuntimeDebug, H256};
-use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
@@ -124,44 +119,29 @@ mod benches {
 	define_benchmarks!(
 		[frame_benchmarking, BaselineBench::<Runtime>]
 		[frame_system, SystemBench::<Runtime>]
-		[labs, Labs]
-		[services, Services]
-		[certifications, Certifications]
-		[orders, Orders]
 		[electronic_medical_record, ElectronicMedicalRecord]
 		[hospitals, Hospitals]
-		[hospital_certifications, HospitalCertifications]
 		[doctors, Doctors]
-		[doctor_certifications, DoctorCertifications]
-		[genetic_analysts, GeneticAnalysts]
-		[genetic_analyst_services, GeneticAnalystServices]
-		[genetic_analyst_qualifications, GeneticAnalystQualifications]
+		[genetic_data, GeneticData]
+		[electronic_medical_record, ElectronicMedicalRecord]
+		[hospitals, Hospitals]
+		[doctors, Doctors]
 		[user_profile, UserProfile]
 		[rewards, Rewards]
 		[genetic_data, GeneticData]
-		[genetic_testing, GeneticTesting]
-		[genetic_analysis, GeneticAnalysis]
-		[service_request, ServiceRequest]
-		[genetic_analysis_orders, GeneticAnalysisOrders]
-		[labs, LabsBench::<Runtime>]
-		[services, ServicesBench::<Runtime>]
-		[certifications, CertificationsBench::<Runtime>]
-		[orders, OrdersBench::<Runtime>]
-		[electronic_medical_record, ElectronicMedicalRecord]
-		[hospitals, Hospitals]
-		[hospital_certifications, HospitalCertificationsBench::<Runtime>]
-		[doctors, Doctors]
-		[doctor_certifications, DoctorCertificationsBench::<Runtime>]
-		[genetic_analysts, GeneticAnalystsBench::<Runtime>]
-		[genetic_analyst_services, GeneticAnalystServicesBench::<Runtime>]
-		[genetic_analyst_qualifications, GeneticAnalystQualificationsBench::<Runtime>]
-		[user_profile, UserProfile]
-		[rewards, Rewards]
-		[service_request, ServiceRequestBench::<Runtime>]
-		[genetic_data, GeneticData]
-		[genetic_testing, GeneticTestingBench::<Runtime>]
-		[genetic_analysis_orders, GeneticAnalysisOrdersBench::<Runtime>]
-		[genetic_analysis, GeneticAnalysisBench::<Runtime>]
+		[labs_benchmarking, LabsBench::<Runtime>]
+		[services_benchmarking, ServicesBench::<Runtime>]
+		[certifications_benchmarking, CertificationsBench::<Runtime>]
+		[orders_benchmarking, OrdersBench::<Runtime>]
+		[hospital_certifications_benchmarking, HospitalCertificationsBench::<Runtime>]
+		[doctor_certifications_benchmarking, DoctorCertificationsBench::<Runtime>]
+		[genetic_analysts_benchmarking, GeneticAnalystsBench::<Runtime>]
+		[genetic_analyst_services_benchmarking, GeneticAnalystServicesBench::<Runtime>]
+		[genetic_analyst_qualifications_benchmarking, GeneticAnalystQualificationsBench::<Runtime>]
+		[service_request_benchmarking, ServiceRequestBench::<Runtime>]
+		[genetic_testing_benchmarking, GeneticTestingBench::<Runtime>]
+		[genetic_analysis_orders_benchmarking, GeneticAnalysisOrdersBench::<Runtime>]
+		[genetic_analysis_benchmarking, GeneticAnalysisBench::<Runtime>]
 	);
 }
 
@@ -515,7 +495,6 @@ impl pallet_uniques::Config<pallet_uniques::Instance1> for Runtime {
 	type DepositPerByte = MetadataDepositPerByte;
 	type Event = Event;
 	type ForceOrigin = EnsureRoot<AccountId>;
-	type AssetAccountDeposit = ConstU128<{ currency::DOLLARS }>;
 	type InstanceDeposit = InstanceDeposit;
 	type InstanceId = InstanceId;
 	type KeyLimit = KeyLimit;
@@ -539,6 +518,7 @@ impl pallet_assets::Config<pallet_assets::Instance1> for Runtime {
 	type AssetId = OctopusAssetId;
 	type Currency = Balances;
 	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU128<{ currency::DOLLARS }>;
 	type AssetDeposit = AssetDeposit;
 	type MetadataDepositBase = MetadataDepositBase;
 	type MetadataDepositPerByte = MetadataDepositPerByte;
@@ -1149,12 +1129,28 @@ impl_runtime_apis! {
 			Vec<frame_benchmarking::BenchmarkList>,
 			Vec<frame_support::traits::StorageInfo>,
 		) {
-			use frame_benchmarking::{Benchmarking, BenchmarkList};
+			use frame_benchmarking::{baseline, Benchmarking, BenchmarkList};
 			use frame_support::traits::StorageInfoTrait;
+			use frame_system_benchmarking::Pallet as SystemBench;
+			use baseline::Pallet as BaselineBench;
+
+			// Local Pallets
+			use services_benchmarking::Pallet as ServicesBench;
+			use certifications_benchmarking::Pallet as CertificationsBench;
+			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use genetic_analyst_services_benchmarking::Pallet as GeneticAnalystServicesBench;
+			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
+			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
+			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
+			use labs_benchmarking::Pallet as LabsBench;
+			use service_request_benchmarking::Pallet as ServiceRequestBench;
+			use genetic_analysts_benchmarking::Pallet as GeneticAnalystsBench;
+			use orders_benchmarking::Pallet as OrdersBench;
+			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
-
-			list_benchmark!(list, extra);
+			list_benchmarks!(list, extra);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -1164,7 +1160,42 @@ impl_runtime_apis! {
 		fn dispatch_benchmark(
 			config: frame_benchmarking::BenchmarkConfig
 		) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
-			use frame_benchmarking::{Benchmarking, BenchmarkBatch, TrackedStorageKey};
+			use frame_benchmarking::{baseline, Benchmarking, BenchmarkBatch, TrackedStorageKey};
+			use frame_system_benchmarking::Pallet as SystemBench;
+			use baseline::Pallet as BaselineBench;
+
+			// Local Pallets
+			use services_benchmarking::Pallet as ServicesBench;
+			use service_request_benchmarking::Pallet as ServiceRequestBench;
+			use certifications_benchmarking::Pallet as CertificationsBench;
+			use doctor_certifications_benchmarking::Pallet as DoctorCertificationsBench;
+			use genetic_analysts_benchmarking::Pallet as GeneticAnalystsBench;
+			use genetic_analyst_services_benchmarking::Pallet as GeneticAnalystServicesBench;
+			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
+			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
+			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
+			use labs_benchmarking::Pallet as LabsBench;
+			use orders_benchmarking::Pallet as OrdersBench;
+			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
+
+			impl frame_system_benchmarking::Config for Runtime {}
+			impl baseline::Config for Runtime {}
+
+			// Local Pallets
+			impl services_benchmarking::Config for Runtime {}
+			impl certifications_benchmarking::Config for Runtime {}
+			impl doctor_certifications_benchmarking::Config for Runtime {}
+			impl genetic_analysts_benchmarking::Config for Runtime {}
+			impl genetic_analyst_services_benchmarking::Config for Runtime {}
+			impl genetic_analyst_qualifications_benchmarking::Config for Runtime {}
+			impl hospital_certifications_benchmarking::Config for Runtime {}
+			impl genetic_testing_benchmarking::Config for Runtime {}
+			impl genetic_analysis_benchmarking::Config for Runtime {}
+			impl orders_benchmarking::Config for Runtime {}
+			impl genetic_analysis_orders_benchmarking::Config for Runtime {}
+			impl labs_benchmarking::Config for Runtime {}
+			impl service_request_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
@@ -1181,7 +1212,6 @@ impl_runtime_apis! {
 
 			let mut batches = Vec::<BenchmarkBatch>::new();
 			let params = (&config, &whitelist);
-
 			add_benchmarks!(params, batches);
 
 			Ok(batches)

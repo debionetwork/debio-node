@@ -205,19 +205,26 @@ pub mod pallet {
 	// ----- Genesis Configs ------------------
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub phantom: PhantomData<T>,
+		pub escrow_key: Option<T::AccountId>,
+		pub treasury_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { phantom: PhantomData }
+			Self { escrow_key: None, treasury_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
+			if let Some(ref escrow_key) = self.escrow_key {
+				EscrowKey::<T>::put(escrow_key);
+			}
+			if let Some(ref treasury_key) = self.treasury_key {
+				TreasuryKey::<T>::put(treasury_key);
+			}
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 		}
 	}

@@ -30,7 +30,7 @@ use pallet_transaction_payment_rpc::{
 	TransactionPayment, TransactionPaymentApi, TransactionPaymentRuntimeApi,
 };
 
-use myriad_runtime::{opaque::Block, AccountId, Balance, BlockNumber, Hash, Index};
+use debio_runtime::{opaque::Block, AccountId, Balance, BlockNumber, Hash, Index};
 
 use jsonrpc_core::IoHandler;
 

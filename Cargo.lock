@@ -1356,6 +1356,7 @@ dependencies = [
  "frame-benchmarking-cli",
  "frame-system",
  "frame-system-benchmarking",
+ "hex-literal",
  "jsonrpc-core",
  "pallet-im-online",
  "pallet-mmr-rpc",

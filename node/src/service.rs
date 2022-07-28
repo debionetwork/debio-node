@@ -40,7 +40,7 @@ use beefy_gadget::{
 	BeefyParams,
 };
 
-use myriad_runtime::{opaque::Block, RuntimeApi};
+use debio_runtime::{opaque::Block, RuntimeApi};
 
 /// The full client type definition.
 type FullClient = TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
@@ -75,11 +75,11 @@ impl NativeExecutionDispatch for ExecutorDispatch {
 	type ExtendHostFunctions = ();
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		myriad_runtime::api::dispatch(method, data)
+		debio_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> NativeVersion {
-		myriad_runtime::native_version()
+		debio_runtime::native_version()
 	}
 }
 
