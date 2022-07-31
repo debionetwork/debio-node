@@ -211,6 +211,8 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 			0
 		));
 
+		PalletAccount::<Test>::put(0);
+
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -382,6 +384,8 @@ fn set_genetic_analysis_order_paid_works() {
 			0
 		));
 
+		PalletAccount::<Test>::put(0);
+
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -503,6 +507,7 @@ fn fulfill_genetic_analysis_order_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 10000, 0));
 
+		PalletAccount::<Test>::put(0);
 		EscrowKey::<Test>::put(1);
 		TreasuryKey::<Test>::put(2);
 
@@ -660,6 +665,7 @@ fn set_genetic_analysis_order_refunded_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 
+		PalletAccount::<Test>::put(0);
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
@@ -1230,6 +1236,8 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 			0
 		));
 
+		EscrowKey::<Test>::put(0);
+
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
 			GeneticAnalystInfo {
@@ -1528,6 +1536,7 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 
+		PalletAccount::<Test>::put(0);
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
@@ -1617,7 +1626,7 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
-			PalletAccount::<Test>::get(),
+			PalletAccount::<Test>::get().unwrap(),
 			1,
 			0
 		));
@@ -1748,6 +1757,7 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 			0
 		));
 
+		PalletAccount::<Test>::put(0);
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
@@ -1837,7 +1847,7 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
-			PalletAccount::<Test>::get(),
+			PalletAccount::<Test>::get().unwrap(),
 			1000000000000000000u128.saturated_into(),
 			0
 		));
@@ -1856,6 +1866,8 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 fn call_event_should_work() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		System::set_block_number(1);
+		PalletAccount::<Test>::put(0);
+		TreasuryKey::<Test>::put(0);
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
 			Origin::signed(1),
@@ -2097,11 +2109,11 @@ fn update_escrow_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		EscrowKey::<Test>::put(2);
 
-		assert_eq!(GeneticAnalysisOrders::admin_key(), 2);
+		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(2));
 
 		assert_ok!(GeneticAnalysisOrders::update_escrow_key(Origin::signed(2), 1,));
 
-		assert_eq!(GeneticAnalysisOrders::admin_key(), 1);
+		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(1));
 	})
 }
 
@@ -2110,7 +2122,7 @@ fn sudo_update_escrow_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysisOrders::sudo_update_escrow_key(Origin::root(), 1));
 
-		assert_eq!(GeneticAnalysisOrders::admin_key(), 1);
+		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(1));
 	})
 }
 
@@ -2119,11 +2131,11 @@ fn update_treasury_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		TreasuryKey::<Test>::put(2);
 
-		assert_eq!(GeneticAnalysisOrders::treasury_key(), 2);
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(2));
 
 		assert_ok!(GeneticAnalysisOrders::update_treasury_key(Origin::signed(2), 1,));
 
-		assert_eq!(GeneticAnalysisOrders::treasury_key(), 1);
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(1));
 	})
 }
 
@@ -2132,6 +2144,6 @@ fn sudo_update_treasury_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysisOrders::sudo_update_treasury_key(Origin::root(), 1));
 
-		assert_eq!(GeneticAnalysisOrders::treasury_key(), 1);
+		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(1));
 	})
 }

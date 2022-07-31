@@ -403,6 +403,8 @@ mod tests {
 	#[test]
 	fn cant_update_lab_verification_status_when_not_admin() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			LabVerifierKey::<Test>::put(1);
+
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
 				LabInfo {
@@ -669,6 +671,8 @@ mod tests {
 	#[test]
 	fn stake_lab_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
@@ -747,6 +751,8 @@ mod tests {
 	#[test]
 	fn cant_stake_lab_when_already_staked() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
@@ -998,11 +1004,11 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			LabVerifierKey::<Test>::put(2);
 
-			assert_eq!(Labs::admin_key(), 2);
+			assert_eq!(Labs::admin_key(), Some(2));
 
 			assert_ok!(Labs::update_admin_key(Origin::signed(2), 1,));
 
-			assert_eq!(Labs::admin_key(), 1);
+			assert_eq!(Labs::admin_key(), Some(1));
 		})
 	}
 
@@ -1023,13 +1029,15 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::sudo_update_admin_key(Origin::root(), 1));
 
-			assert_eq!(Labs::admin_key(), 1);
+			assert_eq!(Labs::admin_key(), Some(1));
 		})
 	}
 
 	#[test]
 	fn cant_sudo_update_admin_key_when_not_sudo() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			LabVerifierKey::<Test>::put(1);
+
 			assert_noop!(
 				Labs::update_admin_key(Origin::signed(2), 1,),
 				Error::<Test>::Unauthorized
@@ -1669,6 +1677,7 @@ mod tests {
 	#[test]
 	fn cant_unstake_lab_when_insufficient_pallet_funds() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Balances::set_balance(
@@ -1709,7 +1718,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
-				PalletAccount::<Test>::get(),
+				PalletAccount::<Test>::get().unwrap(),
 				0u128.saturated_into(),
 				0
 			));

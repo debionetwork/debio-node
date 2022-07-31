@@ -485,6 +485,7 @@ mod tests {
 				}
 			));
 
+			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
@@ -603,6 +604,8 @@ mod tests {
 	#[test]
 	fn cant_update_genetic_analyst_verification_status_when_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			GeneticAnalystVerifierKey::<Test>::put(4);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -723,6 +726,8 @@ mod tests {
 				0
 			));
 
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -747,7 +752,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
-				PalletAccount::<Test>::get(),
+				PalletAccount::<Test>::get().unwrap(),
 				0u128.saturated_into(),
 				0
 			));
@@ -773,6 +778,7 @@ mod tests {
 				0
 			));
 
+			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
@@ -846,6 +852,9 @@ mod tests {
 	#[test]
 	fn cant_stake_genetic_analyst_when_already_staked() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(4);
+			GeneticAnalystVerifierKey::<Test>::put(1);
+
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
@@ -1103,11 +1112,11 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
-			assert_eq!(GeneticAnalysts::admin_key(), 2);
+			assert_eq!(GeneticAnalysts::admin_key(), Some(2));
 
 			assert_ok!(GeneticAnalysts::update_admin_key(Origin::signed(2), 1,));
 
-			assert_eq!(GeneticAnalysts::admin_key(), 1);
+			assert_eq!(GeneticAnalysts::admin_key(), Some(1));
 		})
 	}
 
@@ -1128,13 +1137,14 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::sudo_update_admin_key(Origin::root(), 1));
 
-			assert_eq!(GeneticAnalysts::admin_key(), 1);
+			assert_eq!(GeneticAnalysts::admin_key(), Some(1));
 		})
 	}
 
 	#[test]
 	fn cant_sudo_update_admin_key_when_not_sudo() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			GeneticAnalystVerifierKey::<Test>::put(4);
 			assert_noop!(
 				GeneticAnalysts::update_admin_key(Origin::signed(2), 1,),
 				Error::<Test>::Unauthorized
@@ -1170,6 +1180,7 @@ mod tests {
 				}
 			));
 
+			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
@@ -1246,6 +1257,7 @@ mod tests {
 				}
 			));
 
+			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
@@ -2224,6 +2236,7 @@ mod tests {
 	#[test]
 	fn cant_unstake_genetic_analyst_when_insufficient_pallet_funds() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(Balances::set_balance(
@@ -2262,7 +2275,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
-				PalletAccount::<Test>::get(),
+				PalletAccount::<Test>::get().unwrap(),
 				0u128.saturated_into(),
 				0
 			));

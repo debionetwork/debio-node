@@ -655,7 +655,7 @@ fn cant_create_request_when_balance_not_enough() {
 				String::from("Vaksin").into_bytes(),
 				10
 			),
-			Error::<Test>::Module
+			Error::<Test>::Arithmetic
 		);
 	})
 }
@@ -1187,6 +1187,8 @@ fn cant_retrieve_unstake_when_not_unstaked() {
 #[test]
 fn cant_finalize_request_when_unauthorized() {
 	<ExternalityBuilder>::default().existential_deposit(0).build().execute_with(|| {
+		AdminKey::<Test>::put(2);
+
 		assert_noop!(
 			ServiceRequest::finalize_request(
 				Origin::signed(1),
@@ -1441,10 +1443,10 @@ fn update_admin_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(0).build().execute_with(|| {
 		AdminKey::<Test>::put(2);
 
-		assert_eq!(ServiceRequest::admin_key(), 2);
+		assert_eq!(ServiceRequest::admin_key(), Some(2));
 
 		assert_ok!(ServiceRequest::update_admin_key(Origin::signed(2), 1,));
 
-		assert_eq!(ServiceRequest::admin_key(), 1);
+		assert_eq!(ServiceRequest::admin_key(), Some(1));
 	})
 }
