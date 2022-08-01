@@ -66,7 +66,7 @@ benchmarks! {
 	)
 
 	retrieve_unstaked_amount {
-		let caller: T::AccountId = AdminKey::<T>::get();
+		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 
 		let customer: T::AccountId = account("customer", 0, SEED);
 		let customer_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
@@ -115,7 +115,7 @@ benchmarks! {
 		let _add_labs = Labs::<T>::register_lab(caller_origin, lab);
 
 		// verified lab
-		let admin_key: T::AccountId = LabVerifierKey::<T>::get();
+		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
 		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, caller.clone(), VerificationStatus::Verified);
 
@@ -189,7 +189,7 @@ benchmarks! {
 		let _add_lab = Labs::<T>::register_lab(lab_origin.clone(), lab);
 
 		// verified lab
-		let admin_key: T::AccountId = LabVerifierKey::<T>::get();
+		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
 		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), VerificationStatus::Verified);
 
@@ -215,7 +215,7 @@ benchmarks! {
 	)
 
 	finalize_request{
-		let caller: T::AccountId = AdminKey::<T>::get();
+		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 
 		let lab_id: T::AccountId = account("lab", 0, SEED);
 		let customer_id: T::AccountId = account("customer", 0, SEED);
@@ -241,7 +241,7 @@ benchmarks! {
 		let _add_lab = Labs::<T>::register_lab(lab_id_origin.clone(), lab);
 
 		// verified lab
-		let admin_key: T::AccountId = LabVerifierKey::<T>::get();
+		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
 		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), VerificationStatus::Verified);
 
@@ -291,7 +291,7 @@ benchmarks! {
 	)
 
 	update_admin_key {
-		let caller: T::AccountId = AdminKey::<T>::get();
+		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_admin_key(
 		RawOrigin::Signed(caller),

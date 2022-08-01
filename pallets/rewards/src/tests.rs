@@ -11,7 +11,7 @@ fn reward_funds_works() {
 
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
-			PalletAccount::<Test>::get(),
+			PalletAccount::<Test>::get().unwrap(),
 			100,
 			0
 		));
@@ -19,7 +19,7 @@ fn reward_funds_works() {
 
 		System::assert_last_event(Event::Rewards(crate::Event::RewardFunds(2, 10, 1)));
 
-		assert_eq!(Balances::free_balance(PalletAccount::<Test>::get()), 90);
+		assert_eq!(Balances::free_balance(PalletAccount::<Test>::get().unwrap()), 90);
 	})
 }
 
@@ -32,7 +32,7 @@ fn reward_funds_bad_signature() {
 
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
-			PalletAccount::<Test>::get(),
+			PalletAccount::<Test>::get().unwrap(),
 			1,
 			0
 		));
@@ -56,11 +56,11 @@ fn update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		RewarderKey::<Test>::put(2);
 
-		assert_eq!(Rewards::admin_key(), 2);
+		assert_eq!(Rewards::admin_key(), Some(2));
 
 		assert_ok!(Rewards::update_admin_key(Origin::signed(2), 1,));
 
-		assert_eq!(Rewards::admin_key(), 1);
+		assert_eq!(Rewards::admin_key(), Some(1));
 	})
 }
 
@@ -69,6 +69,6 @@ fn sudo_update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Rewards::sudo_update_admin_key(Origin::root(), 1));
 
-		assert_eq!(Rewards::admin_key(), 1);
+		assert_eq!(Rewards::admin_key(), Some(1));
 	})
 }

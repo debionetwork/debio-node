@@ -10,7 +10,7 @@ use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_octopus_appchain::AuthorityId as OctopusId;
+use pallet_octopus_appchain::sr25519::AuthorityId as OctopusId;
 
 use debio_runtime::{
 	currency::{OCTS, UNITS as DBIO},
@@ -87,12 +87,12 @@ pub fn session_keys(
 
 /// Helper function to generate appchain config
 pub fn appchain_config(
-	relay_contract: &str,
-	asset_id_by_name: &str,
+	anchor_contract: &str,
+	asset_id_by_token_id: &str,
 	premined_amount: Balance,
 	era_payout: Balance,
 ) -> (String, String, Balance, Balance) {
-	(relay_contract.to_string(), asset_id_by_name.to_string(), premined_amount, era_payout)
+	(anchor_contract.to_string(), asset_id_by_token_id.to_string(), premined_amount, era_payout)
 }
 
 /// Helper function to generate an properties
@@ -229,6 +229,7 @@ pub fn staging_testnet_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-staging-testnet"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -352,6 +353,7 @@ pub fn development_testnet_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-development-testnet"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -425,6 +427,7 @@ pub fn local_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-local"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -487,6 +490,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 		None,
 		// Protocol ID
 		Some("debio-development"),
+		None,
 		// Properties
 		Some(properties),
 		// Extensions
@@ -544,24 +548,24 @@ fn genesis(
 		im_online: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
 			anchor_contract: appchain_config.0,
-			asset_id_by_name: vec![(appchain_config.1, 0)],
+			asset_id_by_token_id: vec![(appchain_config.1, 0)],
 			premined_amount: appchain_config.2,
 			validators: initial_authorities.iter().map(|x| (x.0.clone(), x.6)).collect(),
 		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
 		octopus_assets: Default::default(),
-		sudo: SudoConfig { key: root_key },
-		labs: LabsConfig { lab_verifier_key: api_admin_key.clone() },
-		orders: OrdersConfig { escrow_key: api_admin_key.clone() },
+		sudo: SudoConfig { key: Some(root_key) },
+		labs: LabsConfig { lab_verifier_key: Some(api_admin_key.clone()) },
+		orders: OrdersConfig { escrow_key: Some(api_admin_key.clone()) },
 		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
 		genetic_analysts: GeneticAnalystsConfig {
-			genetic_analyst_verifier_key: api_admin_key.clone(),
+			genetic_analyst_verifier_key: Some(api_admin_key.clone()),
 		},
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig {
-			escrow_key: api_admin_key.clone(),
-			treasury_key,
+			escrow_key: Some(api_admin_key.clone()),
+			treasury_key: Some(treasury_key),
 		},
-		service_request: ServiceRequestConfig { admin_key: api_admin_key.clone() },
-		user_profile: UserProfileConfig { admin_key: api_admin_key },
+		service_request: ServiceRequestConfig { admin_key: Some(api_admin_key.clone()) },
+		user_profile: UserProfileConfig { admin_key: Some(api_admin_key) },
 	}
 }

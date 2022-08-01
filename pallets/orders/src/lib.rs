@@ -119,6 +119,7 @@ pub mod pallet {
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
@@ -159,26 +160,28 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
-	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 	// -----------------------------------------
 
 	// ----- Genesis Configs ------------------
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub escrow_key: T::AccountId,
+		pub escrow_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { escrow_key: Default::default() }
+			Self { escrow_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
-			EscrowKey::<T>::put(&self.escrow_key);
+			if let Some(ref escrow_key) = self.escrow_key {
+				EscrowKey::<T>::put(escrow_key);
+			}
 		}
 	}
 	// ----------------------------------------
@@ -452,7 +455,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		escrow_account_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error> {
-		if escrow_account_id.clone() != EscrowKey::<T>::get() {
+		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -494,7 +497,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		escrow_account_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error> {
-		if escrow_account_id.clone() != EscrowKey::<T>::get() {
+		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -516,7 +519,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		escrow_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != EscrowKey::<T>::get() {
+		if account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 

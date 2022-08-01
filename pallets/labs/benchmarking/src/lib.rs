@@ -81,7 +81,7 @@ benchmarks! {
 	)
 
 	update_lab_verification_status {
-		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_lab = LabInfo {
@@ -130,7 +130,7 @@ benchmarks! {
 	)
 
 	stake_lab {
-		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let _ = <T as labs::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
@@ -155,7 +155,7 @@ benchmarks! {
 	)
 
 	unstake_lab {
-		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let _ = <T as labs::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
@@ -182,7 +182,7 @@ benchmarks! {
 	)
 
 	retrieve_unstake_amount {
-		let caller_admin: T::AccountId = LabVerifierKey::<T>::get();
+		let caller_admin: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let caller: T::AccountId = whitelisted_caller();
 		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
@@ -213,21 +213,21 @@ benchmarks! {
 	)
 
 	update_minimum_stake_amount {
-		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 	}: update_minimum_stake_amount(
 		RawOrigin::Signed(caller),
 		60000000000000000000000u128.saturated_into()
 	)
 
 	update_unstake_time {
-		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 	}: update_unstake_time(
 		RawOrigin::Signed(caller),
 		0u64.saturated_into()
 	)
 
 	update_admin_key {
-		let caller: T::AccountId = LabVerifierKey::<T>::get();
+		let caller: T::AccountId = LabVerifierKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_admin_key(
 		RawOrigin::Signed(caller),

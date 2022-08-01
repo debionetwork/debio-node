@@ -13,7 +13,6 @@ pub use weights::WeightInfo;
 
 pub use crate::interface::GeneticAnalystInterface;
 use frame_support::{
-	log,
 	pallet_prelude::*,
 	sp_runtime::{traits::AccountIdConversion, RuntimeDebug, SaturatedConversion},
 	traits::{Currency, ExistenceRequirement, StorageVersion},
@@ -190,6 +189,7 @@ pub mod pallet {
 	#[pallet::pallet]
 	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
@@ -225,11 +225,11 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
-	pub type GeneticAnalystVerifierKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type GeneticAnalystVerifierKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn pallet_id)]
-	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn total_staked_amount)]
@@ -247,13 +247,13 @@ pub mod pallet {
 	// ----- Genesis Configs ------------------
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub genetic_analyst_verifier_key: T::AccountId,
+		pub genetic_analyst_verifier_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { genetic_analyst_verifier_key: Default::default() }
+			Self { genetic_analyst_verifier_key: None }
 		}
 	}
 
@@ -261,12 +261,15 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 			UnstakeTime::<T>::put(MomentOf::<T>::default());
-			GeneticAnalystVerifierKey::<T>::put(&self.genetic_analyst_verifier_key);
+			if let Some(ref genetic_analyst_verifier_key) = self.genetic_analyst_verifier_key {
+				GeneticAnalystVerifierKey::<T>::put(genetic_analyst_verifier_key);
+			}
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 			<Pallet<T>>::set_minimum_stake_amount(50000000000000000000000u128.saturated_into());
 			<Pallet<T>>::set_total_staked_amount();
 		}
 	}
+	// -----------------------------------------
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -342,6 +345,7 @@ pub mod pallet {
 		BadOrigin,
 		CannotLookup,
 		ConsumerRemaining,
+		TooManyConsumers,
 		NoProviders,
 		Token,
 		Arithmetic,
@@ -617,7 +621,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		status: &Self::VerificationStatus,
 	) -> Result<Self::GeneticAnalyst, Self::Error> {
-		if genetic_analyst_verifier_key.clone() != GeneticAnalystVerifierKey::<T>::get() {
+		if genetic_analyst_verifier_key.clone() != GeneticAnalystVerifierKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -655,17 +659,14 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-						log::error!("Module Error: {:?}", m);
-						return Err(Error::<T>::Module)
-					},
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
 					sp_runtime::DispatchError::ConsumerRemaining =>
 						return Err(Error::<T>::ConsumerRemaining),
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-						return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 				},
 			}
 
@@ -734,17 +735,14 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-						log::error!("Module Error: {:?}", m);
-						return Err(Error::<T>::Module)
-					},
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
 					sp_runtime::DispatchError::ConsumerRemaining =>
 						return Err(Error::<T>::ConsumerRemaining),
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-						return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 				},
 			}
 		}
@@ -789,7 +787,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		admin_key: &T::AccountId,
 		account_id: &T::AccountId,
 	) -> Result<Self::GeneticAnalyst, Self::Error> {
-		if admin_key.clone() != GeneticAnalystVerifierKey::<T>::get() {
+		if admin_key.clone() != GeneticAnalystVerifierKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -822,17 +820,14 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining =>
 					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-					return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
@@ -869,7 +864,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		amount: Self::Balance,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get() {
+		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -882,7 +877,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		moment: Self::Moment,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get() {
+		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -895,7 +890,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		admin_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get() {
+		if account_id.clone() != GeneticAnalystVerifierKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -929,7 +924,7 @@ impl<T: Config> Pallet<T> {
 
 	/// The account ID that holds the funds
 	pub fn account_id() -> AccountIdOf<T> {
-		<PalletAccount<T>>::get()
+		<PalletAccount<T>>::get().unwrap()
 	}
 
 	pub fn get_balance_by_account_id(account_id: &AccountIdOf<T>) -> BalanceOf<T> {

@@ -22,7 +22,7 @@ benchmarks! {
 
 	admin_set_eth_address {
 		let eth_address = T::EthereumAddress::default();
-		let caller: T::AccountId = AdminKey::<T>::get();
+		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: admin_set_eth_address(
 		RawOrigin::Signed(caller),
@@ -31,7 +31,7 @@ benchmarks! {
 	)
 
 	update_admin_key {
-		let caller: T::AccountId = AdminKey::<T>::get();
+		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_admin_key(
 		RawOrigin::Signed(caller),

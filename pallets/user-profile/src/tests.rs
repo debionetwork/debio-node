@@ -43,6 +43,8 @@ fn admin_set_eth_address() {
 #[test]
 fn cant_set_eth_address_when_not_admin() {
 	ExternalityBuilder::build().execute_with(|| {
+		AdminKey::<Test>::put(2);
+
 		assert_noop!(
 			UserProfile::admin_set_eth_address(Origin::signed(1), 2, EthereumAddress([b'X'; 20])),
 			Error::<Test>::Unauthorized
@@ -74,11 +76,11 @@ fn update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		AdminKey::<Test>::put(2);
 
-		assert_eq!(UserProfile::admin_key(), 2);
+		assert_eq!(UserProfile::admin_key(), Some(2));
 
 		assert_ok!(UserProfile::update_admin_key(Origin::signed(2), 1,));
 
-		assert_eq!(UserProfile::admin_key(), 1);
+		assert_eq!(UserProfile::admin_key(), Some(1));
 	})
 }
 
@@ -87,6 +89,6 @@ fn sudo_update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(UserProfile::sudo_update_admin_key(Origin::root(), 1));
 
-		assert_eq!(UserProfile::admin_key(), 1);
+		assert_eq!(UserProfile::admin_key(), Some(1));
 	})
 }

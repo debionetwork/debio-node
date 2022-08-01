@@ -45,7 +45,7 @@ use primitives_area_code::{CityCode, CountryCode, RegionCode};
 
 benchmarks! {
 	create_order {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -93,7 +93,7 @@ benchmarks! {
 	)
 
 	cancel_order {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -151,7 +151,7 @@ benchmarks! {
 	)
 
 	set_order_paid {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -209,7 +209,7 @@ benchmarks! {
 	)
 
 	fulfill_order {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -290,7 +290,7 @@ benchmarks! {
 	)
 
 	set_order_refunded {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -360,7 +360,7 @@ benchmarks! {
 	)
 
 	update_escrow_key {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_escrow_key(
 		RawOrigin::Signed(caller),

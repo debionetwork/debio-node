@@ -6,7 +6,6 @@ use interface::GeneticAnalysisOrderInterface;
 
 use frame_support::{
 	codec::{Decode, Encode},
-	log,
 	pallet_prelude::*,
 	sp_runtime::{
 		traits::{AccountIdConversion, Hash},
@@ -142,6 +141,7 @@ pub mod pallet {
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
@@ -187,15 +187,15 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
-	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn treasury_key)]
-	pub type TreasuryKey<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type TreasuryKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn pallet_id)]
-	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn total_escrow_amount)]
@@ -205,22 +205,26 @@ pub mod pallet {
 	// ----- Genesis Configs ------------------
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub escrow_key: T::AccountId,
-		pub treasury_key: T::AccountId,
+		pub escrow_key: Option<T::AccountId>,
+		pub treasury_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { escrow_key: Default::default(), treasury_key: Default::default() }
+			Self { escrow_key: None, treasury_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
-			EscrowKey::<T>::put(&self.escrow_key);
-			TreasuryKey::<T>::put(&self.treasury_key);
+			if let Some(ref escrow_key) = self.escrow_key {
+				EscrowKey::<T>::put(escrow_key);
+			}
+			if let Some(ref treasury_key) = self.treasury_key {
+				TreasuryKey::<T>::put(treasury_key);
+			}
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 		}
 	}
@@ -299,6 +303,7 @@ pub mod pallet {
 		BadOrigin,
 		CannotLookup,
 		ConsumerRemaining,
+		TooManyConsumers,
 		NoProviders,
 		Token,
 		Arithmetic,
@@ -613,17 +618,14 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-						log::error!("Module Error: {:?}", m);
-						return Err(Error::<T>::Module)
-					},
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
 					sp_runtime::DispatchError::ConsumerRemaining =>
 						return Err(Error::<T>::ConsumerRemaining),
 					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-						return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 				},
 			}
 
@@ -654,7 +656,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		escrow_account_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		if escrow_account_id.clone() != EscrowKey::<T>::get() {
+		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -682,17 +684,14 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining =>
 					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-					return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
@@ -709,7 +708,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
 		// Only the admin can fulfill the genetic_analysis_order
-		if escrow_account_id.clone() != EscrowKey::<T>::get() {
+		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -752,24 +751,21 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining =>
 					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-					return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
 		// Transfer 5% to DBIO Treasury
 		match CurrencyOf::<T>::transfer(
 			&Self::account_id(),
-			&TreasuryKey::<T>::get(),
+			&TreasuryKey::<T>::get().unwrap(),
 			price_component_substracted_value,
 			ExistenceRequirement::AllowDeath,
 		) {
@@ -778,17 +774,14 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining =>
 					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-					return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
@@ -804,7 +797,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		escrow_account_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		if escrow_account_id.clone() != EscrowKey::<T>::get() {
+		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -835,17 +828,14 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
 				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
 				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: Some(m) } => {
-					log::error!("Module Error: {:?}", m);
-					return Err(Error::<T>::Module)
-				},
+				sp_runtime::DispatchError::TooManyConsumers =>
+					return Err(Error::<T>::TooManyConsumers),
 				sp_runtime::DispatchError::ConsumerRemaining =>
 					return Err(Error::<T>::ConsumerRemaining),
 				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module { index: _, error: _, message: None } =>
-					return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
@@ -860,7 +850,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		escrow_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != EscrowKey::<T>::get() {
+		if account_id.clone() != EscrowKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -873,7 +863,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		account_id: &T::AccountId,
 		treasury_key: &T::AccountId,
 	) -> Result<(), Self::Error> {
-		if account_id.clone() != TreasuryKey::<T>::get() {
+		if account_id.clone() != TreasuryKey::<T>::get().unwrap() {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -1033,7 +1023,7 @@ impl<T: Config> Pallet<T> {
 
 	/// The account ID that holds the funds
 	pub fn account_id() -> AccountIdOf<T> {
-		<PalletAccount<T>>::get()
+		<PalletAccount<T>>::get().unwrap()
 	}
 
 	/// Is the balance sufficient for payment

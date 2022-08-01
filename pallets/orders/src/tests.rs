@@ -716,6 +716,8 @@ fn cant_set_order_paid_when_unauthorized() {
 
 		let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+		EscrowKey::<Test>::put(2);
+
 		assert_noop!(
 			Orders::set_order_paid(Origin::signed(3), _order_id),
 			Error::<Test>::Unauthorized
@@ -1131,11 +1133,11 @@ fn update_escrow_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		EscrowKey::<Test>::put(2);
 
-		assert_eq!(Orders::admin_key(), 2);
+		assert_eq!(Orders::admin_key(), Some(2));
 
 		assert_ok!(Orders::update_escrow_key(Origin::signed(2), 1,));
 
-		assert_eq!(Orders::admin_key(), 1);
+		assert_eq!(Orders::admin_key(), Some(1));
 	})
 }
 
@@ -1144,6 +1146,6 @@ fn sudo_update_escrow_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Orders::sudo_update_escrow_key(Origin::root(), 1));
 
-		assert_eq!(Orders::admin_key(), 1);
+		assert_eq!(Orders::admin_key(), Some(1));
 	})
 }

@@ -1,48 +1,71 @@
-use sc_cli::{
-	BuildSpecCmd, CheckBlockCmd, ExportBlocksCmd, ExportStateCmd, ImportBlocksCmd, KeySubcommand,
-	PurgeChainCmd, RevertCmd, RunCmd,
-};
+#[allow(missing_docs)]
+#[derive(Debug, clap::Parser)]
+pub struct RunCmd {
+	#[allow(missing_docs)]
+	#[clap(flatten)]
+	pub base: sc_cli::RunCmd,
 
-use frame_benchmarking_cli::BenchmarkCmd;
+	#[clap(long)]
+	pub enable_dev_signer: bool,
 
-use structopt::StructOpt;
+	/// Maximum number of logs in a query.
+	#[clap(long, default_value = "10000")]
+	pub max_past_logs: u32,
 
-#[derive(Debug, StructOpt)]
+	/// Maximum fee history cache size.
+	#[clap(long, default_value = "2048")]
+	pub fee_history_limit: u64,
+
+	/// The dynamic-fee pallet target gas price set by block author
+	#[clap(long, default_value = "1")]
+	pub target_gas_price: u64,
+}
+
+#[derive(Debug, clap::Parser)]
 pub struct Cli {
-	#[structopt(subcommand)]
+	#[clap(subcommand)]
 	pub subcommand: Option<Subcommand>,
 
-	#[structopt(flatten)]
+	#[clap(flatten)]
 	pub run: RunCmd,
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, clap::Subcommand)]
 pub enum Subcommand {
 	/// Key management cli utilities
-	Key(KeySubcommand),
+	#[clap(subcommand)]
+	Key(sc_cli::KeySubcommand),
 
 	/// Build a chain specification.
-	BuildSpec(BuildSpecCmd),
+	BuildSpec(sc_cli::BuildSpecCmd),
 
 	/// Validate blocks.
-	CheckBlock(CheckBlockCmd),
+	CheckBlock(sc_cli::CheckBlockCmd),
 
 	/// Export blocks.
-	ExportBlocks(ExportBlocksCmd),
+	ExportBlocks(sc_cli::ExportBlocksCmd),
 
 	/// Export the state of a given block into a chain spec.
-	ExportState(ExportStateCmd),
+	ExportState(sc_cli::ExportStateCmd),
 
 	/// Import blocks.
-	ImportBlocks(ImportBlocksCmd),
+	ImportBlocks(sc_cli::ImportBlocksCmd),
 
 	/// Remove the whole chain.
-	PurgeChain(PurgeChainCmd),
+	PurgeChain(sc_cli::PurgeChainCmd),
 
 	/// Revert the chain to a previous state.
-	Revert(RevertCmd),
+	Revert(sc_cli::RevertCmd),
 
 	/// The custom benchmark subcommand benchmarking runtime pallets.
-	#[structopt(name = "benchmark", about = "Benchmark runtime pallets.")]
-	Benchmark(BenchmarkCmd),
+	#[clap(name = "benchmark", about = "Benchmark runtime pallets.")]
+	Benchmark(frame_benchmarking_cli::BenchmarkCmd),
+
+	/// Try some command against runtime state.
+	#[cfg(feature = "try-runtime")]
+	TryRuntime(try_runtime_cli::TryRuntimeCmd),
+
+	/// Try some command against runtime state. Note: `try-runtime` feature must be enabled.
+	#[cfg(not(feature = "try-runtime"))]
+	TryRuntime,
 }

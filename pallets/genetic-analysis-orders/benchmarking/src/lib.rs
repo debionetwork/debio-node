@@ -48,7 +48,7 @@ use primitives_price_and_currency::PriceByCurrency;
 
 benchmarks! {
 	create_genetic_analysis_order {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -107,7 +107,7 @@ benchmarks! {
 	)
 
 	cancel_genetic_analysis_order {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -176,7 +176,7 @@ benchmarks! {
 	)
 
 	set_genetic_analysis_order_paid {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -242,7 +242,7 @@ benchmarks! {
 	)
 
 	fulfill_genetic_analysis_order {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -326,7 +326,7 @@ benchmarks! {
 	)
 
 	set_genetic_analysis_order_refunded {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -404,7 +404,7 @@ benchmarks! {
 	)
 
 	update_escrow_key {
-		let caller: T::AccountId = EscrowKey::<T>::get();
+		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_escrow_key(
 		RawOrigin::Signed(caller),
@@ -412,7 +412,7 @@ benchmarks! {
 	)
 
 	update_treasury_key {
-		let caller: T::AccountId = TreasuryKey::<T>::get();
+		let caller: T::AccountId = TreasuryKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_treasury_key(
 		RawOrigin::Signed(caller),

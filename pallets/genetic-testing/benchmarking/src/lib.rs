@@ -46,7 +46,7 @@ use sp_core::Decode;
 
 benchmarks! {
 	reject_dna_sample {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -106,7 +106,7 @@ benchmarks! {
 	)
 
 	process_dna_sample {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -165,7 +165,7 @@ benchmarks! {
 	)
 
 	submit_test_result {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
@@ -230,7 +230,7 @@ benchmarks! {
 	)
 
 	submit_independent_test_result {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 
 		let _dna_test_result = DnaTestResultSubmission {
 			comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -243,7 +243,7 @@ benchmarks! {
 	)
 
 	submit_data_bounty_details {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 	}: submit_data_bounty_details(
 		RawOrigin::Signed(caller),
 		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),

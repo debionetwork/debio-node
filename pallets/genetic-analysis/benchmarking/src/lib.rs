@@ -49,7 +49,7 @@ use primitives_price_and_currency::PriceByCurrency;
 
 benchmarks! {
 	reject_genetic_analysis {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -117,7 +117,7 @@ benchmarks! {
 	)
 
 	process_genetic_analysis {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
@@ -184,7 +184,7 @@ benchmarks! {
 	)
 
 	submit_genetic_analysis {
-		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap_or_default();
+		let caller: T::AccountId = T::AccountId::decode(&mut "18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b".as_bytes()).unwrap();
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
