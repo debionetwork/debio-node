@@ -225,6 +225,7 @@ pub mod pallet {
 	pub type LabOf<T> = Lab<AccountIdOf<T>, HashOf<T>, MomentOf<T>, BalanceOf<T>>;
 	pub type CurrencyOf<T> = <T as self::Config>::Currency;
 	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
+	pub type UserProfileOf<T> = <T as self::Config>::UserProfile;
 
 	// ----- Storage ------------------
 	/// Get Lab by account id
@@ -377,6 +378,8 @@ pub mod pallet {
 		NoProviders,
 		Token,
 		Arithmetic,
+		// Setting profile role failed,
+		FailedToSetProfileRole,
 	}
 
 	#[pallet::call]
@@ -389,9 +392,12 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match Self::create_lab(&who, &lab_info) {
-				Ok(lab) => {
-					Self::deposit_event(Event::LabRegistered(lab, who.clone()));
-					Ok(().into())
+				Ok(lab) => match UserProfileOf::<T>::set_account_profile_role_to_lab(&who) {
+					Ok(_) => {
+						Self::deposit_event(Event::LabRegistered(lab, who.clone()));
+						Ok(().into())
+					},
+					Err(_) => Err(Error::<T>::FailedToSetProfileRole.into()),
 				},
 				Err(error) => Err(error.into()),
 			}
