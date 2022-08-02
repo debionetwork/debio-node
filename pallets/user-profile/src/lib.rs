@@ -24,12 +24,6 @@ pub use codec::EncodeLike;
 pub use scale_info::TypeInfo;
 use traits_user_profile::UserProfileProvider;
 
-/// An Ethereum address (i.e. 20 bytes, used to represent an Ethereum account).
-///
-/// This gets serialized to the 0x-prefixed hex representation.
-// #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug)]
-// pub struct EthereumAddress([u8; 20]);
-
 #[frame_support::pallet]
 pub mod pallet {
 	use crate::*;
@@ -43,6 +37,16 @@ pub mod pallet {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		type EthereumAddress: Clone
+			+ Copy
+			+ PartialEq
+			+ Eq
+			+ Encode
+			+ EncodeLike
+			+ Decode
+			+ Default
+			+ TypeInfo
+			+ sp_std::fmt::Debug;
+		type ProfileRoles: Clone
 			+ Copy
 			+ PartialEq
 			+ Eq
@@ -91,6 +95,7 @@ pub mod pallet {
 	// ---- Types ----------------------
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type EthereumAddressOf<T> = <T as Config>::EthereumAddress;
+	pub type ProfileRolesOf<T> = <T as Config>::ProfileRoles;
 
 	// ----- Storage ------------------
 	#[pallet::storage]
@@ -110,6 +115,10 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn registered_account_id)]
 	pub type RegisteredAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, bool>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn profile_roles_by_account_id)]
+	pub type ProfileRolesByAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, ProfileRolesOf<T>>;
 	// -----------------------------------
 
 	#[pallet::event]
@@ -117,7 +126,7 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		/// User AccountId registered as lab
 		/// parameters. [Lab, who]
-		EthAddressSet(EthereumAddressOf<T>, AccountIdOf<T>),
+		EthAddressSet(EthereumAddressOf<T>, AccountIdOf<T>, Option<ProfileRolesOf<T>>),
 		/// Update user profile admin key successful
 		/// parameters. [who]
 		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
@@ -139,12 +148,16 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::set_eth_address_by_account_id(
 				&who,
 				&eth_address,
 			);
 
-			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who));
+			let roles = <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_account_profile_roles(
+				&who,
+			);
+
+			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who, roles));
 
 			Ok(().into())
 		}
@@ -153,7 +166,7 @@ pub mod pallet {
 		pub fn register_account_id(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::register_account_id(&who);
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::register_account_id(&who);
 
 			Self::deposit_event(Event::<T>::RegisteredAccountId(who, true));
 
@@ -170,12 +183,16 @@ pub mod pallet {
 
 			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
 
-			<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::set_eth_address_by_account_id(
+			<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::set_eth_address_by_account_id(
 				&account_id,
 				&eth_address,
 			);
 
-			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id));
+			let roles = <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_account_profile_roles(
+				&account_id,
+			);
+
+			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id, roles));
 
 			Ok(().into())
 		}
@@ -201,7 +218,7 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as UserProfileInterface<T, EthereumAddressOf<T>>>::update_admin_key(
+			match <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::update_admin_key(
 				&who,
 				&account_id,
 			) {
@@ -215,7 +232,7 @@ pub mod pallet {
 	}
 }
 
-impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
+impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>> for Pallet<T> {
 	type Error = Error<T>;
 
 	fn set_eth_address_by_account_id(
@@ -247,6 +264,10 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 		EthAddressByAccountId::<T>::get(account_id)
 	}
 
+	fn get_account_profile_roles(account_id: &T::AccountId) -> Option<ProfileRolesOf<T>> {
+		ProfileRolesByAccountId::<T>::get(account_id)
+	}
+
 	fn get_account_id_by_eth_address(eth_address: &EthereumAddressOf<T>) -> Option<AccountIdOf<T>> {
 		AccountIdByEthAddress::<T>::get(eth_address)
 	}
@@ -256,15 +277,23 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>> for Pallet<T> {
 	}
 }
 
-impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>> for Pallet<T> {
+impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> for Pallet<T> {
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthereumAddressOf<T>> {
-		<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::get_eth_address_by_account_id(
+		<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_eth_address_by_account_id(
 			account_id,
 		)
 	}
 	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool> {
-		<Self as UserProfileInterface<T, EthereumAddressOf<T>>>::get_registered_account_id(
+		<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_registered_account_id(
 			account_id,
 		)
+	}
+	fn get_account_profile_roles(account_id: &T::AccountId) -> Option<ProfileRolesOf<T>> {
+		<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_account_profile_roles(
+			account_id,
+		)
+	}
+	fn set_account_profile_roles(account_id: &T::AccountId, role: &ProfileRolesOf<T>) {
+		ProfileRolesByAccountId::<T>::insert(account_id, role)
 	}
 }

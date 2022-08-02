@@ -21,6 +21,10 @@ sp-core = { default-features = false, git = "https://github.com/paritytech/subst
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18", optional = true }
 traits-user-profile = { path = './traits', default-features = false }
 
+# Local Primitives
+primitives-profile-roles = { path = '../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../primitives/ethereum-address', default-features = false }
+
 [dev-dependencies]
 sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
@@ -36,6 +40,10 @@ std = [
     'serde/std',
     'rustc-hex/std',
     'traits-user-profile/std',
+
+    # Local Primitives
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'
