@@ -9,6 +9,9 @@ use sp_runtime::{
 	MultiSignature,
 };
 
+use primitives_profile_roles::ProfileRoles;
+use primitives_ethereum_address::EthereumAddress;
+
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
@@ -83,6 +86,7 @@ impl hospitals::Config for Test {
 	type Currency = Balances;
 	type HostpialCertifications = HostpialCertifications;
 	type EthereumAddress = ();
+	type ProfileRoles = ();
 	type UserProfile = ();
 }
 

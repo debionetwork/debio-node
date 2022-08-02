@@ -187,7 +187,17 @@ pub mod pallet {
 			+ Default
 			+ TypeInfo
 			+ sp_std::fmt::Debug;
-		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
+		type ProfileRoles: Clone
+			+ Copy
+			+ PartialEq
+			+ Eq
+			+ Encode
+			+ EncodeLike
+			+ Decode
+			+ Default
+			+ TypeInfo
+			+ sp_std::fmt::Debug;
+		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress, Self::ProfileRoles>;
 		type LabWeightInfo: WeightInfo;
 		/// Currency type for this pallet.
 		type PalletId: Get<PalletId>;

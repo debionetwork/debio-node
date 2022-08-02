@@ -47,6 +47,8 @@ traits-labs = { path = '../../labs/traits', default-features = false }
 
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 [dev-dependencies]
 sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -68,6 +70,8 @@ std = [
 	'frame-benchmarking/std',
 
 	'primitives-area-code/std',
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 
     'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',

@@ -1,12 +1,14 @@
 use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_core::H256;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
+
+use primitives_profile_roles::ProfileRoles;
+use primitives_ethereum_address::EthereumAddress;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -112,6 +114,7 @@ impl genetic_analysts::Config for Test {
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
 }
@@ -152,12 +155,10 @@ impl genetic_analysis_orders::Config for Test {
 	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress(pub [u8; 20]);
-
 impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 

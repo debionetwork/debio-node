@@ -42,6 +42,8 @@ certifications = { path = '../../certifications', default-features = false }
 genetic-testing = { path = '../../genetic-testing', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 traits-order = { path = '../../orders/traits', default-features = false }
 traits-services = { path = '../../services/traits', default-features = false }
@@ -83,5 +85,8 @@ std = [
     'genetic-testing/std',
 
     'primitives-area-code/std',
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
+    
     'traits-certifications/std',
 ]

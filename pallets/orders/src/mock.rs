@@ -127,6 +127,7 @@ impl labs::Config for Test {
 	type Orders = Orders;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type LabWeightInfo = ();
 	type PalletId = LabPalletId;
@@ -145,12 +146,10 @@ impl certifications::Config for Test {
 	type WeightInfo = ();
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress(pub [u8; 20]);
-
 impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 

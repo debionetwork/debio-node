@@ -10,11 +10,11 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup},
 };
 
+use primitives_profile_roles::ProfileRoles;
+use primitives_ethereum_address::EthereumAddress;
+
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
-
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress(pub [u8; 20]);
 
 pub type AccountId = u64;
 
@@ -71,6 +71,7 @@ impl doctors::Config for Test {
 	type Currency = Balances;
 	type DoctorCertifications = DoctorCertifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
@@ -78,6 +79,7 @@ impl doctors::Config for Test {
 impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 

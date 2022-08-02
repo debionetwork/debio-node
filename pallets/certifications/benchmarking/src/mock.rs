@@ -84,6 +84,7 @@ impl labs::Config for Test {
 	type Services = ();
 	type Certifications = Certifications;
 	type EthereumAddress = ();
+	type ProfileRoles = ();
 	type UserProfile = ();
 }
 

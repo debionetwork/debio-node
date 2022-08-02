@@ -45,6 +45,9 @@ user-profile = { path = '../../user-profile', default-features = false }
 traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
 
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
+
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
 
@@ -75,4 +78,7 @@ std = [
 
     'traits-genetic-analyst-services/std',
     'traits-genetic-analyst-qualifications/std',
+    
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 ]

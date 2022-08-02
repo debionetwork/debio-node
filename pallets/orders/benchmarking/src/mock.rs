@@ -90,6 +90,7 @@ impl labs::Config for Test {
 	type Orders = Orders;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type LabWeightInfo = ();
 	type PalletId = LabPalletId;
