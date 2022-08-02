@@ -44,6 +44,7 @@ genetic-testing = { path = '../genetic-testing', default-features = false }
 
 primitives-duration = { path = '../../primitives/duration', default-features = false }
 primitives-area-code = { path = '../../primitives/area-code', default-features = false }
+primitives-profile-roles = { path = '../../primitives/profile-roles', default-features = false }
 primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
 
 [dev-dependencies]
@@ -81,6 +82,7 @@ std = [
 
     'primitives-duration/std',
     'primitives-area-code/std',
+    'primitives-profile-roles/std',
     'primitives-price-and-currency/std',
 ]
 runtime-benchmarks = []

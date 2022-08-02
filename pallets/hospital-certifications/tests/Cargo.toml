@@ -37,6 +37,8 @@ hospital-certifications = { path = '../../hospital-certifications', default-feat
 user-profile = { path = '../../user-profile', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 traits-hospital-certifications = { path = '../../hospital-certifications/traits', default-features = false }
 
 [dev-dependencies]
@@ -62,5 +64,7 @@ std = [
     'user-profile/std',
 
     'primitives-area-code/std',
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
     'traits-hospital-certifications/std',
 ]

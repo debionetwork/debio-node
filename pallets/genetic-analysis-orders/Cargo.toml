@@ -50,6 +50,8 @@ genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications', d
 genetic-analysis = { path = '../genetic-analysis', default-features = false }
 genetic-data = { path = '../genetic-data', default-features = false }
 user-profile = { path = '../user-profile', default-features = false }
+primitives-profile-roles = { path = '../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../primitives/ethereum-address', default-features = false }
 
 [dev-dependencies]
 sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -84,6 +86,8 @@ std = [
     'primitives-tracking-id/std',
     'primitives-price-and-currency/std',
     'primitives-availability-status/std',
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 
     'traits-genetic-analyst-services/std',
     'traits-genetic-analysis/std',

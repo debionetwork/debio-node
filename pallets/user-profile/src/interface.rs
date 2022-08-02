@@ -1,4 +1,4 @@
-pub trait UserProfileInterface<T: frame_system::Config, EthAddress> {
+pub trait UserProfileInterface<T: frame_system::Config, EthAddress, ProfileRoles> {
 	type Error;
 
 	fn get_eth_address_by_account_id(account_id: &T::AccountId) -> Option<EthAddress>;
@@ -10,6 +10,7 @@ pub trait UserProfileInterface<T: frame_system::Config, EthAddress> {
 	) -> Result<(), Self::Error>;
 
 	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool>;
+	fn get_account_profile_roles(account_id: &T::AccountId) -> Option<ProfileRoles>;
 
 	fn get_account_id_by_eth_address(eth_address: &EthAddress) -> Option<T::AccountId>;
 }

@@ -94,6 +94,7 @@ impl genetic_analysts::Config for Test {
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
 }

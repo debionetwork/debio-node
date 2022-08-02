@@ -17,9 +17,6 @@ type Block = frame_system::mocking::MockBlock<Test>;
 
 use sp_io::TestExternalities;
 
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress(pub [u8; 20]);
-
 pub type AccountId = u64;
 
 frame_support::construct_runtime!(
@@ -121,6 +118,7 @@ impl labs::Config for Test {
 	type Orders = Orders;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type LabWeightInfo = ();
 	type PalletId = LabPalletId;
@@ -157,6 +155,7 @@ impl orders::Config for Test {
 impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 

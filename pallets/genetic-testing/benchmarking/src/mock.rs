@@ -10,6 +10,9 @@ use sp_runtime::{
 	MultiSignature,
 };
 
+use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
+
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
@@ -88,6 +91,7 @@ impl labs::Config for Test {
 	type Services = ();
 	type Certifications = Certifications;
 	type EthereumAddress = ();
+	type ProfileRoles = ();
 	type UserProfile = ();
 }
 
@@ -99,6 +103,7 @@ impl services::Config for Test {
 impl user_profile::Config for Runtime {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 }
 
 impl orders::Config for Test {

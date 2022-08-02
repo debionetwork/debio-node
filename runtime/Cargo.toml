@@ -1,6 +1,6 @@
 [package]
 name = 'debio-runtime'
-version = '2.1.3'
+version = '2.1.4'
 edition = '2021'
 license = 'AGPL-3.0'
 authors = ['DeBio Dev Team <debio_dev@blocksphere.id>']
@@ -104,6 +104,10 @@ genetic-analysis-orders = { path = '../pallets/genetic-analysis-orders', default
 genetic-analysis-orders-benchmarking = { path = '../pallets/genetic-analysis-orders/benchmarking', default-features = false, optional = true }
 genetic-analysis-benchmarking = { path = '../pallets/genetic-analysis/benchmarking', default-features = false, optional = true }
 
+# Local Primitives
+primitives-profile-roles = { path = '../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../primitives/ethereum-address', default-features = false }
+
 [features]
 default = ['std']
 std = [
@@ -179,6 +183,10 @@ std = [
     'genetic-analyst-qualifications/std',
     'genetic-analysis/std',
     'genetic-analysis-orders/std',
+
+    # Local Primitives
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 ]
 runtime-benchmarks = [
 	# External Dependencies

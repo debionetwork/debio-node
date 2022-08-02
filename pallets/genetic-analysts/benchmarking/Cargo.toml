@@ -23,6 +23,8 @@ frame-benchmarking = { default-features = false, git = "https://github.com/parit
 primitives-stake-status = { path = '../../../primitives/stake-status', default-features = false }
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
 primitives-availability-status = { path = '../../../primitives/availability-status', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 traits-user-profile = { path = '../../user-profile/traits', default-features = false }
 traits-genetic-analysts = { path = '../traits', default-features = false }
@@ -62,6 +64,8 @@ std = [
 
     'primitives-verification-status/std',
     'primitives-availability-status/std',
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 
     'traits-user-profile/std',
     'traits-genetic-analysts/std',

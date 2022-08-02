@@ -83,6 +83,7 @@ impl doctors::Config for Test {
 	type Currency = Balances;
 	type DoctorCertifications = DoctorCertifications;
 	type EthereumAddress = ();
+	type ProfileRoles = ();
 	type UserProfile = ();
 }
 

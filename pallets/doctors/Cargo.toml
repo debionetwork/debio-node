@@ -29,6 +29,8 @@ pallet-balances = { default-features = false, git = "https://github.com/parityte
 ## Local Dependencies
 doctor-certifications = { path = '../doctor-certifications', default-features = false }
 user-profile = { path = '../user-profile', default-features = false }
+primitives-profile-roles = { path = '../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../primitives/ethereum-address', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
@@ -51,6 +53,8 @@ std = [
 	'pallet-balances/std',
 	'doctor-certifications/std',
 	'user-profile/std',
+    'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'

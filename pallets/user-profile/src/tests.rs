@@ -1,7 +1,7 @@
 use crate::{mock::*, Error};
 use frame_support::{assert_noop, assert_ok};
 
-use crate::AdminKey;
+use crate::{AdminKey, ProfileRolesOf};
 
 #[test]
 fn set_eth_address_works() {
@@ -67,6 +67,7 @@ fn call_event_should_work() {
 		System::assert_last_event(Event::UserProfile(crate::Event::EthAddressSet(
 			EthereumAddress([b'X'; 20]),
 			2,
+			ProfileRolesOf::<Test>::default(),
 		)));
 	})
 }

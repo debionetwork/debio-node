@@ -23,7 +23,7 @@ use frame_system::{
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_babe::{AllowedSlots::PrimaryAndSecondaryVRFSlots, BabeEpochConfiguration};
-use sp_core::{crypto::KeyTypeId, sr25519, Decode, Encode, OpaqueMetadata, RuntimeDebug, H256};
+use sp_core::{crypto::KeyTypeId, sr25519, Encode, OpaqueMetadata, H256};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
@@ -57,7 +57,8 @@ use pallet_session::{historical as pallet_session_historical, FindAccountFromAut
 use pallet_session_historical::NoteHistoricalRoot;
 use pallet_transaction_payment::{ChargeTransactionPayment, CurrencyAdapter};
 
-use scale_info::TypeInfo;
+use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -145,10 +146,6 @@ mod benches {
 	);
 }
 
-/// Ethereum Address type
-#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
-pub struct EthereumAddress([u8; 20]);
-
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
 /// of data like extrinsics, allowing for them to continue syncing the network through upgrades
@@ -207,7 +204,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 2013,
+	spec_version: 2014,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -716,6 +713,7 @@ impl labs::Config for Runtime {
 	type PalletId = LabPalletId;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type LabWeightInfo = ();
 }
@@ -732,6 +730,7 @@ impl hospitals::Config for Runtime {
 	type Currency = Balances;
 	type HospitalCertifications = HospitalCertifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
@@ -741,6 +740,7 @@ impl doctors::Config for Runtime {
 	type Currency = Balances;
 	type DoctorCertifications = DoctorCertifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type WeightInfo = ();
 }
@@ -778,6 +778,7 @@ impl genetic_testing::Config for Runtime {
 impl user_profile::Config for Runtime {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 
@@ -813,6 +814,7 @@ impl genetic_analysts::Config for Runtime {
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type GeneticAnalystWeightInfo = ();
 }

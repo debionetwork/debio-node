@@ -134,7 +134,17 @@ pub mod pallet {
 			+ Default
 			+ TypeInfo
 			+ sp_std::fmt::Debug;
-		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress>;
+		type ProfileRoles: Clone
+			+ Copy
+			+ PartialEq
+			+ Eq
+			+ Encode
+			+ EncodeLike
+			+ Decode
+			+ Default
+			+ TypeInfo
+			+ sp_std::fmt::Debug;
+		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress, Self::ProfileRoles>;
 		type WeightInfo: WeightInfo;
 	}
 
@@ -152,6 +162,7 @@ pub mod pallet {
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
 	pub type DoctorOf<T> = Doctor<AccountIdOf<T>, HashOf<T>>;
+	pub type UserProfileOf<T> = <T as self::Config>::UserProfile;
 
 	// ----- Storage ------------------
 	/// Get Doctor by account id
@@ -210,6 +221,8 @@ pub mod pallet {
 		DoctorDoesNotExist,
 		/// Doctor is not the owner of the certification
 		DoctorIsNotOwner,
+		// Setting profile role failed,
+		FailedToSetProfileRole,
 	}
 
 	#[pallet::call]
@@ -222,9 +235,12 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match Self::create_doctor(&who, &doctor_info) {
-				Ok(doctor) => {
-					Self::deposit_event(Event::DoctorRegistered(doctor, who.clone()));
-					Ok(().into())
+				Ok(doctor) => match UserProfileOf::<T>::set_account_profile_role_to_lab(&who) {
+					Ok(_) => {
+						Self::deposit_event(Event::DoctorRegistered(doctor, who.clone()));
+						Ok(().into())
+					},
+					Err(_) => Err(Error::<T>::FailedToSetProfileRole.into()),
 				},
 				Err(error) => Err(error.into()),
 			}
