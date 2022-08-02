@@ -12,8 +12,8 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup},
 };
 
-use primitives_profile_roles::ProfileRoles;
 use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;

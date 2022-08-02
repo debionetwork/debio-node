@@ -57,8 +57,8 @@ use pallet_session::{historical as pallet_session_historical, FindAccountFromAut
 use pallet_session_historical::NoteHistoricalRoot;
 use pallet_transaction_payment::{ChargeTransactionPayment, CurrencyAdapter};
 
-use primitives_profile_roles::ProfileRoles;
 use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
 
 /// An index to a block.
 pub type BlockNumber = u32;

@@ -8,8 +8,7 @@ use scale_info::TypeInfo;
 
 // ProfileRoles Struct
 #[derive(Encode, Decode, Clone, Copy, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct ProfileRoles
-{
+pub struct ProfileRoles {
 	pub is_customer: bool,
 	pub is_lab: bool,
 	pub is_doctor: bool,

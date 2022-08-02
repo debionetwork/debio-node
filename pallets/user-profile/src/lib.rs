@@ -118,7 +118,8 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn profile_roles_by_account_id)]
-	pub type ProfileRolesByAccountId<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, ProfileRolesOf<T>>;
+	pub type ProfileRolesByAccountId<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, ProfileRolesOf<T>>;
 	// -----------------------------------
 
 	#[pallet::event]
@@ -153,9 +154,11 @@ pub mod pallet {
 				&eth_address,
 			);
 
-			let roles = <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_account_profile_roles(
-				&who,
-			);
+			let roles = <Self as UserProfileInterface<
+				T,
+				EthereumAddressOf<T>,
+				ProfileRolesOf<T>,
+			>>::get_account_profile_roles(&who);
 
 			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, who, roles));
 
@@ -188,9 +191,11 @@ pub mod pallet {
 				&eth_address,
 			);
 
-			let roles = <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::get_account_profile_roles(
-				&account_id,
-			);
+			let roles = <Self as UserProfileInterface<
+				T,
+				EthereumAddressOf<T>,
+				ProfileRolesOf<T>,
+			>>::get_account_profile_roles(&account_id);
 
 			Self::deposit_event(Event::<T>::EthAddressSet(eth_address, account_id, roles));
 
