@@ -2,8 +2,7 @@ use crate as doctors;
 use frame_support::parameter_types;
 use frame_system as system;
 use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,

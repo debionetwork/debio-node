@@ -5001,6 +5001,7 @@ dependencies = [
  "primitives-area-code",
  "primitives-duration",
  "primitives-price-and-currency",
+ "primitives-profile-roles",
  "scale-info",
  "serde",
  "services",

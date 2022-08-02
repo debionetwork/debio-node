@@ -1,14 +1,17 @@
 use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
-use sp_core::H256;
+use scale_info::TypeInfo;
+use sp_core::{Decode, Encode, RuntimeDebug, H256};
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
 
-use primitives_ethereum_address::EthereumAddress;
 use primitives_profile_roles::ProfileRoles;
+
+#[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo)]
+pub struct EthereumAddress(pub [u8; 20]);
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
