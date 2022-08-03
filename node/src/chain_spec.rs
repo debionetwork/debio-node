@@ -5,7 +5,7 @@ use sc_sync_state_rpc::LightSyncStateExtension;
 
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use sp_consensus_babe::AuthorityId as BabeId;
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
+use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
@@ -21,7 +21,6 @@ use debio_runtime::{
 	UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
 
-use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 
 /// Node `ChainSpec` extensions.
@@ -114,128 +113,7 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 }
 
 pub fn development_testnet_config() -> Result<ChainSpec, String> {
-	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
-	let properties = get_properties("DBIO", 18, 42);
-
-	Ok(ChainSpec::from_genesis(
-		// Name
-		"DeBio Development Testnet",
-		// ID
-		"debio_development_testnet",
-		ChainType::Live,
-		move || {
-			genesis(
-				// WASM Binary
-				wasm_binary,
-				// Sudo account
-				// 5G3nLeySH5sFzD9WPKt2kB3KNVnazsZykaFfotouvjf1RZWY
-				hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"].into(),
-				// Initial PoA authorities
-				vec![
-					(
-						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
-							.into(),
-						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
-							.unchecked_into(),
-						// 5DZQ8hkpX2STvCDKxnisDS4M3wKr8T4irH7Kb6pi1opYWicR
-						hex!["421eaffb5d5601b080f546fa8be621d26085a2743b4d935d2b8dd83c2cecaa39"]
-							.unchecked_into(),
-						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
-							.unchecked_into(),
-						// KW39i1yj3MYMcCaF5QZUbk8FBPbEzbrn1E6A3Xdmw4beErUGT
-						hex!["0209f537ca85f50055cf9553d72c8a594516a915b6c040109ed5450da0185c3ff1"]
-							.unchecked_into(),
-						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
-							.unchecked_into(),
-						// Stash amount
-						50_000 * OCTS,
-					),
-					(
-						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
-							.into(),
-						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
-							.unchecked_into(),
-						// 5CetaryC3UwJEwSJvo8GzLVM4kxejioSfjmoZyAX4TKPSNuq
-						hex!["1a1274a58903a684d89cd926735137961a795d798b250926f7c8867b487549d8"]
-							.unchecked_into(),
-						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
-							.unchecked_into(),
-						// KW2ywDzHXAmvvcCZu14szXHdsXka9Xuez4Q1RPuXMkw2VTZYk
-						hex!["020281390b3b2a5f25dcda82477a2da7a00a2570724b24d60e82446a63f81db4c7"]
-							.unchecked_into(),
-						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
-							.unchecked_into(),
-						// Stash amount
-						50_000 * OCTS,
-					),
-				],
-				// Pre-funded accounts
-				vec![
-					(
-						// Sudo account
-						// 5G3nLeySH5sFzD9WPKt2kB3KNVnazsZykaFfotouvjf1RZWY
-						hex!["b03cc727c3c98eab988e5acfa815f6e6ed1939060471adaa78d2e39bbb1fc50b"]
-							.into(),
-						// Balance amount
-						12_499_980 * DBIO,
-					),
-					(
-						// Valiadator 1 account
-						// 5FNUtTJn1hhx1JEBrtWz9yaGx7M19hGhWZonxaJFHFu6SQ6C
-						hex!["92437599810542e6c9e435290225920cb7b8174a949ed8f67b3413c6435ad76c"]
-							.into(),
-						// Balance amount
-						10 * DBIO,
-					),
-					(
-						// Valiadator 2 account
-						// 5DF6RP41YxxgE8yemXAH47aJo9313TG7pVvx1utM4a9WnKk5
-						hex!["3428a50b8746e28304b67a2a8dfd5fc40c0ee17c28ce129c5db1ac42c4e9905a"]
-							.into(),
-						// Balance amount
-						10 * DBIO,
-					),
-				],
-				// Appchain config
-				appchain_config(
-					// Appchain Relay Contract
-					"",
-					// Appchain Asset Id by Name
-					"usdn.testnet",
-					// Premined Amount
-					87_500_000 * DBIO,
-					// Era Payout
-					4_657 * DBIO,
-				),
-				// API admin account
-				// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
-				hex!["02c2cffef38fbf56b32d6a49eeeecc0e3345a1e0549cd8817d52f6cf2e414152"].into(),
-				// Treasury account
-				// C8KpmHUFT7HJbNLv74cXrtT1w9LF1W3WduN8nVGQUySSJTF
-				hex!["02c2cffef38fbf56b32d6a49eeeecc0e3345a1e0549cd8817d52f6cf2e414152"].into(),
-			)
-		},
-		// Bootnodes
-		vec![],
-		// Telemetry
-		None,
-		// Protocol ID
-		Some("debio-development-testnet"),
-		// Fork ID
-		None,
-		// Properties
-		Some(properties),
-		// Extensions
-		Default::default(),
-	))
+	ChainSpec::from_json_bytes(&include_bytes!("../res/dev-testnet.json")[..])
 }
 
 pub fn local_config() -> Result<ChainSpec, String> {
