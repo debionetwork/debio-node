@@ -41,7 +41,6 @@ impl SubstrateCli for Cli {
 			"dev" => Box::new(chain_spec::development_config()?),
 			"local" | "" => Box::new(chain_spec::local_config()?),
 			"dev-testnet" => Box::new(chain_spec::development_testnet_config()?),
-			"stg-testnet" => Box::new(chain_spec::staging_testnet_config()?),
 			"testnet" => Box::new(chain_spec::testnet_config()?),
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			"octopus-testnet" => Box::new(chain_spec::testnet_config()?),
