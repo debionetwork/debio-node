@@ -49,7 +49,7 @@ use pallet_grandpa::{
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_mmr_primitives as mmr;
 use pallet_octopus_appchain::sr25519::AuthorityId as OctopusId;
-use pallet_octopus_lpos::{EraIndex, ExposureOf};
+use pallet_octopus_lpos::{EraIndex, ExposureOf, FilterHistoricalOffences};
 use pallet_session::{historical as pallet_session_historical, FindAccountFromAuthorIndex};
 use pallet_session_historical::NoteHistoricalRoot;
 use pallet_transaction_payment::{ChargeTransactionPayment, CurrencyAdapter};
@@ -417,7 +417,7 @@ impl pallet_babe::Config for Runtime {
 	type ExpectedBlockTime = ExpectedBlockTime;
 	type HandleEquivocation = pallet_babe::EquivocationHandler<
 		Self::KeyOwnerIdentification,
-		pallet_octopus_lpos::FilterHistoricalOffences<OctopusLpos, Offences>,
+		FilterHistoricalOffences<OctopusLpos, Offences>,
 		ReportLongevity,
 	>;
 	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
