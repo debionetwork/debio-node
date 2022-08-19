@@ -418,8 +418,11 @@ impl pallet_babe::Config for Runtime {
 	type EpochChangeTrigger = ExternalTrigger;
 	type EpochDuration = EpochDuration;
 	type ExpectedBlockTime = ExpectedBlockTime;
-	type HandleEquivocation =
-		BabeEquivocationHandler<Self::KeyOwnerIdentification, (), ReportLongevity>;
+	type HandleEquivocation = pallet_babe::EquivocationHandler<
+		Self::KeyOwnerIdentification,
+		pallet_octopus_lpos::FilterHistoricalOffences<OctopusLpos, Offences>,
+		ReportLongevity,
+	>;
 	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
 		KeyTypeId,
 		BabeId,
@@ -620,8 +623,11 @@ impl pallet_session::Config for Runtime {
 impl pallet_grandpa::Config for Runtime {
 	type Call = Call;
 	type Event = Event;
-	type HandleEquivocation =
-		GrandpaEquivocationHandler<Self::KeyOwnerIdentification, (), ReportLongevity>;
+	type HandleEquivocation = pallet_grandpa::EquivocationHandler<
+		Self::KeyOwnerIdentification,
+		pallet_octopus_lpos::FilterHistoricalOffences<OctopusLpos, Offences>,
+		ReportLongevity,
+	>;
 	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
 		KeyTypeId,
 		GrandpaId,
@@ -684,10 +690,17 @@ impl pallet_im_online::Config for Runtime {
 	type MaxPeerDataEncodingSize = MaxPeerDataEncodingSize;
 	type MaxPeerInHeartbeats = MaxPeerInHeartbeats;
 	type NextSessionRotation = Babe;
-	type ReportUnresponsiveness = ();
+	type ReportUnresponsiveness =
+		pallet_octopus_lpos::FilterHistoricalOffences<OctopusLpos, Offences>;
 	type UnsignedPriority = ImOnlineUnsignedPriority;
 	type ValidatorSet = Historical;
 	type WeightInfo = ();
+}
+
+impl pallet_offences::Config for Runtime {
+	type Event = Event;
+	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
+	type OnOffenceHandler = ();
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -882,6 +895,7 @@ construct_runtime!(
 		Mmr: pallet_mmr::{Pallet, Storage},
 		ImOnline: pallet_im_online::{Call, Config<T>, Event<T>, Pallet, Storage, ValidateUnsigned},
 		Sudo: pallet_sudo::{Call, Config<T>, Event<T>, Pallet, Storage},
+		Offences: pallet_offences,
 
 		// Local pallets
 		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},
