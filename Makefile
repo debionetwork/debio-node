@@ -4,6 +4,8 @@ init:
 
 .PHONY: check
 check:
+	cargo +nightly fmt
+	cargo +nightly clippy
 	SKIP_WASM_BUILD=1 cargo check --release
 
 .PHONY: test

@@ -32,6 +32,8 @@ use traits_user_profile::UserProfileProvider;
 
 // LabInfo Struct
 // Used as parameter of dispatchable calls
+// Until update Rust compiler, clippy false positive: https://github.com/rust-lang/rust-clippy/issues/8867
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct LabInfo<Hash>
 where

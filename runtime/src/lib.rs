@@ -40,14 +40,11 @@ use sp_std::prelude::*;
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
-use pallet_babe::{
-	AuthorityId as BabeId, EquivocationHandler as BabeEquivocationHandler, ExternalTrigger,
-};
+use pallet_babe::{AuthorityId as BabeId, ExternalTrigger};
 use pallet_balances::AccountData;
 use pallet_beefy_mmr::{BeefyEcdsaToEthereum, DepositBeefyDigest};
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
-	EquivocationHandler as GrandpaEquivocationHandler,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_mmr_primitives as mmr;
