@@ -13,8 +13,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      test: ${{ steps.filter.outputs.test }}
-      markdown: ${{ steps.filter.outputs.markdown }}
+      test-code: ${{ steps.filter.outputs.test-code }}
     steps:
       - uses: dorny/paths-filter@v2
         id: filter
