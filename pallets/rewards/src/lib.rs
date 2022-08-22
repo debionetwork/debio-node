@@ -1,11 +1,14 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub mod interface;
+pub mod migrations;
 use interface::RewardInterface;
 
 use frame_support::{
 	pallet_prelude::*,
-	traits::{Currency, ExistenceRequirement, WithdrawReasons},
+	sp_runtime::traits::AccountIdConversion,
+	traits::{Currency, ExistenceRequirement, StorageVersion, WithdrawReasons},
+	PalletId,
 };
 
 pub use pallet::*;
@@ -25,8 +28,8 @@ use sp_std::prelude::*;
 pub mod weights;
 pub use weights::WeightInfo;
 
-use frame_support::PalletId;
-use sp_runtime::traits::AccountIdConversion;
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -39,6 +42,7 @@ pub mod pallet {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 		/// Currency type for this pallet.
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
+		#[pallet::constant]
 		type PalletId: Get<PalletId>;
 		type WeightInfo: WeightInfo;
 	}
@@ -67,20 +71,22 @@ pub mod pallet {
 	// ----- Genesis Configs ------------------
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub rewarder_key: T::AccountId,
+		pub rewarder_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { rewarder_key: <Pallet<T>>::get_pallet_id() }
+			Self { rewarder_key: None }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
-			RewarderKey::<T>::put(&self.rewarder_key);
+			if let Some(ref rewarder_key) = self.rewarder_key {
+				RewarderKey::<T>::put(rewarder_key);
+			}
 			PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 			<Pallet<T>>::set_total_reward_amount();
 		}
@@ -109,12 +115,17 @@ pub mod pallet {
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// Pallet run from this pallet::call

@@ -95,7 +95,7 @@ impl ExternalityBuilder {
 		GenesisConfig {
 			system: frame_system::GenesisConfig { code: vec![] },
 			balances: pallet_balances::GenesisConfig::<Test> { balances: vec![] },
-			rewards: rewards::GenesisConfig::<Test> { rewarder_key: 1 },
+			rewards: rewards::GenesisConfig::<Test> { rewarder_key: Some(1) },
 		}
 		.build_storage()
 		.unwrap()

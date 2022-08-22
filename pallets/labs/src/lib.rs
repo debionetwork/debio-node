@@ -1,7 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use scale_info::TypeInfo;
-
 pub mod interface;
 pub mod migrations;
 pub mod weights;
@@ -10,6 +8,7 @@ pub mod weights;
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 pub use pallet::*;
+pub use scale_info::TypeInfo;
 pub use weights::WeightInfo;
 
 pub use crate::interface::LabInterface;
@@ -157,7 +156,7 @@ where
 }
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(3);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -201,6 +200,7 @@ pub mod pallet {
 		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress, Self::ProfileRoles>;
 		type LabWeightInfo: WeightInfo;
 		/// Currency type for this pallet.
+		#[pallet::constant]
 		type PalletId: Get<PalletId>;
 	}
 

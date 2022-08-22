@@ -314,7 +314,7 @@ fn genesis(
 		sudo: SudoConfig { key: Some(root_key) },
 		labs: LabsConfig { lab_verifier_key: Some(api_admin_key.clone()) },
 		orders: OrdersConfig { escrow_key: Some(api_admin_key.clone()) },
-		rewards: RewardsConfig { rewarder_key: api_admin_key.clone() },
+		rewards: RewardsConfig { rewarder_key: Some(api_admin_key.clone()) },
 		genetic_analysts: GeneticAnalystsConfig {
 			genetic_analyst_verifier_key: Some(api_admin_key.clone()),
 		},

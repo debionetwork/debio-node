@@ -40,11 +40,14 @@ use sp_std::prelude::*;
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
-use pallet_babe::{AuthorityId as BabeId, ExternalTrigger};
+use pallet_babe::{
+	AuthorityId as BabeId, EquivocationHandler as BabeEquivocationHandler, ExternalTrigger,
+};
 use pallet_balances::AccountData;
 use pallet_beefy_mmr::{BeefyEcdsaToEthereum, DepositBeefyDigest};
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
+	EquivocationHandler as GrandpaEquivocationHandler,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_mmr_primitives as mmr;
@@ -201,7 +204,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 2013,
+	spec_version: 2014,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -415,7 +418,7 @@ impl pallet_babe::Config for Runtime {
 	type EpochChangeTrigger = ExternalTrigger;
 	type EpochDuration = EpochDuration;
 	type ExpectedBlockTime = ExpectedBlockTime;
-	type HandleEquivocation = pallet_babe::EquivocationHandler<
+	type HandleEquivocation = BabeEquivocationHandler<
 		Self::KeyOwnerIdentification,
 		FilterHistoricalOffences<OctopusLpos, Offences>,
 		ReportLongevity,
@@ -617,12 +620,18 @@ impl pallet_session::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl pallet_offences::Config for Runtime {
+	type Event = Event;
+	type IdentificationTuple = pallet_session_historical::IdentificationTuple<Self>;
+	type OnOffenceHandler = ();
+}
+
 impl pallet_grandpa::Config for Runtime {
 	type Call = Call;
 	type Event = Event;
-	type HandleEquivocation = pallet_grandpa::EquivocationHandler<
+	type HandleEquivocation = GrandpaEquivocationHandler<
 		Self::KeyOwnerIdentification,
-		pallet_octopus_lpos::FilterHistoricalOffences<OctopusLpos, Offences>,
+		FilterHistoricalOffences<OctopusLpos, Offences>,
 		ReportLongevity,
 	>;
 	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
@@ -687,17 +696,10 @@ impl pallet_im_online::Config for Runtime {
 	type MaxPeerDataEncodingSize = MaxPeerDataEncodingSize;
 	type MaxPeerInHeartbeats = MaxPeerInHeartbeats;
 	type NextSessionRotation = Babe;
-	type ReportUnresponsiveness =
-		pallet_octopus_lpos::FilterHistoricalOffences<OctopusLpos, Offences>;
+	type ReportUnresponsiveness = FilterHistoricalOffences<OctopusLpos, Offences>;
 	type UnsignedPriority = ImOnlineUnsignedPriority;
 	type ValidatorSet = Historical;
 	type WeightInfo = ();
-}
-
-impl pallet_offences::Config for Runtime {
-	type Event = Event;
-	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
-	type OnOffenceHandler = ();
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -886,13 +888,13 @@ construct_runtime!(
 		Authorship: pallet_authorship::{Call, Inherent, Pallet, Storage},
 		Historical: pallet_session_historical::{Pallet},
 		Session: pallet_session::{Call, Event, Config<T>, Pallet, Storage},
+		Offences: pallet_offences::{Event, Pallet, Storage},
 		Grandpa: pallet_grandpa::{Call, Config, Event, Pallet, Storage, ValidateUnsigned},
 		Beefy: pallet_beefy::{Config<T>, Pallet, Storage},
 		MmrLeaf: pallet_beefy_mmr::{Pallet, Storage},
 		Mmr: pallet_mmr::{Pallet, Storage},
 		ImOnline: pallet_im_online::{Call, Config<T>, Event<T>, Pallet, Storage, ValidateUnsigned},
 		Sudo: pallet_sudo::{Call, Config<T>, Event<T>, Pallet, Storage},
-		Offences: pallet_offences,
 
 		// Local pallets
 		Labs: labs::{Pallet, Call, Storage, Config<T>, Event<T>},

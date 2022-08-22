@@ -7,7 +7,7 @@ fn reward_funds_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		System::set_block_number(1);
 
-		assert_eq!(RewarderKey::<Test>::put(1), ());
+		RewarderKey::<Test>::put(1);
 
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
@@ -28,7 +28,7 @@ fn reward_funds_bad_signature() {
 	ExternalityBuilder::build().execute_with(|| {
 		System::set_block_number(1);
 
-		assert_eq!(RewarderKey::<Test>::put(1), ());
+		RewarderKey::<Test>::put(1);
 
 		assert_ok!(Balances::set_balance(
 			RawOrigin::Root.into(),
@@ -45,7 +45,7 @@ fn cant_reward_funds_when_not_admin() {
 	ExternalityBuilder::build().execute_with(|| {
 		System::set_block_number(1);
 
-		assert_eq!(RewarderKey::<Test>::put(1), ());
+		RewarderKey::<Test>::put(1);
 
 		assert_noop!(Rewards::reward_funds(Origin::signed(2), 2, 1), Error::<Test>::Unauthorized);
 	})
