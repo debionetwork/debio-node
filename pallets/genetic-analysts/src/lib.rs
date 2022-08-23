@@ -142,7 +142,7 @@ where
 }
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(3);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -192,6 +192,7 @@ pub mod pallet {
 		type UserProfile: UserProfileProvider<Self, Self::EthereumAddress, Self::ProfileRoles>;
 		type GeneticAnalystWeightInfo: WeightInfo;
 		/// Currency type for this pallet.
+		#[pallet::constant]
 		type PalletId: Get<PalletId>;
 	}
 

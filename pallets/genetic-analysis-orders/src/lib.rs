@@ -1,6 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub mod interface;
+pub mod migrations;
 pub mod weights;
 use interface::GeneticAnalysisOrderInterface;
 
@@ -12,7 +13,7 @@ use frame_support::{
 		RuntimeDebug, SaturatedConversion,
 	},
 	sp_std::convert::TryInto,
-	traits::{Currency, ExistenceRequirement},
+	traits::{Currency, ExistenceRequirement, StorageVersion},
 	PalletId,
 };
 pub use pallet::*;
@@ -119,6 +120,9 @@ impl<Hash, AccountId, Balance, Moment: Default>
 	}
 }
 
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
+
 #[frame_support::pallet]
 pub mod pallet {
 	use crate::*;
@@ -135,17 +139,23 @@ pub mod pallet {
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type GeneticAnalysisOrdersWeightInfo: WeightInfo;
 		/// Currency type for this pallet.
+		#[pallet::constant]
 		type PalletId: Get<PalletId>;
 	}
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ---- Types --------------------------------------------
