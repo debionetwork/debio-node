@@ -19,7 +19,7 @@ mod v2 {
 	use super::*;
 
 	pub fn migrate<T: Config>() -> Weight {
-		PalletAccount::<T>::put(<Pallet<T>>::account_id());
+		PalletAccount::<T>::put(<Pallet<T>>::get_pallet_id());
 
 		T::DbWeight::get().writes(1)
 	}
