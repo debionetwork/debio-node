@@ -281,7 +281,10 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
 	}
 
-	fn set_account_profile_roles(account_id: &T::AccountId, role: &ProfileRolesOf<T>) -> Result<(), Self::Error> {
+	fn set_account_profile_roles(
+		account_id: &T::AccountId,
+		role: &ProfileRolesOf<T>,
+	) -> Result<(), Self::Error> {
 		ProfileRolesByAccountId::<T>::insert(account_id, role);
 		Ok(())
 	}
