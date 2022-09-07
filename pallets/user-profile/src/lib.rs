@@ -135,12 +135,14 @@ pub mod pallet {
 		/// parameters. [who]
 		UpdateUserProfileAdminKeySuccessful(AccountIdOf<T>),
 		RegisteredAccountId(AccountIdOf<T>, bool),
+		AdminSetProfileRoles(AccountIdOf<T>, ProfileRolesOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
 		Unauthorized,
+		FailedToSetProfileRole,
 	}
 
 	#[pallet::call]
@@ -177,10 +179,13 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			<Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::register_account_id(&who);
-
-			Self::deposit_event(Event::<T>::RegisteredAccountId(who, true));
-
-			Ok(().into())
+			match <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::set_account_profile_role_to_customer(&who) {
+				Ok(_) => {
+					Self::deposit_event(Event::<T>::RegisteredAccountId(who, true));
+					Ok(().into())
+				},
+				Err(_) => Err(Error::<T>::FailedToSetProfileRole.into()),
+			}
 		}
 
 		#[pallet::weight(T::WeightInfo::admin_set_eth_address())]
@@ -227,6 +232,23 @@ pub mod pallet {
 			Ok(Pays::No.into())
 		}
 
+		#[pallet::weight(0)]
+		pub fn sudo_update_profile_roles(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+			profile_roles: ProfileRolesOf<T>,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			match <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::set_account_profile_roles(&account_id, &profile_roles) {
+				Ok(_) => {
+					Self::deposit_event(Event::<T>::AdminSetProfileRoles(account_id, profile_roles));
+					Ok(Pays::No.into())
+				},
+				Err(_) => Err(Error::<T>::FailedToSetProfileRole.into()),
+			}
+		}
+
 		#[pallet::weight(T::WeightInfo::update_admin_key())]
 		pub fn update_admin_key(
 			origin: OriginFor<T>,
@@ -257,6 +279,28 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>
 	) {
 		EthAddressByAccountId::<T>::insert(account_id, eth_address);
 		AccountIdByEthAddress::<T>::insert(eth_address, account_id);
+	}
+
+	fn set_account_profile_roles(account_id: &T::AccountId, role: &ProfileRolesOf<T>) -> Result<(), Self::Error> {
+		ProfileRolesByAccountId::<T>::insert(account_id, role);
+		Ok(())
+	}
+
+	fn set_account_profile_role_to_customer(
+		account_id: &T::AccountId,
+	) -> Result<ProfileRolesOf<T>, Self::Error> {
+		let mut roles = match <Self as UserProfileInterface<
+			T,
+			EthereumAddressOf<T>,
+			ProfileRolesOf<T>,
+		>>::get_account_profile_roles(account_id)
+		{
+			Some(x) => x,
+			None => ProfileRolesOf::<T>::default(),
+		};
+		roles.set_is_customer(true);
+		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		Ok(roles)
 	}
 
 	fn register_account_id(account_id: &T::AccountId) {
@@ -312,10 +356,10 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			account_id,
 		)
 	}
+
 	fn set_account_profile_roles(account_id: &T::AccountId, role: &ProfileRolesOf<T>) {
 		ProfileRolesByAccountId::<T>::insert(account_id, role);
 	}
-
 	fn set_account_profile_role_to_lab(
 		account_id: &T::AccountId,
 	) -> Result<Self::ProfileRoles, Self::Error> {
