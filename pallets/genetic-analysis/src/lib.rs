@@ -83,7 +83,7 @@ impl<AccountId, Hash, Moment> GeneticAnalysisTracking for GeneticAnalysis<Accoun
 		self.status == GeneticAnalysisStatus::Rejected
 	}
 	fn is_empty(&self) -> bool {
-		self.report_link == Vec::<u8>::new() && self.comment == None
+		self.report_link == Vec::<u8>::new() && self.comment.is_none()
 	}
 }
 

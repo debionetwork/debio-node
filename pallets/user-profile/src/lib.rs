@@ -302,7 +302,7 @@ impl<T: Config> UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_customer(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 
@@ -376,7 +376,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_lab(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 	fn set_account_profile_role_to_customer(
@@ -408,7 +408,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_genetic_analyst(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 	fn set_account_profile_role_to_doctor(
@@ -440,7 +440,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_hospital(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 }

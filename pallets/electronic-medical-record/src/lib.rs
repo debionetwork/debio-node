@@ -399,7 +399,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
 
 			// Store to ElectronicMedicalRecordFiles storage
 			ElectronicMedicalRecordFileById::<T>::insert(
-				&electronic_medical_record_file_id,
+				electronic_medical_record_file_id,
 				&electronic_medical_record_file,
 			);
 
@@ -440,7 +440,7 @@ impl<T: Config> ElectronicMedicalRecordInterface<T> for Pallet<T> {
 	) -> Result<Self::ElectronicMedicalRecord, Self::Error> {
 		let electronic_medical_record =
 			ElectronicMedicalRecordById::<T>::get(electronic_medical_record_id);
-		if electronic_medical_record == None {
+		if electronic_medical_record.is_none() {
 			return Err(Error::<T>::ElectronicMedicalRecordDoesNotExist)
 		}
 
