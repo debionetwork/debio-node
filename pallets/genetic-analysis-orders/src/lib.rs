@@ -926,10 +926,10 @@ impl<T: Config> Pallet<T> {
 	pub fn insert_genetic_analysis_order_to_storage(
 		genetic_analysis_order: &GeneticAnalysisOrderOf<T>,
 	) {
-		GeneticAnalysisOrders::<T>::insert(&genetic_analysis_order.id, genetic_analysis_order);
+		GeneticAnalysisOrders::<T>::insert(genetic_analysis_order.id, genetic_analysis_order);
 		LastGeneticAnalysisOrderByCustomer::<T>::insert(
 			&genetic_analysis_order.customer_id,
-			&genetic_analysis_order.id,
+			genetic_analysis_order.id,
 		);
 		Self::insert_genetic_analysis_order_id_into_genetic_analysis_orders_by_seller(
 			genetic_analysis_order,

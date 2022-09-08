@@ -271,7 +271,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
 		let service =
 			Service::new(service_id, owner_id.clone(), service_info_mut, service_flow.clone());
 		// Store to Services storage
-		Services::<T>::insert(&service_id, &service);
+		Services::<T>::insert(service_id, &service);
 
 		// Increment Services Count
 		Self::add_services_count();
@@ -291,7 +291,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
 		service_info: &Self::ServiceInfo,
 	) -> Result<Self::Service, Self::Error> {
 		let service = Services::<T>::get(service_id);
-		if service == None {
+		if service.is_none() {
 			return Err(Error::<T>::ServiceDoesNotExist)
 		}
 		let mut service = service.unwrap();
@@ -329,7 +329,7 @@ impl<T: Config> ServiceInterface<T> for Pallet<T> {
 		service_id: &Self::ServiceId,
 	) -> Result<Self::Service, Self::Error> {
 		let service = Services::<T>::get(service_id);
-		if service == None {
+		if service.is_none() {
 			return Err(Error::<T>::ServiceDoesNotExist)
 		}
 		let service = service.unwrap();

@@ -83,7 +83,7 @@ impl<AccountId, Hash, Moment> DnaSampleTracking for DnaSample<AccountId, Hash, M
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct DnaTestResult<AccountId, Hash, Moment> {
 	pub tracking_id: DnaSampleTrackingId,
-	pub lab_id: Option<AccountId>, // if lab_id == None, Test result is submitted independently
+	pub lab_id: Option<AccountId>, // if lab_id.is_none(), Test result is submitted independently
 	pub owner_id: AccountId,
 	pub comments: Option<Vec<u8>>,
 	pub result_link: Option<Vec<u8>>,
@@ -492,11 +492,11 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 	) -> Result<Self::DnaTestResult, Self::Error> {
 		let seed = Self::generate_random_seed(owner_id, owner_id);
 
-		if submission.result_link == None {
+		if submission.result_link.is_none() {
 			return Err(Error::<T>::ResultLinkRequired)
 		}
 
-		if submission.report_link == None {
+		if submission.report_link.is_none() {
 			return Err(Error::<T>::ReportLinkRequired)
 		}
 

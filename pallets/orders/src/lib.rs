@@ -564,8 +564,8 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub fn insert_order_to_storage(order: &OrderOf<T>) {
-		Orders::<T>::insert(&order.id, order);
-		LastOrderByCustomer::<T>::insert(&order.customer_id, &order.id);
+		Orders::<T>::insert(order.id, order);
+		LastOrderByCustomer::<T>::insert(&order.customer_id, order.id);
 		Self::insert_order_id_into_orders_by_seller(order);
 		Self::insert_order_id_into_pending_orders_by_seller(order);
 		Self::insert_order_id_into_orders_by_customer(order);

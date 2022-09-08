@@ -242,7 +242,7 @@ impl<T: Config> CertificationInterface<T> for Pallet<T> {
 		let certification =
 			Certification::new(certification_id, owner_id.clone(), certification_info.clone());
 		// Store to Certifications storage
-		Certifications::<T>::insert(&certification_id, &certification);
+		Certifications::<T>::insert(certification_id, &certification);
 
 		// Increment Certifications Count
 		Self::add_certifications_count();
@@ -262,7 +262,7 @@ impl<T: Config> CertificationInterface<T> for Pallet<T> {
 		certification_info: &Self::CertificationInfo,
 	) -> Result<Self::Certification, Self::Error> {
 		let certification = Certifications::<T>::get(certification_id);
-		if certification == None {
+		if certification.is_none() {
 			return Err(Error::<T>::CertificationDoesNotExist)
 		}
 		let mut certification = certification.unwrap();
@@ -287,7 +287,7 @@ impl<T: Config> CertificationInterface<T> for Pallet<T> {
 		certification_id: &Self::CertificationId,
 	) -> Result<Self::Certification, Self::Error> {
 		let certification = Certifications::<T>::get(certification_id);
-		if certification == None {
+		if certification.is_none() {
 			return Err(Error::<T>::CertificationDoesNotExist)
 		}
 		let certification = certification.unwrap();

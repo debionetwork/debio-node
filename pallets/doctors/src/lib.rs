@@ -267,7 +267,7 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 			// Check if user is a doctor
 			let doctor = Self::doctor_by_account_id(&who);
-			if doctor == None {
+			if doctor.is_none() {
 				return Err(Error::<T>::DoctorDoesNotExist.into())
 			}
 
@@ -311,7 +311,7 @@ impl<T: Config> DoctorInterface<T> for Pallet<T> {
 		doctor_info: &Self::DoctorInfo,
 	) -> Result<Self::Doctor, Self::Error> {
 		let doctor = Doctors::<T>::get(account_id);
-		if doctor == None {
+		if doctor.is_none() {
 			return Err(Error::<T>::DoctorDoesNotExist)
 		}
 		let mut doctor = doctor.unwrap();
@@ -344,7 +344,7 @@ impl<T: Config> DoctorInterface<T> for Pallet<T> {
 
 	fn delete_doctor(account_id: &T::AccountId) -> Result<Self::Doctor, Self::Error> {
 		let doctor = Doctors::<T>::get(account_id);
-		if doctor == None {
+		if doctor.is_none() {
 			return Err(Error::<T>::DoctorDoesNotExist)
 		}
 		let doctor = doctor.unwrap();

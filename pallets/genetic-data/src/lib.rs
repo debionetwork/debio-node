@@ -277,7 +277,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 		report_link: &[u8],
 	) -> Result<Self::GeneticData, Self::Error> {
 		let genetic_data = GeneticDataById::<T>::get(genetic_data_id);
-		if genetic_data == None {
+		if genetic_data.is_none() {
 			return Err(Error::<T>::GeneticDataDoesNotExist)
 		}
 
@@ -304,7 +304,7 @@ impl<T: Config> GeneticDataInterface<T> for Pallet<T> {
 		genetic_data_id: &T::Hash,
 	) -> Result<Self::GeneticData, Self::Error> {
 		let genetic_data = GeneticDataById::<T>::get(genetic_data_id);
-		if genetic_data == None {
+		if genetic_data.is_none() {
 			return Err(Error::<T>::GeneticDataDoesNotExist)
 		}
 

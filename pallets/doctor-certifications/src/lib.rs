@@ -253,7 +253,7 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
 			certification_info.clone(),
 		);
 		// Store to DoctorCertifications storage
-		DoctorCertifications::<T>::insert(&certification_id, &certification);
+		DoctorCertifications::<T>::insert(certification_id, &certification);
 
 		// Increment DoctorCertifications Count
 		Self::add_certifications_count();
@@ -273,7 +273,7 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
 		certification_info: &Self::DoctorCertificationInfo,
 	) -> Result<Self::DoctorCertification, Self::Error> {
 		let certification = DoctorCertifications::<T>::get(certification_id);
-		if certification == None {
+		if certification.is_none() {
 			return Err(Error::<T>::DoctorCertificationDoesNotExist)
 		}
 		let mut certification = certification.unwrap();
@@ -298,7 +298,7 @@ impl<T: Config> DoctorCertificationInterface<T> for Pallet<T> {
 		certification_id: &Self::DoctorCertificationId,
 	) -> Result<Self::DoctorCertification, Self::Error> {
 		let certification = DoctorCertifications::<T>::get(certification_id);
-		if certification == None {
+		if certification.is_none() {
 			return Err(Error::<T>::DoctorCertificationDoesNotExist)
 		}
 		let certification = certification.unwrap();
