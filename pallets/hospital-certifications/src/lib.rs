@@ -253,7 +253,7 @@ impl<T: Config> HospitalCertificationInterface<T> for Pallet<T> {
 			certification_info.clone(),
 		);
 		// Store to HospitalCertifications storage
-		HospitalCertifications::<T>::insert(&certification_id, &certification);
+		HospitalCertifications::<T>::insert(certification_id, &certification);
 
 		// Increment HospitalCertifications Count
 		Self::add_certifications_count();
@@ -273,7 +273,7 @@ impl<T: Config> HospitalCertificationInterface<T> for Pallet<T> {
 		certification_info: &Self::HospitalCertificationInfo,
 	) -> Result<Self::HospitalCertification, Self::Error> {
 		let certification = HospitalCertifications::<T>::get(certification_id);
-		if certification == None {
+		if certification.is_none() {
 			return Err(Error::<T>::HospitalCertificationDoesNotExist)
 		}
 		let mut certification = certification.unwrap();
@@ -298,7 +298,7 @@ impl<T: Config> HospitalCertificationInterface<T> for Pallet<T> {
 		certification_id: &Self::HospitalCertificationId,
 	) -> Result<Self::HospitalCertification, Self::Error> {
 		let certification = HospitalCertifications::<T>::get(certification_id);
-		if certification == None {
+		if certification.is_none() {
 			return Err(Error::<T>::HospitalCertificationDoesNotExist)
 		}
 		let certification = certification.unwrap();

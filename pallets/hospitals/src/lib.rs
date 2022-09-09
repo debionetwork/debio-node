@@ -267,7 +267,7 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 			// Check if user is a hospital
 			let hospital = Self::hospital_by_account_id(&who);
-			if hospital == None {
+			if hospital.is_none() {
 				return Err(Error::<T>::HospitalDoesNotExist.into())
 			}
 
@@ -311,7 +311,7 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
 		hospital_info: &Self::HospitalInfo,
 	) -> Result<Self::Hospital, Self::Error> {
 		let hospital = Hospitals::<T>::get(account_id);
-		if hospital == None {
+		if hospital.is_none() {
 			return Err(Error::<T>::HospitalDoesNotExist)
 		}
 		let mut hospital = hospital.unwrap();
@@ -344,7 +344,7 @@ impl<T: Config> HospitalInterface<T> for Pallet<T> {
 
 	fn delete_hospital(account_id: &T::AccountId) -> Result<Self::Hospital, Self::Error> {
 		let hospital = Hospitals::<T>::get(account_id);
-		if hospital == None {
+		if hospital.is_none() {
 			return Err(Error::<T>::HospitalDoesNotExist)
 		}
 		let hospital = hospital.unwrap();

@@ -318,7 +318,7 @@ impl<T: Config> GeneticAnalystQualificationInterface<T> for Pallet<T> {
 				qualification_info.clone(),
 			);
 			// Store to GeneticAnalystQualifications storage
-			GeneticAnalystQualifications::<T>::insert(&qualification_id, &qualification);
+			GeneticAnalystQualifications::<T>::insert(qualification_id, &qualification);
 
 			// Increment GeneticAnalystQualifications Count
 			Self::add_qualifications_count();
@@ -341,7 +341,7 @@ impl<T: Config> GeneticAnalystQualificationInterface<T> for Pallet<T> {
 		qualification_info: &Self::GeneticAnalystQualificationInfo,
 	) -> Result<Self::GeneticAnalystQualification, Self::Error> {
 		let qualification = GeneticAnalystQualifications::<T>::get(qualification_id);
-		if qualification == None {
+		if qualification.is_none() {
 			return Err(Error::<T>::GeneticAnalystQualificationDoesNotExist)
 		}
 		let mut qualification = qualification.unwrap();
@@ -370,7 +370,7 @@ impl<T: Config> GeneticAnalystQualificationInterface<T> for Pallet<T> {
 		qualification_id: &Self::GeneticAnalystQualificationId,
 	) -> Result<Self::GeneticAnalystQualification, Self::Error> {
 		let qualification = GeneticAnalystQualifications::<T>::get(qualification_id);
-		if qualification == None {
+		if qualification.is_none() {
 			return Err(Error::<T>::GeneticAnalystQualificationDoesNotExist)
 		}
 		let qualification = qualification.unwrap();

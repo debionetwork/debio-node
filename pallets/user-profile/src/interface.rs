@@ -9,6 +9,14 @@ pub trait UserProfileInterface<T: frame_system::Config, EthAddress, ProfileRoles
 		admin_key: &T::AccountId,
 	) -> Result<(), Self::Error>;
 
+	fn set_account_profile_roles(
+		account_id: &T::AccountId,
+		role: &ProfileRoles,
+	) -> Result<(), Self::Error>;
+	fn set_account_profile_role_to_customer(
+		account_id: &T::AccountId,
+	) -> Result<ProfileRoles, Self::Error>;
+
 	fn get_registered_account_id(account_id: &T::AccountId) -> Option<bool>;
 	fn get_account_profile_roles(account_id: &T::AccountId) -> Option<ProfileRoles>;
 

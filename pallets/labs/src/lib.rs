@@ -446,7 +446,7 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 			// Check if user is a lab
 			let lab = Self::lab_by_account_id(&who);
-			if lab == None {
+			if lab.is_none() {
 				return Err(Error::<T>::LabDoesNotExist.into())
 			}
 
@@ -597,7 +597,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		lab_info: &Self::LabInfo,
 	) -> Result<Self::Lab, Self::Error> {
 		let lab = Labs::<T>::get(account_id);
-		if lab == None {
+		if lab.is_none() {
 			return Err(Error::<T>::LabDoesNotExist)
 		}
 		let mut lab = lab.unwrap();
@@ -639,7 +639,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		}
 
 		let lab = Labs::<T>::get(account_id);
-		if lab == None {
+		if lab.is_none() {
 			return Err(Error::<T>::LabDoesNotExist)
 		}
 		let mut lab = lab.unwrap();
@@ -650,7 +650,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 
 	fn delete_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error> {
 		let lab = Labs::<T>::get(account_id);
-		if lab == None {
+		if lab.is_none() {
 			return Err(Error::<T>::LabDoesNotExist)
 		}
 		let lab = lab.unwrap();
@@ -672,7 +672,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 
 	fn stake_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error> {
 		let lab = Labs::<T>::get(account_id);
-		if lab == None {
+		if lab.is_none() {
 			return Err(Error::<T>::LabDoesNotExist)
 		}
 
@@ -721,7 +721,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 
 	fn unstake_lab(account_id: &T::AccountId) -> Result<Self::Lab, Self::Error> {
 		let lab = Labs::<T>::get(account_id);
-		if lab == None {
+		if lab.is_none() {
 			return Err(Error::<T>::LabDoesNotExist)
 		}
 
@@ -753,7 +753,7 @@ impl<T: Config> LabInterface<T> for Pallet<T> {
 		}
 
 		let lab = Labs::<T>::get(account_id);
-		if lab == None {
+		if lab.is_none() {
 			return Err(Error::<T>::LabDoesNotExist)
 		}
 

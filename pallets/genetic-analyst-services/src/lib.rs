@@ -325,7 +325,7 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 			);
 			// Store to GeneticAnalystServices storage
 			GeneticAnalystServices::<T>::insert(
-				&genetic_analyst_service_id,
+				genetic_analyst_service_id,
 				&genetic_analyst_service,
 			);
 
@@ -350,7 +350,7 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 		genetic_analyst_service_info: &Self::GeneticAnalystServiceInfo,
 	) -> Result<Self::GeneticAnalystService, Self::Error> {
 		let genetic_analyst_service = GeneticAnalystServices::<T>::get(genetic_analyst_service_id);
-		if genetic_analyst_service == None {
+		if genetic_analyst_service.is_none() {
 			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
 		}
 		let mut genetic_analyst_service = genetic_analyst_service.unwrap();
@@ -396,7 +396,7 @@ impl<T: Config> GeneticAnalystServiceInterface<T> for Pallet<T> {
 		genetic_analyst_service_id: &Self::GeneticAnalystServiceId,
 	) -> Result<Self::GeneticAnalystService, Self::Error> {
 		let genetic_analyst_service = GeneticAnalystServices::<T>::get(genetic_analyst_service_id);
-		if genetic_analyst_service == None {
+		if genetic_analyst_service.is_none() {
 			return Err(Error::<T>::GeneticAnalystServiceDoesNotExist)
 		}
 		let genetic_analyst_service = genetic_analyst_service.unwrap();
