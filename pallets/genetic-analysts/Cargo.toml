@@ -1,6 +1,6 @@
 [package]
 name = 'genetic-analysts'
-version = "2.1.0"
+version = '2.1.0'
 repository = ''
 edition = '2021'
 authors = ['agustinustheoo <agustinustheoo@gmail.com>']
@@ -12,15 +12,15 @@ license = 'AGPL-3.0'
 targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
-frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28", optional = true }
+codec = { package = 'parity-scale-codec', version = '3.0.0', default-features = false, features = ['derive'] }
+scale-info = { version = '2.0.1', default-features = false, features = ['derive'] }
+frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+frame-benchmarking = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', optional = true }
 
-sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
+sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
 
 primitives-stake-status = { path = '../../primitives/stake-status', default-features = false }
 primitives-verification-status = { path = '../../primitives/verification-status', default-features = false }
@@ -33,8 +33,8 @@ traits-genetic-analyst-services = { path = '../genetic-analyst-services/traits',
 traits-genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications/traits', default-features = false }
 
 ## Substrate Pallet Dependencies
-pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
+pallet-timestamp = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+pallet-balances = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
 
 ## Local Dependencies
 genetic-analyst-services = { path = '../genetic-analyst-services', default-features = false }
@@ -42,9 +42,9 @@ genetic-analyst-qualifications = { path = '../genetic-analyst-qualifications', d
 user-profile = { path = '../user-profile', default-features = false }
 
 [dev-dependencies]
-serde = { default-features = false, version = "1.0.136" }
-sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
+serde = { default-features = false, version = '1.0.136' }
+sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
 
 [features]
 default = ['std']

@@ -1,16 +1,16 @@
 [package]
-name = "traits-genetic-analyst-services"
-version = "2.1.0"
-authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
+name = 'traits-genetic-analyst-services'
+version = '2.1.0'
+authors = ['agustinustheoo <agustinustheoo@gmail.com>']
 edition = '2021'
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
-sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
-frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.28" }
+codec = { package = 'parity-scale-codec', version = '3.0.0', default-features = false, features = ['derive'] }
+scale-info = { version = '2.0.1', default-features = false, features = ['derive'] }
+sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
+frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28' }
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
 
 [features]

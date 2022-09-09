@@ -1,6 +1,6 @@
 [package]
 name = 'debio-runtime'
-version = '2.1.4'
+version = '2.1.5'
 edition = '2021'
 license = 'AGPL-3.0'
 authors = ['DeBio Dev Team <debio_dev@blocksphere.id>']
@@ -16,9 +16,9 @@ substrate-wasm-builder = { git = 'https://github.com/paritytech/substrate.git', 
 [dependencies]
 # External Dependencies
 codec = { package = 'parity-scale-codec', version = '3.0.0', default-features = false, features = ['derive'] }
-scale-info = { version = '2.0.1', default-features = false, features = ['derive'] }
+scale-info = { version = '2.1.1', default-features = false, features = ['derive'] }
 hex-literal = { version = '0.3.4', optional = true }
-log = { version = '0.4.14', default-features = false }
+log = { version = '0.4.17', default-features = false }
 static_assertions = '1.1.0'
 
 # Substrate Dependencies
@@ -55,7 +55,7 @@ pallet-beefy-mmr = { git = 'https://github.com/paritytech/substrate.git', branch
 pallet-grandpa = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
 pallet-im-online = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
 pallet-mmr = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
-pallet-mmr-primitives = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
+sp-mmr-primitives = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
 pallet-offences = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
 pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false }
 pallet-session = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.28', default-features = false, features = ['historical'] }
@@ -148,7 +148,7 @@ std = [
     'pallet-beefy/std',
     'pallet-grandpa/std',
     'pallet-im-online/std',
-    'pallet-mmr-primitives/std',
+    'sp-mmr-primitives/std',
     'pallet-mmr/std',
 	'pallet-offences/std',
 	'pallet-randomness-collective-flip/std',

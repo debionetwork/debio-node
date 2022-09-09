@@ -1,6 +1,6 @@
 [package]
 name = 'debio'
-version = '2.1.4'
+version = '2.1.5'
 edition = '2021'
 license = 'AGPL-3.0'
 authors = ['DeBio Dev Team <debio_dev@blocksphere.id>']
@@ -16,9 +16,10 @@ substrate-build-script-utils = { git = 'https://github.com/paritytech/substrate.
 [dependencies]
 # External Dependencies
 codec = { package = 'parity-scale-codec', version = '3.0.0' }
+serde_json = '1.0.81'
 serde = { version = '1.0.136', features = ['derive'] }
-clap = { version = '3.0', features = ['derive'] }
-jsonrpc-core = { version = '18.0.0' }
+clap = { version = '3.1.18', features = ['derive'] }
+jsonrpsee = { version = '0.15.1', features = ['server'] }
 
 # Substrate Dependencies
 ## Substrate Primitive Dependencies
