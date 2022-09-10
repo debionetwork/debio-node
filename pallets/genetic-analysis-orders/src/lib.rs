@@ -123,15 +123,24 @@ impl<Hash, AccountId, Balance, Moment: Default>
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
 
+// Asset ID and Balance types
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
 #[frame_support::pallet]
 pub mod pallet {
 	use crate::*;
-	use frame_support::dispatch::DispatchResultWithPostInfo;
+	use frame_support::{dispatch::DispatchResultWithPostInfo, traits::tokens::fungibles};
 	use frame_system::pallet_prelude::*;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type Assets: fungibles::Mutate<
+			<Self as frame_system::Config>::AccountId,
+			AssetId = AssetId,
+			Balance = AssetBalance,
+		>;
 		type GeneticAnalysts: GeneticAnalystsProvider<Self>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticData: GeneticDataProvider<Self>;

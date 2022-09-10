@@ -859,6 +859,7 @@ impl genetic_analysis::Config for Runtime {
 impl genetic_analysis_orders::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type GeneticData = GeneticData;
 	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;

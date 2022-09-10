@@ -43,6 +43,7 @@ traits-genetic-analyst-services = { path = '../../genetic-analyst-services/trait
 traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
 
 ## Substrate Pallet Dependencies
+pallet-assets = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-randomness-collective-flip = { default-features = false, git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.18" }
@@ -84,6 +85,7 @@ std = [
     'traits-genetic-analyst-services/std',
     'traits-genetic-analyst-qualifications/std',
 
+	'pallet-assets/std',
 	'pallet-balances/std',
     'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',

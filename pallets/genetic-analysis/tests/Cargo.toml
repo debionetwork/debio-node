@@ -30,6 +30,7 @@ frame-system = { default-features = false, git = "https://github.com/paritytech/
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18", optional = true }
 
 ## Substrate Pallet Dependencies
+pallet-assets = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-randomness-collective-flip = { default-features = false, git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.18" }
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -73,6 +74,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
 
+    'pallet-assets/std',
     'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
 	'pallet-balances/std',
