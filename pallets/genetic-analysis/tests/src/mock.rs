@@ -209,7 +209,7 @@ use sp_io::TestExternalities;
 
 #[cfg(test)]
 pub struct ExternalityBuilder {
-	existential_deposit: u64,
+	existential_deposit: u128,
 }
 
 #[cfg(test)]
@@ -221,7 +221,7 @@ impl Default for ExternalityBuilder {
 
 #[cfg(test)]
 impl ExternalityBuilder {
-	pub fn existential_deposit(mut self, existential_deposit: u64) -> Self {
+	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
 		self.existential_deposit = existential_deposit;
 		self
 	}
