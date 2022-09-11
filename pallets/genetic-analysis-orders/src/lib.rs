@@ -1203,7 +1203,7 @@ impl<T: Config> Pallet<T> {
 	// Get token identifier
 	pub fn asset_id(currency_type: &CurrencyType) -> Result<u32, Error<T>> {
 		currency_type
-			.to_string()
+			.to_asset_id()
 			.parse::<u32>()
 			.map_err(|_| Error::<T>::WrongAssetIdFormat)
 	}

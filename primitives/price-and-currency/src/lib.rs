@@ -26,14 +26,14 @@ use scale_info::prelude::string::String;
 use sp_std::borrow::ToOwned;
 
 impl CurrencyType {
-	pub fn to_string(&self) -> String {
+	pub fn to_asset_id(&self) -> String {
 		match self {
-			CurrencyType::DBIO => "DBIO".to_owned(),
-			CurrencyType::USN => "USN".to_owned(),
-			CurrencyType::USDT => "USDT".to_owned(),
-			CurrencyType::DAI => "DAI".to_owned(),
-			CurrencyType::USDO => "USDO".to_owned(),
-			CurrencyType::ETH => "ETH".to_owned(),
+			CurrencyType::DBIO => "dbio".to_owned(),
+			CurrencyType::USN => "usn".to_owned(),
+			CurrencyType::USDT => "usdt".to_owned(),
+			CurrencyType::DAI => "dai".to_owned(),
+			CurrencyType::USDO => "usdo".to_owned(),
+			CurrencyType::ETH => "eth".to_owned(),
 		}
 	}
 }
