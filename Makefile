@@ -25,10 +25,9 @@ build-benchmark:
 build:
 	cargo build --release
 
-.PHONY: clean
-clean:
+.PHONY: format
+format:
 	cargo +nightly fmt
-	cargo +nightly clippy
 
 .PHONY: prepush
 prepush:

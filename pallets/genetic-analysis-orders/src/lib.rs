@@ -639,15 +639,18 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 					Ok(_) => (),
 					Err(dispatch) => match dispatch {
 						sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-						sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+						sp_runtime::DispatchError::CannotLookup =>
+							return Err(Error::<T>::CannotLookup),
 						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
 						sp_runtime::DispatchError::TooManyConsumers =>
 							return Err(Error::<T>::TooManyConsumers),
 						sp_runtime::DispatchError::ConsumerRemaining =>
 							return Err(Error::<T>::ConsumerRemaining),
-						sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+						sp_runtime::DispatchError::NoProviders =>
+							return Err(Error::<T>::NoProviders),
 						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-						sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Arithmetic(_) =>
+							return Err(Error::<T>::Arithmetic),
 						sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 					},
 				}
@@ -662,15 +665,18 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 					Ok(_) => (),
 					Err(dispatch) => match dispatch {
 						sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-						sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+						sp_runtime::DispatchError::CannotLookup =>
+							return Err(Error::<T>::CannotLookup),
 						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
 						sp_runtime::DispatchError::TooManyConsumers =>
 							return Err(Error::<T>::TooManyConsumers),
 						sp_runtime::DispatchError::ConsumerRemaining =>
 							return Err(Error::<T>::ConsumerRemaining),
-						sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+						sp_runtime::DispatchError::NoProviders =>
+							return Err(Error::<T>::NoProviders),
 						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-						sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Arithmetic(_) =>
+							return Err(Error::<T>::Arithmetic),
 						sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
 					},
 				}
@@ -939,7 +945,6 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-
 		// Transfer 5% to DBIO Treasury
 		if genetic_analysis_order.currency == CurrencyType::DBIO {
 			match CurrencyOf::<T>::transfer(
@@ -1197,7 +1202,10 @@ impl<T: Config> Pallet<T> {
 
 	// Get token identifier
 	pub fn asset_id(currency_type: &CurrencyType) -> Result<u32, Error<T>> {
-		currency_type.to_string().parse::<u32>().map_err(|_| Error::<T>::WrongAssetIdFormat)
+		currency_type
+			.to_string()
+			.parse::<u32>()
+			.map_err(|_| Error::<T>::WrongAssetIdFormat)
 	}
 }
 
