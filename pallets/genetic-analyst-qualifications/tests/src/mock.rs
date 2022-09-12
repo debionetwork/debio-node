@@ -1,5 +1,6 @@
-use frame_support::{parameter_types, PalletId};
+use frame_support::{parameter_types, traits::ConstU128, PalletId};
 use frame_system as system;
+use frame_system::EnsureRoot;
 use pallet_balances::AccountData;
 use sp_core::H256;
 use sp_runtime::{
@@ -30,7 +31,8 @@ frame_support::construct_runtime!(
 		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage}
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		OctopusAssets: pallet_assets::<Instance1>::{Call, Config<T>, Event<T>, Pallet, Storage},
 	}
 );
 
@@ -66,7 +68,43 @@ impl system::Config for Test {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-type Balance = u64;
+/// The native token, uses 18 decimals of precision.
+pub mod currency {
+	use super::Balance;
+
+	pub const UNITS: Balance = 1_000_000_000_000_000_000;
+	pub const DOLLARS: Balance = UNITS;
+}
+
+pub type OctopusAssetId = u32;
+pub type OctopusAssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = currency::DOLLARS;
+	pub const AssetDeposit: Balance = 100 * currency::DOLLARS;
+	pub const MetadataDepositBase: Balance = 10 * currency::DOLLARS;
+	pub const MetadataDepositPerByte: Balance = currency::DOLLARS;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config<pallet_assets::Instance1> for Test {
+	type Event = Event;
+	type Balance = OctopusAssetBalance;
+	type AssetId = OctopusAssetId;
+	type Currency = Balances;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU128<{ currency::DOLLARS }>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
+type Balance = u128;
 
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
@@ -147,6 +185,7 @@ impl genetic_analyst_qualifications::Config for Test {
 impl genetic_analysis_orders::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type GeneticData = GeneticData;
 	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;

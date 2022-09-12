@@ -14,7 +14,7 @@ mod tests {
 	use primitives_duration::ExpectedDuration;
 	use primitives_price_and_currency::PriceByCurrency;
 
-	fn create_twenty_services() -> Vec<GeneticAnalystServiceInfo<u64>> {
+	fn create_twenty_services() -> Vec<GeneticAnalystServiceInfo<u128>> {
 		vec![
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
@@ -199,7 +199,7 @@ mod tests {
 		]
 	}
 
-	fn create_twenty_one_services() -> Vec<GeneticAnalystServiceInfo<u64>> {
+	fn create_twenty_one_services() -> Vec<GeneticAnalystServiceInfo<u128>> {
 		let mut twenty_services = create_twenty_services();
 		twenty_services.push(GeneticAnalystServiceInfo {
 			name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
