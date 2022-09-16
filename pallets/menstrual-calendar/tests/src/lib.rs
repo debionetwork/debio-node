@@ -9,8 +9,8 @@ mod tests {
 		sp_runtime::traits::{Hash, Keccak256},
 	};
 
-	use menstrual_calendar::{DnaSampleStatus, DnaTestResultSubmission, Error};
 	use labs::LabInfo;
+	use menstrual_calendar::{DnaSampleStatus, DnaTestResultSubmission, Error};
 	use services::ServiceInfo;
 
 	use primitives_area_code::{CityCode, CountryCode, RegionCode};

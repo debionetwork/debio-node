@@ -11,5 +11,5 @@ pub trait MenstrualSubscriptionProvider<T: Config> {
 	type Error;
 	type MenstrualSubscription: MenstrualSubscription<T> + sp_std::fmt::Debug;
 
-	fn menstrual_data_by_id(id: &T::Hash) -> Option<Self::MenstrualSubscription>;
+	fn menstrual_subscription_by_id(id: &T::Hash) -> Option<Self::MenstrualSubscription>;
 }

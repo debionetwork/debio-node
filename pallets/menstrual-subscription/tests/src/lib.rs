@@ -9,8 +9,8 @@ mod tests {
 		sp_runtime::traits::{Hash, Keccak256},
 	};
 
-	use menstrual_subscription::{DnaSampleStatus, DnaTestResultSubmission, Error};
 	use labs::LabInfo;
+	use menstrual_subscription::{DnaSampleStatus, DnaTestResultSubmission, Error};
 	use services::ServiceInfo;
 
 	use primitives_area_code::{CityCode, CountryCode, RegionCode};
@@ -247,7 +247,8 @@ mod tests {
 			));
 
 			let _dna_test_result =
-				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone()).unwrap();
+				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone())
+					.unwrap();
 
 			assert_eq!(_dna_test_result.tracking_id, _dna_sample[0].clone());
 			assert_eq!(_dna_test_result.lab_id, Some(1));
@@ -362,7 +363,8 @@ mod tests {
 			));
 
 			let _dna_test_result =
-				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone()).unwrap();
+				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone())
+					.unwrap();
 
 			assert_eq!(_dna_test_result.tracking_id, _dna_sample[0].clone());
 			assert_eq!(_dna_test_result.lab_id, Some(1));
@@ -529,7 +531,8 @@ mod tests {
 			));
 
 			let _dna_test_result =
-				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone()).unwrap();
+				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone())
+					.unwrap();
 
 			assert_eq!(_dna_test_result.tracking_id, _dna_sample[0].clone());
 			assert_eq!(_dna_test_result.lab_id, Some(1));
@@ -708,7 +711,8 @@ mod tests {
 			let _dna_sample = MenstrualSubscription::dna_test_results_by_owner_id(1).unwrap();
 
 			let _dna_test_result =
-				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone()).unwrap();
+				MenstrualSubscription::dna_test_result_by_tracking_id(_dna_sample[0].clone())
+					.unwrap();
 
 			assert_eq!(_dna_test_result.tracking_id, _dna_sample[0].clone());
 			assert_eq!(_dna_test_result.owner_id, 1);

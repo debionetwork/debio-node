@@ -27,7 +27,9 @@ use orders::Pallet as Orders;
 
 #[allow(unused)]
 use menstrual_subscription::Pallet as MenstrualSubscription;
-use menstrual_subscription::{Config as MenstrualSubscriptionConfig, DnaSampleStatus, DnaTestResultSubmission};
+use menstrual_subscription::{
+	Config as MenstrualSubscriptionConfig, DnaSampleStatus, DnaTestResultSubmission,
+};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
 use frame_system::RawOrigin;

@@ -27,7 +27,9 @@ use orders::Pallet as Orders;
 
 #[allow(unused)]
 use menstrual_calendar::Pallet as MenstrualCalendar;
-use menstrual_calendar::{Config as MenstrualCalendarConfig, DnaSampleStatus, DnaTestResultSubmission};
+use menstrual_calendar::{
+	Config as MenstrualCalendarConfig, DnaSampleStatus, DnaTestResultSubmission,
+};
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
 use frame_system::RawOrigin;

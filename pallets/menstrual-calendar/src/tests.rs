@@ -20,7 +20,8 @@ fn add_menstrual_calendar_works() {
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count_by_owner(1), Some(1));
 
-		let menstrual_calendar = MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
+		let menstrual_calendar =
+			MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.owner_id, 1);
@@ -49,7 +50,8 @@ fn remove_menstrual_calendar_works() {
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count_by_owner(1), Some(1));
 
-		let menstrual_calendar = MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
+		let menstrual_calendar =
+			MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.owner_id, 1);
@@ -60,7 +62,10 @@ fn remove_menstrual_calendar_works() {
 		);
 		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
 
-		assert_ok!(MentrualCalendar::remove_menstrual_calendar(Origin::signed(1), menstrual_calendar_ids[0]));
+		assert_ok!(MentrualCalendar::remove_menstrual_calendar(
+			Origin::signed(1),
+			menstrual_calendar_ids[0]
+		));
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count(), Some(0));
 
@@ -97,7 +102,8 @@ fn remove_menstrual_calendar_not_menstrual_calendar_owner() {
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count_by_owner(1), Some(1));
 
-		let menstrual_calendar = MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
+		let menstrual_calendar =
+			MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.owner_id, 1);
@@ -109,7 +115,10 @@ fn remove_menstrual_calendar_not_menstrual_calendar_owner() {
 		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
 
 		assert_noop!(
-			MentrualCalendar::remove_menstrual_calendar(Origin::signed(2), menstrual_calendar_ids[0]),
+			MentrualCalendar::remove_menstrual_calendar(
+				Origin::signed(2),
+				menstrual_calendar_ids[0]
+			),
 			Error::<Test>::NotMentrualCalendarOwner
 		);
 	})
@@ -131,7 +140,8 @@ fn update_menstrual_calendar_works() {
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count_by_owner(1), Some(1));
 
-		let menstrual_calendar = MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
+		let menstrual_calendar =
+			MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.owner_id, 1);
@@ -156,7 +166,8 @@ fn update_menstrual_calendar_works() {
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count_by_owner(1), Some(1));
 
-		let menstrual_calendar = MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
+		let menstrual_calendar =
+			MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.owner_id, 1);
@@ -165,7 +176,10 @@ fn update_menstrual_calendar_works() {
 			menstrual_calendar.description,
 			"DeBio Menstrual Data Document Description 2".as_bytes().to_vec()
 		);
-		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link 2".as_bytes().to_vec());
+		assert_eq!(
+			menstrual_calendar.report_link,
+			"DeBio Menstrual Data Link 2".as_bytes().to_vec()
+		);
 	})
 }
 
@@ -201,7 +215,8 @@ fn update_menstrual_calendar_not_menstrual_calendar_owner() {
 
 		assert_eq!(MentrualCalendar::menstrual_calendar_count_by_owner(1), Some(1));
 
-		let menstrual_calendar = MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
+		let menstrual_calendar =
+			MentrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.owner_id, 1);

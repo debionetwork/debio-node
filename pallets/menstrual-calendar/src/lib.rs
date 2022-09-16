@@ -169,7 +169,10 @@ pub mod pallet {
 				&report_link,
 			) {
 				Ok(menstrual_calendar) => {
-					Self::deposit_event(Event::MentrualCalendarAdded(menstrual_calendar, who.clone()));
+					Self::deposit_event(Event::MentrualCalendarAdded(
+						menstrual_calendar,
+						who.clone(),
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -194,7 +197,10 @@ pub mod pallet {
 				&report_link,
 			) {
 				Ok(menstrual_calendar) => {
-					Self::deposit_event(Event::MentrualCalendarUpdated(menstrual_calendar, who.clone()));
+					Self::deposit_event(Event::MentrualCalendarUpdated(
+						menstrual_calendar,
+						who.clone(),
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -213,7 +219,10 @@ pub mod pallet {
 				&menstrual_calendar_id,
 			) {
 				Ok(menstrual_calendar) => {
-					Self::deposit_event(Event::MentrualCalendarRemoved(menstrual_calendar, who.clone()));
+					Self::deposit_event(Event::MentrualCalendarRemoved(
+						menstrual_calendar,
+						who.clone(),
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -321,7 +330,10 @@ impl<T: Config> MentrualCalendarInterface<T> for Pallet<T> {
 		// Remove menstrual_calendar from storage
 		MentrualCalendarById::<T>::take(menstrual_calendar_id).unwrap();
 
-		Self::sub_menstrual_calendar_by_owner(menstrual_calendar.get_owner_id(), menstrual_calendar_id);
+		Self::sub_menstrual_calendar_by_owner(
+			menstrual_calendar.get_owner_id(),
+			menstrual_calendar_id,
+		);
 		Self::sub_menstrual_calendar_count();
 		Self::sub_menstrual_calendar_count_by_owner(menstrual_calendar.get_owner_id());
 
@@ -346,16 +358,24 @@ impl<T: Config> MentrualCalendarInterface<T> for Pallet<T> {
 /// Pallet Methods
 impl<T: Config> Pallet<T> {
 	// Add menstrual_calendar by owner
-	pub fn add_menstrual_calendar_by_owner(owner_id: &T::AccountId, menstrual_calendar_id: &T::Hash) {
-		let mut menstrual_calendar = MentrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
+	pub fn add_menstrual_calendar_by_owner(
+		owner_id: &T::AccountId,
+		menstrual_calendar_id: &T::Hash,
+	) {
+		let mut menstrual_calendar =
+			MentrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
 
 		menstrual_calendar.push(*menstrual_calendar_id);
 		MentrualCalendarByOwner::<T>::insert(owner_id, &menstrual_calendar)
 	}
 
 	// Subtract menstrual_calendar by owner
-	pub fn sub_menstrual_calendar_by_owner(owner_id: &T::AccountId, menstrual_calendar_id: &T::Hash) {
-		let mut menstrual_calendar = MentrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
+	pub fn sub_menstrual_calendar_by_owner(
+		owner_id: &T::AccountId,
+		menstrual_calendar_id: &T::Hash,
+	) {
+		let mut menstrual_calendar =
+			MentrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
 		menstrual_calendar.retain(|&x| x != *menstrual_calendar_id);
 		MentrualCalendarByOwner::<T>::insert(owner_id, menstrual_calendar);
 	}
@@ -368,8 +388,12 @@ impl<T: Config> Pallet<T> {
 
 	// Add menstrual_calendar count by owner
 	pub fn add_menstrual_calendar_count_by_owner(owner_id: &T::AccountId) {
-		let menstrual_calendar_count = MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(0);
-		MentrualCalendarCountByOwner::<T>::insert(owner_id, menstrual_calendar_count.wrapping_add(1))
+		let menstrual_calendar_count =
+			MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(0);
+		MentrualCalendarCountByOwner::<T>::insert(
+			owner_id,
+			menstrual_calendar_count.wrapping_add(1),
+		)
 	}
 
 	// Subtract menstrual_calendar count
@@ -380,7 +404,8 @@ impl<T: Config> Pallet<T> {
 
 	// Subtract menstrual_calendar count by owner
 	pub fn sub_menstrual_calendar_count_by_owner(owner_id: &T::AccountId) {
-		let menstrual_calendar_count = MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(1);
+		let menstrual_calendar_count =
+			MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(1);
 		MentrualCalendarCountByOwner::<T>::insert(owner_id, menstrual_calendar_count - 1);
 	}
 }
