@@ -1,4 +1,4 @@
-use crate as menstrual_data;
+use crate as menstrual_calendar;
 use frame_support::parameter_types;
 use sp_core::H256;
 use sp_io::TestExternalities;
@@ -19,7 +19,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		MentrualCalendar: menstrual_data::{Pallet, Call, Storage, Event<T>},
+		MentrualCalendar: menstrual_calendar::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 	}
 );
@@ -56,7 +56,7 @@ impl frame_system::Config for Test {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-impl menstrual_data::Config for Test {
+impl menstrual_calendar::Config for Test {
 	type Event = Event;
 	type MentrualCalendarWeightInfo = ();
 }

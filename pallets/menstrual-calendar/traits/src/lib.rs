@@ -11,5 +11,5 @@ pub trait MentrualCalendarProvider<T: Config> {
 	type Error;
 	type MentrualCalendar: MentrualCalendar<T> + sp_std::fmt::Debug;
 
-	fn menstrual_data_by_id(id: &T::Hash) -> Option<Self::MentrualCalendar>;
+	fn menstrual_calendar_by_id(id: &T::Hash) -> Option<Self::MentrualCalendar>;
 }
