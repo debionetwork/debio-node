@@ -13,7 +13,7 @@ use frame_support::{
 		RuntimeDebug, SaturatedConversion,
 	},
 	sp_std::convert::TryInto,
-	traits::{Currency, ExistenceRequirement, StorageVersion},
+	traits::{fungibles, Currency, ExistenceRequirement, StorageVersion},
 	PalletId,
 };
 pub use pallet::*;
@@ -123,15 +123,24 @@ impl<Hash, AccountId, Balance, Moment: Default>
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
 
+// Asset ID and Balance types
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
 #[frame_support::pallet]
 pub mod pallet {
 	use crate::*;
-	use frame_support::dispatch::DispatchResultWithPostInfo;
+	use frame_support::{dispatch::DispatchResultWithPostInfo, traits::tokens::fungibles};
 	use frame_system::pallet_prelude::*;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type Assets: fungibles::Mutate<
+			<Self as frame_system::Config>::AccountId,
+			AssetId = AssetId,
+			Balance = AssetBalance,
+		>;
 		type GeneticAnalysts: GeneticAnalystsProvider<Self>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticData: GeneticDataProvider<Self>;
@@ -317,6 +326,7 @@ pub mod pallet {
 		NoProviders,
 		Token,
 		Arithmetic,
+		WrongAssetIdFormat,
 	}
 
 	#[pallet::call]
@@ -555,11 +565,13 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		// Initialize GeneticAnalysis
 		let genetic_analysis_order_id =
 			Self::generate_genetic_analysis_order_id(customer_id, genetic_analyst_service_id);
+
 		let genetic_analysis = T::GeneticAnalysis::register_genetic_analysis(
 			seller_id,
 			customer_id,
 			&genetic_analysis_order_id,
 		);
+
 		if genetic_analysis.is_err() {
 			return Err(Error::<T>::GeneticAnalysisInitalizationError)
 		}
@@ -617,26 +629,57 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 				return Err(Error::<T>::InsufficientPalletFunds)
 			}
 
-			match CurrencyOf::<T>::transfer(
-				&Self::account_id(),
-				&genetic_analysis_order.customer_id,
-				genetic_analysis_order.total_price,
-				ExistenceRequirement::AllowDeath,
-			) {
-				Ok(_) => (),
-				Err(dispatch) => match dispatch {
-					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
-					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-					sp_runtime::DispatchError::TooManyConsumers =>
-						return Err(Error::<T>::TooManyConsumers),
-					sp_runtime::DispatchError::ConsumerRemaining =>
-						return Err(Error::<T>::ConsumerRemaining),
-					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
-					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
-				},
+			if genetic_analysis_order.currency == CurrencyType::DBIO {
+				match CurrencyOf::<T>::transfer(
+					&Self::account_id(),
+					&genetic_analysis_order.customer_id,
+					genetic_analysis_order.total_price,
+					ExistenceRequirement::AllowDeath,
+				) {
+					Ok(_) => (),
+					Err(dispatch) => match dispatch {
+						sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+						sp_runtime::DispatchError::CannotLookup =>
+							return Err(Error::<T>::CannotLookup),
+						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+						sp_runtime::DispatchError::TooManyConsumers =>
+							return Err(Error::<T>::TooManyConsumers),
+						sp_runtime::DispatchError::ConsumerRemaining =>
+							return Err(Error::<T>::ConsumerRemaining),
+						sp_runtime::DispatchError::NoProviders =>
+							return Err(Error::<T>::NoProviders),
+						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+						sp_runtime::DispatchError::Arithmetic(_) =>
+							return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+					},
+				}
+			} else {
+				let asset_id = Self::asset_id(&genetic_analysis_order.currency)?;
+				match <T::Assets as fungibles::Mutate<T::AccountId>>::teleport(
+					asset_id,
+					&Self::account_id(),
+					&genetic_analysis_order.customer_id,
+					genetic_analysis_order.total_price.saturated_into(),
+				) {
+					Ok(_) => (),
+					Err(dispatch) => match dispatch {
+						sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+						sp_runtime::DispatchError::CannotLookup =>
+							return Err(Error::<T>::CannotLookup),
+						sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+						sp_runtime::DispatchError::TooManyConsumers =>
+							return Err(Error::<T>::TooManyConsumers),
+						sp_runtime::DispatchError::ConsumerRemaining =>
+							return Err(Error::<T>::ConsumerRemaining),
+						sp_runtime::DispatchError::NoProviders =>
+							return Err(Error::<T>::NoProviders),
+						sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+						sp_runtime::DispatchError::Arithmetic(_) =>
+							return Err(Error::<T>::Arithmetic),
+						sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+					},
+				}
 			}
 
 			// If code reaches here change status to Refunded
@@ -683,26 +726,51 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientFunds)
 		}
 
-		match CurrencyOf::<T>::transfer(
-			&genetic_analysis_order.customer_id,
-			&Self::account_id(),
-			genetic_analysis_order.total_price,
-			ExistenceRequirement::AllowDeath,
-		) {
-			Ok(_) => (),
-			Err(dispatch) => match dispatch {
-				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
-				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::TooManyConsumers =>
-					return Err(Error::<T>::TooManyConsumers),
-				sp_runtime::DispatchError::ConsumerRemaining =>
-					return Err(Error::<T>::ConsumerRemaining),
-				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
-				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
-			},
+		if genetic_analysis_order.currency == CurrencyType::DBIO {
+			match CurrencyOf::<T>::transfer(
+				&genetic_analysis_order.customer_id,
+				&Self::account_id(),
+				genetic_analysis_order.total_price,
+				ExistenceRequirement::AllowDeath,
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
+		} else {
+			let asset_id = Self::asset_id(&genetic_analysis_order.currency)?;
+			match <T::Assets as fungibles::Mutate<T::AccountId>>::teleport(
+				asset_id,
+				&genetic_analysis_order.customer_id,
+				&Self::account_id(),
+				genetic_analysis_order.total_price.saturated_into(),
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
 		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -750,49 +818,99 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			genetic_analysis_order.total_price - price_component_substracted_value;
 
 		// Withhold 5% for DBIO
-		match CurrencyOf::<T>::transfer(
-			&Self::account_id(),
-			&genetic_analysis_order.seller_id,
-			total_price_paid,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(_) => (),
-			Err(dispatch) => match dispatch {
-				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
-				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::TooManyConsumers =>
-					return Err(Error::<T>::TooManyConsumers),
-				sp_runtime::DispatchError::ConsumerRemaining =>
-					return Err(Error::<T>::ConsumerRemaining),
-				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
-				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
-			},
+		if genetic_analysis_order.currency == CurrencyType::DBIO {
+			match CurrencyOf::<T>::transfer(
+				&Self::account_id(),
+				&genetic_analysis_order.seller_id,
+				total_price_paid,
+				ExistenceRequirement::KeepAlive,
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
+		} else {
+			let asset_id = Self::asset_id(&genetic_analysis_order.currency)?;
+			match <T::Assets as fungibles::Mutate<T::AccountId>>::teleport(
+				asset_id,
+				&Self::account_id(),
+				&genetic_analysis_order.seller_id,
+				total_price_paid.saturated_into(),
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
 		}
 
 		// Transfer 5% to DBIO Treasury
-		match CurrencyOf::<T>::transfer(
-			&Self::account_id(),
-			&TreasuryKey::<T>::get().unwrap(),
-			price_component_substracted_value,
-			ExistenceRequirement::AllowDeath,
-		) {
-			Ok(_) => (),
-			Err(dispatch) => match dispatch {
-				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
-				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::TooManyConsumers =>
-					return Err(Error::<T>::TooManyConsumers),
-				sp_runtime::DispatchError::ConsumerRemaining =>
-					return Err(Error::<T>::ConsumerRemaining),
-				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
-				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
-			},
+		if genetic_analysis_order.currency == CurrencyType::DBIO {
+			match CurrencyOf::<T>::transfer(
+				&Self::account_id(),
+				&TreasuryKey::<T>::get().unwrap(),
+				price_component_substracted_value,
+				ExistenceRequirement::AllowDeath,
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
+		} else {
+			let asset_id = Self::asset_id(&genetic_analysis_order.currency)?;
+			match <T::Assets as fungibles::Mutate<T::AccountId>>::teleport(
+				asset_id,
+				&Self::account_id(),
+				&TreasuryKey::<T>::get().unwrap(),
+				price_component_substracted_value.saturated_into(),
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
 		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -827,26 +945,52 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::InsufficientPalletFunds)
 		}
 
-		match CurrencyOf::<T>::transfer(
-			&Self::account_id(),
-			&genetic_analysis_order.customer_id,
-			genetic_analysis_order.total_price,
-			ExistenceRequirement::AllowDeath,
-		) {
-			Ok(_) => (),
-			Err(dispatch) => match dispatch {
-				sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
-				sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
-				sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
-				sp_runtime::DispatchError::TooManyConsumers =>
-					return Err(Error::<T>::TooManyConsumers),
-				sp_runtime::DispatchError::ConsumerRemaining =>
-					return Err(Error::<T>::ConsumerRemaining),
-				sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
-				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
-				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
-				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
-			},
+		// Transfer 5% to DBIO Treasury
+		if genetic_analysis_order.currency == CurrencyType::DBIO {
+			match CurrencyOf::<T>::transfer(
+				&Self::account_id(),
+				&genetic_analysis_order.customer_id,
+				genetic_analysis_order.total_price,
+				ExistenceRequirement::AllowDeath,
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
+		} else {
+			let asset_id = Self::asset_id(&genetic_analysis_order.currency)?;
+			match <T::Assets as fungibles::Mutate<T::AccountId>>::teleport(
+				asset_id,
+				&Self::account_id(),
+				&genetic_analysis_order.customer_id,
+				genetic_analysis_order.total_price.saturated_into(),
+			) {
+				Ok(_) => (),
+				Err(dispatch) => match dispatch {
+					sp_runtime::DispatchError::Other(_) => return Err(Error::<T>::Other),
+					sp_runtime::DispatchError::CannotLookup => return Err(Error::<T>::CannotLookup),
+					sp_runtime::DispatchError::BadOrigin => return Err(Error::<T>::BadOrigin),
+					sp_runtime::DispatchError::TooManyConsumers =>
+						return Err(Error::<T>::TooManyConsumers),
+					sp_runtime::DispatchError::ConsumerRemaining =>
+						return Err(Error::<T>::ConsumerRemaining),
+					sp_runtime::DispatchError::NoProviders => return Err(Error::<T>::NoProviders),
+					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
+					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				},
+			}
 		}
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -1054,6 +1198,14 @@ impl<T: Config> Pallet<T> {
 	/// Set current escrow amount
 	pub fn set_escrow_amount() {
 		TotalEscrowAmount::<T>::put(T::Currency::free_balance(&Self::account_id()));
+	}
+
+	// Get token identifier
+	pub fn asset_id(currency_type: &CurrencyType) -> Result<u32, Error<T>> {
+		currency_type
+			.to_asset_id()
+			.parse::<u32>()
+			.map_err(|_| Error::<T>::WrongAssetIdFormat)
 	}
 }
 

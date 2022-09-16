@@ -206,7 +206,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 2014,
+	spec_version: 2015,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -875,6 +875,7 @@ impl genetic_analysis::Config for Runtime {
 impl genetic_analysis_orders::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type GeneticData = GeneticData;
 	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;
