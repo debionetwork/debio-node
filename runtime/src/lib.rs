@@ -124,12 +124,10 @@ mod benches {
 		[hospitals, Hospitals]
 		[doctors, Doctors]
 		[genetic_data, GeneticData]
-		[electronic_medical_record, ElectronicMedicalRecord]
-		[hospitals, Hospitals]
-		[doctors, Doctors]
+		[menstrual_calendar, MenstrualCalendar]
+		[menstrual_subscription, MenstrualSubscription]
 		[user_profile, UserProfile]
 		[rewards, Rewards]
-		[genetic_data, GeneticData]
 		[labs_benchmarking, LabsBench::<Runtime>]
 		[services_benchmarking, ServicesBench::<Runtime>]
 		[certifications_benchmarking, CertificationsBench::<Runtime>]
@@ -791,15 +789,11 @@ impl genetic_testing::Config for Runtime {
 
 impl menstrual_calendar::Config for Runtime {
 	type Event = Event;
-	type Orders = Orders;
-	type RandomnessSource = RandomnessCollectiveFlip;
 	type MenstrualCalendarWeightInfo = ();
 }
 
 impl menstrual_subscription::Config for Runtime {
 	type Event = Event;
-	type Orders = Orders;
-	type RandomnessSource = RandomnessCollectiveFlip;
 	type MenstrualSubscriptionWeightInfo = ();
 }
 
@@ -1210,8 +1204,6 @@ impl_runtime_apis! {
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
-			use menstrual_calendar_benchmarking::Pallet as MenstrualCalendarBench;
-			use menstrual_subscription_benchmarking::Pallet as MenstrualSubscriptionBench;
 			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use labs_benchmarking::Pallet as LabsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
@@ -1229,8 +1221,6 @@ impl_runtime_apis! {
 			impl genetic_analyst_qualifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
 			impl genetic_testing_benchmarking::Config for Runtime {}
-			impl menstrual_calendar_benchmarking::Config for Runtime {}
-			impl menstrual_subscription_benchmarking::Config for Runtime {}
 			impl genetic_analysis_benchmarking::Config for Runtime {}
 			impl orders_benchmarking::Config for Runtime {}
 			impl genetic_analysis_orders_benchmarking::Config for Runtime {}

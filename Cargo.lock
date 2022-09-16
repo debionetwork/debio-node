@@ -1442,9 +1442,7 @@ dependencies = [
  "labs-benchmarking",
  "log",
  "menstrual-calendar",
- "menstrual-calendar-benchmarking",
  "menstrual-subscription",
- "menstrual-subscription-benchmarking",
  "orders",
  "orders-benchmarking",
  "pallet-assets",
@@ -4601,70 +4599,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "menstrual-calendar-benchmarking"
-version = "2.1.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "labs",
- "menstrual-calendar",
- "orders",
- "pallet-balances",
- "parity-scale-codec",
- "primitives-area-code",
- "primitives-duration",
- "primitives-ethereum-address",
- "primitives-price-and-currency",
- "primitives-profile-roles",
- "serde",
- "services",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "traits-menstrual-calendar",
- "traits-order",
- "traits-services",
- "traits-user-profile",
- "user-profile",
-]
-
-[[package]]
-name = "menstrual-calendar-tests"
-version = "2.1.0"
-dependencies = [
- "certifications",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "labs",
- "menstrual-calendar",
- "orders",
- "pallet-balances",
- "pallet-randomness-collective-flip",
- "pallet-timestamp",
- "parity-scale-codec",
- "primitives-area-code",
- "primitives-duration",
- "primitives-ethereum-address",
- "primitives-price-and-currency",
- "primitives-profile-roles",
- "scale-info",
- "serde",
- "services",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "traits-menstrual-calendar",
- "traits-order",
- "traits-services",
- "traits-user-profile",
- "user-profile",
-]
-
-[[package]]
 name = "menstrual-subscription"
 version = "2.1.0"
 dependencies = [
@@ -4680,70 +4614,6 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-menstrual-subscription",
-]
-
-[[package]]
-name = "menstrual-subscription-benchmarking"
-version = "2.1.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "labs",
- "menstrual-subscription",
- "orders",
- "pallet-balances",
- "parity-scale-codec",
- "primitives-area-code",
- "primitives-duration",
- "primitives-ethereum-address",
- "primitives-price-and-currency",
- "primitives-profile-roles",
- "serde",
- "services",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "traits-menstrual-subscription",
- "traits-order",
- "traits-services",
- "traits-user-profile",
- "user-profile",
-]
-
-[[package]]
-name = "menstrual-subscription-tests"
-version = "2.1.0"
-dependencies = [
- "certifications",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "labs",
- "menstrual-subscription",
- "orders",
- "pallet-balances",
- "pallet-randomness-collective-flip",
- "pallet-timestamp",
- "parity-scale-codec",
- "primitives-area-code",
- "primitives-duration",
- "primitives-ethereum-address",
- "primitives-price-and-currency",
- "primitives-profile-roles",
- "scale-info",
- "serde",
- "services",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "traits-menstrual-subscription",
- "traits-order",
- "traits-services",
- "traits-user-profile",
- "user-profile",
 ]
 
 [[package]]
