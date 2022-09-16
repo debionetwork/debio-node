@@ -4,7 +4,7 @@ use frame_system::Config;
 
 pub trait MenstrualCalendar<T: Config> {
 	fn get_id(&self) -> &T::Hash;
-	fn get_owner_id(&self) -> &T::AccountId;
+	fn get_address_id(&self) -> &T::AccountId;
 }
 
 pub trait MenstrualCalendarProvider<T: Config> {

@@ -9,12 +9,11 @@ fn add_menstrual_calendar_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(
 			Origin::signed(1),
-			"DeBio Menstrual Data".as_bytes().to_vec(),
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
-			"DeBio Menstrual Data Link".as_bytes().to_vec()
+			16,
+			"DeBio Menstrual Cycle Log".as_bytes().to_vec()
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_owner_id(1).unwrap();
+		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -24,13 +23,9 @@ fn add_menstrual_calendar_works() {
 			MenstrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
-		assert_eq!(menstrual_calendar.owner_id, 1);
-		assert_eq!(menstrual_calendar.title, "DeBio Menstrual Data".as_bytes().to_vec());
-		assert_eq!(
-			menstrual_calendar.description,
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec()
-		);
-		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
+		assert_eq!(menstrual_calendar.address_id, 1);
+		assert_eq!(menstrual_calendar.average_cycle, 16);
+		assert_eq!(menstrual_calendar.cycle_log, "DeBio Menstrual Cycle Log".as_bytes().to_vec());
 	})
 }
 
@@ -39,12 +34,11 @@ fn remove_menstrual_calendar_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(
 			Origin::signed(1),
-			"DeBio Menstrual Data".as_bytes().to_vec(),
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
-			"DeBio Menstrual Data Link".as_bytes().to_vec()
+			16,
+			"DeBio Menstrual Cycle Log".as_bytes().to_vec()
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_owner_id(1).unwrap();
+		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -54,13 +48,9 @@ fn remove_menstrual_calendar_works() {
 			MenstrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
-		assert_eq!(menstrual_calendar.owner_id, 1);
-		assert_eq!(menstrual_calendar.title, "DeBio Menstrual Data".as_bytes().to_vec());
-		assert_eq!(
-			menstrual_calendar.description,
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec()
-		);
-		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
+		assert_eq!(menstrual_calendar.address_id, 1);
+		assert_eq!(menstrual_calendar.average_cycle, 16);
+		assert_eq!(menstrual_calendar.cycle_log, "DeBio Menstrual Cycle Log".as_bytes().to_vec());
 
 		assert_ok!(MenstrualCalendar::remove_menstrual_calendar(
 			Origin::signed(1),
@@ -91,12 +81,11 @@ fn remove_menstrual_calendar_not_menstrual_calendar_owner() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(
 			Origin::signed(1),
-			"DeBio Menstrual Data".as_bytes().to_vec(),
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
-			"DeBio Menstrual Data Link".as_bytes().to_vec()
+			16,
+			"DeBio Menstrual Cycle Log".as_bytes().to_vec()
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_owner_id(1).unwrap();
+		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -106,13 +95,9 @@ fn remove_menstrual_calendar_not_menstrual_calendar_owner() {
 			MenstrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
-		assert_eq!(menstrual_calendar.owner_id, 1);
-		assert_eq!(menstrual_calendar.title, "DeBio Menstrual Data".as_bytes().to_vec());
-		assert_eq!(
-			menstrual_calendar.description,
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec()
-		);
-		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
+		assert_eq!(menstrual_calendar.address_id, 1);
+		assert_eq!(menstrual_calendar.average_cycle, 16);
+		assert_eq!(menstrual_calendar.cycle_log, "DeBio Menstrual Cycle Log".as_bytes().to_vec());
 
 		assert_noop!(
 			MenstrualCalendar::remove_menstrual_calendar(
@@ -129,12 +114,11 @@ fn update_menstrual_calendar_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(
 			Origin::signed(1),
-			"DeBio Menstrual Data".as_bytes().to_vec(),
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
-			"DeBio Menstrual Data Link".as_bytes().to_vec()
+			16,
+			"DeBio Menstrual Cycle Log".as_bytes().to_vec()
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_owner_id(1).unwrap();
+		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -144,23 +128,18 @@ fn update_menstrual_calendar_works() {
 			MenstrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
-		assert_eq!(menstrual_calendar.owner_id, 1);
-		assert_eq!(menstrual_calendar.title, "DeBio Menstrual Data".as_bytes().to_vec());
-		assert_eq!(
-			menstrual_calendar.description,
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec()
-		);
-		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
+		assert_eq!(menstrual_calendar.address_id, 1);
+		assert_eq!(menstrual_calendar.average_cycle, 16);
+		assert_eq!(menstrual_calendar.cycle_log, "DeBio Menstrual Cycle Log".as_bytes().to_vec());
 
 		assert_ok!(MenstrualCalendar::update_menstrual_calendar(
 			Origin::signed(1),
 			menstrual_calendar_ids[0],
-			"DeBio Menstrual Data 2".as_bytes().to_vec(),
-			"DeBio Menstrual Data Document Description 2".as_bytes().to_vec(),
-			"DeBio Menstrual Data Link 2".as_bytes().to_vec()
+			16,
+			"DeBio Menstrual Cycle Log 2".as_bytes().to_vec(),
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_owner_id(1).unwrap();
+		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -170,15 +149,11 @@ fn update_menstrual_calendar_works() {
 			MenstrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
-		assert_eq!(menstrual_calendar.owner_id, 1);
-		assert_eq!(menstrual_calendar.title, "DeBio Menstrual Data 2".as_bytes().to_vec());
+		assert_eq!(menstrual_calendar.address_id, 1);
+		assert_eq!(menstrual_calendar.average_cycle, 16);
 		assert_eq!(
-			menstrual_calendar.description,
-			"DeBio Menstrual Data Document Description 2".as_bytes().to_vec()
-		);
-		assert_eq!(
-			menstrual_calendar.report_link,
-			"DeBio Menstrual Data Link 2".as_bytes().to_vec()
+			menstrual_calendar.cycle_log,
+			"DeBio Menstrual Cycle Log 2".as_bytes().to_vec()
 		);
 	})
 }
@@ -190,9 +165,8 @@ fn update_menstrual_calendar_does_not_exist() {
 			MenstrualCalendar::update_menstrual_calendar(
 				Origin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				"DeBio Menstrual Data".as_bytes().to_vec(),
-				"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
-				"DeBio Menstrual Data Link".as_bytes().to_vec()
+				16,
+				"DeBio Menstrual Cycle Log".as_bytes().to_vec(),
 			),
 			Error::<Test>::MenstrualCalendarDoesNotExist
 		);
@@ -204,12 +178,11 @@ fn update_menstrual_calendar_not_menstrual_calendar_owner() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(
 			Origin::signed(1),
-			"DeBio Menstrual Data".as_bytes().to_vec(),
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
-			"DeBio Menstrual Data Link".as_bytes().to_vec()
+			16,
+			"DeBio Menstrual Cycle Log".as_bytes().to_vec()
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_owner_id(1).unwrap();
+		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -219,21 +192,16 @@ fn update_menstrual_calendar_not_menstrual_calendar_owner() {
 			MenstrualCalendar::menstrual_calendar_by_id(menstrual_calendar_ids[0]).unwrap();
 
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
-		assert_eq!(menstrual_calendar.owner_id, 1);
-		assert_eq!(menstrual_calendar.title, "DeBio Menstrual Data".as_bytes().to_vec());
-		assert_eq!(
-			menstrual_calendar.description,
-			"DeBio Menstrual Data Document Description".as_bytes().to_vec()
-		);
-		assert_eq!(menstrual_calendar.report_link, "DeBio Menstrual Data Link".as_bytes().to_vec());
+		assert_eq!(menstrual_calendar.address_id, 1);
+		assert_eq!(menstrual_calendar.average_cycle, 16);
+		assert_eq!(menstrual_calendar.cycle_log, "DeBio Menstrual Cycle Log".as_bytes().to_vec());
 
 		assert_noop!(
 			MenstrualCalendar::update_menstrual_calendar(
 				Origin::signed(2),
 				menstrual_calendar_ids[0],
-				"DeBio Menstrual Data 2".as_bytes().to_vec(),
-				"DeBio Menstrual Data Document Description 2".as_bytes().to_vec(),
-				"DeBio Menstrual Data Link 2".as_bytes().to_vec()
+				16,
+				"DeBio Menstrual Cycle Log 2".as_bytes().to_vec(),
 			),
 			Error::<Test>::NotMenstrualCalendarOwner
 		);

@@ -27,10 +27,9 @@ use traits_menstrual_calendar::{
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualCalendar<AccountId, Hash, Moment> {
 	pub id: Hash,
-	pub owner_id: AccountId,
-	pub title: Vec<u8>,
-	pub description: Vec<u8>,
-	pub report_link: Vec<u8>,
+	pub address_id: AccountId,
+	pub average_cycle: u8,
+	pub cycle_log: Vec<u8>,
 	pub created_at: Moment,
 	pub updated_at: Moment,
 }
@@ -38,18 +37,16 @@ pub struct MenstrualCalendar<AccountId, Hash, Moment> {
 impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment> {
 	pub fn new(
 		id: Hash,
-		owner_id: AccountId,
-		title: Vec<u8>,
-		description: Vec<u8>,
-		report_link: Vec<u8>,
+		address_id: AccountId,
+		average_cycle: u8,
+		cycle_log: Vec<u8>,
 		created_at: Moment,
 	) -> Self {
 		Self {
 			id,
-			owner_id,
-			title,
-			description,
-			report_link,
+			address_id,
+			average_cycle,
+			cycle_log,
 			created_at,
 			updated_at: Moment::default(),
 		}
@@ -59,8 +56,8 @@ impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment
 		&self.id
 	}
 
-	pub fn get_owner_id(&self) -> &AccountId {
-		&self.owner_id
+	pub fn get_address_id(&self) -> &AccountId {
+		&self.address_id
 	}
 }
 
@@ -72,8 +69,8 @@ where
 	fn get_id(&self) -> &Hash {
 		self.get_id()
 	}
-	fn get_owner_id(&self) -> &AccountId {
-		self.get_owner_id()
+	fn get_address_id(&self) -> &AccountId {
+		self.get_address_id()
 	}
 }
 
@@ -109,7 +106,7 @@ pub mod pallet {
 
 	// ------- Storage -------------
 	#[pallet::storage]
-	#[pallet::getter(fn menstrual_calendar_by_owner_id)]
+	#[pallet::getter(fn menstrual_calendar_by_address_id)]
 	pub type MenstrualCalendarByOwner<T> =
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<MenstrualCalendarIdOf<T>>>;
 
@@ -159,17 +156,15 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualCalendarWeightInfo::add_menstrual_calendar())]
 		pub fn add_menstrual_calendar(
 			origin: OriginFor<T>,
-			title: Vec<u8>,
-			description: Vec<u8>,
-			report_link: Vec<u8>,
+			average_cycle: u8,
+			cycle_log: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::add_menstrual_calendar(
 				&who,
-				&title,
-				&description,
-				&report_link,
+				&average_cycle,
+				&cycle_log,
 			) {
 				Ok(menstrual_calendar) => {
 					Self::deposit_event(Event::MenstrualCalendarAdded(
@@ -186,18 +181,16 @@ pub mod pallet {
 		pub fn update_menstrual_calendar(
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
-			title: Vec<u8>,
-			description: Vec<u8>,
-			report_link: Vec<u8>,
+			average_cycle: u8,
+			cycle_log: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::update_menstrual_calendar(
 				&who,
 				&menstrual_calendar_id,
-				&title,
-				&description,
-				&report_link,
+				&average_cycle,
+				&cycle_log,
 			) {
 				Ok(menstrual_calendar) => {
 					Self::deposit_event(Event::MenstrualCalendarUpdated(
@@ -243,10 +236,10 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	type MenstrualCalendar = MenstrualCalendarOf<T>;
 
 	fn generate_menstrual_calendar_id(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_calendar_count: u64,
 	) -> Self::MenstrualCalendarId {
-		let mut account_id_bytes = owner_id.encode();
+		let mut account_id_bytes = address_id.encode();
 		let mut menstrual_calendar_count_bytes = menstrual_calendar_count.encode();
 		account_id_bytes.append(&mut menstrual_calendar_count_bytes);
 
@@ -255,43 +248,40 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	}
 
 	fn add_menstrual_calendar(
-		owner_id: &T::AccountId,
-		title: &[u8],
-		description: &[u8],
-		report_link: &[u8],
+		address_id: &T::AccountId,
+		average_cycle: &u8,
+		cycle_log: &[u8],
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
 		let owner_menstrual_calendar_count =
-			<Self as MenstrualCalendarInterface<T>>::menstrual_calendar_count_by_owner(owner_id);
+			<Self as MenstrualCalendarInterface<T>>::menstrual_calendar_count_by_owner(address_id);
 		let menstrual_calendar_id =
-			Self::generate_menstrual_calendar_id(owner_id, owner_menstrual_calendar_count);
+			Self::generate_menstrual_calendar_id(address_id, owner_menstrual_calendar_count);
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
 		let menstrual_calendar = MenstrualCalendar::new(
 			menstrual_calendar_id,
-			owner_id.clone(),
-			title.to_vec(),
-			description.to_vec(),
-			report_link.to_vec(),
+			address_id.clone(),
+			average_cycle.clone(),
+			cycle_log.to_vec(),
 			now,
 		);
 
 		// Store to MenstrualCalendarById storage
 		MenstrualCalendarById::<T>::insert(menstrual_calendar_id, &menstrual_calendar);
 
-		Self::add_menstrual_calendar_by_owner(owner_id, &menstrual_calendar_id);
+		Self::add_menstrual_calendar_by_owner(address_id, &menstrual_calendar_id);
 		Self::add_menstrual_calendar_count();
-		Self::add_menstrual_calendar_count_by_owner(owner_id);
+		Self::add_menstrual_calendar_count_by_owner(address_id);
 
 		Ok(menstrual_calendar)
 	}
 
 	fn update_menstrual_calendar(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
-		title: &[u8],
-		description: &[u8],
-		report_link: &[u8],
+		average_cycle: &u8,
+		cycle_log: &[u8],
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
 		let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id);
 		if menstrual_calendar.is_none() {
@@ -299,15 +289,14 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		}
 
 		let mut menstrual_calendar = menstrual_calendar.unwrap();
-		if menstrual_calendar.owner_id != owner_id.clone() {
+		if menstrual_calendar.address_id != address_id.clone() {
 			return Err(Error::<T>::NotMenstrualCalendarOwner)
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
-		menstrual_calendar.title = title.to_vec();
-		menstrual_calendar.description = description.to_vec();
-		menstrual_calendar.report_link = report_link.to_vec();
+		menstrual_calendar.average_cycle = average_cycle.clone();
+		menstrual_calendar.cycle_log = cycle_log.to_vec();
 		menstrual_calendar.updated_at = now;
 
 		// Store to MenstrualCalendarById storage
@@ -317,7 +306,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	}
 
 	fn remove_menstrual_calendar(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
 		let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id);
@@ -326,7 +315,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		}
 
 		let menstrual_calendar = menstrual_calendar.unwrap();
-		if menstrual_calendar.owner_id != owner_id.clone() {
+		if menstrual_calendar.address_id != address_id.clone() {
 			return Err(Error::<T>::NotMenstrualCalendarOwner)
 		}
 
@@ -334,21 +323,21 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		MenstrualCalendarById::<T>::take(menstrual_calendar_id).unwrap();
 
 		Self::sub_menstrual_calendar_by_owner(
-			menstrual_calendar.get_owner_id(),
+			menstrual_calendar.get_address_id(),
 			menstrual_calendar_id,
 		);
 		Self::sub_menstrual_calendar_count();
-		Self::sub_menstrual_calendar_count_by_owner(menstrual_calendar.get_owner_id());
+		Self::sub_menstrual_calendar_count_by_owner(menstrual_calendar.get_address_id());
 
 		Ok(menstrual_calendar)
 	}
 
-	fn menstrual_calendar_by_owner_id(owner_id: &T::AccountId) -> Option<Vec<T::Hash>> {
-		MenstrualCalendarByOwner::<T>::get(owner_id)
+	fn menstrual_calendar_by_address_id(address_id: &T::AccountId) -> Option<Vec<T::Hash>> {
+		MenstrualCalendarByOwner::<T>::get(address_id)
 	}
 
-	fn menstrual_calendar_count_by_owner(owner_id: &T::AccountId) -> u64 {
-		MenstrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(0)
+	fn menstrual_calendar_count_by_owner(address_id: &T::AccountId) -> u64 {
+		MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(0)
 	}
 
 	fn menstrual_calendar_by_id(
@@ -362,25 +351,25 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 impl<T: Config> Pallet<T> {
 	// Add menstrual_calendar by owner
 	pub fn add_menstrual_calendar_by_owner(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
 	) {
 		let mut menstrual_calendar =
-			MenstrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
+			MenstrualCalendarByOwner::<T>::get(address_id).unwrap_or_default();
 
 		menstrual_calendar.push(*menstrual_calendar_id);
-		MenstrualCalendarByOwner::<T>::insert(owner_id, &menstrual_calendar)
+		MenstrualCalendarByOwner::<T>::insert(address_id, &menstrual_calendar)
 	}
 
 	// Subtract menstrual_calendar by owner
 	pub fn sub_menstrual_calendar_by_owner(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
 	) {
 		let mut menstrual_calendar =
-			MenstrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
+			MenstrualCalendarByOwner::<T>::get(address_id).unwrap_or_default();
 		menstrual_calendar.retain(|&x| x != *menstrual_calendar_id);
-		MenstrualCalendarByOwner::<T>::insert(owner_id, menstrual_calendar);
+		MenstrualCalendarByOwner::<T>::insert(address_id, menstrual_calendar);
 	}
 
 	// Add menstrual_calendar count
@@ -390,11 +379,11 @@ impl<T: Config> Pallet<T> {
 	}
 
 	// Add menstrual_calendar count by owner
-	pub fn add_menstrual_calendar_count_by_owner(owner_id: &T::AccountId) {
+	pub fn add_menstrual_calendar_count_by_owner(address_id: &T::AccountId) {
 		let menstrual_calendar_count =
-			MenstrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(0);
+			MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(0);
 		MenstrualCalendarCountByOwner::<T>::insert(
-			owner_id,
+			address_id,
 			menstrual_calendar_count.wrapping_add(1),
 		)
 	}
@@ -406,10 +395,10 @@ impl<T: Config> Pallet<T> {
 	}
 
 	// Subtract menstrual_calendar count by owner
-	pub fn sub_menstrual_calendar_count_by_owner(owner_id: &T::AccountId) {
+	pub fn sub_menstrual_calendar_count_by_owner(address_id: &T::AccountId) {
 		let menstrual_calendar_count =
-			MenstrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(1);
-		MenstrualCalendarCountByOwner::<T>::insert(owner_id, menstrual_calendar_count - 1);
+			MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(1);
+		MenstrualCalendarCountByOwner::<T>::insert(address_id, menstrual_calendar_count - 1);
 	}
 }
 

@@ -26,7 +26,7 @@ benchmarks! {
 			"DeBio Menstrual Data Link".as_bytes().to_vec()
 		);
 
-		let _menstrual_calendar_ids = MenstrualCalendar::<T>::menstrual_calendar_by_owner_id(
+		let _menstrual_calendar_ids = MenstrualCalendar::<T>::menstrual_calendar_by_address_id(
 			caller.clone()
 		).unwrap();
 	}: update_menstrual_calendar(
@@ -48,7 +48,7 @@ benchmarks! {
 			"DeBio Menstrual Data Link".as_bytes().to_vec()
 		);
 
-		let _menstrual_calendar_ids = MenstrualCalendar::<T>::menstrual_calendar_by_owner_id(
+		let _menstrual_calendar_ids = MenstrualCalendar::<T>::menstrual_calendar_by_address_id(
 			caller.clone()
 		).unwrap();
 	}: remove_menstrual_calendar(
