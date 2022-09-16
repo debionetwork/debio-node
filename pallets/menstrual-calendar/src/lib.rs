@@ -18,12 +18,12 @@ mod benchmarking;
 
 pub mod interface;
 pub mod weights;
-pub use interface::MenstrualDataInterface;
+pub use interface::MentrualCalendarInterface;
 use sp_std::prelude::*;
-use traits_menstrual_data::{MenstrualData as MenstrualDataT, MenstrualDataProvider};
+use traits_menstrual_data::{MentrualCalendar as MentrualCalendarT, MentrualCalendarProvider};
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct MenstrualData<AccountId, Hash, Moment> {
+pub struct MentrualCalendar<AccountId, Hash, Moment> {
 	pub id: Hash,
 	pub owner_id: AccountId,
 	pub title: Vec<u8>,
@@ -33,7 +33,7 @@ pub struct MenstrualData<AccountId, Hash, Moment> {
 	pub updated_at: Moment,
 }
 
-impl<AccountId, Hash, Moment: Default> MenstrualData<AccountId, Hash, Moment> {
+impl<AccountId, Hash, Moment: Default> MentrualCalendar<AccountId, Hash, Moment> {
 	pub fn new(
 		id: Hash,
 		owner_id: AccountId,
@@ -62,8 +62,8 @@ impl<AccountId, Hash, Moment: Default> MenstrualData<AccountId, Hash, Moment> {
 	}
 }
 
-impl<T, AccountId, Hash, Moment: Default> MenstrualDataT<T>
-	for MenstrualData<AccountId, Hash, Moment>
+impl<T, AccountId, Hash, Moment: Default> MentrualCalendarT<T>
+	for MentrualCalendar<AccountId, Hash, Moment>
 where
 	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
 {
@@ -77,7 +77,7 @@ where
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::{interface::MenstrualDataInterface, weights::WeightInfo, MenstrualData};
+	use crate::{interface::MentrualCalendarInterface, weights::WeightInfo, MentrualCalendar};
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 	pub use sp_std::prelude::*;
@@ -85,7 +85,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-		type MenstrualDataWeightInfo: WeightInfo;
+		type MentrualCalendarWeightInfo: WeightInfo;
 	}
 
 	// ----- This is template code, every pallet needs this ---
@@ -102,27 +102,27 @@ pub mod pallet {
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
 	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
-	pub type MenstrualDataOf<T> = MenstrualData<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
-	pub type MenstrualDataIdOf<T> = HashOf<T>;
+	pub type MentrualCalendarOf<T> = MentrualCalendar<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
+	pub type MentrualCalendarIdOf<T> = HashOf<T>;
 
 	// ------- Storage -------------
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_data_by_owner_id)]
-	pub type MenstrualDataByOwner<T> =
-		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<MenstrualDataIdOf<T>>>;
+	pub type MentrualCalendarByOwner<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<MentrualCalendarIdOf<T>>>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_data_by_id)]
-	pub type MenstrualDataById<T> =
-		StorageMap<_, Blake2_128Concat, MenstrualDataIdOf<T>, MenstrualDataOf<T>>;
+	pub type MentrualCalendarById<T> =
+		StorageMap<_, Blake2_128Concat, MentrualCalendarIdOf<T>, MentrualCalendarOf<T>>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_data_count_by_owner)]
-	pub type MenstrualDataCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
+	pub type MentrualCalendarCountByOwner<T> = StorageMap<_, Blake2_128Concat, AccountIdOf<T>, u64>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_data_count)]
-	pub type MenstrualDataCount<T> = StorageValue<_, u64>;
+	pub type MentrualCalendarCount<T> = StorageValue<_, u64>;
 	//                                _,  Hasher         ,  Key     ,  Value
 	// -----------------------------
 
@@ -130,14 +130,14 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// Event documentation should end with an array that provides descriptive names for event
-		/// parameters, [MenstrualData, who]
-		MenstrualDataAdded(MenstrualDataOf<T>, AccountIdOf<T>),
-		//// MenstrualData updated
-		/// parameters, [MenstrualData, who]
-		MenstrualDataUpdated(MenstrualDataOf<T>, AccountIdOf<T>),
-		//// MenstrualData deleted
-		/// parameters, [MenstrualData, who]
-		MenstrualDataRemoved(MenstrualDataOf<T>, AccountIdOf<T>),
+		/// parameters, [MentrualCalendar, who]
+		MentrualCalendarAdded(MentrualCalendarOf<T>, AccountIdOf<T>),
+		//// MentrualCalendar updated
+		/// parameters, [MentrualCalendar, who]
+		MentrualCalendarUpdated(MentrualCalendarOf<T>, AccountIdOf<T>),
+		//// MentrualCalendar deleted
+		/// parameters, [MentrualCalendar, who]
+		MentrualCalendarRemoved(MentrualCalendarOf<T>, AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -146,14 +146,14 @@ pub mod pallet {
 		/// User not allowed to create menstrual_data
 		NotAllowedToCreate,
 		/// User is not the owner of a menstrual_data
-		NotMenstrualDataOwner,
+		NotMentrualCalendarOwner,
 		/// Ordering a menstrual_data that does not exist
-		MenstrualDataDoesNotExist,
+		MentrualCalendarDoesNotExist,
 	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		#[pallet::weight(T::MenstrualDataWeightInfo::add_menstrual_data())]
+		#[pallet::weight(T::MentrualCalendarWeightInfo::add_menstrual_data())]
 		pub fn add_menstrual_data(
 			origin: OriginFor<T>,
 			title: Vec<u8>,
@@ -162,21 +162,21 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as MenstrualDataInterface<T>>::add_menstrual_data(
+			match <Self as MentrualCalendarInterface<T>>::add_menstrual_data(
 				&who,
 				&title,
 				&description,
 				&report_link,
 			) {
 				Ok(menstrual_data) => {
-					Self::deposit_event(Event::MenstrualDataAdded(menstrual_data, who.clone()));
+					Self::deposit_event(Event::MentrualCalendarAdded(menstrual_data, who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
 			}
 		}
 
-		#[pallet::weight(T::MenstrualDataWeightInfo::update_menstrual_data())]
+		#[pallet::weight(T::MentrualCalendarWeightInfo::update_menstrual_data())]
 		pub fn update_menstrual_data(
 			origin: OriginFor<T>,
 			menstrual_data_id: HashOf<T>,
@@ -186,7 +186,7 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as MenstrualDataInterface<T>>::update_menstrual_data(
+			match <Self as MentrualCalendarInterface<T>>::update_menstrual_data(
 				&who,
 				&menstrual_data_id,
 				&title,
@@ -194,26 +194,26 @@ pub mod pallet {
 				&report_link,
 			) {
 				Ok(menstrual_data) => {
-					Self::deposit_event(Event::MenstrualDataUpdated(menstrual_data, who.clone()));
+					Self::deposit_event(Event::MentrualCalendarUpdated(menstrual_data, who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
 			}
 		}
 
-		#[pallet::weight(T::MenstrualDataWeightInfo::remove_menstrual_data())]
+		#[pallet::weight(T::MentrualCalendarWeightInfo::remove_menstrual_data())]
 		pub fn remove_menstrual_data(
 			origin: OriginFor<T>,
 			menstrual_data_id: HashOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as MenstrualDataInterface<T>>::remove_menstrual_data(
+			match <Self as MentrualCalendarInterface<T>>::remove_menstrual_data(
 				&who,
 				&menstrual_data_id,
 			) {
 				Ok(menstrual_data) => {
-					Self::deposit_event(Event::MenstrualDataRemoved(menstrual_data, who.clone()));
+					Self::deposit_event(Event::MentrualCalendarRemoved(menstrual_data, who.clone()));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -224,16 +224,16 @@ pub mod pallet {
 
 use frame_support::sp_runtime::traits::Hash;
 
-/// MenstrualData Interface Implementation
-impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
+/// MentrualCalendar Interface Implementation
+impl<T: Config> MentrualCalendarInterface<T> for Pallet<T> {
 	type Error = Error<T>;
-	type MenstrualDataId = T::Hash;
-	type MenstrualData = MenstrualDataOf<T>;
+	type MentrualCalendarId = T::Hash;
+	type MentrualCalendar = MentrualCalendarOf<T>;
 
 	fn generate_menstrual_data_id(
 		owner_id: &T::AccountId,
 		menstrual_data_count: u64,
-	) -> Self::MenstrualDataId {
+	) -> Self::MentrualCalendarId {
 		let mut account_id_bytes = owner_id.encode();
 		let mut menstrual_data_count_bytes = menstrual_data_count.encode();
 		account_id_bytes.append(&mut menstrual_data_count_bytes);
@@ -247,15 +247,15 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 		title: &[u8],
 		description: &[u8],
 		report_link: &[u8],
-	) -> Result<Self::MenstrualData, Self::Error> {
+	) -> Result<Self::MentrualCalendar, Self::Error> {
 		let owner_menstrual_data_count =
-			<Self as MenstrualDataInterface<T>>::menstrual_data_count_by_owner(owner_id);
+			<Self as MentrualCalendarInterface<T>>::menstrual_data_count_by_owner(owner_id);
 		let menstrual_data_id =
 			Self::generate_menstrual_data_id(owner_id, owner_menstrual_data_count);
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
-		let menstrual_data = MenstrualData::new(
+		let menstrual_data = MentrualCalendar::new(
 			menstrual_data_id,
 			owner_id.clone(),
 			title.to_vec(),
@@ -264,8 +264,8 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 			now,
 		);
 
-		// Store to MenstrualDataById storage
-		MenstrualDataById::<T>::insert(menstrual_data_id, &menstrual_data);
+		// Store to MentrualCalendarById storage
+		MentrualCalendarById::<T>::insert(menstrual_data_id, &menstrual_data);
 
 		Self::add_menstrual_data_by_owner(owner_id, &menstrual_data_id);
 		Self::add_menstrual_data_count();
@@ -280,15 +280,15 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 		title: &[u8],
 		description: &[u8],
 		report_link: &[u8],
-	) -> Result<Self::MenstrualData, Self::Error> {
-		let menstrual_data = MenstrualDataById::<T>::get(menstrual_data_id);
+	) -> Result<Self::MentrualCalendar, Self::Error> {
+		let menstrual_data = MentrualCalendarById::<T>::get(menstrual_data_id);
 		if menstrual_data.is_none() {
-			return Err(Error::<T>::MenstrualDataDoesNotExist)
+			return Err(Error::<T>::MentrualCalendarDoesNotExist)
 		}
 
 		let mut menstrual_data = menstrual_data.unwrap();
 		if menstrual_data.owner_id != owner_id.clone() {
-			return Err(Error::<T>::NotMenstrualDataOwner)
+			return Err(Error::<T>::NotMentrualCalendarOwner)
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
@@ -298,8 +298,8 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 		menstrual_data.report_link = report_link.to_vec();
 		menstrual_data.updated_at = now;
 
-		// Store to MenstrualDataById storage
-		MenstrualDataById::<T>::insert(menstrual_data_id, &menstrual_data);
+		// Store to MentrualCalendarById storage
+		MentrualCalendarById::<T>::insert(menstrual_data_id, &menstrual_data);
 
 		Ok(menstrual_data)
 	}
@@ -307,19 +307,19 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 	fn remove_menstrual_data(
 		owner_id: &T::AccountId,
 		menstrual_data_id: &T::Hash,
-	) -> Result<Self::MenstrualData, Self::Error> {
-		let menstrual_data = MenstrualDataById::<T>::get(menstrual_data_id);
+	) -> Result<Self::MentrualCalendar, Self::Error> {
+		let menstrual_data = MentrualCalendarById::<T>::get(menstrual_data_id);
 		if menstrual_data.is_none() {
-			return Err(Error::<T>::MenstrualDataDoesNotExist)
+			return Err(Error::<T>::MentrualCalendarDoesNotExist)
 		}
 
 		let menstrual_data = menstrual_data.unwrap();
 		if menstrual_data.owner_id != owner_id.clone() {
-			return Err(Error::<T>::NotMenstrualDataOwner)
+			return Err(Error::<T>::NotMentrualCalendarOwner)
 		}
 
 		// Remove menstrual_data from storage
-		MenstrualDataById::<T>::take(menstrual_data_id).unwrap();
+		MentrualCalendarById::<T>::take(menstrual_data_id).unwrap();
 
 		Self::sub_menstrual_data_by_owner(menstrual_data.get_owner_id(), menstrual_data_id);
 		Self::sub_menstrual_data_count();
@@ -329,17 +329,17 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 	}
 
 	fn menstrual_data_by_owner_id(owner_id: &T::AccountId) -> Option<Vec<T::Hash>> {
-		MenstrualDataByOwner::<T>::get(owner_id)
+		MentrualCalendarByOwner::<T>::get(owner_id)
 	}
 
 	fn menstrual_data_count_by_owner(owner_id: &T::AccountId) -> u64 {
-		MenstrualDataCountByOwner::<T>::get(owner_id).unwrap_or(0)
+		MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(0)
 	}
 
 	fn menstrual_data_by_id(
-		menstrual_data_id: &Self::MenstrualDataId,
-	) -> Option<Self::MenstrualData> {
-		MenstrualDataById::<T>::get(menstrual_data_id)
+		menstrual_data_id: &Self::MentrualCalendarId,
+	) -> Option<Self::MentrualCalendar> {
+		MentrualCalendarById::<T>::get(menstrual_data_id)
 	}
 }
 
@@ -347,50 +347,50 @@ impl<T: Config> MenstrualDataInterface<T> for Pallet<T> {
 impl<T: Config> Pallet<T> {
 	// Add menstrual_data by owner
 	pub fn add_menstrual_data_by_owner(owner_id: &T::AccountId, menstrual_data_id: &T::Hash) {
-		let mut menstrual_data = MenstrualDataByOwner::<T>::get(owner_id).unwrap_or_default();
+		let mut menstrual_data = MentrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
 
 		menstrual_data.push(*menstrual_data_id);
-		MenstrualDataByOwner::<T>::insert(owner_id, &menstrual_data)
+		MentrualCalendarByOwner::<T>::insert(owner_id, &menstrual_data)
 	}
 
 	// Subtract menstrual_data by owner
 	pub fn sub_menstrual_data_by_owner(owner_id: &T::AccountId, menstrual_data_id: &T::Hash) {
-		let mut menstrual_data = MenstrualDataByOwner::<T>::get(owner_id).unwrap_or_default();
+		let mut menstrual_data = MentrualCalendarByOwner::<T>::get(owner_id).unwrap_or_default();
 		menstrual_data.retain(|&x| x != *menstrual_data_id);
-		MenstrualDataByOwner::<T>::insert(owner_id, menstrual_data);
+		MentrualCalendarByOwner::<T>::insert(owner_id, menstrual_data);
 	}
 
 	// Add menstrual_data count
 	pub fn add_menstrual_data_count() {
-		let menstrual_data_count = <MenstrualDataCount<T>>::get().unwrap_or(0);
-		<MenstrualDataCount<T>>::put(menstrual_data_count.wrapping_add(1));
+		let menstrual_data_count = <MentrualCalendarCount<T>>::get().unwrap_or(0);
+		<MentrualCalendarCount<T>>::put(menstrual_data_count.wrapping_add(1));
 	}
 
 	// Add menstrual_data count by owner
 	pub fn add_menstrual_data_count_by_owner(owner_id: &T::AccountId) {
-		let menstrual_data_count = MenstrualDataCountByOwner::<T>::get(owner_id).unwrap_or(0);
-		MenstrualDataCountByOwner::<T>::insert(owner_id, menstrual_data_count.wrapping_add(1))
+		let menstrual_data_count = MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(0);
+		MentrualCalendarCountByOwner::<T>::insert(owner_id, menstrual_data_count.wrapping_add(1))
 	}
 
 	// Subtract menstrual_data count
 	pub fn sub_menstrual_data_count() {
-		let menstrual_data_count = <MenstrualDataCount<T>>::get().unwrap_or(1);
-		MenstrualDataCount::<T>::put(menstrual_data_count - 1);
+		let menstrual_data_count = <MentrualCalendarCount<T>>::get().unwrap_or(1);
+		MentrualCalendarCount::<T>::put(menstrual_data_count - 1);
 	}
 
 	// Subtract menstrual_data count by owner
 	pub fn sub_menstrual_data_count_by_owner(owner_id: &T::AccountId) {
-		let menstrual_data_count = MenstrualDataCountByOwner::<T>::get(owner_id).unwrap_or(1);
-		MenstrualDataCountByOwner::<T>::insert(owner_id, menstrual_data_count - 1);
+		let menstrual_data_count = MentrualCalendarCountByOwner::<T>::get(owner_id).unwrap_or(1);
+		MentrualCalendarCountByOwner::<T>::insert(owner_id, menstrual_data_count - 1);
 	}
 }
 
-/// MenstrualDataProvider Trait Implementation
-impl<T: Config> MenstrualDataProvider<T> for Pallet<T> {
+/// MentrualCalendarProvider Trait Implementation
+impl<T: Config> MentrualCalendarProvider<T> for Pallet<T> {
 	type Error = Error<T>;
-	type MenstrualData = MenstrualDataOf<T>;
+	type MentrualCalendar = MentrualCalendarOf<T>;
 
-	fn menstrual_data_by_id(id: &T::Hash) -> Option<MenstrualDataOf<T>> {
-		<Self as MenstrualDataInterface<T>>::menstrual_data_by_id(id)
+	fn menstrual_data_by_id(id: &T::Hash) -> Option<MentrualCalendarOf<T>> {
+		<Self as MentrualCalendarInterface<T>>::menstrual_data_by_id(id)
 	}
 }

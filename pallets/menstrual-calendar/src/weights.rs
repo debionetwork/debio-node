@@ -10,13 +10,13 @@
 // --chain=dev
 // --execution=wasm
 // --wasm-execution=compiled
-// --pallet=menstrual-data
+// --pallet=menstrual-calendar
 // --extrinsic=*
 // --steps=20
 // --repeat=10
 // --heap-pages=4096
 // --raw
-// --output=./pallets/menstrual-data/src/weights.rs
+// --output=./pallets/menstrual-calendar/src/weights.rs
 // --template=./.maintain/pallet-weight-template.hbs
 
 #![cfg_attr(rustfmt, rustfmt_skip)]
@@ -36,27 +36,27 @@ pub trait WeightInfo {
 /// Weights for menstrual_data using the Substrate node and recommended hardware.
 pub struct SubstrateWeight<T>(PhantomData<T>); 
 impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: MenstrualData MenstrualDataCountByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCountByOwner (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: MenstrualData MenstrualDataByOwner (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataCount (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataById (r:0 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCount (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarById (r:0 w:1) 
 	fn add_menstrual_data() -> Weight { 
 		89_688_000_u64 
 			.saturating_add(T::DbWeight::get().reads(4_u64)) 
 			.saturating_add(T::DbWeight::get().writes(4_u64)) 
 	}
-	// Storage: MenstrualData MenstrualDataById (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarById (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
 	fn update_menstrual_data() -> Weight { 
 		107_069_000_u64 
 			.saturating_add(T::DbWeight::get().reads(2_u64)) 
 			.saturating_add(T::DbWeight::get().writes(1_u64)) 
 	}
-	// Storage: MenstrualData MenstrualDataById (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataByOwner (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataCount (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataCountByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarById (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCount (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCountByOwner (r:1 w:1) 
 	fn remove_menstrual_data() -> Weight { 
 		47_647_000_u64 
 			.saturating_add(T::DbWeight::get().reads(4_u64)) 
@@ -66,27 +66,27 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 
 // For backwards compatibility and tests
 impl WeightInfo for () { 
-	// Storage: MenstrualData MenstrualDataCountByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCountByOwner (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: MenstrualData MenstrualDataByOwner (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataCount (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataById (r:0 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCount (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarById (r:0 w:1) 
 	fn add_menstrual_data() -> Weight { 
 		89_688_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
 			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
 	} 
-	// Storage: MenstrualData MenstrualDataById (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarById (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
 	fn update_menstrual_data() -> Weight { 
 		107_069_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
 			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
 	} 
-	// Storage: MenstrualData MenstrualDataById (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataByOwner (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataCount (r:1 w:1) 
-	// Storage: MenstrualData MenstrualDataCountByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarById (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarByOwner (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCount (r:1 w:1) 
+	// Storage: MentrualCalendar MentrualCalendarCountByOwner (r:1 w:1) 
 	fn remove_menstrual_data() -> Weight { 
 		47_647_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64)) 

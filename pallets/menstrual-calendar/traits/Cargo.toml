@@ -1,5 +1,5 @@
 [package]
-name = "traits-menstrual-data"
+name = "traits-menstrual-calendar"
 version = "2.1.0"
 authors = ["agustinustheoo <agustinustheoo@gmail.com>"]
 edition = '2021'

@@ -19,7 +19,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		MenstrualData: menstrual_data::{Pallet, Call, Storage, Event<T>},
+		MentrualCalendar: menstrual_data::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 	}
 );
@@ -58,7 +58,7 @@ impl frame_system::Config for Test {
 
 impl menstrual_data::Config for Test {
 	type Event = Event;
-	type MenstrualDataWeightInfo = ();
+	type MentrualCalendarWeightInfo = ();
 }
 
 pub type Moment = u64;

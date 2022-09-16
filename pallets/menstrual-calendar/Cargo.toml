@@ -1,5 +1,5 @@
 [package]
-name = 'menstrual-data'
+name = 'menstrual-calendar'
 version = "2.1.0"
 repository = ''
 edition = '2021'
@@ -30,7 +30,7 @@ sp-runtime = { default-features = false, git = "https://github.com/paritytech/su
 ## Substrate Pallet Dependencies
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
-traits-menstrual-data = { path = './traits', default-features = false }
+traits-menstrual-calendar = { path = './traits', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
@@ -51,7 +51,7 @@ std = [
 
     'pallet-timestamp/std',
 
-    'traits-menstrual-data/std',
+    'traits-menstrual-calendar/std',
 ]
 runtime-benchmarks = [
 	'frame-benchmarking'

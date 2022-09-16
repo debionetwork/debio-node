@@ -1,7 +1,7 @@
 use super::*;
 
 #[allow(unused)]
-use crate::Pallet as MenstrualData;
+use crate::Pallet as MentrualCalendar;
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;
 
@@ -19,14 +19,14 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		let _add_menstrual_data = MenstrualData::<T>::add_menstrual_data(
+		let _add_menstrual_data = MentrualCalendar::<T>::add_menstrual_data(
 			caller_origin.clone(),
 			"DeBio Menstrual Data".as_bytes().to_vec(),
 			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
 			"DeBio Menstrual Data Link".as_bytes().to_vec()
 		);
 
-		let _menstrual_data_ids = MenstrualData::<T>::menstrual_data_by_owner_id(
+		let _menstrual_data_ids = MentrualCalendar::<T>::menstrual_data_by_owner_id(
 			caller.clone()
 		).unwrap();
 	}: update_menstrual_data(
@@ -41,14 +41,14 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 
 		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		let _add_menstrual_data = MenstrualData::<T>::add_menstrual_data(
+		let _add_menstrual_data = MentrualCalendar::<T>::add_menstrual_data(
 			caller_origin.clone(),
 			"DeBio Menstrual Data".as_bytes().to_vec(),
 			"DeBio Menstrual Data Document Description".as_bytes().to_vec(),
 			"DeBio Menstrual Data Link".as_bytes().to_vec()
 		);
 
-		let _menstrual_data_ids = MenstrualData::<T>::menstrual_data_by_owner_id(
+		let _menstrual_data_ids = MentrualCalendar::<T>::menstrual_data_by_owner_id(
 			caller.clone()
 		).unwrap();
 	}: remove_menstrual_data(
@@ -57,4 +57,4 @@ benchmarks! {
 	)
 }
 
-impl_benchmark_test_suite! {MenstrualData, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
+impl_benchmark_test_suite! {MentrualCalendar, crate::mock::ExternalityBuilder::build(), crate::mock::Test}
