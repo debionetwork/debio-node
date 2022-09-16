@@ -26,7 +26,7 @@ benchmarks! {
 			"DeBio Menstrual Data Link".as_bytes().to_vec()
 		);
 
-		let _menstrual_subscription_ids = MenstrualSubscription::<T>::menstrual_subscription_by_owner_id(
+		let _menstrual_subscription_ids = MenstrualSubscription::<T>::menstrual_subscription_by_address_id(
 			caller.clone()
 		).unwrap();
 	}: update_menstrual_subscription(
@@ -48,7 +48,7 @@ benchmarks! {
 			"DeBio Menstrual Data Link".as_bytes().to_vec()
 		);
 
-		let _menstrual_subscription_ids = MenstrualSubscription::<T>::menstrual_subscription_by_owner_id(
+		let _menstrual_subscription_ids = MenstrualSubscription::<T>::menstrual_subscription_by_address_id(
 			caller.clone()
 		).unwrap();
 	}: remove_menstrual_subscription(

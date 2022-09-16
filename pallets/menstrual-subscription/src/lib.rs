@@ -19,6 +19,8 @@ mod benchmarking;
 pub mod interface;
 pub mod weights;
 pub use interface::MenstrualSubscriptionInterface;
+use primitives_duration::MenstrualSubscriptionDuration;
+use primitives_menstrual_status::{MenstrualSubscriptionStatus, PaymentStatus};
 use sp_std::prelude::*;
 use traits_menstrual_subscription::{
 	MenstrualSubscription as MenstrualSubscriptionT, MenstrualSubscriptionProvider,
@@ -27,10 +29,11 @@ use traits_menstrual_subscription::{
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualSubscription<AccountId, Hash, Moment> {
 	pub id: Hash,
-	pub owner_id: AccountId,
-	pub title: Vec<u8>,
-	pub description: Vec<u8>,
-	pub report_link: Vec<u8>,
+	pub address_id: AccountId,
+	pub duration: MenstrualSubscriptionDuration,
+	pub price: u8,
+	pub payment_status: PaymentStatus,
+	pub status: MenstrualSubscriptionStatus,
 	pub created_at: Moment,
 	pub updated_at: Moment,
 }
@@ -38,18 +41,20 @@ pub struct MenstrualSubscription<AccountId, Hash, Moment> {
 impl<AccountId, Hash, Moment: Default> MenstrualSubscription<AccountId, Hash, Moment> {
 	pub fn new(
 		id: Hash,
-		owner_id: AccountId,
-		title: Vec<u8>,
-		description: Vec<u8>,
-		report_link: Vec<u8>,
+		address_id: AccountId,
+		duration: MenstrualSubscriptionDuration,
+		price: u8,
+		payment_status: PaymentStatus,
+		status: MenstrualSubscriptionStatus,
 		created_at: Moment,
 	) -> Self {
 		Self {
 			id,
-			owner_id,
-			title,
-			description,
-			report_link,
+			address_id,
+			duration,
+			price,
+			payment_status,
+			status,
 			created_at,
 			updated_at: Moment::default(),
 		}
@@ -59,8 +64,8 @@ impl<AccountId, Hash, Moment: Default> MenstrualSubscription<AccountId, Hash, Mo
 		&self.id
 	}
 
-	pub fn get_owner_id(&self) -> &AccountId {
-		&self.owner_id
+	pub fn get_address_id(&self) -> &AccountId {
+		&self.address_id
 	}
 }
 
@@ -72,8 +77,8 @@ where
 	fn get_id(&self) -> &Hash {
 		self.get_id()
 	}
-	fn get_owner_id(&self) -> &AccountId {
-		self.get_owner_id()
+	fn get_address_id(&self) -> &AccountId {
+		self.get_address_id()
 	}
 }
 
@@ -81,6 +86,7 @@ where
 pub mod pallet {
 	use crate::{
 		interface::MenstrualSubscriptionInterface, weights::WeightInfo, MenstrualSubscription,
+		MenstrualSubscriptionDuration, MenstrualSubscriptionStatus, PaymentStatus,
 	};
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
@@ -112,7 +118,7 @@ pub mod pallet {
 
 	// ------- Storage -------------
 	#[pallet::storage]
-	#[pallet::getter(fn menstrual_subscription_by_owner_id)]
+	#[pallet::getter(fn menstrual_subscription_by_address_id)]
 	pub type MenstrualSubscriptionByOwner<T> =
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<MenstrualSubscriptionIdOf<T>>>;
 
@@ -162,17 +168,19 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::add_menstrual_subscription())]
 		pub fn add_menstrual_subscription(
 			origin: OriginFor<T>,
-			title: Vec<u8>,
-			description: Vec<u8>,
-			report_link: Vec<u8>,
+			duration: MenstrualSubscriptionDuration,
+			price: u8,
+			payment_status: PaymentStatus,
+			status: MenstrualSubscriptionStatus,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualSubscriptionInterface<T>>::add_menstrual_subscription(
 				&who,
-				&title,
-				&description,
-				&report_link,
+				&duration,
+				&price,
+				&payment_status,
+				&status,
 			) {
 				Ok(menstrual_subscription) => {
 					Self::deposit_event(Event::MenstrualSubscriptionAdded(
@@ -189,18 +197,20 @@ pub mod pallet {
 		pub fn update_menstrual_subscription(
 			origin: OriginFor<T>,
 			menstrual_subscription_id: HashOf<T>,
-			title: Vec<u8>,
-			description: Vec<u8>,
-			report_link: Vec<u8>,
+			duration: MenstrualSubscriptionDuration,
+			price: u8,
+			payment_status: PaymentStatus,
+			status: MenstrualSubscriptionStatus,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualSubscriptionInterface<T>>::update_menstrual_subscription(
 				&who,
 				&menstrual_subscription_id,
-				&title,
-				&description,
-				&report_link,
+				&duration,
+				&price,
+				&payment_status,
+				&status,
 			) {
 				Ok(menstrual_subscription) => {
 					Self::deposit_event(Event::MenstrualSubscriptionUpdated(
@@ -246,10 +256,10 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 	type MenstrualSubscription = MenstrualSubscriptionOf<T>;
 
 	fn generate_menstrual_subscription_id(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_subscription_count: u64,
 	) -> Self::MenstrualSubscriptionId {
-		let mut account_id_bytes = owner_id.encode();
+		let mut account_id_bytes = address_id.encode();
 		let mut menstrual_subscription_count_bytes = menstrual_subscription_count.encode();
 		account_id_bytes.append(&mut menstrual_subscription_count_bytes);
 
@@ -258,45 +268,50 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 	}
 
 	fn add_menstrual_subscription(
-		owner_id: &T::AccountId,
-		title: &[u8],
-		description: &[u8],
-		report_link: &[u8],
+		address_id: &T::AccountId,
+		duration: &MenstrualSubscriptionDuration,
+		price: &u8,
+		payment_status: &PaymentStatus,
+		status: &MenstrualSubscriptionStatus,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
 		let owner_menstrual_subscription_count =
 			<Self as MenstrualSubscriptionInterface<T>>::menstrual_subscription_count_by_owner(
-				owner_id,
+				address_id,
 			);
-		let menstrual_subscription_id =
-			Self::generate_menstrual_subscription_id(owner_id, owner_menstrual_subscription_count);
+		let menstrual_subscription_id = Self::generate_menstrual_subscription_id(
+			address_id,
+			owner_menstrual_subscription_count,
+		);
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
 		let menstrual_subscription = MenstrualSubscription::new(
 			menstrual_subscription_id,
-			owner_id.clone(),
-			title.to_vec(),
-			description.to_vec(),
-			report_link.to_vec(),
+			address_id.clone(),
+			duration.clone(),
+			*price,
+			payment_status.clone(),
+			status.clone(),
 			now,
 		);
 
 		// Store to MenstrualSubscriptionById storage
 		MenstrualSubscriptionById::<T>::insert(menstrual_subscription_id, &menstrual_subscription);
 
-		Self::add_menstrual_subscription_by_owner(owner_id, &menstrual_subscription_id);
+		Self::add_menstrual_subscription_by_owner(address_id, &menstrual_subscription_id);
 		Self::add_menstrual_subscription_count();
-		Self::add_menstrual_subscription_count_by_owner(owner_id);
+		Self::add_menstrual_subscription_count_by_owner(address_id);
 
 		Ok(menstrual_subscription)
 	}
 
 	fn update_menstrual_subscription(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
-		title: &[u8],
-		description: &[u8],
-		report_link: &[u8],
+		duration: &MenstrualSubscriptionDuration,
+		price: &u8,
+		payment_status: &PaymentStatus,
+		status: &MenstrualSubscriptionStatus,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
 		let menstrual_subscription = MenstrualSubscriptionById::<T>::get(menstrual_subscription_id);
 		if menstrual_subscription.is_none() {
@@ -304,15 +319,16 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		}
 
 		let mut menstrual_subscription = menstrual_subscription.unwrap();
-		if menstrual_subscription.owner_id != owner_id.clone() {
+		if menstrual_subscription.address_id != address_id.clone() {
 			return Err(Error::<T>::NotMenstrualSubscriptionOwner)
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
-		menstrual_subscription.title = title.to_vec();
-		menstrual_subscription.description = description.to_vec();
-		menstrual_subscription.report_link = report_link.to_vec();
+		menstrual_subscription.duration = duration.clone();
+		menstrual_subscription.price = *price;
+		menstrual_subscription.payment_status = payment_status.clone();
+		menstrual_subscription.status = status.clone();
 		menstrual_subscription.updated_at = now;
 
 		// Store to MenstrualSubscriptionById storage
@@ -322,7 +338,7 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 	}
 
 	fn remove_menstrual_subscription(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
 		let menstrual_subscription = MenstrualSubscriptionById::<T>::get(menstrual_subscription_id);
@@ -331,7 +347,7 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		}
 
 		let menstrual_subscription = menstrual_subscription.unwrap();
-		if menstrual_subscription.owner_id != owner_id.clone() {
+		if menstrual_subscription.address_id != address_id.clone() {
 			return Err(Error::<T>::NotMenstrualSubscriptionOwner)
 		}
 
@@ -339,21 +355,21 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		MenstrualSubscriptionById::<T>::take(menstrual_subscription_id).unwrap();
 
 		Self::sub_menstrual_subscription_by_owner(
-			menstrual_subscription.get_owner_id(),
+			menstrual_subscription.get_address_id(),
 			menstrual_subscription_id,
 		);
 		Self::sub_menstrual_subscription_count();
-		Self::sub_menstrual_subscription_count_by_owner(menstrual_subscription.get_owner_id());
+		Self::sub_menstrual_subscription_count_by_owner(menstrual_subscription.get_address_id());
 
 		Ok(menstrual_subscription)
 	}
 
-	fn menstrual_subscription_by_owner_id(owner_id: &T::AccountId) -> Option<Vec<T::Hash>> {
-		MenstrualSubscriptionByOwner::<T>::get(owner_id)
+	fn menstrual_subscription_by_address_id(address_id: &T::AccountId) -> Option<Vec<T::Hash>> {
+		MenstrualSubscriptionByOwner::<T>::get(address_id)
 	}
 
-	fn menstrual_subscription_count_by_owner(owner_id: &T::AccountId) -> u64 {
-		MenstrualSubscriptionCountByOwner::<T>::get(owner_id).unwrap_or(0)
+	fn menstrual_subscription_count_by_owner(address_id: &T::AccountId) -> u64 {
+		MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(0)
 	}
 
 	fn menstrual_subscription_by_id(
@@ -367,25 +383,25 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 impl<T: Config> Pallet<T> {
 	// Add menstrual_subscription by owner
 	pub fn add_menstrual_subscription_by_owner(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
 	) {
 		let mut menstrual_subscription =
-			MenstrualSubscriptionByOwner::<T>::get(owner_id).unwrap_or_default();
+			MenstrualSubscriptionByOwner::<T>::get(address_id).unwrap_or_default();
 
 		menstrual_subscription.push(*menstrual_subscription_id);
-		MenstrualSubscriptionByOwner::<T>::insert(owner_id, &menstrual_subscription)
+		MenstrualSubscriptionByOwner::<T>::insert(address_id, &menstrual_subscription)
 	}
 
 	// Subtract menstrual_subscription by owner
 	pub fn sub_menstrual_subscription_by_owner(
-		owner_id: &T::AccountId,
+		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
 	) {
 		let mut menstrual_subscription =
-			MenstrualSubscriptionByOwner::<T>::get(owner_id).unwrap_or_default();
+			MenstrualSubscriptionByOwner::<T>::get(address_id).unwrap_or_default();
 		menstrual_subscription.retain(|&x| x != *menstrual_subscription_id);
-		MenstrualSubscriptionByOwner::<T>::insert(owner_id, menstrual_subscription);
+		MenstrualSubscriptionByOwner::<T>::insert(address_id, menstrual_subscription);
 	}
 
 	// Add menstrual_subscription count
@@ -395,11 +411,11 @@ impl<T: Config> Pallet<T> {
 	}
 
 	// Add menstrual_subscription count by owner
-	pub fn add_menstrual_subscription_count_by_owner(owner_id: &T::AccountId) {
+	pub fn add_menstrual_subscription_count_by_owner(address_id: &T::AccountId) {
 		let menstrual_subscription_count =
-			MenstrualSubscriptionCountByOwner::<T>::get(owner_id).unwrap_or(0);
+			MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(0);
 		MenstrualSubscriptionCountByOwner::<T>::insert(
-			owner_id,
+			address_id,
 			menstrual_subscription_count.wrapping_add(1),
 		)
 	}
@@ -411,10 +427,13 @@ impl<T: Config> Pallet<T> {
 	}
 
 	// Subtract menstrual_subscription count by owner
-	pub fn sub_menstrual_subscription_count_by_owner(owner_id: &T::AccountId) {
+	pub fn sub_menstrual_subscription_count_by_owner(address_id: &T::AccountId) {
 		let menstrual_subscription_count =
-			MenstrualSubscriptionCountByOwner::<T>::get(owner_id).unwrap_or(1);
-		MenstrualSubscriptionCountByOwner::<T>::insert(owner_id, menstrual_subscription_count - 1);
+			MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(1);
+		MenstrualSubscriptionCountByOwner::<T>::insert(
+			address_id,
+			menstrual_subscription_count - 1,
+		);
 	}
 }
 

@@ -1,3 +1,5 @@
+use primitives_duration::MenstrualSubscriptionDuration;
+use primitives_menstrual_status::{MenstrualSubscriptionStatus, PaymentStatus};
 use sp_std::vec::Vec;
 
 pub trait MenstrualSubscriptionInterface<T: frame_system::Config> {
@@ -12,17 +14,19 @@ pub trait MenstrualSubscriptionInterface<T: frame_system::Config> {
 
 	fn add_menstrual_subscription(
 		owner_id: &T::AccountId,
-		title: &[u8],
-		description: &[u8],
-		report_link: &[u8],
+		duration: &MenstrualSubscriptionDuration,
+		price: &u8,
+		payment_status: &PaymentStatus,
+		status: &MenstrualSubscriptionStatus,
 	) -> Result<Self::MenstrualSubscription, Self::Error>;
 
 	fn update_menstrual_subscription(
 		owner_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
-		title: &[u8],
-		description: &[u8],
-		report_link: &[u8],
+		duration: &MenstrualSubscriptionDuration,
+		price: &u8,
+		payment_status: &PaymentStatus,
+		status: &MenstrualSubscriptionStatus,
 	) -> Result<Self::MenstrualSubscription, Self::Error>;
 
 	fn remove_menstrual_subscription(
@@ -32,7 +36,7 @@ pub trait MenstrualSubscriptionInterface<T: frame_system::Config> {
 
 	fn menstrual_subscription_count_by_owner(owner_id: &T::AccountId) -> u64;
 
-	fn menstrual_subscription_by_owner_id(owner_id: &T::AccountId) -> Option<Vec<T::Hash>>;
+	fn menstrual_subscription_by_address_id(owner_id: &T::AccountId) -> Option<Vec<T::Hash>>;
 
 	fn menstrual_subscription_by_id(
 		menstrual_subscription_id: &Self::MenstrualSubscriptionId,
