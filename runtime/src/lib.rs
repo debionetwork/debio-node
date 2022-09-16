@@ -141,6 +141,8 @@ mod benches {
 		[genetic_analyst_qualifications_benchmarking, GeneticAnalystQualificationsBench::<Runtime>]
 		[service_request_benchmarking, ServiceRequestBench::<Runtime>]
 		[genetic_testing_benchmarking, GeneticTestingBench::<Runtime>]
+		[menstrual_calendar_benchmarking, MenstrualCalendarBench::<Runtime>]
+		[menstrual_subscription_benchmarking, MenstrualSubscriptionBench::<Runtime>]
 		[genetic_analysis_orders_benchmarking, GeneticAnalysisOrdersBench::<Runtime>]
 		[genetic_analysis_benchmarking, GeneticAnalysisBench::<Runtime>]
 	);
@@ -787,6 +789,20 @@ impl genetic_testing::Config for Runtime {
 	type GeneticTestingWeightInfo = ();
 }
 
+impl menstrual_calendar::Config for Runtime {
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type MenstrualCalendarWeightInfo = ();
+}
+
+impl menstrual_subscription::Config for Runtime {
+	type Event = Event;
+	type Orders = Orders;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type MenstrualSubscriptionWeightInfo = ();
+}
+
 impl user_profile::Config for Runtime {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
@@ -903,6 +919,8 @@ construct_runtime!(
 		Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
+		MenstrualCalendar: menstrual_calendar::{Pallet, Call, Storage, Event<T>},
+		MenstrualSubscription: menstrual_subscription::{Pallet, Call, Storage, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Config<T>, Event<T>},
 		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
@@ -1157,6 +1175,8 @@ impl_runtime_apis! {
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use menstrual_calendar_benchmarking::Pallet as MenstrualCalendarBench;
+			use menstrual_subscription_benchmarking::Pallet as MenstrualSubscriptionBench;
 			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use labs_benchmarking::Pallet as LabsBench;
 			use service_request_benchmarking::Pallet as ServiceRequestBench;
@@ -1189,6 +1209,8 @@ impl_runtime_apis! {
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
+			use menstrual_calendar_benchmarking::Pallet as MenstrualCalendarBench;
+			use menstrual_subscription_benchmarking::Pallet as MenstrualSubscriptionBench;
 			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use labs_benchmarking::Pallet as LabsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
@@ -1206,6 +1228,8 @@ impl_runtime_apis! {
 			impl genetic_analyst_qualifications_benchmarking::Config for Runtime {}
 			impl hospital_certifications_benchmarking::Config for Runtime {}
 			impl genetic_testing_benchmarking::Config for Runtime {}
+			impl menstrual_calendar_benchmarking::Config for Runtime {}
+			impl menstrual_subscription_benchmarking::Config for Runtime {}
 			impl genetic_analysis_benchmarking::Config for Runtime {}
 			impl orders_benchmarking::Config for Runtime {}
 			impl genetic_analysis_orders_benchmarking::Config for Runtime {}
