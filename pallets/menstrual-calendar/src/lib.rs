@@ -23,13 +23,14 @@ use sp_std::prelude::*;
 use traits_menstrual_calendar::{
 	MenstrualCalendar as MenstrualCalendarT, MenstrualCalendarProvider,
 };
+use primitives_menstrual_cycle_log::MenstrualCycleLog;
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualCalendar<AccountId, Hash, Moment> {
 	pub id: Hash,
 	pub address_id: AccountId,
 	pub average_cycle: u8,
-	pub cycle_log: Vec<u8>,
+	pub cycle_log: Vec<MenstrualCycleLog>,
 	pub created_at: Moment,
 	pub updated_at: Moment,
 }
@@ -39,7 +40,7 @@ impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment
 		id: Hash,
 		address_id: AccountId,
 		average_cycle: u8,
-		cycle_log: Vec<u8>,
+		cycle_log: Vec<MenstrualCycleLog>,
 		created_at: Moment,
 	) -> Self {
 		Self {
@@ -76,7 +77,7 @@ where
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::{interface::MenstrualCalendarInterface, weights::WeightInfo, MenstrualCalendar};
+	use crate::{interface::MenstrualCalendarInterface, weights::WeightInfo, MenstrualCalendar, MenstrualCycleLog};
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 	pub use sp_std::prelude::*;
@@ -157,7 +158,7 @@ pub mod pallet {
 		pub fn add_menstrual_calendar(
 			origin: OriginFor<T>,
 			average_cycle: u8,
-			cycle_log: Vec<u8>,
+			cycle_log: Vec<MenstrualCycleLog>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -182,7 +183,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
 			average_cycle: u8,
-			cycle_log: Vec<u8>,
+			cycle_log: Vec<MenstrualCycleLog>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -250,7 +251,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	fn add_menstrual_calendar(
 		address_id: &T::AccountId,
 		average_cycle: &u8,
-		cycle_log: &[u8],
+		cycle_log: &[MenstrualCycleLog],
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
 		let owner_menstrual_calendar_count =
 			<Self as MenstrualCalendarInterface<T>>::menstrual_calendar_count_by_owner(address_id);
@@ -281,7 +282,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
 		average_cycle: &u8,
-		cycle_log: &[u8],
+		cycle_log: &[MenstrualCycleLog],
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
 		let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id);
 		if menstrual_calendar.is_none() {

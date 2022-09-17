@@ -32,6 +32,8 @@ pallet-timestamp = { default-features = false, git = "https://github.com/parityt
 
 traits-menstrual-calendar = { path = './traits', default-features = false }
 
+primitives-menstrual-cycle-log = { path = '../../primitives/menstrual-cycle-log', default-features = false }
+
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
 sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -51,6 +53,8 @@ std = [
 
     'pallet-timestamp/std',
 
+    'primitives-menstrual-cycle-log/std',
+    
     'traits-menstrual-calendar/std',
 ]
 runtime-benchmarks = [
