@@ -5,7 +5,7 @@ use frame_support::{
 	inherent::Vec,
 	RuntimeDebug,
 };
-use scale_info::{TypeInfo, prelude::vec};
+use scale_info::{prelude::vec, TypeInfo};
 
 // Symptom
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]

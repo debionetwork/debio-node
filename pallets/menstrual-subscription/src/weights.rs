@@ -29,8 +29,8 @@ use sp_std::marker::PhantomData;
 /// Weight functions needed for menstrual_subscription.
 pub trait WeightInfo { 
 	fn add_menstrual_subscription() -> Weight; 
-	fn update_menstrual_subscription() -> Weight; 
-	fn remove_menstrual_subscription() -> Weight; 
+	fn change_menstrual_subscription_status() -> Weight; 
+	fn set_menstrual_subscription_paid() -> Weight; 
 }
 
 /// Weights for menstrual_subscription using the Substrate node and recommended hardware.
@@ -48,7 +48,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	}
 	// Storage: MenstrualSubscription MenstrualSubscriptionById (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
-	fn update_menstrual_subscription() -> Weight { 
+	fn change_menstrual_subscription_status() -> Weight { 
 		107_069_000_u64 
 			.saturating_add(T::DbWeight::get().reads(2_u64)) 
 			.saturating_add(T::DbWeight::get().writes(1_u64)) 
@@ -57,7 +57,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: MenstrualSubscription MenstrualSubscriptionByOwner (r:1 w:1) 
 	// Storage: MenstrualSubscription MenstrualSubscriptionCount (r:1 w:1) 
 	// Storage: MenstrualSubscription MenstrualSubscriptionCountByOwner (r:1 w:1) 
-	fn remove_menstrual_subscription() -> Weight { 
+	fn set_menstrual_subscription_paid() -> Weight { 
 		47_647_000_u64 
 			.saturating_add(T::DbWeight::get().reads(4_u64)) 
 			.saturating_add(T::DbWeight::get().writes(4_u64)) 
@@ -78,7 +78,7 @@ impl WeightInfo for () {
 	} 
 	// Storage: MenstrualSubscription MenstrualSubscriptionById (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
-	fn update_menstrual_subscription() -> Weight { 
+	fn change_menstrual_subscription_status() -> Weight { 
 		107_069_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
 			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
@@ -87,7 +87,7 @@ impl WeightInfo for () {
 	// Storage: MenstrualSubscription MenstrualSubscriptionByOwner (r:1 w:1) 
 	// Storage: MenstrualSubscription MenstrualSubscriptionCount (r:1 w:1) 
 	// Storage: MenstrualSubscription MenstrualSubscriptionCountByOwner (r:1 w:1) 
-	fn remove_menstrual_subscription() -> Weight { 
+	fn set_menstrual_subscription_paid() -> Weight { 
 		47_647_000_u64
 			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
 			.saturating_add(RocksDbWeight::get().writes(4_u64)) 

@@ -193,23 +193,17 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::update_menstrual_subscription())]
-		pub fn update_menstrual_subscription(
+		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::change_menstrual_subscription_status())]
+		pub fn change_menstrual_subscription_status(
 			origin: OriginFor<T>,
 			menstrual_subscription_id: HashOf<T>,
-			duration: MenstrualSubscriptionDuration,
-			price: u8,
-			payment_status: PaymentStatus,
 			status: MenstrualSubscriptionStatus,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as MenstrualSubscriptionInterface<T>>::update_menstrual_subscription(
+			match <Self as MenstrualSubscriptionInterface<T>>::change_menstrual_subscription_status(
 				&who,
 				&menstrual_subscription_id,
-				&duration,
-				&price,
-				&payment_status,
 				&status,
 			) {
 				Ok(menstrual_subscription) => {
@@ -223,14 +217,14 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::remove_menstrual_subscription())]
-		pub fn remove_menstrual_subscription(
+		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::set_menstrual_subscription_paid())]
+		pub fn set_menstrual_subscription_paid(
 			origin: OriginFor<T>,
 			menstrual_subscription_id: HashOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as MenstrualSubscriptionInterface<T>>::remove_menstrual_subscription(
+			match <Self as MenstrualSubscriptionInterface<T>>::set_menstrual_subscription_paid(
 				&who,
 				&menstrual_subscription_id,
 			) {
@@ -305,12 +299,9 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		Ok(menstrual_subscription)
 	}
 
-	fn update_menstrual_subscription(
+	fn change_menstrual_subscription_status(
 		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
-		duration: &MenstrualSubscriptionDuration,
-		price: &u8,
-		payment_status: &PaymentStatus,
 		status: &MenstrualSubscriptionStatus,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
 		let menstrual_subscription = MenstrualSubscriptionById::<T>::get(menstrual_subscription_id);
@@ -325,9 +316,6 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
-		menstrual_subscription.duration = duration.clone();
-		menstrual_subscription.price = *price;
-		menstrual_subscription.payment_status = payment_status.clone();
 		menstrual_subscription.status = status.clone();
 		menstrual_subscription.updated_at = now;
 
@@ -337,7 +325,7 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		Ok(menstrual_subscription)
 	}
 
-	fn remove_menstrual_subscription(
+	fn set_menstrual_subscription_paid(
 		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
@@ -346,20 +334,18 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 			return Err(Error::<T>::MenstrualSubscriptionDoesNotExist)
 		}
 
-		let menstrual_subscription = menstrual_subscription.unwrap();
+		let mut menstrual_subscription = menstrual_subscription.unwrap();
 		if menstrual_subscription.address_id != address_id.clone() {
 			return Err(Error::<T>::NotMenstrualSubscriptionOwner)
 		}
 
-		// Remove menstrual_subscription from storage
-		MenstrualSubscriptionById::<T>::take(menstrual_subscription_id).unwrap();
+		let now = pallet_timestamp::Pallet::<T>::get();
 
-		Self::sub_menstrual_subscription_by_owner(
-			menstrual_subscription.get_address_id(),
-			menstrual_subscription_id,
-		);
-		Self::sub_menstrual_subscription_count();
-		Self::sub_menstrual_subscription_count_by_owner(menstrual_subscription.get_address_id());
+		menstrual_subscription.payment_status = PaymentStatus::Paid;
+		menstrual_subscription.updated_at = now;
+
+		// Store to MenstrualSubscriptionById storage
+		MenstrualSubscriptionById::<T>::insert(menstrual_subscription_id, &menstrual_subscription);
 
 		Ok(menstrual_subscription)
 	}
