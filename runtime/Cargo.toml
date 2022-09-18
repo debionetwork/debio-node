@@ -228,6 +228,8 @@ runtime-benchmarks = [
 	'service-request-benchmarking',
 	'genetic-analysis-orders-benchmarking',
 	'genetic-data/runtime-benchmarks',
+	'menstrual-calendar/runtime-benchmarks',
+	'menstrual-subscription/runtime-benchmarks',
 	'genetic-analysts-benchmarking',
 	'genetic-analyst-qualifications-benchmarking',
 ]

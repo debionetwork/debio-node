@@ -38,7 +38,7 @@ fn add_menstrual_subscription_works() {
 }
 
 #[test]
-fn remove_menstrual_subscription_works() {
+fn set_menstrual_subscription_paid_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
 			Origin::signed(1),
@@ -66,22 +66,22 @@ fn remove_menstrual_subscription_works() {
 		assert_eq!(menstrual_subscription.payment_status, PaymentStatus::default(),);
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
-		assert_ok!(MenstrualSubscription::remove_menstrual_subscription(
+		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
 			Origin::signed(1),
 			menstrual_subscription_ids[0]
 		));
 
-		assert_eq!(MenstrualSubscription::menstrual_subscription_count(), Some(0));
+		assert_eq!(MenstrualSubscription::menstrual_subscription_count(), Some(1));
 
-		assert_eq!(MenstrualSubscription::menstrual_subscription_count_by_owner(1), Some(0));
+		assert_eq!(MenstrualSubscription::menstrual_subscription_count_by_owner(1), Some(1));
 	})
 }
 
 #[test]
-fn remove_menstrual_subscription_does_not_exist() {
+fn set_menstrual_subscription_paid_does_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
-			MenstrualSubscription::remove_menstrual_subscription(
+			MenstrualSubscription::set_menstrual_subscription_paid(
 				Origin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 			),
@@ -91,7 +91,7 @@ fn remove_menstrual_subscription_does_not_exist() {
 }
 
 #[test]
-fn remove_menstrual_subscription_not_menstrual_subscription_owner() {
+fn set_menstrual_subscription_paid_not_menstrual_subscription_owner() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
 			Origin::signed(1),
@@ -120,7 +120,7 @@ fn remove_menstrual_subscription_not_menstrual_subscription_owner() {
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
 		assert_noop!(
-			MenstrualSubscription::remove_menstrual_subscription(
+			MenstrualSubscription::set_menstrual_subscription_paid(
 				Origin::signed(2),
 				menstrual_subscription_ids[0]
 			),
@@ -130,7 +130,7 @@ fn remove_menstrual_subscription_not_menstrual_subscription_owner() {
 }
 
 #[test]
-fn update_menstrual_subscription_works() {
+fn change_menstrual_subscription_status_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
 			Origin::signed(1),
@@ -158,12 +158,9 @@ fn update_menstrual_subscription_works() {
 		assert_eq!(menstrual_subscription.payment_status, PaymentStatus::default(),);
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
-		assert_ok!(MenstrualSubscription::update_menstrual_subscription(
+		assert_ok!(MenstrualSubscription::change_menstrual_subscription_status(
 			Origin::signed(1),
 			menstrual_subscription_ids[0],
-			MenstrualSubscriptionDuration::default(),
-			1,
-			PaymentStatus::default(),
 			MenstrualSubscriptionStatus::default(),
 		));
 
@@ -188,15 +185,12 @@ fn update_menstrual_subscription_works() {
 }
 
 #[test]
-fn update_menstrual_subscription_does_not_exist() {
+fn change_menstrual_subscription_status_does_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
-			MenstrualSubscription::update_menstrual_subscription(
+			MenstrualSubscription::change_menstrual_subscription_status(
 				Origin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				MenstrualSubscriptionDuration::default(),
-				1,
-				PaymentStatus::default(),
 				MenstrualSubscriptionStatus::default()
 			),
 			Error::<Test>::MenstrualSubscriptionDoesNotExist
@@ -205,7 +199,7 @@ fn update_menstrual_subscription_does_not_exist() {
 }
 
 #[test]
-fn update_menstrual_subscription_not_menstrual_subscription_owner() {
+fn change_menstrual_subscription_status_not_menstrual_subscription_owner() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
 			Origin::signed(1),
@@ -234,12 +228,9 @@ fn update_menstrual_subscription_not_menstrual_subscription_owner() {
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
 		assert_noop!(
-			MenstrualSubscription::update_menstrual_subscription(
+			MenstrualSubscription::change_menstrual_subscription_status(
 				Origin::signed(2),
 				menstrual_subscription_ids[0],
-				MenstrualSubscriptionDuration::default(),
-				1,
-				PaymentStatus::default(),
 				MenstrualSubscriptionStatus::default(),
 			),
 			Error::<Test>::NotMenstrualSubscriptionOwner

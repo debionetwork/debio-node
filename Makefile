@@ -21,6 +21,10 @@ run:
 build-benchmark:
 	cargo build --release --features runtime-benchmarks
 
+.PHONY: benchmark
+benchmark:
+	.maintain/run-benchmark-locally-build-once.sh
+
 .PHONY: build
 build:
 	cargo build --release

@@ -1,4 +1,3 @@
-use primitives_menstrual_cycle_log::MenstrualCycleLog;
 use sp_std::vec::Vec;
 
 pub trait MenstrualCalendarInterface<T: frame_system::Config> {
@@ -14,19 +13,12 @@ pub trait MenstrualCalendarInterface<T: frame_system::Config> {
 	fn add_menstrual_calendar(
 		address_id: &T::AccountId,
 		average_cycle: &u8,
-		cycle_log: &[MenstrualCycleLog],
 	) -> Result<Self::MenstrualCalendar, Self::Error>;
 
 	fn update_menstrual_calendar(
 		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
 		average_cycle: &u8,
-		cycle_log: &[MenstrualCycleLog],
-	) -> Result<Self::MenstrualCalendar, Self::Error>;
-
-	fn remove_menstrual_calendar(
-		address_id: &T::AccountId,
-		menstrual_calendar_id: &T::Hash,
 	) -> Result<Self::MenstrualCalendar, Self::Error>;
 
 	fn menstrual_calendar_count_by_owner(address_id: &T::AccountId) -> u64;

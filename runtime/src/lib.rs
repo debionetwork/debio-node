@@ -139,8 +139,6 @@ mod benches {
 		[genetic_analyst_qualifications_benchmarking, GeneticAnalystQualificationsBench::<Runtime>]
 		[service_request_benchmarking, ServiceRequestBench::<Runtime>]
 		[genetic_testing_benchmarking, GeneticTestingBench::<Runtime>]
-		[menstrual_calendar_benchmarking, MenstrualCalendarBench::<Runtime>]
-		[menstrual_subscription_benchmarking, MenstrualSubscriptionBench::<Runtime>]
 		[genetic_analysis_orders_benchmarking, GeneticAnalysisOrdersBench::<Runtime>]
 		[genetic_analysis_benchmarking, GeneticAnalysisBench::<Runtime>]
 	);
@@ -1170,8 +1168,6 @@ impl_runtime_apis! {
 			use genetic_analyst_qualifications_benchmarking::Pallet as GeneticAnalystQualificationsBench;
 			use hospital_certifications_benchmarking::Pallet as HospitalCertificationsBench;
 			use genetic_testing_benchmarking::Pallet as GeneticTestingBench;
-			use menstrual_calendar_benchmarking::Pallet as MenstrualCalendarBench;
-			use menstrual_subscription_benchmarking::Pallet as MenstrualSubscriptionBench;
 			use genetic_analysis_benchmarking::Pallet as GeneticAnalysisBench;
 			use labs_benchmarking::Pallet as LabsBench;
 			use service_request_benchmarking::Pallet as ServiceRequestBench;
