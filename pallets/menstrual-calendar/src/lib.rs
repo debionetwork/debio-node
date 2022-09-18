@@ -19,11 +19,11 @@ mod benchmarking;
 pub mod interface;
 pub mod weights;
 pub use interface::MenstrualCalendarInterface;
+use primitives_menstrual_cycle_log::MenstrualCycleLog;
 use sp_std::prelude::*;
 use traits_menstrual_calendar::{
 	MenstrualCalendar as MenstrualCalendarT, MenstrualCalendarProvider,
 };
-use primitives_menstrual_cycle_log::MenstrualCycleLog;
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualCalendar<AccountId, Hash, Moment> {
@@ -43,14 +43,7 @@ impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment
 		cycle_log: Vec<MenstrualCycleLog>,
 		created_at: Moment,
 	) -> Self {
-		Self {
-			id,
-			address_id,
-			average_cycle,
-			cycle_log,
-			created_at,
-			updated_at: Moment::default(),
-		}
+		Self { id, address_id, average_cycle, cycle_log, created_at, updated_at: Moment::default() }
 	}
 
 	pub fn get_id(&self) -> &Hash {
@@ -77,7 +70,10 @@ where
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::{interface::MenstrualCalendarInterface, weights::WeightInfo, MenstrualCalendar, MenstrualCycleLog};
+	use crate::{
+		interface::MenstrualCalendarInterface, weights::WeightInfo, MenstrualCalendar,
+		MenstrualCycleLog,
+	};
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 	pub use sp_std::prelude::*;

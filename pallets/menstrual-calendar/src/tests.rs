@@ -14,7 +14,8 @@ fn add_menstrual_calendar_works() {
 			vec![MenstrualCycleLog::default()]
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
+		let menstrual_calendar_ids =
+			MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -39,7 +40,8 @@ fn remove_menstrual_calendar_works() {
 			vec![MenstrualCycleLog::default()]
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
+		let menstrual_calendar_ids =
+			MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -86,7 +88,8 @@ fn remove_menstrual_calendar_not_menstrual_calendar_owner() {
 			vec![MenstrualCycleLog::default()]
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
+		let menstrual_calendar_ids =
+			MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -119,7 +122,8 @@ fn update_menstrual_calendar_works() {
 			vec![MenstrualCycleLog::default()]
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
+		let menstrual_calendar_ids =
+			MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -140,7 +144,8 @@ fn update_menstrual_calendar_works() {
 			vec![MenstrualCycleLog::default()],
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
+		let menstrual_calendar_ids =
+			MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 
@@ -152,10 +157,7 @@ fn update_menstrual_calendar_works() {
 		assert_eq!(menstrual_calendar.id, menstrual_calendar_ids[0]);
 		assert_eq!(menstrual_calendar.address_id, 1);
 		assert_eq!(menstrual_calendar.average_cycle, 16);
-		assert_eq!(
-			menstrual_calendar.cycle_log,
-			vec![MenstrualCycleLog::default()]
-		);
+		assert_eq!(menstrual_calendar.cycle_log, vec![MenstrualCycleLog::default()]);
 	})
 }
 
@@ -183,7 +185,8 @@ fn update_menstrual_calendar_not_menstrual_calendar_owner() {
 			vec![MenstrualCycleLog::default()]
 		));
 
-		let menstrual_calendar_ids = MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
+		let menstrual_calendar_ids =
+			MenstrualCalendar::menstrual_calendar_by_address_id(1).unwrap();
 
 		assert_eq!(MenstrualCalendar::menstrual_calendar_count(), Some(1));
 

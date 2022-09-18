@@ -1,5 +1,5 @@
-use sp_std::vec::Vec;
 use primitives_menstrual_cycle_log::MenstrualCycleLog;
+use sp_std::vec::Vec;
 
 pub trait MenstrualCalendarInterface<T: frame_system::Config> {
 	type Error;

@@ -2,21 +2,26 @@
 
 use frame_support::{
 	codec::{Decode, Encode},
+	inherent::Vec,
 	RuntimeDebug,
 };
-use scale_info::TypeInfo;
+use scale_info::{TypeInfo, prelude::vec};
+
+// Symptom
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub struct Symptom {
+	name: Vec<u8>,
+}
 
 // MenstrualCycleLog
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualCycleLog {
 	date: u64,
 	menstruation: bool,
-	symptoms: Vec<Vec<u8>>,
+	symptoms: Vec<Symptom>,
 }
 impl Default for MenstrualCycleLog {
-	fn default() -> Self { MenstrualCycleLog {
-		date: 1,
-		menstruation: false,
-		symptoms: vec![vec![]],
-	} }
+	fn default() -> Self {
+		MenstrualCycleLog { date: 1, menstruation: false, symptoms: vec![Symptom::default()] }
+	}
 }
