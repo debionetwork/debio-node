@@ -396,7 +396,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_customer(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 	fn set_account_profile_role_to_genetic_analyst(
@@ -428,7 +428,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_doctor(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 	fn set_account_profile_role_to_hospital(

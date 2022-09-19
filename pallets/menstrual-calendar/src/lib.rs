@@ -302,10 +302,7 @@ pub mod pallet {
 				&menstrual_cycle_log,
 			) {
 				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogAdded(
-						menstrual_cycle_log,
-						who.clone(),
-					));
+					Self::deposit_event(Event::MenstrualCycleLogAdded(menstrual_cycle_log, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -327,10 +324,7 @@ pub mod pallet {
 				&menstrual_cycle_log,
 			) {
 				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogUpdated(
-						menstrual_cycle_log,
-						who.clone(),
-					));
+					Self::deposit_event(Event::MenstrualCycleLogUpdated(menstrual_cycle_log, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -350,10 +344,7 @@ pub mod pallet {
 				&menstrual_cycle_log_id,
 			) {
 				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogRemoved(
-						menstrual_cycle_log,
-						who.clone(),
-					));
+					Self::deposit_event(Event::MenstrualCycleLogRemoved(menstrual_cycle_log, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -395,12 +386,8 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
-		let menstrual_calendar = MenstrualCalendar::new(
-			menstrual_calendar_id,
-			address_id.clone(),
-			average_cycle.clone(),
-			now,
-		);
+		let menstrual_calendar =
+			MenstrualCalendar::new(menstrual_calendar_id, address_id.clone(), *average_cycle, now);
 
 		// Store to MenstrualCalendarById storage
 		MenstrualCalendarById::<T>::insert(menstrual_calendar_id, &menstrual_calendar);
@@ -429,7 +416,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
-		menstrual_calendar.average_cycle = average_cycle.clone();
+		menstrual_calendar.average_cycle = *average_cycle;
 		menstrual_calendar.updated_at = now;
 
 		// Store to MenstrualCalendarById storage
@@ -495,7 +482,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		}
 
 		let mut _menstrual_cycle_log = _menstrual_cycle_log.unwrap();
-		if _menstrual_cycle_log.menstrual_calendar_id != menstrual_calendar_id.clone() {
+		if _menstrual_cycle_log.menstrual_calendar_id != *menstrual_calendar_id {
 			return Err(Error::<T>::NotMenstrualCycleLogOwner)
 		}
 
@@ -522,14 +509,14 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		}
 
 		let menstrual_cycle_log = menstrual_cycle_log.unwrap();
-		if menstrual_cycle_log.menstrual_calendar_id != menstrual_calendar_id.clone() {
+		if menstrual_cycle_log.menstrual_calendar_id != *menstrual_calendar_id {
 			return Err(Error::<T>::NotMenstrualCycleLogOwner)
 		}
 
 		// Remove menstrual_cycle_log from storage
 		MenstrualCycleLogById::<T>::take(menstrual_cycle_log_id).unwrap();
 
-		Self::sub_menstrual_cycle_log_by_owner(&menstrual_calendar_id, menstrual_cycle_log_id);
+		Self::sub_menstrual_cycle_log_by_owner(menstrual_calendar_id, menstrual_cycle_log_id);
 		Self::sub_menstrual_cycle_log_count();
 		Self::sub_menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
 
