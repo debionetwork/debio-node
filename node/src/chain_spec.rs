@@ -16,9 +16,9 @@ use debio_runtime::{
 	currency::{OCTS, UNITS as DBIO},
 	opaque::{Block, SessionKeys},
 	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GeneticAnalysisOrdersConfig,
-	GeneticAnalystsConfig, LabsConfig, OctopusAppchainConfig, OctopusLposConfig, OrdersConfig,
-	RewardsConfig, ServiceRequestConfig, SessionConfig, Signature, SudoConfig, SystemConfig,
-	UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
+	GeneticAnalystsConfig, LabsConfig, MenstrualSubscriptionConfig, OctopusAppchainConfig,
+	OctopusLposConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig, SessionConfig, Signature,
+	SudoConfig, SystemConfig, UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
 
 use serde::{Deserialize, Serialize};
@@ -323,6 +323,7 @@ fn genesis(
 			treasury_key: Some(treasury_key),
 		},
 		service_request: ServiceRequestConfig { admin_key: Some(api_admin_key.clone()) },
-		user_profile: UserProfileConfig { admin_key: Some(api_admin_key) },
+		user_profile: UserProfileConfig { admin_key: Some(api_admin_key.clone()) },
+		menstrual_subscription: MenstrualSubscriptionConfig { admin_key: Some(api_admin_key) },
 	}
 }

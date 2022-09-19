@@ -20,6 +20,18 @@ impl Default for DurationType {
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct ExpectedDuration {
-	pub duration: i8,
+	pub duration: u64,
 	pub duration_type: DurationType,
+}
+
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub enum MenstrualSubscriptionDuration {
+	Monthly,
+	Quarterly,
+	Yearly,
+}
+impl Default for MenstrualSubscriptionDuration {
+	fn default() -> Self {
+		MenstrualSubscriptionDuration::Monthly
+	}
 }

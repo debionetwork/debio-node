@@ -20,7 +20,6 @@ for entry in `ls pallets`; do
     --steps=20 \
     --repeat=10 \
     --heap-pages=4096 \
-    --raw \
     --output="./pallets/${PALLET}/src/weights.rs" \
     --template="./.maintain/pallet-weight-template.hbs"
 
