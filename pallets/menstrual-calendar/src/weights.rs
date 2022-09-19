@@ -29,6 +29,9 @@ use sp_std::marker::PhantomData;
 pub trait WeightInfo { 
 	fn add_menstrual_calendar() -> Weight; 
 	fn update_menstrual_calendar() -> Weight; 
+	fn add_menstrual_cycle_log() -> Weight; 
+	fn update_menstrual_cycle_log() -> Weight; 
+	fn remove_menstrual_cycle_log() -> Weight; 
 }
 
 /// Weights for menstrual_calendar using the Substrate node and recommended hardware.
@@ -51,6 +54,30 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(2_u64)) 
 			.saturating_add(T::DbWeight::get().writes(1_u64)) 
 	}
+	// Storage: MenstrualCalendar MenstrualCalendarCountByOwner (r:1 w:1) 
+	// Storage: Timestamp Now (r:1 w:0) 
+	// Storage: MenstrualCalendar MenstrualCalendarByOwner (r:1 w:1) 
+	// Storage: MenstrualCalendar MenstrualCalendarCount (r:1 w:1) 
+	// Storage: MenstrualCalendar MenstrualCalendarById (r:0 w:1) 
+	fn add_menstrual_cycle_log() -> Weight { 
+		119_166_000_u64 
+			.saturating_add(T::DbWeight::get().reads(4_u64)) 
+			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	}
+	// Storage: MenstrualCalendar MenstrualCalendarById (r:1 w:1) 
+	// Storage: Timestamp Now (r:1 w:0) 
+	fn update_menstrual_cycle_log() -> Weight { 
+		73_825_000_u64 
+			.saturating_add(T::DbWeight::get().reads(2_u64)) 
+			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	}
+	// Storage: MenstrualCalendar MenstrualCalendarById (r:1 w:1) 
+	// Storage: Timestamp Now (r:1 w:0) 
+	fn remove_menstrual_cycle_log() -> Weight { 
+		73_825_000_u64 
+			.saturating_add(T::DbWeight::get().reads(2_u64)) 
+			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	}
 }
 
 // For backwards compatibility and tests
@@ -68,6 +95,30 @@ impl WeightInfo for () {
 	// Storage: MenstrualCalendar MenstrualCalendarById (r:1 w:1) 
 	// Storage: Timestamp Now (r:1 w:0) 
 	fn update_menstrual_calendar() -> Weight { 
+		73_825_000_u64
+			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
+			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
+	} 
+	// Storage: MenstrualCalendar MenstrualCalendarCountByOwner (r:1 w:1) 
+	// Storage: Timestamp Now (r:1 w:0) 
+	// Storage: MenstrualCalendar MenstrualCalendarByOwner (r:1 w:1) 
+	// Storage: MenstrualCalendar MenstrualCalendarCount (r:1 w:1) 
+	// Storage: MenstrualCalendar MenstrualCalendarById (r:0 w:1) 
+	fn add_menstrual_cycle_log() -> Weight { 
+		119_166_000_u64
+			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
+			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
+	} 
+	// Storage: MenstrualCalendar MenstrualCalendarById (r:1 w:1) 
+	// Storage: Timestamp Now (r:1 w:0) 
+	fn update_menstrual_cycle_log() -> Weight { 
+		73_825_000_u64
+			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
+			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
+	} 
+	// Storage: MenstrualCalendar MenstrualCalendarById (r:1 w:1) 
+	// Storage: Timestamp Now (r:1 w:0) 
+	fn remove_menstrual_cycle_log() -> Weight { 
 		73_825_000_u64
 			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
 			.saturating_add(RocksDbWeight::get().writes(1_u64)) 

@@ -4589,7 +4589,6 @@ dependencies = [
  "frame-system",
  "pallet-timestamp",
  "parity-scale-codec",
- "primitives-menstrual-cycle-log",
  "scale-info",
  "serde",
  "sp-core",
@@ -5981,15 +5980,6 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-std",
-]
-
-[[package]]
-name = "primitives-menstrual-cycle-log"
-version = "2.1.0"
-dependencies = [
- "frame-support",
- "parity-scale-codec",
- "scale-info",
 ]
 
 [[package]]

@@ -20,7 +20,7 @@ impl Default for DurationType {
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct ExpectedDuration {
-	pub duration: u8,
+	pub duration: u64,
 	pub duration_type: DurationType,
 }
 
