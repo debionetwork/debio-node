@@ -1,4 +1,4 @@
-use crate::{mock::*, Error};
+use crate::{mock::*, AdminKey, Error};
 use frame_support::{
 	assert_noop, assert_ok,
 	sp_runtime::traits::{Hash, Keccak256},
@@ -66,8 +66,11 @@ fn set_menstrual_subscription_paid_works() {
 		assert_eq!(menstrual_subscription.payment_status, PaymentStatus::default(),);
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
+		AdminKey::<Test>::put(1);
+
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
 			Origin::signed(1),
+			1,
 			menstrual_subscription_ids[0]
 		));
 
@@ -80,9 +83,12 @@ fn set_menstrual_subscription_paid_works() {
 #[test]
 fn set_menstrual_subscription_paid_does_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
+		AdminKey::<Test>::put(1);
+
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_paid(
 				Origin::signed(1),
+				1,
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 			),
 			Error::<Test>::MenstrualSubscriptionDoesNotExist
@@ -119,9 +125,12 @@ fn set_menstrual_subscription_paid_not_menstrual_subscription_owner() {
 		assert_eq!(menstrual_subscription.payment_status, PaymentStatus::default(),);
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
+		AdminKey::<Test>::put(2);
+
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_paid(
 				Origin::signed(2),
+				2,
 				menstrual_subscription_ids[0]
 			),
 			Error::<Test>::NotMenstrualSubscriptionOwner
@@ -158,8 +167,11 @@ fn change_menstrual_subscription_status_works() {
 		assert_eq!(menstrual_subscription.payment_status, PaymentStatus::default(),);
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
+		AdminKey::<Test>::put(1);
+
 		assert_ok!(MenstrualSubscription::change_menstrual_subscription_status(
 			Origin::signed(1),
+			1,
 			menstrual_subscription_ids[0],
 			MenstrualSubscriptionStatus::default(),
 		));
@@ -187,9 +199,12 @@ fn change_menstrual_subscription_status_works() {
 #[test]
 fn change_menstrual_subscription_status_does_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
+		AdminKey::<Test>::put(1);
+
 		assert_noop!(
 			MenstrualSubscription::change_menstrual_subscription_status(
 				Origin::signed(1),
+				1,
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 				MenstrualSubscriptionStatus::default()
 			),
@@ -227,9 +242,12 @@ fn change_menstrual_subscription_status_not_menstrual_subscription_owner() {
 		assert_eq!(menstrual_subscription.payment_status, PaymentStatus::default(),);
 		assert_eq!(menstrual_subscription.status, MenstrualSubscriptionStatus::default(),);
 
+		AdminKey::<Test>::put(2);
+
 		assert_noop!(
 			MenstrualSubscription::change_menstrual_subscription_status(
 				Origin::signed(2),
+				2,
 				menstrual_subscription_ids[0],
 				MenstrualSubscriptionStatus::default(),
 			),

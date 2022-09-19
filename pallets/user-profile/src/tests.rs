@@ -87,16 +87,20 @@ fn update_admin_key_works() {
 }
 
 #[test]
-fn sudo_update_profile_roles_works() {
+fn admin_update_profile_roles_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		let mut roles = ProfileRolesOf::<Test>::default();
 		roles.set_is_customer(true);
 
+		AdminKey::<Test>::put(2);
+
+		assert_eq!(UserProfile::admin_key(), Some(2));
+
 		System::set_block_number(1);
 
-		assert_ok!(UserProfile::sudo_update_profile_roles(Origin::root(), 1, roles.clone()));
+		assert_ok!(UserProfile::admin_update_profile_roles(Origin::signed(2), 2, roles.clone()));
 
-		System::assert_last_event(Event::UserProfile(crate::Event::AdminSetProfileRoles(1, roles)));
+		System::assert_last_event(Event::UserProfile(crate::Event::AdminSetProfileRoles(2, roles)));
 	})
 }
 

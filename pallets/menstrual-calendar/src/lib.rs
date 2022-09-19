@@ -184,12 +184,12 @@ pub mod pallet {
 	pub type MenstrualCalendarCount<T> = StorageValue<_, u64>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn menstrual_cycle_log_by_address_id)]
+	#[pallet::getter(fn menstrual_cycle_log_by_owner_id)]
 	pub type MenstrualCycleLogByOwner<T> =
 		StorageMap<_, Blake2_128Concat, HashOf<T>, Vec<MenstrualCycleLogIdOf<T>>>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn menstrual_cycle_log_by_hash_id)]
+	#[pallet::getter(fn menstrual_cycle_log_by_id)]
 	pub type MenstrualCycleLogById<T> =
 		StorageMap<_, Blake2_128Concat, HashOf<T>, MenstrualCycleLogOf<T>>;
 
