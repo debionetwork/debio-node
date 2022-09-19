@@ -98,6 +98,27 @@ pub mod pallet {
 		type MenstrualSubscriptionWeightInfo: WeightInfo;
 	}
 
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config> {
+		pub admin_key: Option<T::AccountId>,
+	}
+
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { admin_key: None }
+		}
+	}
+
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+			if let Some(ref admin_key) = self.admin_key {
+				AdminKey::<T>::put(admin_key);
+			}
+		}
+	}
+
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -117,6 +138,10 @@ pub mod pallet {
 	pub type MenstrualSubscriptionIdOf<T> = HashOf<T>;
 
 	// ------- Storage -------------
+	#[pallet::storage]
+	#[pallet::getter(fn admin_key)]
+	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
+
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_subscription_by_address_id)]
 	pub type MenstrualSubscriptionByOwner<T> =
@@ -150,6 +175,9 @@ pub mod pallet {
 		//// MenstrualSubscription deleted
 		/// parameters, [MenstrualSubscription, who]
 		MenstrualSubscriptionRemoved(MenstrualSubscriptionOf<T>, AccountIdOf<T>),
+		/// Update menstrual subscription admin key successful
+		/// parameters. [who]
+		UpdateMenstrualSubscriptionAdminKeySuccessful(AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -161,6 +189,8 @@ pub mod pallet {
 		NotMenstrualSubscriptionOwner,
 		/// Ordering a menstrual_subscription that does not exist
 		MenstrualSubscriptionDoesNotExist,
+		// Unauthorized access of an Admin key
+		Unauthorized,
 	}
 
 	#[pallet::call]
@@ -196,20 +226,23 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::change_menstrual_subscription_status())]
 		pub fn change_menstrual_subscription_status(
 			origin: OriginFor<T>,
+			account_id: T::AccountId,
 			menstrual_subscription_id: HashOf<T>,
 			status: MenstrualSubscriptionStatus,
 		) -> DispatchResultWithPostInfo {
-			let who = ensure_signed(origin)?;
+			let admin = ensure_signed(origin)?;
+
+			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
 
 			match <Self as MenstrualSubscriptionInterface<T>>::change_menstrual_subscription_status(
-				&who,
+				&account_id,
 				&menstrual_subscription_id,
 				&status,
 			) {
 				Ok(menstrual_subscription) => {
 					Self::deposit_event(Event::MenstrualSubscriptionUpdated(
 						menstrual_subscription,
-						who.clone(),
+						account_id.clone(),
 					));
 					Ok(().into())
 				},
@@ -220,23 +253,56 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::set_menstrual_subscription_paid())]
 		pub fn set_menstrual_subscription_paid(
 			origin: OriginFor<T>,
+			account_id: T::AccountId,
 			menstrual_subscription_id: HashOf<T>,
 		) -> DispatchResultWithPostInfo {
-			let who = ensure_signed(origin)?;
+			let admin = ensure_signed(origin)?;
+
+			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
 
 			match <Self as MenstrualSubscriptionInterface<T>>::set_menstrual_subscription_paid(
-				&who,
+				&account_id,
 				&menstrual_subscription_id,
 			) {
 				Ok(menstrual_subscription) => {
 					Self::deposit_event(Event::MenstrualSubscriptionRemoved(
 						menstrual_subscription,
-						who.clone(),
+						account_id.clone(),
 					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
 			}
+		}
+
+		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::set_menstrual_subscription_paid())]
+		pub fn update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			ensure!(who == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
+
+			AdminKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateMenstrualSubscriptionAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			AdminKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateMenstrualSubscriptionAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
 		}
 	}
 }

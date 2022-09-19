@@ -913,7 +913,7 @@ construct_runtime!(
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		MenstrualCalendar: menstrual_calendar::{Pallet, Call, Storage, Event<T>},
-		MenstrualSubscription: menstrual_subscription::{Pallet, Call, Storage, Event<T>},
+		MenstrualSubscription: menstrual_subscription::{Pallet, Call, Storage, Config<T>, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Config<T>, Event<T>},
 		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},

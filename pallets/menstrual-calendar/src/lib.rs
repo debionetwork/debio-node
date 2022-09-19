@@ -50,9 +50,17 @@ impl<Hash, Moment: Default> MenstrualCycleLog<Hash, Moment> {
 		date: Moment,
 		menstruation: bool,
 		symptoms: Vec<Symptom>,
-		created_at: Moment
+		created_at: Moment,
 	) -> Self {
-		Self { id, menstrual_calendar_id, date, menstruation, symptoms, created_at, updated_at: Moment::default() }
+		Self {
+			id,
+			menstrual_calendar_id,
+			date,
+			menstruation,
+			symptoms,
+			created_at,
+			updated_at: Moment::default(),
+		}
 	}
 
 	pub fn get_id(&self) -> &Hash {
@@ -64,8 +72,7 @@ impl<Hash, Moment: Default> MenstrualCycleLog<Hash, Moment> {
 	}
 }
 
-impl<T, Hash, Moment: Default> MenstrualCycleLogT<T>
-	for MenstrualCycleLog<Hash, Moment>
+impl<T, Hash, Moment: Default> MenstrualCycleLogT<T> for MenstrualCycleLog<Hash, Moment>
 where
 	T: frame_system::Config<Hash = Hash>,
 {
@@ -76,7 +83,6 @@ where
 		self.get_menstrual_calendar_id()
 	}
 }
-
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualCalendar<AccountId, Hash, Moment> {
@@ -89,13 +95,15 @@ pub struct MenstrualCalendar<AccountId, Hash, Moment> {
 }
 
 impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment> {
-	pub fn new(
-		id: Hash,
-		address_id: AccountId,
-		average_cycle: u8,
-		created_at: Moment
-	) -> Self {
-		Self { id, address_id, average_cycle, cycle_log: vec![], created_at, updated_at: Moment::default() }
+	pub fn new(id: Hash, address_id: AccountId, average_cycle: u8, created_at: Moment) -> Self {
+		Self {
+			id,
+			address_id,
+			average_cycle,
+			cycle_log: vec![],
+			created_at,
+			updated_at: Moment::default(),
+		}
 	}
 
 	pub fn get_id(&self) -> &Hash {
@@ -191,8 +199,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_cycle_log_count_by_owner)]
-	pub type MenstrualCycleLogCountByOwner<T> =
-		StorageMap<_, Blake2_128Concat, HashOf<T>, u64>;
+	pub type MenstrualCycleLogCountByOwner<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, u64>;
 	//                                _,  Hasher         ,  Key     ,  Value
 	// -----------------------------
 
@@ -295,7 +302,10 @@ pub mod pallet {
 				&menstrual_cycle_log,
 			) {
 				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogAdded(menstrual_cycle_log, who.clone()));
+					Self::deposit_event(Event::MenstrualCycleLogAdded(
+						menstrual_cycle_log,
+						who.clone(),
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -445,9 +455,13 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		menstrual_cycle_log: &Self::MenstrualCycleLog,
 	) -> Result<Self::MenstrualCycleLog, Self::Error> {
 		let owner_menstrual_cycle_log_count =
-			<Self as MenstrualCalendarInterface<T>>::menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
-		let menstrual_cycle_log_id =
-			Self::generate_menstrual_cycle_log_id(menstrual_calendar_id, owner_menstrual_cycle_log_count);
+			<Self as MenstrualCalendarInterface<T>>::menstrual_cycle_log_count_by_owner(
+				menstrual_calendar_id,
+			);
+		let menstrual_cycle_log_id = Self::generate_menstrual_cycle_log_id(
+			menstrual_calendar_id,
+			owner_menstrual_cycle_log_count,
+		);
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 
@@ -456,9 +470,9 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 			menstrual_cycle_log_id,
 			*menstrual_calendar_id,
 			menstrual_cycle_log.date,
-			menstrual_cycle_log.menstruation,			
+			menstrual_cycle_log.menstruation,
 			menstrual_cycle_log.symptoms.clone(),
-			now
+			now,
 		);
 
 		MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, &_menstrual_cycle_log);
@@ -515,10 +529,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		// Remove menstrual_cycle_log from storage
 		MenstrualCycleLogById::<T>::take(menstrual_cycle_log_id).unwrap();
 
-		Self::sub_menstrual_cycle_log_by_owner(
-			&menstrual_calendar_id,
-			menstrual_cycle_log_id,
-		);
+		Self::sub_menstrual_cycle_log_by_owner(&menstrual_calendar_id, menstrual_cycle_log_id);
 		Self::sub_menstrual_cycle_log_count();
 		Self::sub_menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
 
@@ -652,7 +663,10 @@ impl<T: Config> Pallet<T> {
 	pub fn sub_menstrual_cycle_log_count_by_owner(menstrual_calendar_id: &T::Hash) {
 		let menstrual_cycle_log_count =
 			MenstrualCycleLogCountByOwner::<T>::get(menstrual_calendar_id).unwrap_or(1);
-		MenstrualCycleLogCountByOwner::<T>::insert(menstrual_calendar_id, menstrual_cycle_log_count - 1);
+		MenstrualCycleLogCountByOwner::<T>::insert(
+			menstrual_calendar_id,
+			menstrual_cycle_log_count - 1,
+		);
 	}
 }
 
