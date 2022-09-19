@@ -1203,13 +1203,23 @@ fn cant_finalize_request_when_unauthorized() {
 #[test]
 fn cant_finalize_request_when_invoice_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(0).build().execute_with(|| {
+		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		AdminKey::<Test>::put(1);
+
+		// Customer create request
+		assert_ok!(ServiceRequest::create_request(
+			Origin::signed(1),
+			String::from("Indonesia").into_bytes(),
+			String::from("West Java").into_bytes(),
+			String::from("Bogor").into_bytes(),
+			String::from("Vaksin").into_bytes(),
+			10
+		));
+
+		let request_id = ServiceRequest::request_by_account_id(1)[0];
+
 		assert_noop!(
-			ServiceRequest::finalize_request(
-				Origin::signed(1),
-				Keccak256::hash("request_id".as_bytes()),
-				true
-			),
+			ServiceRequest::finalize_request(Origin::signed(1), request_id, true),
 			Error::<Test>::ServiceInvoiceNotFound
 		);
 	})
@@ -1445,7 +1455,7 @@ fn update_admin_key_works() {
 
 		assert_eq!(ServiceRequest::admin_key(), Some(2));
 
-		assert_ok!(ServiceRequest::update_admin_key(Origin::signed(2), 1,));
+		assert_ok!(ServiceRequest::update_admin_key(Origin::root(), 1));
 
 		assert_eq!(ServiceRequest::admin_key(), Some(1));
 	})

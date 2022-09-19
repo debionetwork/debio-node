@@ -16,14 +16,6 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 	type OrderId;
 	type DNASampleTrackingId;
 
-	fn generate_request_id(
-		requester_id: Self::RequesterId,
-		country: Self::Country,
-		region: Self::Region,
-		city: Self::City,
-		service_category: Self::ServiceCategory,
-	) -> Self::RequestId;
-
 	fn create_request(
 		requester_id: Self::RequesterId,
 		country: Self::Country,
@@ -65,9 +57,4 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		request_id: Self::RequestId,
 		test_result_success: bool,
 	) -> Result<Self::ServiceInvoice, Self::Error>;
-
-	fn update_admin_key(
-		account_id: &T::AccountId,
-		admin_key: &T::AccountId,
-	) -> Result<(), Self::Error>;
 }
