@@ -1,6 +1,6 @@
 use super::*;
 
-use frame_support::{sp_runtime::traits::Zero, traits::ExistenceRequirement};
+use frame_support::sp_runtime::traits::Zero;
 
 /// Service Request Interface Implementation
 impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
@@ -20,7 +20,9 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type ServiceId = ServiceIdOf<T>;
 	type OrderId = OrderIdOf<T>;
 	type DNASampleTrackingId = DNASampleTrackingIdOf;
+	type ServicePrice = LabPriceOf<T>;
 
+	// Stake with DBIO
 	fn create_request(
 		requester_id: Self::RequesterId,
 		country: Self::Country,
@@ -39,10 +41,11 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let now = T::TimeProvider::now().as_millis();
 
 		Self::do_transfer(
+			b"native",
 			&requester_id,
 			&Self::staking_account_id(request_id),
 			staking_amount,
-			ExistenceRequirement::KeepAlive,
+			true,
 		)?;
 
 		let request = Request::new(
@@ -66,6 +69,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		Ok(request)
 	}
 
+	// Unstake DBIO
 	fn unstake(
 		requester_id: Self::RequesterId,
 		request_id: Self::RequestId,
@@ -90,6 +94,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		Ok(request)
 	}
 
+	// Unstake DBIO
 	fn retrieve_unstaked_amount(
 		admin: Self::Admin,
 		request_id: Self::RequestId,
@@ -116,10 +121,11 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		}
 
 		Self::do_transfer(
+			b"native",
 			&Self::staking_account_id(request_id),
 			&requester_id,
 			request.staking_amount,
-			ExistenceRequirement::AllowDeath,
+			false,
 		)?;
 
 		Self::deposit_event(Event::StakingAmountRefunded(
@@ -135,12 +141,12 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		Ok(request)
 	}
 
+	// Claim request with AssetId
 	fn claim_request(
 		lab_id: Self::LabId,
 		request_id: Self::RequestId,
 		service_id: Self::ServiceId,
-		testing_price: Self::Balance,
-		qc_price: Self::Balance,
+		service_price: Self::ServicePrice,
 	) -> Result<(Self::Request, Self::ServiceOffer), Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
 
@@ -160,12 +166,14 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let lab_status =
 			T::Labs::lab_verification_status(&lab_id).ok_or(Error::<T>::LabNotFound)?;
-		let service_offer =
-			ServiceOffer::new(request_id, &lab_id, service_id, testing_price, qc_price);
 
-		let now = T::TimeProvider::now().as_millis();
+		let _ = Self::do_asset_exist(service_price.get_asset_id())?;
+
+		let service_offer = ServiceOffer::new(request_id, &lab_id, service_id, &service_price);
 
 		if lab_status.is_verified() {
+			let now = T::TimeProvider::now().as_millis();
+
 			request.status = RequestStatus::Claimed;
 			request.lab_address = Some(lab_id);
 			request.updated_at = Some(now);
@@ -187,13 +195,13 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		Ok((request, service_offer))
 	}
 
+	// Process request with assetId
 	fn process_request(
 		requester_id: Self::RequesterId,
 		lab_id: Self::LabId,
 		request_id: Self::RequestId,
 		order_id: Self::OrderId,
 		dna_sample_tracking_id: Self::DNASampleTrackingId,
-		additional_staking_amount: Self::Balance,
 	) -> Result<Self::ServiceInvoice, Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
 
@@ -219,48 +227,24 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let service_offer =
 			ServiceOfferById::<T>::get(request_id).ok_or(Error::<T>::ServiceOfferNotFound)?;
-		let pay_amount = request.staking_amount;
-		let testing_price = service_offer.testing_price;
-		let qc_price = service_offer.qc_price;
-		let total_price = testing_price + qc_price;
 
-		let mut final_pay_amount = total_price;
+		let service_price = service_offer.get_service_price();
+		let asset_id = service_price.get_asset_id();
+		let total_price = service_price.total_price();
 
-		if pay_amount > total_price {
-			let excess = pay_amount - total_price;
+		Self::do_transfer(
+			asset_id,
+			&requester_id,
+			&Self::staking_account_id(request_id),
+			total_price,
+			true,
+		)?;
 
-			Self::do_transfer(
-				&Self::staking_account_id(request_id),
-				&requester_id,
-				excess,
-				ExistenceRequirement::KeepAlive,
-			)?;
-
-			Self::deposit_event(Event::StakingAmountExcessRefunded(
-				requester_id.clone(),
-				request_id,
-				excess,
-			));
-		} else {
-			final_pay_amount = request.staking_amount + additional_staking_amount;
-
-			if final_pay_amount != total_price {
-				return Err(Error::<T>::NotValidAmount)
-			}
-
-			Self::do_transfer(
-				&requester_id,
-				&Self::staking_account_id(request_id),
-				additional_staking_amount,
-				ExistenceRequirement::KeepAlive,
-			)?;
-
-			Self::deposit_event(Event::StakingAmountIncreased(
-				requester_id.clone(),
-				request_id,
-				additional_staking_amount,
-			));
-		}
+		Self::deposit_event(Event::StakingAmountIncreased(
+			requester_id.clone(),
+			request_id,
+			total_price,
+		));
 
 		let service_invoice = ServiceInvoice::new(
 			request_id,
@@ -269,9 +253,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			requester_id,
 			lab_id,
 			dna_sample_tracking_id,
-			testing_price,
-			qc_price,
-			final_pay_amount,
+			service_price,
 		);
 
 		let now = T::TimeProvider::now().as_millis();
@@ -286,6 +268,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		Ok(service_invoice)
 	}
 
+	// Finalize request with assetId
 	fn finalize_request(
 		admin: Self::Admin,
 		request_id: Self::RequestId,
@@ -306,29 +289,46 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let requester_id = service_invoice.customer_address.clone();
 		let lab_id = service_invoice.seller_address.clone();
 
-		let mut pay_amount = service_invoice.pay_amount;
+		let service_price = service_invoice.get_service_price();
+		let asset_id = service_price.get_asset_id();
+		let mut pay_amount = service_price.total_price();
 
 		if !test_result_success {
-			pay_amount = service_invoice.qc_price;
+			pay_amount = service_price.get_qc_price();
 
-			let testing_price = service_invoice.testing_price;
+			let testing_price = service_price.get_testing_price();
 
 			// Transfer testing price back to customer
 			Self::do_transfer(
+				asset_id,
 				&Self::staking_account_id(request_id),
 				&requester_id,
 				testing_price,
-				ExistenceRequirement::AllowDeath,
+				false,
 			)?;
 		}
 
-		// Transfer to lab_id
+		// Transfer qc_price to lab_id
 		Self::do_transfer(
+			asset_id,
 			&Self::staking_account_id(request_id),
 			&lab_id,
 			pay_amount,
-			ExistenceRequirement::AllowDeath,
+			false,
 		)?;
+
+		let balance = CurrencyOf::<T>::free_balance(&Self::staking_account_id(request_id));
+
+		if !balance.is_zero() {
+			// Transfer DBIO to requester_id
+			Self::do_transfer(
+				b"native",
+				&Self::staking_account_id(request_id),
+				&requester_id,
+				balance,
+				false,
+			)?;
+		}
 
 		let now = T::TimeProvider::now().as_millis();
 

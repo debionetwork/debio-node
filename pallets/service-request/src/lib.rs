@@ -8,7 +8,7 @@ use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::{traits::Hash, RuntimeDebug},
 	sp_std::prelude::*,
-	traits::{Currency, UnixTime},
+	traits::{tokens::fungibles, Currency, UnixTime},
 };
 use frame_system::pallet_prelude::*;
 use primitives_verification_status::VerificationStatusTrait;
@@ -23,12 +23,18 @@ mod tests;
 pub mod functions;
 pub mod impl_service_request;
 pub mod interface;
+pub mod migrations;
 pub mod types;
 pub mod weights;
 
 pub use interface::SeviceRequestInterface;
 pub use types::*;
 pub use weights::WeightInfo;
+
+pub use frame_support::traits::StorageVersion;
+
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -40,6 +46,11 @@ pub mod pallet {
 		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type Labs: LabsProvider<Self>;
+		type Assets: fungibles::Transfer<
+				<Self as frame_system::Config>::AccountId,
+				AssetId = AssetId,
+				Balance = AssetBalance,
+			> + fungibles::InspectMetadata<<Self as frame_system::Config>::AccountId>;
 		type ServiceRequestWeightInfo: WeightInfo;
 	}
 
@@ -109,12 +120,19 @@ pub mod pallet {
 		NoProviders,
 		Token,
 		Arithmetic,
+		WrongFormat,
+		AssetNotExists,
 	}
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
@@ -245,8 +263,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			request_id: HashOf<T>,
 			service_id: HashOf<T>,
-			testing_price: BalanceOf<T>,
-			qc_price: BalanceOf<T>,
+			service_price: LabPriceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -254,8 +271,7 @@ pub mod pallet {
 				who.clone(),
 				request_id,
 				service_id,
-				testing_price,
-				qc_price,
+				service_price,
 			) {
 				Ok((request, service_offer)) => {
 					if request.status == RequestStatus::Claimed {
@@ -279,7 +295,6 @@ pub mod pallet {
 			request_id: HashOf<T>,
 			order_id: HashOf<T>,
 			dna_sample_tracking_id: DNASampleTrackingIdOf,
-			additional_staking_amount: BalanceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -289,7 +304,6 @@ pub mod pallet {
 				request_id,
 				order_id,
 				dna_sample_tracking_id,
-				additional_staking_amount,
 			) {
 				Ok(service_invoice) => {
 					Self::deposit_event(Event::ServiceRequestProcessed(who, service_invoice));
