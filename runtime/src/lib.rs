@@ -766,6 +766,7 @@ impl service_request::Config for Runtime {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type Labs = Labs;
 	type ServiceRequestWeightInfo = ();
 }
