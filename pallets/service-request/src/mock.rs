@@ -1,5 +1,9 @@
 use crate as service_request;
-use frame_support::{parameter_types, PalletId};
+use frame_support::{
+	construct_runtime, parameter_types,
+	traits::{ConstU64, GenesisBuild},
+	PalletId,
+};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -20,7 +24,7 @@ type Block = frame_system::mocking::MockBlock<Test>;
 
 pub type AccountId = u64;
 
-frame_support::construct_runtime!(
+construct_runtime!(
 	pub enum Test where
 		Block = Block,
 		NodeBlock = Block,
@@ -37,6 +41,7 @@ frame_support::construct_runtime!(
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -113,11 +118,40 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetDeposit: Balance = 1;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU64<10>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
 impl service_request::Config for Test {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
 	type Labs = Labs;
+	type Assets = Assets;
 	type ServiceRequestWeightInfo = ();
 }
 
@@ -169,6 +203,15 @@ impl user_profile::Config for Test {
 	type WeightInfo = ();
 }
 
+pub fn account_key(s: &str) -> u64 {
+	match s {
+		"admin" => 1,
+		"customer" => 2,
+		"lab" => 3,
+		_ => 4,
+	}
+}
+
 pub struct ExternalityBuilder {
 	existential_deposit: u64,
 }
@@ -190,9 +233,26 @@ impl ExternalityBuilder {
 	pub fn build(&self) -> TestExternalities {
 		self.set_associated_consts();
 		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
-			.assimilate_storage(&mut storage)
-			.unwrap();
+
+		let admin = account_key("admin");
+		let lab = account_key("lab");
+		let customer = account_key("customer");
+		let other = account_key("other");
+
+		pallet_assets::GenesisConfig::<Test> {
+			assets: vec![(1, 4, true, 1)],
+			metadata: vec![(1, b"USDT".to_vec(), b"USDT".to_vec(), 6)],
+			accounts: vec![(1, admin, 100), (1, customer, 200), (1, lab, 300), (1, other, 400)],
+		}
+		.assimilate_storage(&mut storage)
+		.unwrap();
+
+		pallet_balances::GenesisConfig::<Test> {
+			balances: vec![(admin, 100), (customer, 200), (lab, 300), (other, 400)],
+		}
+		.assimilate_storage(&mut storage)
+		.unwrap();
+
 		let mut ext = sp_io::TestExternalities::new(storage);
 		ext.execute_with(|| System::set_block_number(1));
 		ext
