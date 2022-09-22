@@ -10,7 +10,7 @@ use frame_system::RawOrigin;
 use labs::{Config as LabsConfig, LabInfo, LabVerifierKey, Pallet as Labs};
 #[allow(unused)]
 use service_request::{
-	AdminKey, Call, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId,
+	AdminKey, Call, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId, ServicePrice,
 };
 
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
@@ -58,7 +58,6 @@ benchmarks! {
 
 		let request_ids = RequestByAccountId::<T>::get(caller.clone());
 		let request_id = request_ids[0];
-
 
 	}: unstake(
 		RawOrigin::Signed(caller),
@@ -139,12 +138,12 @@ benchmarks! {
 		let service_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
 		let testing_price = 10000000000000000000u128.saturated_into();
 		let qc_price = 10000000000000000000u128.saturated_into();
+		let service_price = ServicePrice::new(b"native", testing_price, qc_price);
 	}: claim_request(
 		RawOrigin::Signed(caller),
 		request_id,
 		service_id,
-		testing_price,
-		qc_price
+		service_price
 	)
 
 	process_request {
@@ -197,21 +196,18 @@ benchmarks! {
 			lab_origin,
 			request_id,
 			service_id,
-			testing_price,
-			qc_price
+			ServicePrice::new(b"native", testing_price, qc_price),
 		);
 
 		let order_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
 		let dna_sample_tracking_id = "DeBio Sample".as_bytes().to_vec();
-		let additional_staking_amount = 0u128.saturated_into();
 
 	}: process_request(
 		RawOrigin::Signed(caller),
 		lab_id,
 		request_id,
 		order_id,
-		dna_sample_tracking_id,
-		additional_staking_amount
+		dna_sample_tracking_id
 	)
 
 	finalize_request{
@@ -268,21 +264,18 @@ benchmarks! {
 			lab_id_origin,
 			request_id,
 			service_id,
-			testing_price,
-			qc_price
+			ServicePrice::new(b"native", testing_price, qc_price),
 		);
 
 		// process request
 		let order_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
 		let dna_sample_tracking_id = "DeBio Sample".as_bytes().to_vec();
-		let additional_staking_amount = 0u128.saturated_into();
 		let _process_request = ServiceRequest::<T>::process_request(
 			customer_id_origin,
 			lab_id,
 			request_id,
 			order_id,
 			dna_sample_tracking_id,
-			additional_staking_amount
 		);
 	}: finalize_request(
 		RawOrigin::Signed(caller),
@@ -294,7 +287,7 @@ benchmarks! {
 		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
 	}: update_admin_key(
-		RawOrigin::Signed(caller),
+		RawOrigin::Root,
 		caller2
 	)
 }
