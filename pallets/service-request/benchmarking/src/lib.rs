@@ -10,7 +10,8 @@ use frame_system::RawOrigin;
 use labs::{Config as LabsConfig, LabInfo, LabVerifierKey, Pallet as Labs};
 #[allow(unused)]
 use service_request::{
-	AdminKey, Call, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId, ServicePrice,
+	AdminKey, Call, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId,
+	ServicePrice,
 };
 
 use primitives_area_code::{CityCode, CountryCode, RegionCode};

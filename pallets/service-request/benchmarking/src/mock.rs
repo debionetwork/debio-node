@@ -2,7 +2,7 @@
 
 use super::*;
 
-use frame_support::{parameter_types, PalletId, traits::GenesisBuild};
+use frame_support::{parameter_types, traits::GenesisBuild, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;

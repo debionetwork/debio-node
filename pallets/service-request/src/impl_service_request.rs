@@ -233,7 +233,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		let total_price = service_price.total_price();
 
 		Self::do_transfer(
-			&asset_id,
+			asset_id,
 			&requester_id,
 			&Self::staking_account_id(request_id),
 			total_price,
@@ -300,7 +300,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 			// Transfer testing price back to customer
 			Self::do_transfer(
-				&asset_id,
+				asset_id,
 				&Self::staking_account_id(request_id),
 				&requester_id,
 				testing_price,
@@ -308,23 +308,27 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			)?;
 		}
 
-		// Transfer asset_id to lab_id
+		// Transfer qc_price to lab_id
 		Self::do_transfer(
-			&asset_id,
+			asset_id,
 			&Self::staking_account_id(request_id),
 			&lab_id,
 			pay_amount,
 			false,
 		)?;
 
-		// Transfer DBIO to requester_id
-		Self::do_transfer(
-			b"native",
-			&Self::staking_account_id(request_id),
-			&requester_id,
-			request.staking_amount,
-			false,
-		)?;
+		let balance = CurrencyOf::<T>::free_balance(&Self::staking_account_id(request_id));
+
+		if !balance.is_zero() {
+			// Transfer DBIO to requester_id
+			Self::do_transfer(
+				b"native",
+				&Self::staking_account_id(request_id),
+				&requester_id,
+				balance,
+				false,
+			)?;
+		}
 
 		let now = T::TimeProvider::now().as_millis();
 

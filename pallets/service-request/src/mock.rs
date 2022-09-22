@@ -238,9 +238,10 @@ impl ExternalityBuilder {
 		let lab = account_key("lab");
 		let customer = account_key("customer");
 		let other = account_key("other");
+		let owner = account_key("owner");
 
 		pallet_assets::GenesisConfig::<Test> {
-			assets: vec![(1, 4, true, 1)],
+			assets: vec![(1, owner, true, 1)],
 			metadata: vec![(1, b"USDT".to_vec(), b"USDT".to_vec(), 6)],
 			accounts: vec![(1, admin, 100), (1, customer, 200), (1, lab, 300), (1, other, 400)],
 		}

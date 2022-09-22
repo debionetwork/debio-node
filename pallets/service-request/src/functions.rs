@@ -40,11 +40,11 @@ impl<T: Config> Pallet<T> {
 		let name = <T::Assets as fungibles::InspectMetadata<T::AccountId>>::name(&asset_id);
 		let symbol = <T::Assets as fungibles::InspectMetadata<T::AccountId>>::symbol(&asset_id);
 
-		if name.len() == 0 {
+		if name.is_empty() {
 			return Err(Error::<T>::AssetNotExists)
 		}
 
-		if symbol.len() == 0 {
+		if symbol.is_empty() {
 			return Err(Error::<T>::AssetNotExists)
 		}
 
