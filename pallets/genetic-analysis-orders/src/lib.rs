@@ -706,19 +706,18 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 	}
 
 	fn set_genetic_analysis_order_paid(
-		escrow_account_id: &T::AccountId,
+		customer_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
-			return Err(Error::<T>::Unauthorized)
+		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id)
+			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?;
+
+		if customer_id != &genetic_analysis_order.customer_id {
+			let _ = EscrowKey::<T>::get()
+				.filter(|account_id| account_id == customer_id)
+				.ok_or(Error::<T>::Unauthorized)?;
 		}
 
-		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id);
-		if genetic_analysis_order.is_none() {
-			return Err(Error::<T>::GeneticAnalysisOrderNotFound)
-		}
-
-		let genetic_analysis_order = genetic_analysis_order.unwrap();
 		if !Self::is_balance_sufficient_for_payment(
 			&genetic_analysis_order.customer_id,
 			genetic_analysis_order.total_price,
