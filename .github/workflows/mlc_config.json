@@ -1,10 +1,13 @@
 {
   "ignorePatterns": [
     {
-      "pattern": "^https://crates.io"
+      "pattern": "^http://127.0.0.1"
     },
     {
-      "pattern": "^https://blocksphere2020.atlassian.net/browse/DBIO-ISSUE_NUMBER"
+      "pattern": "^http://localhost"
+    },
+    {
+      "pattern": "^https://medium.com/@debionetwork.blog"
     }
   ]
 }

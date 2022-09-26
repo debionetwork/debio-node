@@ -2,36 +2,28 @@
   "categories": [
     {
       "title": "## 🚀 Features",
-      "labels": [
-        "feature"
-      ]
-    },
-    {
-      "title": "## 👌 Improvements",
-      "labels": [
-        "improvement"
-      ]
+      "labels": ["feature", "feat"]
     },
     {
       "title": "## 🐛 Fixes",
-      "labels": [
-        "fix"
-      ]
+      "labels": ["fix", "bug"]
+    },
+    {
+      "title": "## 👌 Improvements",
+      "labels": ["refactor", "style", "chore"]
     },
     {
       "title": "## 🤖 Tests",
-      "labels": [
-        "test"
-      ]
+      "labels": ["test"]
     },
     {
       "title": "## 📖 Documents",
-      "labels": [
-        "documentation"
-      ]
+      "labels": ["docs"]
     }
   ],
   "ignore_labels": [
     "ci"
-  ]
+  ],
+  "template": "${{CHANGELOG}}\n\n<summary>**Full Changelog**: ${{RELEASE_DIFF}}</summary>",
+  "pr_template": "* ${{TITLE}} in #${{NUMBER}}"
 }

@@ -3,20 +3,15 @@
 </div>
 
 <div align="Center">
-<h1> DeBio Node</h1>
-<h2> Decentralized Sovereign Biomed </h2>
+<h1>DeBio Network Node</h1>
+<h2>Decentralized Sovereign Biomed</h2>
 The Anonymous-First Platform for Medical and Bioinformatics Data.
-<br>
-Built on Substrate.
 
 <br>
 <br>
 
 [![Substrate version](https://img.shields.io/badge/Substrate-3.0.0-brightgreen?logo=Parity%20Substrate)](https://substrate.dev/)
 [![Medium](https://img.shields.io/badge/Medium-DeBio-brightgreen?logo=medium)](https://medium.com/@debionetwork.blog)
-[![Builder](https://github.com/debionetwork/debio-node/actions/workflows/builder.yml/badge.svg)](https://github.com/debionetwork/debio-node/actions/workflows/builder.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=debionetwork_debio-node&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=debionetwork_debio-node)
-[![Tester](https://github.com/debionetwork/debio-node/actions/workflows/tester.yml/badge.svg)](https://github.com/debionetwork/debio-node/actions/workflows/tester.yml)
 </div>
 
 ---

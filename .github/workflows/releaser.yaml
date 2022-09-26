@@ -1,0 +1,28 @@
+name: Releaser
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+
+concurrency:
+  group: releaser
+
+jobs:
+  publish-draft-release:
+    runs-on: ubuntu-20.04
+    name: Publish Draft Release
+    steps:
+      - name: Build Changelog
+        id: build-changelog
+        uses: mikepenz/release-changelog-builder-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          configuration: .github/workflows/rcb_config.json
+      - name: Publish
+        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
+        with:
+          body: ${{ steps.build-changelog.outputs.changelog }}
+          draft: true
+          prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-beta') || contains(github.ref, '-alpha') }}

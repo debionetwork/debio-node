@@ -1,0 +1,63 @@
+name: Analyzer
+
+on:
+  branch_protection_rule:
+  pull_request:
+    branches:
+      - main
+      - releases/**
+  push:
+    branches:
+      - main
+      - releases/**
+  schedule:
+    - cron: '00 5 * * 0'
+
+concurrency:
+  group: analyzer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-cii-best-practice:
+    if: ${{ !startsWith(github.ref, 'refs/pull/') }}
+    runs-on: ubuntu-20.04
+    permissions:
+      security-events: write
+      id-token: write
+      actions: read
+      contents: read
+    name: Security CII Best Practices
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Perform Scorecards Analysis
+        uses: ossf/scorecard-action@v2.0.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+      - name: Upload to Code-Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
+
+  check-dead-link:
+    if: ${{ !startsWith(github.ref, 'refs/heads/') }}
+    runs-on: ubuntu-20.04
+    name: Check Dead Link
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Perform Check Dead Link on Markdown
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: "yes"
+          config-file: ".github/workflows/mlc_config.json"

@@ -6,7 +6,7 @@ services:
     image: debionetwork/debio-node
     build:
       context: ../../
-      dockerfile: .maintain2/docker/Dockerfile
+      dockerfile: .maintain/docker/Dockerfile
     volumes:
       - data:/data
     command: >
@@ -29,7 +29,7 @@ services:
       debio:
         ipv4_address: 172.26.1.1
         aliases:
-          - node
+          - debio-node
 
 volumes:
   data:

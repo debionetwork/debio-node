@@ -1,0 +1,67 @@
+name: Tester
+
+on:
+  pull_request:
+    branches:
+      - main
+      - releases/**
+
+concurrency:
+  group: tester-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-20.04
+    outputs:
+      app-source: ${{ steps.filter.outputs.app-source }}
+    name: Changes
+    steps:
+      - name: Filter
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            app-source:
+              - 'node/**'
+              - 'pallets/**'
+              - 'primitives/**'
+              - 'runtime/**'
+              - '.rustfmt.toml'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+  testing:
+    needs: changes
+    if: ${{ needs.changes.outputs.app-source == 'true' }}
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        toolchain: [nightly-2021-11-01]
+    name: Testing on Rust Toolchain ${{ matrix.toolchain }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Rust Toolchain
+        id: setup-rust-toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.toolchain }}
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+          override: true
+          default: true
+      - name: Initialize Rust Cache
+        uses: Swatinem/rust-cache@v2
+      - name: Check Lint
+        run: cargo clippy --all -- -D warnings
+      - name: Check Format
+        run: cargo fmt --all -- --check
+      - name: Run Test
+        run: cargo test --workspace --locked
+      - name: Test Build
+        run: SKIP_WASM_BUILD=1 cargo check --release --locked
+      - name: Test Build for Benchmarking
+        run: cargo check --features=runtime-benchmarks --release --locked
