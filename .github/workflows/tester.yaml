@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        toolchain: [nightly-2021-11-01]
+        toolchain: [nightly]
     name: Testing on Rust Toolchain ${{ matrix.toolchain }}
     steps:
       - name: Checkout Repository
@@ -56,9 +56,9 @@ jobs:
       - name: Initialize Rust Cache
         uses: Swatinem/rust-cache@v2
       - name: Check Lint
-        run: cargo clippy --all -- -D warnings
+        run: cargo clippy --workspace --locked -- -D warnings
       - name: Check Format
-        run: cargo fmt --all -- --check
+        run: cargo fmt --workspace --locked -- --check
       - name: Run Test
         run: cargo test --workspace --locked
       - name: Test Build
