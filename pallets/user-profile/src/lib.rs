@@ -219,26 +219,14 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(0)]
-		pub fn sudo_update_admin_key(
-			origin: OriginFor<T>,
-			account_id: T::AccountId,
-		) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-
-			AdminKey::<T>::put(&account_id);
-
-			Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(account_id));
-
-			Ok(Pays::No.into())
-		}
-
-		#[pallet::weight(0)]
-		pub fn sudo_update_profile_roles(
+		pub fn admin_update_profile_roles(
 			origin: OriginFor<T>,
 			account_id: T::AccountId,
 			profile_roles: ProfileRolesOf<T>,
 		) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
+			let admin = ensure_signed(origin)?;
+
+			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
 
 			match <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::set_account_profile_roles(&account_id, &profile_roles) {
 				Ok(_) => {
@@ -256,6 +244,8 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
+			ensure!(who == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
+
 			match <Self as UserProfileInterface<T, EthereumAddressOf<T>, ProfileRolesOf<T>>>::update_admin_key(
 				&who,
 				&account_id,
@@ -266,6 +256,20 @@ pub mod pallet {
 				},
 				Err(error) => Err(error.into()),
 			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn sudo_update_admin_key(
+			origin: OriginFor<T>,
+			account_id: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+
+			AdminKey::<T>::put(&account_id);
+
+			Self::deposit_event(Event::UpdateUserProfileAdminKeySuccessful(account_id));
+
+			Ok(Pays::No.into())
 		}
 	}
 }
@@ -392,7 +396,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_customer(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 	fn set_account_profile_role_to_genetic_analyst(
@@ -424,7 +428,7 @@ impl<T: Config> UserProfileProvider<T, EthereumAddressOf<T>, ProfileRolesOf<T>> 
 			None => ProfileRolesOf::<T>::default(),
 		};
 		roles.set_is_doctor(true);
-		ProfileRolesByAccountId::<T>::insert(account_id, &roles);
+		ProfileRolesByAccountId::<T>::insert(account_id, roles);
 		Ok(roles)
 	}
 	fn set_account_profile_role_to_hospital(

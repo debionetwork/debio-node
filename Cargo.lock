@@ -1441,6 +1441,8 @@ dependencies = [
  "labs",
  "labs-benchmarking",
  "log",
+ "menstrual-calendar",
+ "menstrual-subscription",
  "orders",
  "orders-benchmarking",
  "pallet-assets",
@@ -4579,6 +4581,44 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71d96e3f3c0b6325d8ccd83c33b28acb183edcb6c67938ba104ec546854b0882"
 
 [[package]]
+name = "menstrual-calendar"
+version = "2.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-menstrual-calendar",
+]
+
+[[package]]
+name = "menstrual-subscription"
+version = "2.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-duration",
+ "primitives-menstrual-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-menstrual-subscription",
+]
+
+[[package]]
 name = "merlin"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5940,6 +5980,15 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-std",
+]
+
+[[package]]
+name = "primitives-menstrual-status"
+version = "2.1.0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -7714,6 +7763,7 @@ dependencies = [
  "hex-literal",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -7744,6 +7794,7 @@ dependencies = [
  "hex-literal",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -9289,6 +9340,28 @@ dependencies = [
  "parity-scale-codec",
  "primitives-verification-status",
  "scale-info",
+]
+
+[[package]]
+name = "traits-menstrual-calendar"
+version = "2.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-menstrual-subscription"
+version = "2.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
 ]
 
 [[package]]

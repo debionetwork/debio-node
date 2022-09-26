@@ -15,14 +15,7 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 	type ServiceId;
 	type OrderId;
 	type DNASampleTrackingId;
-
-	fn generate_request_id(
-		requester_id: Self::RequesterId,
-		country: Self::Country,
-		region: Self::Region,
-		city: Self::City,
-		service_category: Self::ServiceCategory,
-	) -> Self::RequestId;
+	type ServicePrice;
 
 	fn create_request(
 		requester_id: Self::RequesterId,
@@ -47,8 +40,7 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		lab_id: Self::LabId,
 		request_id: Self::RequestId,
 		service_id: Self::ServiceId,
-		testing_price: Self::Balance,
-		qc_price: Self::Balance,
+		lab_id: Self::ServicePrice,
 	) -> Result<(Self::Request, Self::ServiceOffer), Self::Error>;
 
 	fn process_request(
@@ -57,7 +49,6 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		request_id: Self::RequestId,
 		order_id: Self::OrderId,
 		dna_sample_tracking_id: Self::DNASampleTrackingId,
-		additional_staking_amount: Self::Balance,
 	) -> Result<Self::ServiceInvoice, Self::Error>;
 
 	fn finalize_request(
@@ -65,9 +56,4 @@ pub trait SeviceRequestInterface<T: frame_system::Config> {
 		request_id: Self::RequestId,
 		test_result_success: bool,
 	) -> Result<Self::ServiceInvoice, Self::Error>;
-
-	fn update_admin_key(
-		account_id: &T::AccountId,
-		admin_key: &T::AccountId,
-	) -> Result<(), Self::Error>;
 }

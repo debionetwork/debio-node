@@ -2,7 +2,7 @@
 
 use super::*;
 
-use frame_support::{parameter_types, PalletId};
+use frame_support::{parameter_types, traits::GenesisBuild, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -38,6 +38,7 @@ frame_support::construct_runtime!(
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -114,11 +115,41 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+pub type OctopusAssetId = u32;
+pub type OctopusAssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetDeposit: Balance = 1;
+	pub const AssetAccountDeposit = 10;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = OctopusAssetBalance;
+	type AssetId = OctopusAssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = AssetAccountDeposit;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
 impl service_request::Config for Test {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
 	type Labs = Labs;
+	type Assets = Assets;
 	type ServiceRequestWeightInfo = ();
 }
 

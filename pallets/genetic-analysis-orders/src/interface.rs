@@ -15,7 +15,7 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error>;
 	fn set_genetic_analysis_order_paid(
-		escrow_account_id: &T::AccountId,
+		customer_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error>;
 	fn fulfill_genetic_analysis_order(

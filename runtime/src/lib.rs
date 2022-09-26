@@ -124,12 +124,10 @@ mod benches {
 		[hospitals, Hospitals]
 		[doctors, Doctors]
 		[genetic_data, GeneticData]
-		[electronic_medical_record, ElectronicMedicalRecord]
-		[hospitals, Hospitals]
-		[doctors, Doctors]
+		[menstrual_calendar, MenstrualCalendar]
+		[menstrual_subscription, MenstrualSubscription]
 		[user_profile, UserProfile]
 		[rewards, Rewards]
-		[genetic_data, GeneticData]
 		[labs_benchmarking, LabsBench::<Runtime>]
 		[services_benchmarking, ServicesBench::<Runtime>]
 		[certifications_benchmarking, CertificationsBench::<Runtime>]
@@ -768,6 +766,7 @@ impl service_request::Config for Runtime {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type Labs = Labs;
 	type ServiceRequestWeightInfo = ();
 }
@@ -785,6 +784,16 @@ impl genetic_testing::Config for Runtime {
 	type Orders = Orders;
 	type RandomnessSource = RandomnessCollectiveFlip;
 	type GeneticTestingWeightInfo = ();
+}
+
+impl menstrual_calendar::Config for Runtime {
+	type Event = Event;
+	type MenstrualCalendarWeightInfo = ();
+}
+
+impl menstrual_subscription::Config for Runtime {
+	type Event = Event;
+	type MenstrualSubscriptionWeightInfo = ();
 }
 
 impl user_profile::Config for Runtime {
@@ -904,6 +913,8 @@ construct_runtime!(
 		Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
+		MenstrualCalendar: menstrual_calendar::{Pallet, Call, Storage, Event<T>},
+		MenstrualSubscription: menstrual_subscription::{Pallet, Call, Storage, Config<T>, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Config<T>, Event<T>},
 		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
 		Certifications: certifications::{Pallet, Call, Storage, Event<T>},

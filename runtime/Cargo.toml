@@ -83,6 +83,8 @@ orders = { path = '../pallets/orders', default-features = false }
 orders-benchmarking = { path = '../pallets/orders/benchmarking', default-features = false, optional = true }
 genetic-testing = { path = '../pallets/genetic-testing', default-features = false }
 genetic-testing-benchmarking = { path = '../pallets/genetic-testing/benchmarking', default-features = false, optional = true }
+menstrual-calendar = { path = '../pallets/menstrual-calendar', default-features = false }
+menstrual-subscription = { path = '../pallets/menstrual-subscription', default-features = false }
 user-profile = { path = '../pallets/user-profile', default-features = false }
 electronic-medical-record = { path = '../pallets/electronic-medical-record', default-features = false }
 certifications = { path = '../pallets/certifications', default-features = false }
@@ -172,6 +174,8 @@ std = [
 	'service-request/std',
     'orders/std',
     'genetic-testing/std',
+    'menstrual-calendar/std',
+    'menstrual-subscription/std',
     'user-profile/std',
     'electronic-medical-record/std',
     'certifications/std',
@@ -224,6 +228,8 @@ runtime-benchmarks = [
 	'service-request-benchmarking',
 	'genetic-analysis-orders-benchmarking',
 	'genetic-data/runtime-benchmarks',
+	'menstrual-calendar/runtime-benchmarks',
+	'menstrual-subscription/runtime-benchmarks',
 	'genetic-analysts-benchmarking',
 	'genetic-analyst-qualifications-benchmarking',
 ]
