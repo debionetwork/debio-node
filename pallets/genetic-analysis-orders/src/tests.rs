@@ -288,7 +288,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(3),
+			Origin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -1417,7 +1417,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(3),
+				Origin::signed(1),
 				_genetic_analysis_order_id,
 			),
 			Error::<Test>::InsufficientFunds
@@ -2003,7 +2003,7 @@ fn call_event_should_work() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(3),
+			Origin::signed(1),
 			_genetic_analysis_order_id
 		));
 
