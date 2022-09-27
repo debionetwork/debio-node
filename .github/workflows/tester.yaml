@@ -11,14 +11,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
+  testing:
     runs-on: ubuntu-20.04
-    outputs:
-      app-source: ${{ steps.filter.outputs.app-source }}
-    name: Changes
+    name: Testing on Rust Toolchain Nightly
+    strategy:
+      matrix:
+        node-version: [nightly]
     steps:
-      - name: Filter
-        id: filter
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Rust Toolchain
+        id: setup-rust-toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+          override: true
+          default: true
+      - name: Initialize Rust Cache
+        uses: Swatinem/rust-cache@v2
+      - name: List Changed
+        id: list-changed
         uses: dorny/paths-filter@v2
         with:
           filters: |
@@ -30,38 +47,33 @@ jobs:
               - '.rustfmt.toml'
               - 'Cargo.toml'
               - 'Cargo.lock'
-  testing:
-    needs: changes
-    if: ${{ needs.changes.outputs.app-source == 'true' }}
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        toolchain: [nightly]
-    name: Testing on Rust Toolchain ${{ matrix.toolchain }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up Rust Toolchain
-        id: setup-rust-toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.toolchain }}
-          components: clippy, rustfmt
-          target: wasm32-unknown-unknown
-          override: true
-          default: true
-      - name: Initialize Rust Cache
-        uses: Swatinem/rust-cache@v2
       - name: Check Lint
-        run: cargo clippy --workspace --locked -- -D warnings
+        if: steps.list-changed.outputs.app-source == 'true'
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --workspace --all-features --locked -- -D warnings
       - name: Check Format
-        run: cargo fmt --workspace --locked -- --check
+        if: steps.list-changed.outputs.app-source == 'true'
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all --check
       - name: Run Test
-        run: cargo test --workspace --locked
-      - name: Test Build
-        run: SKIP_WASM_BUILD=1 cargo check --release --locked
-      - name: Test Build for Benchmarking
-        run: cargo check --features=runtime-benchmarks --release --locked
+        if: steps.list-changed.outputs.app-source == 'true'
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --workspace --locked
+      - name: Run Build
+        if: steps.list-changed.outputs.app-source == 'true'
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --release --locked
+      - name: Run Build for Benchmarking
+        if: steps.list-changed.outputs.app-source == 'true'
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --features=runtime-benchmarks --release --locked
