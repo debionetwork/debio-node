@@ -2,7 +2,7 @@
 
 use super::*;
 
-use frame_support::parameter_types;
+use frame_support::{parameter_types, types::ConstU64};
 use sp_io::TestExternalities;
 use sp_runtime::{
 	testing::Header,
@@ -32,6 +32,7 @@ frame_support::construct_runtime!(
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -85,6 +86,34 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetDeposit: Balance = 1;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU64<10>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
 impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
@@ -111,6 +140,8 @@ impl orders::Config for Test {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = Assets;
+	type OrdersWeightInfo = ();
 }
 
 impl genetic_testing::Config for Test {

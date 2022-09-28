@@ -1,4 +1,4 @@
-use frame_support::{parameter_types, PalletId};
+use frame_support::{parameter_types, traits::ConstU64, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -34,6 +34,7 @@ frame_support::construct_runtime!(
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -108,6 +109,34 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetDeposit: Balance = 1;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU64<10>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
 impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
@@ -146,6 +175,7 @@ impl orders::Config for Test {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = Assets;
 	type OrdersWeightInfo = ();
 }
 
