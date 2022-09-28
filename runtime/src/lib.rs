@@ -776,6 +776,7 @@ impl orders::Config for Runtime {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type OrdersWeightInfo = ();
 }
 

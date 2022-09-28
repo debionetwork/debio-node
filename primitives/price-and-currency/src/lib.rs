@@ -36,6 +36,17 @@ impl CurrencyType {
 			CurrencyType::ETH => "eth".to_owned(),
 		}
 	}
+
+	pub fn as_string(&self) -> String {
+		match self {
+			CurrencyType::DBIO => "DBIO".to_owned(),
+			CurrencyType::USN => "USN".to_owned(),
+			CurrencyType::USDT => "USDT".to_owned(),
+			CurrencyType::DAI => "DAI".to_owned(),
+			CurrencyType::USDO => "USDO".to_owned(),
+			CurrencyType::ETH => "ETH".to_owned(),
+		}
+	}
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
