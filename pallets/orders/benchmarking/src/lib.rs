@@ -89,7 +89,8 @@ benchmarks! {
 		_lab.services[0],
 		0,
 		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-		StakingRequestService
+		StakingRequestService,
+		None
 	)
 
 	cancel_order {
@@ -138,7 +139,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			RequestTest
+			RequestTest,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -196,7 +198,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			StakingRequestService
+			StakingRequestService,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -254,7 +257,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			RequestTest
+			RequestTest,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -335,7 +339,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			StakingRequestService
+			StakingRequestService,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
