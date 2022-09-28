@@ -11,23 +11,31 @@ pub use pallet::*;
 pub mod functions;
 pub mod impl_orders;
 pub mod interface;
+pub mod migrations;
 pub mod types;
 pub mod weights;
 
 pub use interface::OrderInterface;
 pub use sp_std::{prelude::*, vec};
-pub use traits_genetic_testing::{DnaSampleTracking, DnaSampleTrackingId, GeneticTestingProvider};
+pub use traits_genetic_testing::{DnaSampleTracking, GeneticTestingProvider};
 pub use traits_order::{OrderEventEmitter, OrderStatusUpdater};
 pub use traits_services::{types::ServiceFlow, ServiceInfo, ServicesProvider};
 pub use types::*;
 pub use weights::WeightInfo;
+
+pub use frame_support::traits::StorageVersion;
+
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
 
 	use frame_support::{
-		dispatch::DispatchResultWithPostInfo, pallet_prelude::*, traits::Currency,
+		dispatch::DispatchResultWithPostInfo,
+		pallet_prelude::*,
+		traits::{tokens::fungibles, Currency},
 	};
 	use frame_system::pallet_prelude::*;
 
@@ -37,17 +45,27 @@ pub mod pallet {
 		type Services: ServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticTesting: GeneticTestingProvider<Self>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
+		type Assets: fungibles::Transfer<
+				<Self as frame_system::Config>::AccountId,
+				AssetId = AssetId,
+				Balance = AssetBalance,
+			> + fungibles::InspectMetadata<<Self as frame_system::Config>::AccountId>;
 		type OrdersWeightInfo: WeightInfo;
 	}
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ------ Storage --------------------------
@@ -155,6 +173,21 @@ pub mod pallet {
 		SellerEthAddressNotFound,
 		/// Service Price Index not found
 		PriceIndexNotFound,
+		/// Asset Id not found
+		AssetIdNotFound,
+		OrderCannotBeCancelled,
+		OrderCannotBePaid,
+		OrderAlreadyRefunded,
+		OrderAlreadyFulfilled,
+		Module,
+		Other,
+		BadOrigin,
+		CannotLookup,
+		ConsumerRemaining,
+		TooManyConsumers,
+		NoProviders,
+		Token,
+		Arithmetic,
 	}
 
 	#[pallet::call]
@@ -166,6 +199,7 @@ pub mod pallet {
 			price_index: u32,
 			customer_box_public_key: T::Hash,
 			order_flow: ServiceFlow,
+			asset_id: Option<u32>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -175,6 +209,7 @@ pub mod pallet {
 				price_index,
 				&customer_box_public_key,
 				order_flow,
+				asset_id,
 			) {
 				Ok(order) => {
 					Self::deposit_event(Event::<T>::OrderCreated(order));

@@ -4,6 +4,11 @@ use frame_support::{pallet_prelude::*, traits::Currency};
 use primitives_price_and_currency::{CurrencyType, Price};
 use scale_info::TypeInfo;
 use sp_std::vec::Vec;
+use traits_genetic_testing::DnaSampleTrackingId;
+use traits_services::types::ServiceFlow;
+
+pub type AssetId = u32;
+pub type AssetBalance = u128;
 
 pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
@@ -36,9 +41,11 @@ pub struct Order<Hash, AccountId, Balance, Moment> {
 	pub customer_box_public_key: Hash,
 	pub seller_id: AccountId,
 	pub dna_sample_tracking_id: DnaSampleTrackingId,
+	pub asset_id: Option<u32>,
 	pub currency: CurrencyType,
 	pub prices: Vec<Price<Balance>>,
 	pub additional_prices: Vec<Price<Balance>>,
+	pub total_price: Balance,
 	pub status: OrderStatus,
 	pub order_flow: ServiceFlow,
 	pub created_at: Moment,
@@ -53,10 +60,12 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
 		customer_box_public_key: Hash,
 		seller_id: AccountId,
 		dna_sample_tracking_id: DnaSampleTrackingId,
+		asset_id: Option<u32>,
 		currency: CurrencyType,
 		order_flow: ServiceFlow,
 		prices: Vec<Price<Balance>>,
 		additional_prices: Vec<Price<Balance>>,
+		total_price: Balance,
 		created_at: Moment,
 		updated_at: Moment,
 	) -> Self {
@@ -67,11 +76,13 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
 			customer_box_public_key,
 			seller_id,
 			dna_sample_tracking_id,
+			asset_id,
 			currency,
 			prices,
 			additional_prices,
 			status: OrderStatus::default(),
 			order_flow,
+			total_price,
 			created_at,
 			updated_at,
 		}
@@ -95,5 +106,10 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
 
 	pub fn get_service_id(&self) -> &Hash {
 		&self.service_id
+	}
+
+	pub fn set_asset_id(mut self, asset_id: u32) -> Self {
+		self.asset_id = Some(asset_id);
+		self
 	}
 }

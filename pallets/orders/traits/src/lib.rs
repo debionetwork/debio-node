@@ -13,4 +13,5 @@ pub trait OrderStatusUpdater<T: Config> {
 		genetic_analysis_order_id: &T::Hash,
 	);
 	fn is_pending_order_by_seller_exist(seller_id: &T::AccountId) -> bool;
+	fn is_order_paid(order_id: &T::Hash) -> bool;
 }

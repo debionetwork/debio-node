@@ -2,9 +2,15 @@ use crate::*;
 
 use frame_support::{
 	pallet_prelude::*,
-	sp_runtime::traits::{AccountIdConversion, Hash},
+	sp_runtime::{
+		traits::{AccountIdConversion, Hash},
+		SaturatedConversion,
+	},
+	traits::{fungibles, Currency, ExistenceRequirement},
 	PalletId,
 };
+use primitives_price_and_currency::CurrencyType;
+use scale_info::prelude::string::String;
 use sp_std::vec;
 
 pub const PALLET_ID: PalletId = PalletId(*b"orders!!");
@@ -103,7 +109,7 @@ impl<T: Config> Pallet<T> {
 		OrdersByCustomer::<T>::insert(customer_id, orders);
 	}
 
-	pub fn order_can_be_refunded(order: OrderOf<T>) -> bool {
+	pub fn order_can_be_refunded(order: &OrderOf<T>) -> bool {
 		let dna_sample =
 			T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id).unwrap();
 		if !dna_sample.is_rejected() {
@@ -112,11 +118,91 @@ impl<T: Config> Pallet<T> {
 		true
 	}
 
-	fn is_pending_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool {
+	pub fn is_pending_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool {
 		match PendingOrdersBySeller::<T>::get(account_id) {
 			Some(_arr) => !_arr.is_empty(),
 			None => false,
 		}
+	}
+
+	pub fn do_validate_asset_id(
+		currency: &CurrencyType,
+		asset_id: Option<u32>,
+	) -> Result<Option<u32>, Error<T>> {
+		if currency == &CurrencyType::DBIO {
+			return Ok(None)
+		}
+
+		if let Some(asset_id) = asset_id {
+			let symbol = <T::Assets as fungibles::InspectMetadata<T::AccountId>>::symbol(&asset_id);
+			let str_symbol = String::from_utf8(symbol).map_err(|_| Error::<T>::AssetIdNotFound)?;
+
+			if currency.as_string().to_lowercase() != str_symbol.to_lowercase() {
+				return Err(Error::<T>::AssetIdNotFound)
+			}
+
+			return Ok(Some(asset_id))
+		}
+
+		Err(Error::<T>::AssetIdNotFound)
+	}
+
+	pub fn do_transfer(
+		currency: &CurrencyType,
+		sender: &T::AccountId,
+		receiver: &T::AccountId,
+		amount: BalanceOf<T>,
+		keep_alive: bool,
+		asset_id: Option<u32>,
+	) -> Result<(), Error<T>> {
+		if currency == &CurrencyType::DBIO {
+			let existence = if keep_alive {
+				ExistenceRequirement::KeepAlive
+			} else {
+				ExistenceRequirement::AllowDeath
+			};
+
+			let result = CurrencyOf::<T>::transfer(sender, receiver, amount, existence);
+
+			if let Err(dispatch) = result {
+				return match dispatch {
+					DispatchError::Other(_) => Err(Error::<T>::Other),
+					DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
+					DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
+					DispatchError::TooManyConsumers => Err(Error::<T>::TooManyConsumers),
+					DispatchError::ConsumerRemaining => Err(Error::<T>::ConsumerRemaining),
+					DispatchError::NoProviders => Err(Error::<T>::NoProviders),
+					DispatchError::Token(_) => Err(Error::<T>::Token),
+					DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
+					DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
+				}
+			}
+		} else {
+			let asset_id = asset_id.ok_or(Error::<T>::AssetIdNotFound)?;
+			let result = <T::Assets as fungibles::Transfer<T::AccountId>>::transfer(
+				asset_id,
+				sender,
+				receiver,
+				amount.saturated_into(),
+				keep_alive,
+			);
+
+			if let Err(dispatch) = result {
+				return match dispatch {
+					DispatchError::Other(_) => Err(Error::<T>::Other),
+					DispatchError::CannotLookup => Err(Error::<T>::CannotLookup),
+					DispatchError::BadOrigin => Err(Error::<T>::BadOrigin),
+					DispatchError::TooManyConsumers => Err(Error::<T>::TooManyConsumers),
+					DispatchError::ConsumerRemaining => Err(Error::<T>::ConsumerRemaining),
+					DispatchError::NoProviders => Err(Error::<T>::NoProviders),
+					DispatchError::Token(_) => Err(Error::<T>::Token),
+					DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
+					DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
+				}
+			}
+		}
+
+		Ok(())
 	}
 }
 
@@ -148,5 +234,12 @@ impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
 
 	fn is_pending_order_by_seller_exist(seller_id: &AccountIdOf<T>) -> bool {
 		Self::is_pending_order_ids_by_seller_exist(seller_id)
+	}
+
+	fn is_order_paid(order_id: &HashOf<T>) -> bool {
+		match Self::order_by_id(order_id) {
+			None => false,
+			Some(order) => order.status == OrderStatus::Paid,
+		}
 	}
 }
