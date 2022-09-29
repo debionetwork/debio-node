@@ -9,12 +9,12 @@ use sp_std::vec::Vec;
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum CurrencyType {
-	DAI,
-	ETH,
 	DBIO,
-	USDO,
 	USN,
 	USDT,
+	DAI,
+	USDO,
+	ETH,
 }
 impl Default for CurrencyType {
 	fn default() -> Self {
@@ -34,6 +34,17 @@ impl CurrencyType {
 			CurrencyType::DAI => "dai".to_owned(),
 			CurrencyType::USDO => "usdo".to_owned(),
 			CurrencyType::ETH => "eth".to_owned(),
+		}
+	}
+
+	pub fn as_string(&self) -> String {
+		match self {
+			CurrencyType::DBIO => "DBIO".to_owned(),
+			CurrencyType::USN => "USN".to_owned(),
+			CurrencyType::USDT => "USDT".to_owned(),
+			CurrencyType::DAI => "DAI".to_owned(),
+			CurrencyType::USDO => "USDO".to_owned(),
+			CurrencyType::ETH => "ETH".to_owned(),
 		}
 	}
 }

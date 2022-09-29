@@ -31,6 +31,7 @@ frame-benchmarking = { default-features = false, git = "https://github.com/parit
 ## Substrate Pallet Dependencies
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-assets = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 pallet-randomness-collective-flip = { default-features = false, git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.18" }
 
 # Local Dependencies
@@ -72,6 +73,7 @@ std = [
 	'pallet-balances/std',
 	'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
+	'pallet-assets/std',
 
     'labs/std',
     'orders/std',

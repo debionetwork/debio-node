@@ -1215,7 +1215,8 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
@@ -1231,6 +1232,8 @@ mod tests {
 						"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 					),
 					seller_id: 1,
+					total_price: 0,
+					asset_id: None,
 					dna_sample_tracking_id: _dna_sample[0].clone(),
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
@@ -1311,11 +1314,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::reject_dna_sample(
 				Origin::signed(1),
 				_dna_sample[0].clone(),
@@ -1403,11 +1409,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::submit_test_result(
 				Origin::signed(1),
 				_dna_sample[0].clone(),

@@ -7,8 +7,6 @@ pub trait ServiceInterface<T: frame_system::Config> {
 	type ServiceInfo;
 	type ServiceFlow;
 
-	fn generate_service_id(owner_id: &T::AccountId, service_count: u64) -> Self::ServiceId;
-
 	fn create_service(
 		owner_id: &T::AccountId,
 		service: &Self::ServiceInfo,

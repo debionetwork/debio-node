@@ -177,6 +177,7 @@ impl orders::Config for Test {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = Assets;
 	type OrdersWeightInfo = ();
 }
 
