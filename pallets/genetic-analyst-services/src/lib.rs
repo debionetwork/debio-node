@@ -4,7 +4,7 @@ use frame_support::{
 	codec::{Decode, Encode},
 	pallet_prelude::*,
 	sp_runtime::SaturatedConversion,
-	traits::Currency,
+	traits::{Currency, StorageVersion},
 };
 pub use pallet::*;
 use primitives_duration::ExpectedDuration;
@@ -16,7 +16,9 @@ use traits_genetic_analyst_services::{
 };
 
 pub mod interface;
+pub mod migrations;
 pub mod weights;
+
 pub use interface::GeneticAnalystServiceInterface;
 use sp_std::prelude::*;
 
@@ -71,13 +73,18 @@ where
 	}
 }
 
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
+
 #[frame_support::pallet]
 pub mod pallet {
+	use super::*;
+
 	use crate::{
 		interface::GeneticAnalystServiceInterface, weights::WeightInfo, Currency,
 		GeneticAnalystService, GeneticAnalystServiceInfo, GeneticAnalystServiceOwner,
 	};
-	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+	use frame_support::dispatch::DispatchResultWithPostInfo;
 	use frame_system::pallet_prelude::*;
 	pub use sp_std::prelude::*;
 
@@ -91,12 +98,17 @@ pub mod pallet {
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ----- Types -------

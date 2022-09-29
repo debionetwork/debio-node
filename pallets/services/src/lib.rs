@@ -5,6 +5,7 @@ pub use pallet::*;
 pub mod functions;
 pub mod impl_services;
 pub mod interface;
+pub mod migrations;
 pub mod types;
 pub mod weights;
 
@@ -12,6 +13,11 @@ pub use interface::ServiceInterface;
 pub use traits_services::{types::ServiceFlow, ServiceOwner, ServicesProvider};
 pub use types::*;
 pub use weights::WeightInfo;
+
+pub use frame_support::traits::StorageVersion;
+
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -32,12 +38,17 @@ pub mod pallet {
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ------- Storage -------------
