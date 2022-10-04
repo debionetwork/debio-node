@@ -12,12 +12,16 @@ license = 'Unlicense'
 targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
 frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
+pallet-assets = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 
 sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -26,7 +30,13 @@ sp-runtime = { default-features = false, git = "https://github.com/paritytech/su
 
 labs = { path = '../../labs', default-features = false }
 certifications = { path = '../../certifications', default-features = false }
+services = { path = '../../services', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
+genetic-testing = { path = '../../genetic-testing', default-features = false }
+orders = { path = '../../orders', default-features = false }
 
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-certifications = { path = '../../certifications/traits', default-features = false }
 
@@ -46,11 +56,20 @@ std = [
     'frame-support/std',
     'frame-system/std',
 
+	'pallet-assets/std',
 	'pallet-balances/std',
+	'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
 
     'labs/std',
-    'certifications/std',
+    'services/std',
+    'user-profile/std',
+	'genetic-testing/std',
+	'orders/std',
+	'certifications/std',
 
     'primitives-area-code/std',
+	'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
     'traits-certifications/std',
 ]

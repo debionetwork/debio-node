@@ -27,6 +27,8 @@ sp-io = { default-features = false, git = "https://github.com/paritytech/substra
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 primitives-stake-status = { path = '../../../primitives/stake-status', default-features = false }
 primitives-verification-status = { path = '../../../primitives/verification-status', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 traits-order = { path = '../../orders/traits', default-features = false }
 traits-services = { path = '../../services/traits', default-features = false }
@@ -66,12 +68,15 @@ std = [
     'sp-runtime/std',
     'sp-io/std',
 
+	'pallet-assets/std',
 	'pallet-balances/std',
 	'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
 
     'primitives-area-code/std',
     'primitives-stake-status/std',
+	'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
     'primitives-verification-status/std',
 
     'traits-order/std',

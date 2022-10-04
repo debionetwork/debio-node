@@ -1068,4 +1068,8 @@ impl<T: Config> LabsProvider<T> for Pallet<T> {
 	fn lab_verification_status(account_id: &AccountIdOf<T>) -> Option<VerificationStatus> {
 		Self::lab_verification_status(account_id)
 	}
+
+	fn is_lab_exists(account_id: &T::AccountId) -> bool {
+		Self::lab_by_account_id(account_id).is_some()
+	}
 }

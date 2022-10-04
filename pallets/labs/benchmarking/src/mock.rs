@@ -1,21 +1,19 @@
 #![cfg(test)]
 
-use super::*;
-
-use frame_support::{parameter_types, traits::ConstU64, PalletId};
+use frame_support::{parameter_types, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_core::H256;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
 
+use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
+
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
-
-use sp_io::TestExternalities;
 
 pub type AccountId = u64;
 
@@ -117,6 +115,7 @@ pub type AssetBalance = u128;
 
 parameter_types! {
 	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetAccountDeposit: Balance = 10;
 	pub const AssetDeposit: Balance = 1;
 	pub const MetadataDepositBase: Balance = 1;
 	pub const MetadataDepositPerByte: Balance = 1;
@@ -129,7 +128,7 @@ impl pallet_assets::Config for Test {
 	type AssetId = AssetId;
 	type Currency = Balances;
 	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
-	type AssetAccountDeposit = ConstU64<10>;
+	type AssetAccountDeposit = AssetAccountDeposit;
 	type AssetDeposit = AssetDeposit;
 	type MetadataDepositBase = MetadataDepositBase;
 	type MetadataDepositPerByte = MetadataDepositPerByte;
@@ -187,13 +186,4 @@ impl user_profile::Config for Test {
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
-}
-
-pub struct ExternalityBuilder;
-
-impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
-	}
 }

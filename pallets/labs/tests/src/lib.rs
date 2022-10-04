@@ -1333,7 +1333,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.is_rejected(), true);
+			assert!(_dna_sample_info.is_rejected());
 
 			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
 		})
@@ -1456,7 +1456,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.process_success(), true);
+			assert!(_dna_sample_info.process_success());
 
 			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
 		})

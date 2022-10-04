@@ -29,7 +29,7 @@ use orders::Pallet as Orders;
 use genetic_testing::Pallet as GeneticTesting;
 use genetic_testing::{Config as GeneticTestingConfig, DnaSampleStatus, DnaTestResultSubmission};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
+use frame_benchmarking::{benchmarks, vec};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(GeneticTesting<T>);
@@ -253,5 +253,3 @@ benchmarks! {
 		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
 	)
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

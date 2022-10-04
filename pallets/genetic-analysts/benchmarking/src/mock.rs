@@ -1,12 +1,9 @@
 #![cfg(test)]
 
-use super::*;
-
 use frame_support::{parameter_types, traits::ConstU128, PalletId};
 use frame_system::EnsureRoot;
-use sp_io::TestExternalities;
+use pallet_balances::AccountData;
 use sp_runtime::{
-	testing::Header,
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
 	MultiSignature,
 };
@@ -66,7 +63,7 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -204,34 +201,4 @@ impl pallet_balances::Config for Test {
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
 	type WeightInfo = ();
-}
-
-pub struct ExternalityBuilder {
-	existential_deposit: u128,
-}
-
-impl Default for ExternalityBuilder {
-	fn default() -> Self {
-		Self { existential_deposit: 1 }
-	}
-}
-
-impl ExternalityBuilder {
-	pub fn existential_deposit(mut self, existential_deposit: u128) -> Self {
-		self.existential_deposit = existential_deposit;
-		self
-	}
-	pub fn set_associated_consts(&self) {
-		EXISTENTIAL_DEPOSIT.with(|v| *v.borrow_mut() = self.existential_deposit);
-	}
-	pub fn build(&self) -> TestExternalities {
-		self.set_associated_consts();
-		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
-			.assimilate_storage(&mut storage)
-			.unwrap();
-		let mut ext = sp_io::TestExternalities::new(storage);
-		ext.execute_with(|| System::set_block_number(1));
-		ext
-	}
 }

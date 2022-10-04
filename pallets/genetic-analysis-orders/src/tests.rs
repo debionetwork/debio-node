@@ -584,7 +584,7 @@ fn fulfill_genetic_analysis_order_works() {
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
 			Origin::signed(1),
-			_genetic_analysis_order_id.clone()
+			_genetic_analysis_order_id
 		));
 
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();

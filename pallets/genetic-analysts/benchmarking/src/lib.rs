@@ -11,7 +11,7 @@ pub struct Pallet<T: Config>(GeneticAnalysts<T>);
 
 pub trait Config: GeneticAnalystsConfig {}
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_support::{
 	sp_runtime::{traits::Hash, SaturatedConversion},
 	traits::Currency,
@@ -246,5 +246,3 @@ benchmarks! {
 		caller2
 	)
 }
-
-impl_benchmark_test_suite! {GeneticAnalysts, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

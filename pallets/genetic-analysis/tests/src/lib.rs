@@ -104,7 +104,7 @@ mod tests {
 				_genetic_analysis_info.get_genetic_analysis_tracking_id(),
 				&_genetic_analysis[0]
 			);
-			assert_eq!(_genetic_analysis_info.is_rejected(), true);
+			assert!(_genetic_analysis_info.is_rejected());
 		})
 	}
 
@@ -313,7 +313,7 @@ mod tests {
 				_genetic_analysis_info.get_genetic_analysis_tracking_id(),
 				&_genetic_analysis[0]
 			);
-			assert_eq!(_genetic_analysis_info.process_success(), true);
+			assert!(_genetic_analysis_info.process_success());
 		})
 	}
 
