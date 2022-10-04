@@ -4,7 +4,6 @@ pub trait OrderInterface<T: frame_system::Config> {
 	type Order;
 	type Error;
 
-	//fn generate_order_id(customer_id: &T::AccountId, service_id: &T::Hash) -> T::Hash;
 	fn create_order(
 		customer_id: &T::AccountId,
 		service_id: &T::Hash,
@@ -19,11 +18,11 @@ pub trait OrderInterface<T: frame_system::Config> {
 	) -> Result<Self::Order, Self::Error>;
 	// set_order_paid Should only be called by Escrow API Server with the correct account_id
 	fn set_order_paid(
-		customer_id: &T::AccountId,
+		account_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error>;
 	fn fulfill_order(
-		escrow_account_id: &T::AccountId,
+		seller_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error>;
 	fn set_order_refunded(

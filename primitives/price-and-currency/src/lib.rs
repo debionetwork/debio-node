@@ -47,6 +47,17 @@ impl CurrencyType {
 			CurrencyType::ETH => "ETH".to_owned(),
 		}
 	}
+
+	pub fn can_transfer(&self) -> bool {
+		match self {
+			CurrencyType::DBIO => true,
+			CurrencyType::USN => true,
+			CurrencyType::USDT => true,
+			CurrencyType::DAI => false,
+			CurrencyType::USDO => false,
+			CurrencyType::ETH => false,
+		}
+	}
 }
 
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
