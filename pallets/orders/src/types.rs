@@ -5,6 +5,7 @@ use primitives_price_and_currency::{CurrencyType, Price};
 use scale_info::TypeInfo;
 use sp_std::vec::Vec;
 use traits_genetic_testing::DnaSampleTrackingId;
+use traits_order::OrderInfo;
 use traits_services::types::ServiceFlow;
 
 pub type AssetId = u32;
@@ -111,5 +112,44 @@ impl<Hash, AccountId, Balance, Moment> Order<Hash, AccountId, Balance, Moment> {
 	pub fn set_asset_id(mut self, asset_id: u32) -> Self {
 		self.asset_id = Some(asset_id);
 		self
+	}
+}
+
+impl<T, Hash, AccountId, Balance, Moment> OrderInfo<T> for Order<Hash, AccountId, Balance, Moment>
+where
+	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
+	AccountId: PartialEq,
+	Hash: PartialEq,
+{
+	fn is_order_paid(&self) -> bool {
+		self.status == OrderStatus::Paid
+	}
+
+	fn is_order_unpaid(&self) -> bool {
+		self.status == OrderStatus::Unpaid
+	}
+
+	fn is_order_fullfilled(&self) -> bool {
+		self.status == OrderStatus::Fulfilled
+	}
+
+	fn is_order_refunded(&self) -> bool {
+		self.status == OrderStatus::Refunded
+	}
+
+	fn is_order_failed(&self) -> bool {
+		self.status == OrderStatus::Failed
+	}
+
+	fn is_order_to_lab(&self, account_id: &T::AccountId) -> bool {
+		&self.seller_id == account_id
+	}
+
+	fn is_account_order(&self, account_id: &T::AccountId) -> bool {
+		&self.customer_id == account_id
+	}
+
+	fn is_order_from_service(&self, service_id: &T::Hash) -> bool {
+		&self.service_id == service_id
 	}
 }

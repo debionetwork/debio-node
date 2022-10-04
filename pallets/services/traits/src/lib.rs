@@ -29,6 +29,7 @@ pub trait ServiceInfo<T: Config, Balance> {
 	fn get_owner_id(&self) -> &T::AccountId;
 	fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>>;
 	fn get_service_flow(&self) -> &types::ServiceFlow;
+	fn is_service_owner(&self, account_id: &T::AccountId) -> bool;
 }
 
 pub trait ServicesProvider<T: Config, Balance> {

@@ -67,6 +67,7 @@ impl<AccountId, Hash, Balance> Service<AccountId, Hash, Balance> {
 impl<T, AccountId, Hash, Balance> ServiceInfoT<T, Balance> for Service<AccountId, Hash, Balance>
 where
 	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
+	AccountId: PartialEq,
 {
 	fn get_id(&self) -> &Hash {
 		self.get_id()
@@ -79,5 +80,8 @@ where
 	}
 	fn get_prices_by_currency(&self) -> &Vec<PriceByCurrency<Balance>> {
 		self.get_prices_by_currency()
+	}
+	fn is_service_owner(&self, account_id: &T::AccountId) -> bool {
+		self.get_owner_id() == account_id
 	}
 }
