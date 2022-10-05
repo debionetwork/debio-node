@@ -202,7 +202,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 2021,
+	spec_version: 2022,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -715,6 +715,11 @@ parameter_types! {
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
 }
 
+parameter_types! {
+	// Six days in milliseconds
+	pub const UnstakePeriode: Moment = 6 * 24 * 60 * 60 * 1000;
+}
+
 impl labs::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
@@ -766,8 +771,10 @@ impl service_request::Config for Runtime {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
-	type Assets = OctopusAssets;
 	type Labs = Labs;
+	type Orders = Orders;
+	type Services = Services;
+	type UnstakePeriode = UnstakePeriode;
 	type ServiceRequestWeightInfo = ();
 }
 
