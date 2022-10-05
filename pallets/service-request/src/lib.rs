@@ -8,11 +8,12 @@ use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::{traits::Hash, RuntimeDebug},
 	sp_std::prelude::*,
-	traits::{tokens::fungibles, Currency, UnixTime},
+	traits::{Currency, Get, UnixTime},
 };
 use frame_system::pallet_prelude::*;
-use primitives_verification_status::VerificationStatusTrait;
 use traits_labs::LabsProvider;
+use traits_order::OrderProvider;
+use traits_services::ServicesProvider;
 
 #[cfg(test)]
 mod mock;
@@ -34,7 +35,7 @@ pub use weights::WeightInfo;
 pub use frame_support::traits::StorageVersion;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -46,12 +47,12 @@ pub mod pallet {
 		type TimeProvider: UnixTime;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		type Labs: LabsProvider<Self>;
-		type Assets: fungibles::Transfer<
-				<Self as frame_system::Config>::AccountId,
-				AssetId = AssetId,
-				Balance = AssetBalance,
-			> + fungibles::InspectMetadata<<Self as frame_system::Config>::AccountId>;
+		type Services: ServicesProvider<Self, BalanceOf<Self>>;
+		type Orders: OrderProvider<Self>;
 		type ServiceRequestWeightInfo: WeightInfo;
+
+		#[pallet::constant]
+		type UnstakePeriode: Get<u64>;
 	}
 
 	#[pallet::genesis_config]
@@ -79,16 +80,9 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		ServiceRequestCreated(AccountIdOf<T>, RequestOf<T>),
-		ServiceRequestWaitingForUnstaked(AccountIdOf<T>, RequestOf<T>),
-		ServiceRequestUnstaked(AccountIdOf<T>, RequestOf<T>),
+		ServiceRequestUpdated(AccountIdOf<T>, HashOf<T>, RequestStatus),
+		StakingAmountRefunded(AccountIdOf<T>, BalanceOf<T>),
 		UpdateServiceRequestAdminKeySuccessful(AccountIdOf<T>),
-		ServiceRequestWaitingForClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
-		ServiceRequestClaimed(AccountIdOf<T>, ServiceOfferOf<T>),
-		ServiceRequestProcessed(AccountIdOf<T>, ServiceInvoiceOf<T>),
-		ServiceRequestFinalized(AccountIdOf<T>, ServiceInvoiceOf<T>),
-		StakingAmountRefunded(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
-		StakingAmountExcessRefunded(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
-		StakingAmountIncreased(AccountIdOf<T>, RequestIdOf<T>, BalanceOf<T>),
 	}
 
 	#[pallet::error]
@@ -104,12 +98,10 @@ pub mod pallet {
 		RequestUnableToFinalize,
 		RequestWaitingForUnstaked,
 		RequestAlreadyUnstaked,
-		RequestAlreadyInList,
 		RequestAlreadyClaimed,
 		RequestAlreadyProccessed,
 		RequestAlreadyFinalized,
-		ServiceOfferNotFound,
-		ServiceInvoiceNotFound,
+		RequestAlreadyInList,
 		LabNotFound,
 		Module,
 		Other,
@@ -122,6 +114,8 @@ pub mod pallet {
 		Arithmetic,
 		WrongFormat,
 		AssetNotExists,
+		OrderNotFound,
+		ServiceNotFound,
 	}
 
 	#[pallet::hooks]
@@ -145,24 +139,29 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn staking_account_id_by_request_id)]
 	pub type StakingAccountIdByRequestId<T> =
-		StorageMap<_, Blake2_128Concat, RequestIdOf<T>, AccountIdOf<T>, OptionQuery>;
+		StorageMap<_, Blake2_128Concat, HashOf<T>, AccountIdOf<T>, OptionQuery>;
 
 	/// Get Request by Account Id
 	#[pallet::storage]
 	#[pallet::getter(fn request_by_account_id)]
 	pub type RequestByAccountId<T> =
-		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<RequestIdOf<T>>, ValueQuery>;
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<HashOf<T>>, ValueQuery>;
 
 	/// Get Request by RequestId
 	#[pallet::storage]
 	#[pallet::getter(fn request_by_id)]
-	pub type RequestById<T> = StorageMap<_, Blake2_128Concat, RequestIdOf<T>, RequestOf<T>>;
+	pub type RequestById<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, RequestOf<T>>;
 
-	/// Get RequestIds by LabId
+	/// Get Request by LabId
 	#[pallet::storage]
 	#[pallet::getter(fn requests_by_lab_id)]
 	pub type RequestsByLabId<T> =
-		StorageMap<_, Blake2_128Concat, LabIdOf<T>, Vec<RequestIdOf<T>>, ValueQuery>;
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<HashOf<T>>, ValueQuery>;
+
+	/// Get Request by OrderId
+	#[pallet::storage]
+	#[pallet::getter(fn request_by_order_id)]
+	pub type RequestByOrderId<T> = StorageMap<_, Blake2_128Concat, HashOf<T>, HashOf<T>>;
 
 	/// Get  ServiceCountRequest by Country, Region, City, ServiceCategoryOf
 	#[pallet::storage]
@@ -170,48 +169,32 @@ pub mod pallet {
 	pub type ServiceCountRequest<T> = StorageNMap<
 		_,
 		(
-			NMapKey<Blake2_128Concat, CountryOf>,
-			NMapKey<Blake2_128Concat, RegionOf>,
-			NMapKey<Blake2_128Concat, CityOf>,
-			NMapKey<Blake2_128Concat, ServiceCategoryOf>,
+			NMapKey<Blake2_128Concat, Country>,
+			NMapKey<Blake2_128Concat, Region>,
+			NMapKey<Blake2_128Concat, City>,
+			NMapKey<Blake2_128Concat, ServiceCategory>,
 		),
 		u64,
 		ValueQuery,
 	>;
 
-	/// Get ServiceOffer by RequestId
-	#[pallet::storage]
-	#[pallet::getter(fn service_offer_by_id)]
-	pub type ServiceOfferById<T> =
-		StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceOfferOf<T>>;
-
-	/// Get ServiceInvoice by RequestId
-	#[pallet::storage]
-	#[pallet::getter(fn service_invoice_by_id)]
-	pub type ServiceInvoiceById<T> =
-		StorageMap<_, Blake2_128Concat, RequestIdOf<T>, ServiceInvoiceOf<T>>;
-
-	/// Get ServiceInvoice By OrderId
-	#[pallet::storage]
-	#[pallet::getter(fn service_invoice_by_order_id)]
-	pub type ServiceInvoiceByOrderId<T> =
-		StorageMap<_, Blake2_128Concat, OrderIdOf<T>, ServiceInvoiceOf<T>>;
+	// Request by order id
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		#[pallet::weight(T::ServiceRequestWeightInfo::create_request())]
 		pub fn create_request(
 			origin: OriginFor<T>,
-			country: CountryOf,
-			region: RegionOf,
-			city: CityOf,
-			service_category: ServiceCategoryOf,
+			country: Vec<u8>,
+			region: Vec<u8>,
+			city: Vec<u8>,
+			service_category: Vec<u8>,
 			staking_amount: BalanceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::create_request(
-				who.clone(),
+				&who,
 				country,
 				region,
 				city,
@@ -230,9 +213,13 @@ pub mod pallet {
 		pub fn unstake(origin: OriginFor<T>, request_id: HashOf<T>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as SeviceRequestInterface<T>>::unstake(who.clone(), request_id) {
-				Ok(request) => {
-					Self::deposit_event(Event::ServiceRequestWaitingForUnstaked(who, request));
+			match <Self as SeviceRequestInterface<T>>::unstake(&who, &request_id) {
+				Ok(_) => {
+					Self::deposit_event(Event::ServiceRequestUpdated(
+						who,
+						request_id,
+						RequestStatus::WaitingForUnstaked,
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -246,12 +233,15 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as SeviceRequestInterface<T>>::retrieve_unstaked_amount(
-				who.clone(),
-				request_id,
-			) {
-				Ok(request) => {
-					Self::deposit_event(Event::ServiceRequestUnstaked(who, request));
+			match <Self as SeviceRequestInterface<T>>::retrieve_unstaked_amount(&who, &request_id) {
+				Ok(balance) => {
+					Self::deposit_event(Event::StakingAmountRefunded(who.clone(), balance));
+					Self::deposit_event(Event::ServiceRequestUpdated(
+						who,
+						request_id,
+						RequestStatus::Unstaked,
+					));
+
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -263,25 +253,17 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			request_id: HashOf<T>,
 			service_id: HashOf<T>,
-			service_price: LabPriceOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as SeviceRequestInterface<T>>::claim_request(
-				who.clone(),
-				request_id,
-				service_id,
-				service_price,
-			) {
-				Ok((request, service_offer)) => {
-					if request.status == RequestStatus::Claimed {
-						Self::deposit_event(Event::ServiceRequestClaimed(who, service_offer));
-					} else {
-						Self::deposit_event(Event::ServiceRequestWaitingForClaimed(
-							who,
-							service_offer,
-						));
-					}
+			match <Self as SeviceRequestInterface<T>>::claim_request(&who, &request_id, &service_id)
+			{
+				Ok(claimed) => {
+					let status =
+						if claimed { RequestStatus::Claimed } else { RequestStatus::InLabList };
+
+					Self::deposit_event(Event::ServiceRequestUpdated(who, request_id, status));
+
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -291,22 +273,19 @@ pub mod pallet {
 		#[pallet::weight(T::ServiceRequestWeightInfo::process_request())]
 		pub fn process_request(
 			origin: OriginFor<T>,
-			lab_id: LabIdOf<T>,
 			request_id: HashOf<T>,
 			order_id: HashOf<T>,
-			dna_sample_tracking_id: DNASampleTrackingIdOf,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as SeviceRequestInterface<T>>::process_request(
-				who.clone(),
-				lab_id,
-				request_id,
-				order_id,
-				dna_sample_tracking_id,
-			) {
-				Ok(service_invoice) => {
-					Self::deposit_event(Event::ServiceRequestProcessed(who, service_invoice));
+			match <Self as SeviceRequestInterface<T>>::process_request(&who, &request_id, &order_id)
+			{
+				Ok(_) => {
+					Self::deposit_event(Event::ServiceRequestUpdated(
+						who,
+						request_id,
+						RequestStatus::Processed,
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -317,17 +296,16 @@ pub mod pallet {
 		pub fn finalize_request(
 			origin: OriginFor<T>,
 			request_id: HashOf<T>,
-			test_result_success: bool,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as SeviceRequestInterface<T>>::finalize_request(
-				who.clone(),
-				request_id,
-				test_result_success,
-			) {
-				Ok(service_invoice) => {
-					Self::deposit_event(Event::ServiceRequestFinalized(who, service_invoice));
+			match <Self as SeviceRequestInterface<T>>::finalize_request(&who, &request_id) {
+				Ok(_) => {
+					Self::deposit_event(Event::ServiceRequestUpdated(
+						who,
+						request_id,
+						RequestStatus::Finalized,
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

@@ -130,7 +130,7 @@ impl<T: Config> Pallet<T> {
 		currency: &CurrencyType,
 		asset_id: Option<u32>,
 	) -> Result<Option<u32>, Error<T>> {
-		if currency.can_transfer() {
+		if !currency.can_transfer() || currency == &CurrencyType::DBIO {
 			return Ok(None)
 		}
 

@@ -1,13 +1,8 @@
 #![cfg(test)]
 
-use super::*;
-
-use frame_support::{parameter_types, traits::GenesisBuild, PalletId};
-use frame_system as system;
+use frame_support::{parameter_types, PalletId};
 use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
-use sp_io::TestExternalities;
+use sp_core::H256;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
@@ -115,13 +110,13 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-pub type OctopusAssetId = u32;
-pub type OctopusAssetBalance = u128;
+pub type AssetId = u32;
+pub type AssetBalance = u128;
 
 parameter_types! {
 	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetAccountDeposit: Balance = 10;
 	pub const AssetDeposit: Balance = 1;
-	pub const AssetAccountDeposit = 10;
 	pub const MetadataDepositBase: Balance = 1;
 	pub const MetadataDepositPerByte: Balance = 1;
 	pub const StringLimit: u32 = 50;
@@ -129,8 +124,8 @@ parameter_types! {
 
 impl pallet_assets::Config for Test {
 	type Event = Event;
-	type Balance = OctopusAssetBalance;
-	type AssetId = OctopusAssetId;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
 	type Currency = Balances;
 	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
 	type AssetAccountDeposit = AssetAccountDeposit;
@@ -144,12 +139,18 @@ impl pallet_assets::Config for Test {
 	type WeightInfo = ();
 }
 
+parameter_types! {
+	pub const UnstakePeriode: Moment = 0;
+}
+
 impl service_request::Config for Test {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
 	type Labs = Labs;
-	type Assets = Assets;
+	type Orders = Orders;
+	type Services = Services;
+	type UnstakePeriode = UnstakePeriode;
 	type ServiceRequestWeightInfo = ();
 }
 
@@ -160,6 +161,7 @@ impl labs::Config for Test {
 	type EthereumAddress = EthereumAddress;
 	type Services = Services;
 	type Orders = Orders;
+	type ProfileRoles = ProfileRoles;
 	type UserProfile = UserProfile;
 	type PalletId = LabPalletId;
 	type LabWeightInfo = ();
@@ -199,34 +201,4 @@ impl user_profile::Config for Test {
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
-}
-
-pub struct ExternalityBuilder {
-	existential_deposit: u64,
-}
-
-impl Default for ExternalityBuilder {
-	fn default() -> Self {
-		Self { existential_deposit: 1 }
-	}
-}
-
-impl ExternalityBuilder {
-	pub fn existential_deposit(mut self, existential_deposit: u64) -> Self {
-		self.existential_deposit = existential_deposit;
-		self
-	}
-	pub fn set_associated_consts(&self) {
-		EXISTENTIAL_DEPOSIT.with(|v| *v.borrow_mut() = self.existential_deposit);
-	}
-	pub fn build(&self) -> TestExternalities {
-		self.set_associated_consts();
-		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		pallet_balances::GenesisConfig::<Test> { balances: { vec![] } }
-			.assimilate_storage(&mut storage)
-			.unwrap();
-		let mut ext = sp_io::TestExternalities::new(storage);
-		ext.execute_with(|| System::set_block_number(1));
-		ext
-	}
 }

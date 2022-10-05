@@ -35,7 +35,7 @@ mod version {
 		pub fn migrate<T: Config>() -> Weight {
 			let mut weight = T::DbWeight::get().writes(1);
 
-			#[derive(Encode, Decode, PartialEq)]
+			#[derive(Encode, Decode, PartialEq, Eq)]
 			pub struct OldOrder<Hash, AccountId, Balance, Moment> {
 				pub id: Hash,
 				pub service_id: Hash,

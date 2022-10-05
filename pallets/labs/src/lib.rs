@@ -989,11 +989,7 @@ impl<T: Config> Pallet<T> {
 	}
 
 	fn lab_verification_status(account_id: &T::AccountId) -> Option<VerificationStatus> {
-		let lab = Self::lab_by_account_id(account_id);
-
-		lab.as_ref()?;
-
-		let lab = lab.unwrap();
+		let lab = Self::lab_by_account_id(account_id)?;
 		Some(lab.verification_status)
 	}
 }
@@ -1065,7 +1061,7 @@ impl<T: Config> CertificationOwner<T> for Pallet<T> {
 }
 
 impl<T: Config> LabsProvider<T> for Pallet<T> {
-	fn lab_verification_status(account_id: &AccountIdOf<T>) -> Option<VerificationStatus> {
+	fn lab_verification_status(account_id: &T::AccountId) -> Option<VerificationStatus> {
 		Self::lab_verification_status(account_id)
 	}
 
