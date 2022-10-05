@@ -61,7 +61,7 @@ mod tests {
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![prices_by_currency_dbio.clone()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
@@ -102,7 +102,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.is_rejected(), true);
+			assert!(_dna_sample_info.is_rejected());
 		})
 	}
 
@@ -301,7 +301,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.process_success(), true);
+			assert!(_dna_sample_info.process_success());
 		})
 	}
 
@@ -359,7 +359,7 @@ mod tests {
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![prices_by_currency_dbio.clone()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
@@ -542,7 +542,7 @@ mod tests {
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![prices_by_currency_dbio.clone()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),

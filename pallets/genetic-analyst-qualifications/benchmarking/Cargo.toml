@@ -13,12 +13,15 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
+pallet-assets = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 
 sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -27,9 +30,16 @@ sp-runtime = { default-features = false, git = "https://github.com/paritytech/su
 
 genetic-analysts = { path = '../../genetic-analysts', default-features = false }
 genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
+genetic-analysis = { path = '../../genetic-analysis', default-features = false }
+genetic-analysis-orders = { path = '../../genetic-analysis-orders', default-features = false }
+genetic-data = { path = '../../genetic-data', default-features = false }
+genetic-analyst-services = { path = '../../genetic-analyst-services', default-features = false }
 
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
@@ -47,12 +57,20 @@ std = [
     'frame-support/std',
     'frame-system/std',
 
+	'pallet-assets/std',
 	'pallet-balances/std',
     'pallet-timestamp/std',
 
+    'genetic-data/std',
+	'genetic-analysis/std',
     'genetic-analysts/std',
+    'genetic-analyst-services/std',
     'genetic-analyst-qualifications/std',
+	'genetic-analysis-orders/std',
+    'user-profile/std',
 
     'primitives-area-code/std',
     'traits-genetic-analyst-qualifications/std',
+	'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 ]

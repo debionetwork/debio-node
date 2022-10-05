@@ -9,12 +9,12 @@ use doctor_certifications::{Config as DoctorCertificationsConfig, DoctorCertific
 use doctors::Pallet as Doctors;
 use doctors::{Config as DoctorsConfig, DoctorInfo};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 
-pub struct Pallet<T: Config>(DoctorCertifications<T>);
-
 pub trait Config: DoctorCertificationsConfig + DoctorsConfig {}
+
+pub struct Pallet<T: Config>(DoctorCertifications<T>);
 
 use doctor_certifications::Call;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
@@ -116,5 +116,3 @@ benchmarks! {
 			.unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _doctor.certifications[0])
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

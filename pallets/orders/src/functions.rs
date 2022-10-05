@@ -12,6 +12,7 @@ use frame_support::{
 use primitives_price_and_currency::CurrencyType;
 use scale_info::prelude::string::String;
 use sp_std::vec;
+use traits_order::OrderProvider;
 
 pub const PALLET_ID: PalletId = PalletId(*b"orders!!");
 
@@ -129,7 +130,7 @@ impl<T: Config> Pallet<T> {
 		currency: &CurrencyType,
 		asset_id: Option<u32>,
 	) -> Result<Option<u32>, Error<T>> {
-		if currency == &CurrencyType::DBIO {
+		if !currency.can_transfer() || currency == &CurrencyType::DBIO {
 			return Ok(None)
 		}
 
@@ -174,7 +175,7 @@ impl<T: Config> Pallet<T> {
 					DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 					DispatchError::Token(_) => Err(Error::<T>::Token),
 					DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
-					DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
+					DispatchError::Module(_) => Err(Error::<T>::Other),
 				}
 			}
 		} else {
@@ -197,7 +198,7 @@ impl<T: Config> Pallet<T> {
 					DispatchError::NoProviders => Err(Error::<T>::NoProviders),
 					DispatchError::Token(_) => Err(Error::<T>::Token),
 					DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
-					DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
+					DispatchError::Module(_) => Err(Error::<T>::Module),
 				}
 			}
 		}
@@ -241,5 +242,16 @@ impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
 			None => false,
 			Some(order) => order.status == OrderStatus::Paid,
 		}
+	}
+}
+
+impl<T: Config> OrderProvider<T> for Pallet<T>
+where
+	OrderOf<T>: traits_order::OrderInfo<T>,
+{
+	type Orders = OrderOf<T>;
+
+	fn get_order_by_id(order_id: &T::Hash) -> Option<Self::Orders> {
+		Self::order_by_id(order_id)
 	}
 }

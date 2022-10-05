@@ -133,8 +133,8 @@ fn add_menstrual_cycle_log_works() {
 		let menstrual_cycle_log =
 			MenstrualCalendar::menstrual_cycle_log_by_id(menstrual_cycle_log_ids[0]).unwrap();
 
+		assert!(!menstrual_cycle_log.menstruation);
 		assert_eq!(menstrual_cycle_log.date, 0);
-		assert_eq!(menstrual_cycle_log.menstruation, false);
 		assert_eq!(menstrual_cycle_log.symptoms, vec![]);
 		assert_eq!(menstrual_cycle_log.created_at, 0);
 		assert_eq!(menstrual_cycle_log.updated_at, 0);
@@ -160,8 +160,8 @@ fn remove_menstrual_cycle_log_works() {
 		let menstrual_cycle_log =
 			MenstrualCalendar::menstrual_cycle_log_by_id(menstrual_cycle_log_ids[0]).unwrap();
 
+		assert!(!menstrual_cycle_log.menstruation);
 		assert_eq!(menstrual_cycle_log.date, 0);
-		assert_eq!(menstrual_cycle_log.menstruation, false);
 		assert_eq!(menstrual_cycle_log.symptoms, vec![]);
 		assert_eq!(menstrual_cycle_log.created_at, 0);
 		assert_eq!(menstrual_cycle_log.updated_at, 0);
@@ -209,8 +209,8 @@ fn remove_menstrual_cycle_log_not_menstrual_cycle_log_owner() {
 		let menstrual_cycle_log =
 			MenstrualCalendar::menstrual_cycle_log_by_id(menstrual_cycle_log_ids[0]).unwrap();
 
+		assert!(!menstrual_cycle_log.menstruation);
 		assert_eq!(menstrual_cycle_log.date, 0);
-		assert_eq!(menstrual_cycle_log.menstruation, false);
 		assert_eq!(menstrual_cycle_log.symptoms, vec![]);
 		assert_eq!(menstrual_cycle_log.created_at, 0);
 		assert_eq!(menstrual_cycle_log.updated_at, 0);
@@ -245,8 +245,8 @@ fn update_menstrual_cycle_log_works() {
 		let menstrual_cycle_log =
 			MenstrualCalendar::menstrual_cycle_log_by_id(menstrual_cycle_log_ids[0]).unwrap();
 
+		assert!(!menstrual_cycle_log.menstruation);
 		assert_eq!(menstrual_cycle_log.date, 0);
-		assert_eq!(menstrual_cycle_log.menstruation, false);
 		assert_eq!(menstrual_cycle_log.symptoms, vec![]);
 		assert_eq!(menstrual_cycle_log.created_at, 0);
 		assert_eq!(menstrual_cycle_log.updated_at, 0);
@@ -268,8 +268,8 @@ fn update_menstrual_cycle_log_works() {
 		let menstrual_cycle_log =
 			MenstrualCalendar::menstrual_cycle_log_by_id(menstrual_cycle_log_ids[0]).unwrap();
 
+		assert!(!menstrual_cycle_log.menstruation);
 		assert_eq!(menstrual_cycle_log.date, 0);
-		assert_eq!(menstrual_cycle_log.menstruation, false);
 		assert_eq!(menstrual_cycle_log.symptoms, vec![]);
 		assert_eq!(menstrual_cycle_log.created_at, 0);
 		assert_eq!(menstrual_cycle_log.updated_at, 0);
@@ -310,8 +310,8 @@ fn update_menstrual_cycle_log_not_menstrual_cycle_log_owner() {
 		let menstrual_cycle_log =
 			MenstrualCalendar::menstrual_cycle_log_by_id(menstrual_cycle_log_ids[0]).unwrap();
 
+		assert!(!menstrual_cycle_log.menstruation);
 		assert_eq!(menstrual_cycle_log.date, 0);
-		assert_eq!(menstrual_cycle_log.menstruation, false);
 		assert_eq!(menstrual_cycle_log.symptoms, vec![]);
 		assert_eq!(menstrual_cycle_log.created_at, 0);
 		assert_eq!(menstrual_cycle_log.updated_at, 0);

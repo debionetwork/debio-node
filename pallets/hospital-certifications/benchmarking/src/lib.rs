@@ -9,7 +9,7 @@ use hospital_certifications::{Config as HospitalCertificationsConfig, HospitalCe
 use hospitals::Pallet as Hospitals;
 use hospitals::{Config as HospitalsConfig, HospitalInfo};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(HospitalCertifications<T>);
@@ -116,5 +116,3 @@ benchmarks! {
 			.unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _hospital.certifications[0])
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

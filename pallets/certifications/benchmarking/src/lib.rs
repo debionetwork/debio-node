@@ -5,7 +5,7 @@ use certifications::{CertificationInfo, Config as CertificationsConfig, Pallet a
 
 use labs::{Config as LabsConfig, LabInfo, Pallet as Labs};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(Certifications<T>);
@@ -122,5 +122,3 @@ benchmarks! {
 			.unwrap();
 	}: delete_certification(RawOrigin::Signed(caller), _lab.certifications[0])
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

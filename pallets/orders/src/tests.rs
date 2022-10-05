@@ -58,10 +58,7 @@ fn create_order_works() {
 			Origin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
-				prices_by_currency: vec![
-					prices_by_currency_dbio.clone(),
-					prices_by_currency_usdt.clone()
-				],
+				prices_by_currency: vec![prices_by_currency_dbio.clone(), prices_by_currency_usdt],
 				expected_duration: ExpectedDuration::default(),
 				category: "DeBio category".as_bytes().to_vec(),
 				description: "This is my description".as_bytes().to_vec(),
@@ -609,7 +606,7 @@ fn fulfill_order_works() {
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(admin), _order_id));
+		assert_ok!(Orders::fulfill_order(Origin::signed(lab), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -961,7 +958,7 @@ fn cant_cancel_order_when_order_ongoing() {
 			Origin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
-				prices_by_currency: vec![prices_by_currency_dbio.clone()],
+				prices_by_currency: vec![prices_by_currency_dbio],
 				expected_duration: ExpectedDuration::default(),
 				category: "DeBio category".as_bytes().to_vec(),
 				description: "This is my description".as_bytes().to_vec(),
@@ -1332,10 +1329,92 @@ fn cant_fulfill_order_when_not_exist() {
 #[test]
 fn cant_fulfill_order_when_unauthorized() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+		let lab = account_key("lab");
 		let admin = account_key("admin");
+		let customer = account_key("customer");
+		let other_lab = account_key("other_lab");
+
+		assert_ok!(Labs::register_lab(
+			Origin::signed(lab),
+			LabInfo {
+				box_public_key: Keccak256::hash(
+					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
+				),
+				name: "DeBio Lab".as_bytes().to_vec(),
+				email: "DeBio Email".as_bytes().to_vec(),
+				country: CountryCode::from_vec("DC".as_bytes().to_vec()),
+				region: RegionCode::from_vec("DB".as_bytes().to_vec()),
+				city: CityCode::from_vec("CITY".as_bytes().to_vec()),
+				address: "DeBio Address".as_bytes().to_vec(),
+				phone_number: "+6281394653625".as_bytes().to_vec(),
+				website: "DeBio Website".as_bytes().to_vec(),
+				latitude: Some("DeBio Latitude".as_bytes().to_vec()),
+				longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
+				profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
+			}
+		));
+
+		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+
+		let prices_by_currency_dbio = PriceByCurrency {
+			currency: CurrencyType::DBIO,
+			total_price: 10,
+			price_components: vec![Price { component: b"testing_price".to_vec(), value: 5 }],
+			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 5 }],
+		};
+
+		assert_ok!(Services::create_service(
+			Origin::signed(lab),
+			ServiceInfo {
+				name: "DeBio name".as_bytes().to_vec(),
+				prices_by_currency: vec![prices_by_currency_dbio],
+				expected_duration: ExpectedDuration::default(),
+				category: "DeBio category".as_bytes().to_vec(),
+				description: "This is my description".as_bytes().to_vec(),
+				test_result_sample: "Test result sample".as_bytes().to_vec(),
+				dna_collection_process: "Dna Collection Process".as_bytes().to_vec(),
+				long_description: Some("This is my long description".as_bytes().to_vec()),
+				image: Some("This is my image".as_bytes().to_vec()),
+			},
+			ServiceFlow::default()
+		));
+
+		let _lab = Labs::lab_by_account_id(lab).unwrap();
+
+		assert_ok!(Orders::create_order(
+			Origin::signed(customer),
+			_lab.services[0],
+			0,
+			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			ServiceFlow::StakingRequestService,
+			None,
+		));
+
+		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
+		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
+
+		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+
+		assert_ok!(GeneticTesting::submit_test_result(
+			Origin::signed(lab),
+			_dna_sample[0].clone(),
+			DnaTestResultSubmission {
+				comments: Some("comment".as_bytes().to_vec()),
+				result_link: Some("result_link".as_bytes().to_vec()),
+				report_link: Some("report_link".as_bytes().to_vec()),
+			}
+		));
+
+		assert_ok!(GeneticTesting::process_dna_sample(
+			Origin::signed(lab),
+			_dna_sample[0].clone(),
+			DnaSampleStatus::ResultReady,
+		));
+
+		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(admin), Keccak256::hash("order_id".as_bytes())),
+			Orders::fulfill_order(Origin::signed(other_lab), _order_id),
 			Error::<Test>::UnauthorizedOrderFulfillment
 		);
 	})
@@ -1402,7 +1481,7 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(admin), _order_id),
+			Orders::fulfill_order(Origin::signed(lab), _order_id),
 			Error::<Test>::DnaSampleNotSuccessfullyProcessed
 		);
 	})
@@ -1493,10 +1572,10 @@ fn cant_fulfill_order_when_already_fulfilled() {
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(admin), _order_id));
+		assert_ok!(Orders::fulfill_order(Origin::signed(lab), _order_id));
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(admin), _order_id),
+			Orders::fulfill_order(Origin::signed(lab), _order_id),
 			Error::<Test>::OrderAlreadyFulfilled
 		);
 	})
@@ -1834,7 +1913,7 @@ fn call_event_should_work() {
 			DnaSampleStatus::ResultReady,
 		));
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(admin), _order_id));
+		assert_ok!(Orders::fulfill_order(Origin::signed(lab), _order_id));
 
 		System::assert_last_event(Event::Orders(crate::Event::OrderFulfilled(Order {
 			id: _order_id,
@@ -1849,7 +1928,7 @@ fn call_event_should_work() {
 			total_price: 10,
 			currency: CurrencyType::default(),
 			prices: prices_by_currency_dbio.price_components.clone(),
-			additional_prices: prices_by_currency_dbio.additional_prices.clone(),
+			additional_prices: prices_by_currency_dbio.additional_prices,
 			status: OrderStatus::Fulfilled,
 			order_flow: ServiceFlow::StakingRequestService,
 			created_at: 0,

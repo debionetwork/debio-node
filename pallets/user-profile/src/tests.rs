@@ -98,7 +98,7 @@ fn admin_update_profile_roles_works() {
 
 		System::set_block_number(1);
 
-		assert_ok!(UserProfile::admin_update_profile_roles(Origin::signed(2), 2, roles.clone()));
+		assert_ok!(UserProfile::admin_update_profile_roles(Origin::signed(2), 2, roles));
 
 		System::assert_last_event(Event::UserProfile(crate::Event::AdminSetProfileRoles(2, roles)));
 	})

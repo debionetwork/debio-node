@@ -1,23 +1,36 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 mod mock;
 
-use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_support::{
 	sp_runtime::{traits::Hash, SaturatedConversion},
 	traits::Currency,
 };
 use frame_system::RawOrigin;
+use genetic_testing::{
+	Config as GeneticTestingConfig, DnaSampleStatus, DnaTestResultSubmission,
+	Pallet as GeneticTesting,
+};
 use labs::{Config as LabsConfig, LabInfo, LabVerifierKey, Pallet as Labs};
+use orders::{Config as OrdersConfig, Pallet as Orders};
+use services::{Config as ServiceConfig, Pallet as Services, ServiceInfo};
+
 #[allow(unused)]
 use service_request::{
 	AdminKey, Call, Config as ServiceRequestConfig, Pallet as ServiceRequest, RequestByAccountId,
-	ServicePrice,
 };
 
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
+use primitives_duration::ExpectedDuration;
+use primitives_price_and_currency::{CurrencyType, Price, PriceByCurrency};
 use primitives_verification_status::VerificationStatus;
+use sp_std::vec;
+use traits_services::types::ServiceFlow;
 
-pub trait Config: ServiceRequestConfig + LabsConfig {}
+pub trait Config:
+	ServiceRequestConfig + LabsConfig + OrdersConfig + ServiceConfig + GeneticTestingConfig
+{
+}
 
 pub struct Pallet<T: Config>(ServiceRequest<T>);
 
@@ -25,14 +38,24 @@ const SEED: u32 = 0;
 
 benchmarks! {
 	create_request {
+		// Initial account
 		let caller: T::AccountId = whitelisted_caller();
-		let _ = <T as service_request::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
 
+		// Default balance
+		let init_balance = 1000000000000000000000u128.saturated_into();
+		let total_staked = 10000000000000000000u128.saturated_into();
+
+		// Caller initial balance
+		let _ = <T as service_request::Config>::Currency::deposit_creating(
+			&caller,
+			init_balance
+		);
+
+		// Create request
 		let country = "Indonesia".as_bytes().to_vec();
 		let region = "West Java".as_bytes().to_vec();
 		let city = "Bogor".as_bytes().to_vec();
 		let service_category = "Vaksin".as_bytes().to_vec();
-		let total_staked = 10000000000000000000u128.saturated_into();
 	}: create_request(
 		RawOrigin::Signed(caller),
 		country,
@@ -43,57 +66,85 @@ benchmarks! {
 	)
 
 	unstake {
+		// Initial account
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 
-		let _ = <T as service_request::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
+		// Default balance
+		let init_balance = 1000000000000000000000u128.saturated_into();
+		let total_staked = 10000000000000000000u128.saturated_into();
 
+		// Caller init balance
+		let _ = <T as service_request::Config>::Currency::deposit_creating(
+			&caller,
+			init_balance
+		);
+
+		// Create request
+		let origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
-			caller_origin,
+			origin,
 			"Indonesia".as_bytes().to_vec(),
 			"West Java".as_bytes().to_vec(),
 			"Bogor".as_bytes().to_vec(),
 			"Vaksin".as_bytes().to_vec(),
-			10000000000000000000u128.saturated_into()
+			total_staked
 		);
 
+		// Unstake
 		let request_ids = RequestByAccountId::<T>::get(caller.clone());
 		let request_id = request_ids[0];
-
 	}: unstake(
 		RawOrigin::Signed(caller),
 		request_ids[0]
 	)
 
 	retrieve_unstaked_amount {
-		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
+		// Initial account
+		let caller: T::AccountId = whitelisted_caller();
 
-		let customer: T::AccountId = account("customer", 0, SEED);
-		let customer_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
+		// Default balance
+		let init_balance = 1000000000000000000000u128.saturated_into();
+		let total_staked = 10000000000000000000u128.saturated_into();
 
-		let _ = <T as service_request::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
+		// Caller init balance
+		let _ = <T as service_request::Config>::Currency::deposit_creating(
+			&caller,
+			init_balance
+		);
 
+		let origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
-			customer_origin.clone(),
+			origin.clone(),
 			"Indonesia".as_bytes().to_vec(),
 			"West Java".as_bytes().to_vec(),
 			"Bogor".as_bytes().to_vec(),
 			"Vaksin".as_bytes().to_vec(),
-			10000000000000000000u128.saturated_into()
+			total_staked
 		);
 
-		let request_ids = RequestByAccountId::<T>::get(customer);
+		// Unstake
+		let request_ids = RequestByAccountId::<T>::get(caller.clone());
 		let request_id = request_ids[0];
-
-		let _request_unstake = ServiceRequest::<T>::unstake(customer_origin, request_id);
-	}: retrieve_unstaked_amount (
-		RawOrigin::Signed(caller),
-		request_id
-	)
+		let _request_unstake = ServiceRequest::<T>::unstake(origin, request_id);
+	}: retrieve_unstaked_amount(RawOrigin::Signed(caller), request_id)
 
 	claim_request {
+		// Initial account
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let customer: T::AccountId = account("customer", 0, SEED);
+
+		// Default balance
+		let init_balance = 1000000000000000000000u128.saturated_into();
+		let total_staked = 10000000000000000000u128.saturated_into();
+		let total_price = 10000000000000000000u128.saturated_into();
+		let testing_price = 10000000000000000000u128.saturated_into();
+		let qc_price = 10000000000000000000u128.saturated_into();
+
+		// Caller init balance
+		let _ = <T as service_request::Config>::Currency::deposit_creating(
+			&customer,
+			init_balance
+		);
 
 		// Set lab info
 		let lab = LabInfo {
@@ -112,67 +163,78 @@ benchmarks! {
 		};
 
 		// register lab
-		let _add_labs = Labs::<T>::register_lab(caller_origin, lab);
+		let origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let _add_labs = Labs::<T>::register_lab(origin.clone(), lab);
 
-		// verified lab
+		// Verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
-		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
-		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, caller.clone(), VerificationStatus::Verified);
+		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let status = VerificationStatus::Verified;
+		let _ = Labs::<T>::update_lab_verification_status(admin_origin, caller.clone(), status);
 
 		// Create request
-		let customer: T::AccountId = account("recepient", 0, SEED);
-		let customer_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
-		let _ = <T as service_request::Config>::Currency::deposit_creating(&customer, 1000000000000000000000u128.saturated_into());
-
+		let cust_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
-			customer_origin,
+			cust_origin,
 			"Indonesia".as_bytes().to_vec(),
 			"West Java".as_bytes().to_vec(),
 			"Bogor".as_bytes().to_vec(),
 			"Vaksin".as_bytes().to_vec(),
-			10000000000000000000u128.saturated_into()
+			total_staked
 		);
 
 		let request_ids = RequestByAccountId::<T>::get(customer);
-
 		let request_id = request_ids[0];
-		let service_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
-		let testing_price = 10000000000000000000u128.saturated_into();
-		let qc_price = 10000000000000000000u128.saturated_into();
-		let service_price = ServicePrice::new(b"native", testing_price, qc_price);
-	}: claim_request(
-		RawOrigin::Signed(caller),
-		request_id,
-		service_id,
-		service_price
-	)
 
-	process_request {
-		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let prices_by_currency_dbio = PriceByCurrency {
+			currency: CurrencyType::DBIO,
+			total_price,
+			price_components: vec![Price { component: b"testing_price".to_vec(), value: testing_price }],
+			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: qc_price }],
+		};
 
-		let _ = <T as service_request::Config>::Currency::deposit_creating(&caller, 1000000000000000000000u128.saturated_into());
+		let service_info = ServiceInfo {
+			name: "DeBio service name".as_bytes().to_vec(),
+			prices_by_currency: vec![prices_by_currency_dbio],
+			expected_duration: ExpectedDuration::default(),
+			category: "DeBio service category".as_bytes().to_vec(),
+			description: "DeBio service description".as_bytes().to_vec(),
+			dna_collection_process: "DeBio service dna_collection_process".as_bytes().to_vec(),
+			test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
+			long_description: Some("DeBio service long_description".as_bytes().to_vec()),
+			image: Some("DeBio service image".as_bytes().to_vec()),
+		};
 
-		let _new_request = ServiceRequest::<T>::create_request(
-			caller_origin,
-			"Indonesia".as_bytes().to_vec(),
-			"West Java".as_bytes().to_vec(),
-			"Bogor".as_bytes().to_vec(),
-			"Vaksin".as_bytes().to_vec(),
-			10000000000000000000u128.saturated_into()
+		let _services = Services::<T>::create_service(
+			origin,
+			service_info,
+			ServiceFlow::default()
 		);
 
-		let request_ids = RequestByAccountId::<T>::get(caller.clone());
+		let _lab = Labs::<T>::lab_by_account_id(caller.clone()).unwrap();
+		let service_id = _lab.services[0];
+	}: claim_request(RawOrigin::Signed(caller),	request_id,	service_id)
 
-		let request_id = request_ids[0];
-		let service_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
-		let testing_price = 1000000000000000000u128.saturated_into();
-		let qc_price = 1000000000000000000u128.saturated_into();
+	process_request {
+		// Init account
+		let caller: T::AccountId = whitelisted_caller();
+		let lab: T::AccountId = account("lab", 0, SEED);
 
-		let lab_id: T::AccountId = account("recepient", 0, SEED);
-		let lab_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(lab_id.clone()));
+		// Default balance
+		let init_balance = 1000000000000000000000u128.saturated_into();
+		let total_staked = 10000000000000000000u128.saturated_into();
+		let total_price = 10000000000000000000u128.saturated_into();
+		let testing_price = 10000000000000000000u128.saturated_into();
+		let qc_price = 10000000000000000000u128.saturated_into();
+
+		// Caller init balance
+		let _ = <T as service_request::Config>::Currency::deposit_creating(
+			&caller,
+			init_balance
+		);
+
 		// Set lab info
-		let lab = LabInfo {
+		let lab_info = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			name: "DeBio Lab".as_bytes().to_vec(),
 			email: "DeBio Email".as_bytes().to_vec(),
@@ -186,41 +248,100 @@ benchmarks! {
 			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_lab = Labs::<T>::register_lab(lab_origin.clone(), lab);
+
+		// register lab
+		let lab_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(lab.clone()));
+		let _ = Labs::<T>::register_lab(lab_origin.clone(), lab_info);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
-		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
-		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), VerificationStatus::Verified);
+		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let status = VerificationStatus::Verified;
+		let _verified = Labs::<T>::update_lab_verification_status(
+			admin_origin,
+			lab.clone(),
+			status
+		);
+
+		// Create request
+		let cust_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let _new_request = ServiceRequest::<T>::create_request(
+			cust_origin.clone(),
+			"Indonesia".as_bytes().to_vec(),
+			"West Java".as_bytes().to_vec(),
+			"Bogor".as_bytes().to_vec(),
+			"Vaksin".as_bytes().to_vec(),
+			total_staked
+		);
+
+		let request_ids = RequestByAccountId::<T>::get(caller.clone());
+		let request_id = request_ids[0];
+
+		let prices_by_currency_dbio = PriceByCurrency {
+			currency: CurrencyType::DBIO,
+			total_price,
+			price_components: vec![Price { component: b"testing_price".to_vec(), value: testing_price }],
+			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: qc_price }],
+		};
+
+		let service_info = ServiceInfo {
+			name: "DeBio service name".as_bytes().to_vec(),
+			prices_by_currency: vec![prices_by_currency_dbio],
+			expected_duration: ExpectedDuration::default(),
+			category: "DeBio service category".as_bytes().to_vec(),
+			description: "DeBio service description".as_bytes().to_vec(),
+			dna_collection_process: "DeBio service dna_collection_process".as_bytes().to_vec(),
+			test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
+			long_description: Some("DeBio service long_description".as_bytes().to_vec()),
+			image: Some("DeBio service image".as_bytes().to_vec()),
+		};
+
+		let _ = Services::<T>::create_service(
+			lab_origin.clone(),
+			service_info,
+			ServiceFlow::default()
+		);
+		let _lab = Labs::<T>::lab_by_account_id(lab).unwrap();
+		let service_id = _lab.services[0];
 
 		let _claim_request = ServiceRequest::<T>::claim_request(
 			lab_origin,
 			request_id,
 			service_id,
-			ServicePrice::new(b"native", testing_price, qc_price),
 		);
 
-		let order_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
-		let dna_sample_tracking_id = "DeBio Sample".as_bytes().to_vec();
+		let _order = Orders::<T>::create_order(
+			cust_origin,
+			service_id,
+			0,
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			ServiceFlow::StakingRequestService,
+			None,
+		);
 
-	}: process_request(
-		RawOrigin::Signed(caller),
-		lab_id,
-		request_id,
-		order_id,
-		dna_sample_tracking_id
-	)
+		let order_id = Orders::<T>::last_order_by_customer_id(caller.clone()).unwrap();
+	}: process_request(RawOrigin::Signed(caller), request_id, order_id)
 
+	// Finalize by lab
 	finalize_request{
-		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
+		// Initial account
+		let caller: T::AccountId = whitelisted_caller();
+		let customer: T::AccountId = account("customer", 0, SEED);
 
-		let lab_id: T::AccountId = account("lab", 0, SEED);
-		let customer_id: T::AccountId = account("customer", 0, SEED);
+		// Default balance
+		let init_balance = 1000000000000000000000u128.saturated_into();
+		let total_staked = 10000000000000000000u128.saturated_into();
+		let total_price = 10000000000000000000u128.saturated_into();
+		let testing_price = 10000000000000000000u128.saturated_into();
+		let qc_price = 10000000000000000000u128.saturated_into();
 
-		let lab_id_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(lab_id.clone()));
-		let customer_id_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer_id.clone()));
+		// Caller init balance
+		let _ = <T as service_request::Config>::Currency::deposit_creating(
+			&customer,
+			init_balance
+		);
 
-		// Register lab
+		// Seet lab info
 		let lab = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 			name: "DeBio Lab".as_bytes().to_vec(),
@@ -235,66 +356,113 @@ benchmarks! {
 			longitude: Some("DeBio Longtitude".as_bytes().to_vec()),
 			profile_image: Some("DeBio Profile Image uwu".as_bytes().to_vec()),
 		};
-		let _add_lab = Labs::<T>::register_lab(lab_id_origin.clone(), lab);
+
+		// Register lab
+		let lab_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let _ = Labs::<T>::register_lab(lab_origin.clone(), lab);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
-		let admin_key_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
-		let _verified_labs = Labs::<T>::update_lab_verification_status(admin_key_origin, lab_id.clone(), VerificationStatus::Verified);
-
-		let _ = <T as service_request::Config>::Currency::deposit_creating(&customer_id, 1000000000000000000000u128.saturated_into());
+		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let status = VerificationStatus::Verified;
+		let _verified_labs = Labs::<T>::update_lab_verification_status(
+			admin_origin,
+			caller.clone(),
+			status
+		);
 
 		// Create request
+		let cust_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
-			customer_id_origin.clone(),
+			cust_origin.clone(),
 			"Indonesia".as_bytes().to_vec(),
 			"West Java".as_bytes().to_vec(),
 			"Bogor".as_bytes().to_vec(),
 			"Vaksin".as_bytes().to_vec(),
-			10000000000000000000u128.saturated_into()
+			total_staked
 		);
 
-		let request_ids = RequestByAccountId::<T>::get(customer_id);
+		let request_ids = RequestByAccountId::<T>::get(customer.clone());
 		let request_id = request_ids[0];
 
+		// Set service info
+		let prices_by_currency_dbio = PriceByCurrency {
+			currency: CurrencyType::DBIO,
+			total_price,
+			price_components: vec![Price { component: b"testing_price".to_vec(), value: testing_price }],
+			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: qc_price }],
+		};
+
+		let service_info = ServiceInfo {
+			name: "DeBio service name".as_bytes().to_vec(),
+			prices_by_currency: vec![prices_by_currency_dbio],
+			expected_duration: ExpectedDuration::default(),
+			category: "DeBio service category".as_bytes().to_vec(),
+			description: "DeBio service description".as_bytes().to_vec(),
+			dna_collection_process: "DeBio service dna_collection_process".as_bytes().to_vec(),
+			test_result_sample: "DeBio service test_result_sample".as_bytes().to_vec(),
+			long_description: Some("DeBio service long_description".as_bytes().to_vec()),
+			image: Some("DeBio service image".as_bytes().to_vec()),
+		};
+
 		// claim request
-		let service_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
-		let testing_price = 1000000000000000000u128.saturated_into();
-		let qc_price = 1000000000000000000u128.saturated_into();
-		let _claim_request = ServiceRequest::<T>::claim_request(
-			lab_id_origin,
+		let _ = Services::<T>::create_service(
+			lab_origin.clone(),
+			service_info,
+			ServiceFlow::default()
+		);
+		let _lab = Labs::<T>::lab_by_account_id(caller.clone()).unwrap();
+		let service_id = _lab.services[0];
+		let _ = ServiceRequest::<T>::claim_request(
+			lab_origin.clone(),
 			request_id,
 			service_id,
-			ServicePrice::new(b"native", testing_price, qc_price),
 		);
 
 		// process request
-		let order_id = T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC576143".as_bytes());
-		let dna_sample_tracking_id = "DeBio Sample".as_bytes().to_vec();
-		let _process_request = ServiceRequest::<T>::process_request(
-			customer_id_origin,
-			lab_id,
+		let _order = Orders::<T>::create_order(
+			cust_origin.clone(),
+			service_id,
+			0,
+			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
+			ServiceFlow::StakingRequestService,
+			None,
+		);
+
+		let order_id = Orders::<T>::last_order_by_customer_id(customer).unwrap();
+		let _ = ServiceRequest::<T>::process_request(
+			cust_origin.clone(),
 			request_id,
 			order_id,
-			dna_sample_tracking_id,
 		);
-	}: finalize_request(
-		RawOrigin::Signed(caller),
-		request_id,
-		true
-	)
+
+		let _ = Orders::<T>::set_order_paid(cust_origin, order_id);
+		let dna_sample = GeneticTesting::<T>::dna_samples_by_lab_id(caller.clone()).unwrap();
+
+		let _ = GeneticTesting::<T>::submit_test_result(
+			lab_origin.clone(),
+			dna_sample[0].clone(),
+			DnaTestResultSubmission {
+				comments: Some("comment".as_bytes().to_vec()),
+				result_link: Some("result_link".as_bytes().to_vec()),
+				report_link: Some("report_link".as_bytes().to_vec()),
+			}
+		);
+
+		let _ = GeneticTesting::<T>::process_dna_sample(
+			lab_origin.clone(),
+			dna_sample[0].clone(),
+			DnaSampleStatus::ResultReady,
+		);
+
+		let _ = Orders::<T>::fulfill_order(
+			lab_origin,
+			order_id
+		);
+	}: finalize_request(RawOrigin::Signed(caller), request_id)
 
 	update_admin_key {
 		let caller: T::AccountId = AdminKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
-	}: update_admin_key(
-		RawOrigin::Root,
-		caller2
-	)
+	}: update_admin_key(RawOrigin::Root, caller2)
 }
-
-impl_benchmark_test_suite!(
-	ServiceRequest,
-	crate::mock::ExternalityBuilder::build(),
-	crate::mock::Test,
-);

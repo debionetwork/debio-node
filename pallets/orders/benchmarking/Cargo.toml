@@ -13,10 +13,13 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 hex-literal = '0.3.4'
 frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-randomness-collective-flip = { default-features = false, git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.18" }
+pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
 pallet-assets = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -31,6 +34,7 @@ services = { path = '../../services', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 orders = { path = '../../orders', default-features = false }
 genetic-testing = { path = '../../genetic-testing', default-features = false }
+certifications = { path = '../../certifications', default-features = false }
 
 traits-services = { path = '../../services/traits', default-features = false }
 traits-user-profile = { path = '../../user-profile/traits', default-features = false }
@@ -40,6 +44,8 @@ traits-genetic-testing = { path = '../../genetic-testing/traits', default-featur
 primitives-duration = { path = '../../../primitives/duration', default-features = false }
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
@@ -59,15 +65,20 @@ std = [
 
 	'pallet-assets/std',
 	'pallet-balances/std',
+	'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
 
     'labs/std',
     'services/std',
     'user-profile/std',
     'orders/std',
     'genetic-testing/std',
+	'certifications/std',
 
     'primitives-duration/std',
     'primitives-area-code/std',
+	'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
     'primitives-price-and-currency/std',
 
     'traits-services/std',

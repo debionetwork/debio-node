@@ -1,9 +1,8 @@
 #![cfg(test)]
 
-use super::*;
-
 use frame_support::parameter_types;
-use sp_io::TestExternalities;
+use pallet_balances::AccountData;
+
 use sp_runtime::{
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
 	MultiSignature,
@@ -27,7 +26,8 @@ frame_support::construct_runtime!(
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
-		HostpialCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
+		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
+		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -56,7 +56,7 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -84,22 +84,22 @@ impl pallet_balances::Config for Test {
 impl hospitals::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
-	type HostpialCertifications = HostpialCertifications;
-	type EthereumAddress = ();
-	type ProfileRoles = ();
-	type UserProfile = ();
+	type HospitalCertifications = HospitalCertifications;
+	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
+	type UserProfile = UserProfile;
+	type WeightInfo = ();
 }
 
 impl hospital_certifications::Config for Test {
 	type Event = Event;
-	type HostpialCertificationOwner = Hospitals;
+	type HospitalCertificationOwner = Hospitals;
+	type WeightInfo = ();
 }
 
-pub struct ExternalityBuilder;
-
-impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
-	}
+impl user_profile::Config for Test {
+	type Event = Event;
+	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
+	type WeightInfo = ();
 }

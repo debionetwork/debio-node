@@ -37,7 +37,7 @@ pub trait Config:
 
 pub struct Pallet<T: Config>(GeneticAnalysisOrders<T>);
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
+use frame_benchmarking::{benchmarks, vec, whitelisted_caller};
 use frame_support::sp_runtime::traits::Hash;
 use frame_system::RawOrigin;
 use genetic_analysis_orders::Call;
@@ -419,5 +419,3 @@ benchmarks! {
 		caller2
 	)
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

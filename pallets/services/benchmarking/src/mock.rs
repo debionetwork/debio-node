@@ -1,12 +1,9 @@
 #![cfg(test)]
 
-use super::*;
-
 use frame_support::{parameter_types, traits::ConstU64, PalletId};
 use frame_system as system;
 use pallet_balances::AccountData;
-use scale_info::TypeInfo;
-use sp_core::{Decode, Encode, RuntimeDebug, H256};
+use sp_core::H256;
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
@@ -186,13 +183,4 @@ impl user_profile::Config for Test {
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
-}
-
-pub struct ExternalityBuilder;
-
-impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
-	}
 }
