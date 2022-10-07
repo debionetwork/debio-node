@@ -134,18 +134,15 @@ impl<T: Config> Pallet<T> {
 			return Ok(None)
 		}
 
-		if let Some(asset_id) = asset_id {
-			let symbol = <T::Assets as fungibles::InspectMetadata<T::AccountId>>::symbol(&asset_id);
-			let str_symbol = String::from_utf8(symbol).map_err(|_| Error::<T>::AssetIdNotFound)?;
+		let asset_id = asset_id.ok_or(Error::<T>::AssetIdNotFound)?;
+		let symbol = <T::Assets as fungibles::InspectMetadata<T::AccountId>>::symbol(&asset_id);
+		let str_symbol = String::from_utf8(symbol).map_err(|_| Error::<T>::AssetIdNotFound)?;
 
-			if currency.as_string().to_lowercase() != str_symbol.to_lowercase() {
-				return Err(Error::<T>::AssetIdNotFound)
-			}
-
-			return Ok(Some(asset_id))
+		if currency.as_string().to_lowercase() != str_symbol.to_lowercase() {
+			return Err(Error::<T>::AssetIdNotFound)
 		}
 
-		Err(Error::<T>::AssetIdNotFound)
+		Ok(Some(asset_id))
 	}
 
 	pub fn do_transfer(
