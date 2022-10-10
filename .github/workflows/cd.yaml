@@ -13,9 +13,6 @@ permissions:
 
 jobs:
   release-please:
-    permissions:
-      contents: write
-      pull-requests: write
     runs-on: ubuntu-20.04
     name: Release Please
     steps:
@@ -23,6 +20,16 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
         with:
           fetch-depth: 0
+      - name: Download Release Build
+        id: download-release-build
+        uses: dawidd6/action-download-artifact@7847792dd435a50521b8e3bd3576dae7459d1fa8
+        with:
+          github_token: ${{ secrets.PAT }}
+          event: push
+          branch: main
+          commit: ${{ github.sha }}
+          workflow_conclusion: success
+          name: release-build
       - name: Release
         id: release
         uses: google-github-actions/release-please-action@069d7229d7b10308de85bc606a91e0033e259c8e
@@ -32,8 +39,8 @@ jobs:
           package-name: ${{ github.event.repository.name }}
           include-v-in-tag: false
           extra-files: |
-            ./target/release/debio
-            ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
+            ./debio
+            ./debio_runtime.compact.compressed.wasm
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -47,6 +54,16 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
         with:
           fetch-depth: 0
+      - name: Download Release Build
+        id: download-release-build
+        uses: dawidd6/action-download-artifact@7847792dd435a50521b8e3bd3576dae7459d1fa8
+        with:
+          github_token: ${{ secrets.PAT }}
+          event: push
+          branch: main
+          commit: ${{ github.sha }}
+          workflow_conclusion: success
+          name: release-build
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8
       - name: Set Up Buildx

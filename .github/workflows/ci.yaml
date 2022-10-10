@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+  push:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -12,6 +13,7 @@ permissions:
 
 jobs:
   test:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -39,10 +41,48 @@ jobs:
           target: wasm32-unknown-unknown
           override: true
           default: true
-      - name: Rust cache
+      - name: Cache Rust
         uses: Swatinem/rust-cache@6720f05bc48b77f96918929a9019fb2203ff71f8
+        with:
+          shared-key: ci
       - name: Run cargo ${{ matrix.command }}
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505
         with:
           command: ${{ matrix.command }}
           args: ${{ matrix.args }}
+
+  build:
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') }}
+    runs-on: ubuntu-20.04
+    name: Build on Rust Toolchain nightly-2021-11-01
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+        with:
+          fetch-depth: 0
+      - name: Set Up Rust
+        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af
+        with:
+          profile: minimal
+          toolchain: nightly-2021-11-01
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+          override: true
+          default: true
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@6720f05bc48b77f96918929a9019fb2203ff71f8
+        with:
+          shared-key: ci
+      - name: Run Build
+        uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505
+        with:
+          command: build
+          args: --release --locked
+      - name: Upload Build Result
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
+        with:
+          name: release-build
+          path: |
+            ./target/release/debio
+            ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
+          retention-days: 1

@@ -25,7 +25,7 @@ RUN cargo build --release
 
 # Production image, copy all the files and run
 FROM debian:buster-20210816-slim AS runner
-LABEL network.debio.image.authors="debio_dev@blocksphere.id"
+LABEL network.debio.image.authors="devops@debio.network"
 # Create user and set ownership and permissions as required
 RUN useradd -m -u 1001 -U -s /bin/sh -d /home/debio debio && \
   # manage folder data
