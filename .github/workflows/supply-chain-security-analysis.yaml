@@ -1,0 +1,41 @@
+name: Supply Chain Security Analysis
+
+on:
+  branch_protection_rule:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '00 5 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  openssf-scorecard:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      security-events: write
+    runs-on: ubuntu-20.04
+    name: OpenSSF Scorecards
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+      - name: Analize
+        uses: ossf/scorecard-action@e363bfca00e752f91de7b7d2a77340e2e523cb18
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - name: Upload Result to Artifact
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+      - name: Upload Result to Code-Scanning
+        uses: github/codeql-action/upload-sarif@e0e5ded33cabb451ae0a9768fc7b0410bad9ad44
+        with:
+          sarif_file: results.sarif

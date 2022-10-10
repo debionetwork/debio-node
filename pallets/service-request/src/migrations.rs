@@ -245,8 +245,8 @@ mod version {
 			RequestById::<T>::translate(|request_id: HashOf<T>, request: OldRequestOf<T>| {
 				weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
 
-				let service_invoice_opt = ServiceInvoiceById::<T>::take(&request_id);
-				let service_offer_opt = ServiceOfferById::<T>::take(&request_id);
+				let service_invoice_opt = ServiceInvoiceById::<T>::take(request_id);
+				let service_offer_opt = ServiceOfferById::<T>::take(request_id);
 
 				let (mut service_id, order_id) = if let Some(service_invoice) = service_invoice_opt
 				{
@@ -256,7 +256,7 @@ mod version {
 				};
 
 				if let Some(order_id) = order_id {
-					RequestByOrderId::<T>::insert(&order_id, &request_id);
+					RequestByOrderId::<T>::insert(order_id, request_id);
 				}
 
 				if service_id.is_none() {

@@ -29,21 +29,21 @@ pids
 # IDE
 .idea
 .vscode
+.editorconfig
 
 # Git
 .git
 .gitignore
 
+# GitHub
+.github
+
 # Docker
 .dockerignore
-Dockerfile
-docker-compose.yaml
 
 # Docs
 /docs
 README.md
-DEVELOPING.md
 
 # Other
-.github
 .maintain

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        command: [ clippy, fmt, test ]
+        include:
+          - command: clippy
+            args: '--workspace --locked -- -D warnings'
+          - command: fmt
+            args: '--all --check'
+          - command: test
+            args: '--workspace --locked'
+    name: Test on Rust Toolchain nightly-2021-11-01 ( ${{ matrix.command }} )
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+        with:
+          fetch-depth: 0
+      - name: Set Up Rust
+        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af
+        with:
+          profile: minimal
+          toolchain: nightly-2021-11-01
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+          override: true
+          default: true
+      - name: Rust cache
+        uses: Swatinem/rust-cache@6720f05bc48b77f96918929a9019fb2203ff71f8
+      - name: Run cargo ${{ matrix.command }}
+        uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505
+        with:
+          command: ${{ matrix.command }}
+          args: ${{ matrix.args }}

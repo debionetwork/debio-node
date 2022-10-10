@@ -1,0 +1,98 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: cd-${{ github.ref }}
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-20.04
+    name: Release Please
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+        with:
+          fetch-depth: 0
+      - name: Release
+        id: release
+        uses: google-github-actions/release-please-action@069d7229d7b10308de85bc606a91e0033e259c8e
+        with:
+          token: ${{ secrets.PAT }}
+          release-type: rust
+          package-name: ${{ github.event.repository.name }}
+          include-v-in-tag: false
+          extra-files: |
+            ./target/release/debio
+            ./target/release/wbuild/debio-runtime/debio_runtime.compact.compressed.wasm
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
+  docker:
+    needs: release-please
+    runs-on: ubuntu-20.04
+    name: Docker
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+        with:
+          fetch-depth: 0
+      - name: Set Up QEMU
+        uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8
+      - name: Set Up Buildx
+        id: set-up-buildx
+        uses: docker/setup-buildx-action@dc7b9719a96d48369863986a06765841d7ea23f6
+        with:
+          install: true
+      - name: Cache Layers
+        uses: actions/cache@56461b9eb0f8438fd15c7a9968e3c9ebb18ceff1
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Login to DockerHub
+        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Generate Metadata
+        id: generate-metadata
+        uses: docker/metadata-action@69f6fc9d46f2f8bf0d5491e4aabe0bb8c6a4678a
+        with:
+          images: |
+            docker.io/${{ github.repository }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=raw,value=latest,enable=${{ needs.release-please.outputs.release_created || false }}
+            type=raw,value=${{ needs.release-please.outputs.tag_name || github.sha }},enable=${{ needs.release-please.outputs.release_created || false }}
+      - name: Build and Push
+        uses: docker/build-push-action@c84f38281176d4c9cdb1626ffafcd6b3911b5d94
+        with:
+          builder: ${{ steps.set-up-buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          context: .
+          file: .maintain/docker/injected-binnary.Dockerfile
+          push: true
+          tags: ${{ steps.generate-metadata.outputs.tags }}
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move Cache Layers
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    outputs:
+      image_name: docker.io/${{ github.repository }}
+      image_version: ${{ steps.generate-metadata.outputs.version }}

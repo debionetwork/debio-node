@@ -47,9 +47,9 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			now,
 		);
 
-		RequestById::<T>::insert(&request_id, &request);
-		RequestByAccountId::<T>::mutate(&requester_id, |request_ids| request_ids.push(request_id));
-		StakingAccountIdByRequestId::<T>::insert(&request_id, Self::staking_account_id(request_id));
+		RequestById::<T>::insert(request_id, &request);
+		RequestByAccountId::<T>::mutate(requester_id, |request_ids| request_ids.push(request_id));
+		StakingAccountIdByRequestId::<T>::insert(request_id, Self::staking_account_id(request_id));
 		ServiceCountRequest::<T>::mutate((country, region, city, service_category), |value| {
 			*value = value.wrapping_add(1);
 		});
