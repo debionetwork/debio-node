@@ -1509,6 +1509,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1529,6 +1530,7 @@ mod tests {
 					seller_id: 1,
 					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					asset_id: None,
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
 					additional_prices: PriceByCurrency::default().additional_prices,
@@ -1619,6 +1621,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1639,6 +1642,7 @@ mod tests {
 					seller_id: 1,
 					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					asset_id: None,
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
 					additional_prices: PriceByCurrency::default().additional_prices,
@@ -1732,6 +1736,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1752,6 +1757,7 @@ mod tests {
 					seller_id: 1,
 					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					asset_id: None,
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
 					additional_prices: PriceByCurrency::default().additional_prices,
@@ -1847,6 +1853,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1957,6 +1964,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis =

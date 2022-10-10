@@ -76,6 +76,7 @@ fn create_genetic_analysis_order() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -95,6 +96,7 @@ fn create_genetic_analysis_order() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -165,6 +167,7 @@ fn cancel_genetic_analysis_order_works() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -189,6 +192,7 @@ fn cancel_genetic_analysis_order_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -279,6 +283,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -317,6 +322,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: _price_by_currency.currency,
 				prices: _price_by_currency.price_components,
 				additional_prices: _price_by_currency.additional_prices,
@@ -357,6 +363,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: _price_by_currency.currency,
 				prices: _price_by_currency.price_components,
 				additional_prices: _price_by_currency.additional_prices,
@@ -452,6 +459,7 @@ fn set_genetic_analysis_order_paid_works() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -490,6 +498,7 @@ fn set_genetic_analysis_order_paid_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: _price_by_currency.currency,
 				prices: _price_by_currency.price_components,
 				additional_prices: _price_by_currency.additional_prices,
@@ -577,6 +586,7 @@ fn fulfill_genetic_analysis_order_works() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -625,6 +635,7 @@ fn fulfill_genetic_analysis_order_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: vec![_price.clone()],
 				additional_prices: vec![_price.clone()],
@@ -648,6 +659,7 @@ fn fulfill_genetic_analysis_order_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: vec![_price.clone()],
 				additional_prices: vec![_price],
@@ -722,6 +734,7 @@ fn set_genetic_analysis_order_refunded_works() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -759,6 +772,7 @@ fn set_genetic_analysis_order_refunded_works() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -793,6 +807,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_service_not_exists() 
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			),
 			Error::<Test>::GeneticAnalystServiceDoesNotExist
 		);
@@ -858,6 +873,7 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 				10,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			),
 			Error::<Test>::PriceIndexNotFound
 		);
@@ -923,6 +939,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_unavailable() {
 				10,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			),
 			Error::<Test>::GeneticAnalystUnavailable
 		);
@@ -988,6 +1005,7 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 				10,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			),
 			Error::<Test>::GeneticDataDoesNotExist
 		);
@@ -1053,6 +1071,7 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 				10,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			),
 			Error::<Test>::NotOwnerOfGeneticData
 		);
@@ -1117,6 +1136,7 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1210,6 +1230,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1302,6 +1323,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1410,6 +1432,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1516,6 +1539,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1605,6 +1629,7 @@ fn cant_fulfill_genetic_analysis_order_when_insufficient_pallet_funds() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1730,6 +1755,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1826,6 +1852,7 @@ fn cant_set_genetic_analysis_order_refunded_when_insufficient_funds() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1923,6 +1950,7 @@ fn call_event_should_work() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -1941,6 +1969,7 @@ fn call_event_should_work() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -1968,6 +1997,7 @@ fn call_event_should_work() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -1994,6 +2024,7 @@ fn call_event_should_work() {
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		));
 
 		let _genetic_analysis_order_id =
@@ -2019,6 +2050,7 @@ fn call_event_should_work() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -2059,6 +2091,7 @@ fn call_event_should_work() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
@@ -2092,6 +2125,7 @@ fn call_event_should_work() {
 				seller_id: 1,
 				genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 				genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				asset_id: None,
 				currency: CurrencyType::default(),
 				prices: PriceByCurrency::default().price_components,
 				additional_prices: PriceByCurrency::default().additional_prices,
