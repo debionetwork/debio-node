@@ -1,11 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{
-	codec::{Decode, Encode},
-	pallet_prelude::*,
-};
+use frame_support::codec::{Decode, Encode};
 pub use pallet::*;
-pub use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -17,126 +13,21 @@ mod tests;
 mod benchmarking;
 
 pub mod interface;
+pub mod types;
 pub mod weights;
-pub use interface::MenstrualCalendarInterface;
+
+use interface::MenstrualCalendarInterface;
 use sp_std::prelude::*;
-use traits_menstrual_calendar::{
-	MenstrualCalendar as MenstrualCalendarT, MenstrualCalendarProvider,
-	MenstrualCycleLog as MenstrualCycleLogT,
-};
-
-// Symptom
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct Symptom {
-	pub name: Vec<u8>,
-}
-
-// MenstrualCycleLog
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct MenstrualCycleLog<Hash, Moment> {
-	pub id: Hash,
-	pub menstrual_calendar_id: Hash,
-	pub date: Moment,
-	pub menstruation: bool,
-	pub symptoms: Vec<Symptom>,
-	pub created_at: Moment,
-	pub updated_at: Moment,
-}
-
-impl<Hash, Moment: Default> MenstrualCycleLog<Hash, Moment> {
-	pub fn new(
-		id: Hash,
-		menstrual_calendar_id: Hash,
-		date: Moment,
-		menstruation: bool,
-		symptoms: Vec<Symptom>,
-		created_at: Moment,
-	) -> Self {
-		Self {
-			id,
-			menstrual_calendar_id,
-			date,
-			menstruation,
-			symptoms,
-			created_at,
-			updated_at: Moment::default(),
-		}
-	}
-
-	pub fn get_id(&self) -> &Hash {
-		&self.id
-	}
-
-	pub fn get_menstrual_calendar_id(&self) -> &Hash {
-		&self.menstrual_calendar_id
-	}
-}
-
-impl<T, Hash, Moment: Default> MenstrualCycleLogT<T> for MenstrualCycleLog<Hash, Moment>
-where
-	T: frame_system::Config<Hash = Hash>,
-{
-	fn get_id(&self) -> &Hash {
-		self.get_id()
-	}
-	fn get_menstrual_calendar_id(&self) -> &Hash {
-		self.get_menstrual_calendar_id()
-	}
-}
-
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct MenstrualCalendar<AccountId, Hash, Moment> {
-	pub id: Hash,
-	pub address_id: AccountId,
-	pub average_cycle: u8,
-	pub cycle_log: Vec<Hash>,
-	pub created_at: Moment,
-	pub updated_at: Moment,
-}
-
-impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment> {
-	pub fn new(id: Hash, address_id: AccountId, average_cycle: u8, created_at: Moment) -> Self {
-		Self {
-			id,
-			address_id,
-			average_cycle,
-			cycle_log: vec![],
-			created_at,
-			updated_at: Moment::default(),
-		}
-	}
-
-	pub fn get_id(&self) -> &Hash {
-		&self.id
-	}
-
-	pub fn get_address_id(&self) -> &AccountId {
-		&self.address_id
-	}
-}
-
-impl<T, AccountId, Hash, Moment: Default> MenstrualCalendarT<T>
-	for MenstrualCalendar<AccountId, Hash, Moment>
-where
-	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
-{
-	fn get_id(&self) -> &Hash {
-		self.get_id()
-	}
-	fn get_address_id(&self) -> &AccountId {
-		self.get_address_id()
-	}
-}
+use traits_menstrual_calendar::MenstrualCalendarProvider;
+use types::*;
+use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::{
-		interface::MenstrualCalendarInterface, weights::WeightInfo, MenstrualCalendar,
-		MenstrualCycleLog,
-	};
+	use super::*;
+
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
-	pub use sp_std::prelude::*;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
@@ -404,13 +295,10 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		menstrual_calendar_id: &T::Hash,
 		average_cycle: &u8,
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
-		let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id);
-		if menstrual_calendar.is_none() {
-			return Err(Error::<T>::MenstrualCalendarDoesNotExist)
-		}
+		let mut menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id)
+			.ok_or(Error::<T>::MenstrualCalendarDoesNotExist)?;
 
-		let mut menstrual_calendar = menstrual_calendar.unwrap();
-		if menstrual_calendar.address_id != address_id.clone() {
+		if &menstrual_calendar.address_id != address_id {
 			return Err(Error::<T>::NotMenstrualCalendarOwner)
 		}
 
@@ -476,12 +364,9 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		menstrual_cycle_log_id: &T::Hash,
 		menstrual_cycle_log: &Self::MenstrualCycleLog,
 	) -> Result<Self::MenstrualCycleLog, Self::Error> {
-		let _menstrual_cycle_log = MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id);
-		if _menstrual_cycle_log.is_none() {
-			return Err(Error::<T>::MenstrualCycleLogDoesNotExist)
-		}
+		let mut _menstrual_cycle_log = MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id)
+			.ok_or(Error::<T>::MenstrualCycleLogDoesNotExist)?;
 
-		let mut _menstrual_cycle_log = _menstrual_cycle_log.unwrap();
 		if _menstrual_cycle_log.menstrual_calendar_id != *menstrual_calendar_id {
 			return Err(Error::<T>::NotMenstrualCycleLogOwner)
 		}

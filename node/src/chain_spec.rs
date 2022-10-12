@@ -320,10 +320,13 @@ fn genesis(
 		},
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig {
 			escrow_key: Some(api_admin_key.clone()),
-			treasury_key: Some(treasury_key),
+			treasury_key: Some(treasury_key.clone()),
 		},
 		service_request: ServiceRequestConfig { admin_key: Some(api_admin_key.clone()) },
 		user_profile: UserProfileConfig { admin_key: Some(api_admin_key.clone()) },
-		menstrual_subscription: MenstrualSubscriptionConfig { admin_key: Some(api_admin_key) },
+		menstrual_subscription: MenstrualSubscriptionConfig {
+			admin_key: Some(api_admin_key),
+			treasury_key: Some(treasury_key),
+		},
 	}
 }
