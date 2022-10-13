@@ -8,8 +8,11 @@ use traits_menstrual_calendar::{
 
 // Symptom
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct Symptom {
-	pub name: Vec<u8>,
+pub struct Symptom(Vec<u8>);
+impl Symptom {
+	pub fn from(name: &[u8]) -> Symptom {
+		Symptom(name.to_vec())
+	}
 }
 
 // MenstrualCycleLog
@@ -70,21 +73,13 @@ pub struct MenstrualCalendar<AccountId, Hash, Moment> {
 	pub id: Hash,
 	pub address_id: AccountId,
 	pub average_cycle: u8,
-	pub cycle_log: Vec<Hash>,
 	pub created_at: Moment,
 	pub updated_at: Moment,
 }
 
 impl<AccountId, Hash, Moment: Default> MenstrualCalendar<AccountId, Hash, Moment> {
 	pub fn new(id: Hash, address_id: AccountId, average_cycle: u8, created_at: Moment) -> Self {
-		Self {
-			id,
-			address_id,
-			average_cycle,
-			cycle_log: Vec::new(),
-			created_at,
-			updated_at: Moment::default(),
-		}
+		Self { id, address_id, average_cycle, created_at, updated_at: Moment::default() }
 	}
 
 	pub fn get_id(&self) -> &Hash {

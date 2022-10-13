@@ -1,8 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::codec::{Decode, Encode};
-pub use pallet::*;
-
 #[cfg(test)]
 mod mock;
 
@@ -12,7 +9,12 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+pub use pallet::*;
+
+pub mod functions;
+pub mod impl_menstrual_calendar;
 pub mod interface;
+pub mod migrations;
 pub mod types;
 pub mod weights;
 
@@ -21,6 +23,11 @@ use sp_std::prelude::*;
 use traits_menstrual_calendar::MenstrualCalendarProvider;
 use types::*;
 use weights::WeightInfo;
+
+pub use frame_support::traits::StorageVersion;
+
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -37,12 +44,17 @@ pub mod pallet {
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ----- Types -------
@@ -56,7 +68,7 @@ pub mod pallet {
 
 	// ------- Storage -------------
 	#[pallet::storage]
-	#[pallet::getter(fn menstrual_calendar_by_address_id)]
+	#[pallet::getter(fn menstrual_calendar_by_owner)]
 	pub type MenstrualCalendarByOwner<T> =
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<MenstrualCalendarIdOf<T>>>;
 
@@ -104,8 +116,8 @@ pub mod pallet {
 		/// parameters, [MenstrualCalendar, who]
 		MenstrualCalendarUpdated(MenstrualCalendarOf<T>, AccountIdOf<T>),
 		//// MenstrualCalendar deleted
-		/// parameters, [MenstrualCalendar, who]
-		MenstrualCalendarRemoved(MenstrualCalendarOf<T>, AccountIdOf<T>),
+		/// parameters, [MenstrualCalendarId, who]
+		MenstrualCalendarRemoved(HashOf<T>, AccountIdOf<T>),
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters, [MenstrualCycleLog, who]
 		MenstrualCycleLogAdded(MenstrualCycleLogOf<T>, AccountIdOf<T>),
@@ -113,8 +125,8 @@ pub mod pallet {
 		/// parameters, [MenstrualCycleLog, who]
 		MenstrualCycleLogUpdated(MenstrualCycleLogOf<T>, AccountIdOf<T>),
 		//// MenstrualCycleLog deleted
-		/// parameters, [MenstrualCycleLog, who]
-		MenstrualCycleLogRemoved(MenstrualCycleLogOf<T>, AccountIdOf<T>),
+		/// parameters, [MenstrualCycleLogId, who]
+		MenstrualCycleLogRemoved(HashOf<T>, AccountIdOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -143,13 +155,10 @@ pub mod pallet {
 
 			match <Self as MenstrualCalendarInterface<T>>::add_menstrual_calendar(
 				&who,
-				&average_cycle,
+				average_cycle,
 			) {
 				Ok(menstrual_calendar) => {
-					Self::deposit_event(Event::MenstrualCalendarAdded(
-						menstrual_calendar,
-						who.clone(),
-					));
+					Self::deposit_event(Event::MenstrualCalendarAdded(menstrual_calendar, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -167,30 +176,32 @@ pub mod pallet {
 			match <Self as MenstrualCalendarInterface<T>>::update_menstrual_calendar(
 				&who,
 				&menstrual_calendar_id,
-				&average_cycle,
+				average_cycle,
 			) {
 				Ok(menstrual_calendar) => {
-					Self::deposit_event(Event::MenstrualCalendarUpdated(
-						menstrual_calendar,
-						who.clone(),
-					));
+					Self::deposit_event(Event::MenstrualCalendarUpdated(menstrual_calendar, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
 			}
 		}
 
-		#[pallet::weight(T::MenstrualCalendarWeightInfo::add_menstrual_calendar())]
+		#[pallet::weight(T::MenstrualCalendarWeightInfo::add_menstrual_cycle_log())]
 		pub fn add_menstrual_cycle_log(
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
-			menstrual_cycle_log: MenstrualCycleLogOf<T>,
+			date: MomentOf<T>,
+			symptoms: Vec<Symptom>,
+			menstruation: bool,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::add_menstrual_cycle_log(
+				&who,
 				&menstrual_calendar_id,
-				&menstrual_cycle_log,
+				&date,
+				&symptoms,
+				menstruation,
 			) {
 				Ok(menstrual_cycle_log) => {
 					Self::deposit_event(Event::MenstrualCycleLogAdded(menstrual_cycle_log, who));
@@ -200,19 +211,24 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::MenstrualCalendarWeightInfo::add_menstrual_calendar())]
+		#[pallet::weight(T::MenstrualCalendarWeightInfo::update_menstrual_cycle_log())]
 		pub fn update_menstrual_cycle_log(
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
 			menstrual_cycle_log_id: HashOf<T>,
-			menstrual_cycle_log: MenstrualCycleLogOf<T>,
+			date: MomentOf<T>,
+			symptoms: Vec<Symptom>,
+			menstruation: bool,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::update_menstrual_cycle_log(
+				&who,
 				&menstrual_calendar_id,
 				&menstrual_cycle_log_id,
-				&menstrual_cycle_log,
+				&date,
+				&symptoms,
+				menstruation,
 			) {
 				Ok(menstrual_cycle_log) => {
 					Self::deposit_event(Event::MenstrualCycleLogUpdated(menstrual_cycle_log, who));
@@ -222,7 +238,7 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::MenstrualCalendarWeightInfo::add_menstrual_calendar())]
+		#[pallet::weight(T::MenstrualCalendarWeightInfo::remove_menstrual_cycle_log())]
 		pub fn remove_menstrual_cycle_log(
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
@@ -231,323 +247,19 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::remove_menstrual_cycle_log(
+				&who,
 				&menstrual_calendar_id,
 				&menstrual_cycle_log_id,
 			) {
-				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogRemoved(menstrual_cycle_log, who));
+				Ok(_) => {
+					Self::deposit_event(Event::MenstrualCycleLogRemoved(
+						menstrual_cycle_log_id,
+						who,
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
 			}
 		}
-	}
-}
-
-use frame_support::sp_runtime::traits::Hash;
-
-/// MenstrualCalendar Interface Implementation
-impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
-	type Error = Error<T>;
-	type MenstrualCycleLog = MenstrualCycleLogOf<T>;
-	type MenstrualCalendarId = T::Hash;
-	type MenstrualCycleLogId = T::Hash;
-	type MenstrualCalendar = MenstrualCalendarOf<T>;
-
-	fn generate_menstrual_calendar_id(
-		address_id: &T::AccountId,
-		menstrual_calendar_count: u64,
-	) -> Self::MenstrualCalendarId {
-		let mut account_id_bytes = address_id.encode();
-		let mut menstrual_calendar_count_bytes = menstrual_calendar_count.encode();
-		account_id_bytes.append(&mut menstrual_calendar_count_bytes);
-
-		let seed = &account_id_bytes;
-		T::Hashing::hash(seed)
-	}
-
-	fn add_menstrual_calendar(
-		address_id: &T::AccountId,
-		average_cycle: &u8,
-	) -> Result<Self::MenstrualCalendar, Self::Error> {
-		let owner_menstrual_calendar_count =
-			<Self as MenstrualCalendarInterface<T>>::menstrual_calendar_count_by_owner(address_id);
-		let menstrual_calendar_id =
-			Self::generate_menstrual_calendar_id(address_id, owner_menstrual_calendar_count);
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		let menstrual_calendar =
-			MenstrualCalendar::new(menstrual_calendar_id, address_id.clone(), *average_cycle, now);
-
-		// Store to MenstrualCalendarById storage
-		MenstrualCalendarById::<T>::insert(menstrual_calendar_id, &menstrual_calendar);
-
-		Self::add_menstrual_calendar_by_owner(address_id, &menstrual_calendar_id);
-		Self::add_menstrual_calendar_count();
-		Self::add_menstrual_calendar_count_by_owner(address_id);
-
-		Ok(menstrual_calendar)
-	}
-
-	fn update_menstrual_calendar(
-		address_id: &T::AccountId,
-		menstrual_calendar_id: &T::Hash,
-		average_cycle: &u8,
-	) -> Result<Self::MenstrualCalendar, Self::Error> {
-		let mut menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id)
-			.ok_or(Error::<T>::MenstrualCalendarDoesNotExist)?;
-
-		if &menstrual_calendar.address_id != address_id {
-			return Err(Error::<T>::NotMenstrualCalendarOwner)
-		}
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		menstrual_calendar.average_cycle = *average_cycle;
-		menstrual_calendar.updated_at = now;
-
-		// Store to MenstrualCalendarById storage
-		MenstrualCalendarById::<T>::insert(menstrual_calendar_id, &menstrual_calendar);
-
-		Ok(menstrual_calendar)
-	}
-
-	fn generate_menstrual_cycle_log_id(
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_count: u64,
-	) -> Self::MenstrualCycleLogId {
-		let mut account_id_bytes = menstrual_calendar_id.encode();
-		let mut menstrual_cycle_log_count_bytes = menstrual_cycle_log_count.encode();
-		account_id_bytes.append(&mut menstrual_cycle_log_count_bytes);
-
-		let seed = &account_id_bytes;
-		T::Hashing::hash(seed)
-	}
-
-	fn add_menstrual_cycle_log(
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log: &Self::MenstrualCycleLog,
-	) -> Result<Self::MenstrualCycleLog, Self::Error> {
-		let owner_menstrual_cycle_log_count =
-			<Self as MenstrualCalendarInterface<T>>::menstrual_cycle_log_count_by_owner(
-				menstrual_calendar_id,
-			);
-		let menstrual_cycle_log_id = Self::generate_menstrual_cycle_log_id(
-			menstrual_calendar_id,
-			owner_menstrual_cycle_log_count,
-		);
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		// Store to MenstrualCycleLogById storage
-		let _menstrual_cycle_log = MenstrualCycleLog::new(
-			menstrual_cycle_log_id,
-			*menstrual_calendar_id,
-			menstrual_cycle_log.date,
-			menstrual_cycle_log.menstruation,
-			menstrual_cycle_log.symptoms.clone(),
-			now,
-		);
-
-		MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, &_menstrual_cycle_log);
-
-		Self::add_menstrual_cycle_log_by_owner(menstrual_calendar_id, &menstrual_cycle_log_id);
-		Self::add_menstrual_cycle_log_count();
-		Self::add_menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
-
-		Ok(_menstrual_cycle_log)
-	}
-
-	fn update_menstrual_cycle_log(
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_id: &T::Hash,
-		menstrual_cycle_log: &Self::MenstrualCycleLog,
-	) -> Result<Self::MenstrualCycleLog, Self::Error> {
-		let mut _menstrual_cycle_log = MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id)
-			.ok_or(Error::<T>::MenstrualCycleLogDoesNotExist)?;
-
-		if _menstrual_cycle_log.menstrual_calendar_id != *menstrual_calendar_id {
-			return Err(Error::<T>::NotMenstrualCycleLogOwner)
-		}
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		_menstrual_cycle_log.date = menstrual_cycle_log.date;
-		_menstrual_cycle_log.menstruation = menstrual_cycle_log.menstruation;
-		_menstrual_cycle_log.symptoms = menstrual_cycle_log.symptoms.clone();
-		_menstrual_cycle_log.updated_at = now;
-
-		// Store to MenstrualCycleLogById storage
-		MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, _menstrual_cycle_log.clone());
-
-		Ok(_menstrual_cycle_log)
-	}
-
-	fn remove_menstrual_cycle_log(
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_id: &T::Hash,
-	) -> Result<Self::MenstrualCycleLog, Self::Error> {
-		let menstrual_cycle_log = MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id);
-		if menstrual_cycle_log.is_none() {
-			return Err(Error::<T>::MenstrualCycleLogDoesNotExist)
-		}
-
-		let menstrual_cycle_log = menstrual_cycle_log.unwrap();
-		if menstrual_cycle_log.menstrual_calendar_id != *menstrual_calendar_id {
-			return Err(Error::<T>::NotMenstrualCycleLogOwner)
-		}
-
-		// Remove menstrual_cycle_log from storage
-		MenstrualCycleLogById::<T>::take(menstrual_cycle_log_id).unwrap();
-
-		Self::sub_menstrual_cycle_log_by_owner(menstrual_calendar_id, menstrual_cycle_log_id);
-		Self::sub_menstrual_cycle_log_count();
-		Self::sub_menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
-
-		Ok(menstrual_cycle_log)
-	}
-
-	fn menstrual_calendar_by_address_id(address_id: &T::AccountId) -> Option<Vec<T::Hash>> {
-		MenstrualCalendarByOwner::<T>::get(address_id)
-	}
-
-	fn menstrual_calendar_count_by_owner(address_id: &T::AccountId) -> u64 {
-		MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(0)
-	}
-
-	fn menstrual_calendar_by_id(
-		menstrual_calendar_id: &Self::MenstrualCalendarId,
-	) -> Option<Self::MenstrualCalendar> {
-		MenstrualCalendarById::<T>::get(menstrual_calendar_id)
-	}
-
-	fn menstrual_cycle_log_count_by_owner(menstrual_cycle_log_id: &T::Hash) -> u64 {
-		MenstrualCycleLogCountByOwner::<T>::get(menstrual_cycle_log_id).unwrap_or(0)
-	}
-
-	fn menstrual_cycle_log_by_id(
-		menstrual_cycle_log_id: &Self::MenstrualCycleLogId,
-	) -> Option<Self::MenstrualCycleLog> {
-		MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id)
-	}
-}
-
-/// Pallet Methods
-impl<T: Config> Pallet<T> {
-	// Add menstrual_calendar by owner
-	pub fn add_menstrual_calendar_by_owner(
-		address_id: &T::AccountId,
-		menstrual_calendar_id: &T::Hash,
-	) {
-		let mut menstrual_calendar =
-			MenstrualCalendarByOwner::<T>::get(address_id).unwrap_or_default();
-
-		menstrual_calendar.push(*menstrual_calendar_id);
-		MenstrualCalendarByOwner::<T>::insert(address_id, &menstrual_calendar)
-	}
-
-	// Subtract menstrual_calendar by owner
-	pub fn sub_menstrual_calendar_by_owner(
-		address_id: &T::AccountId,
-		menstrual_calendar_id: &T::Hash,
-	) {
-		let mut menstrual_calendar =
-			MenstrualCalendarByOwner::<T>::get(address_id).unwrap_or_default();
-		menstrual_calendar.retain(|&x| x != *menstrual_calendar_id);
-		MenstrualCalendarByOwner::<T>::insert(address_id, menstrual_calendar);
-	}
-
-	// Add menstrual_calendar count
-	pub fn add_menstrual_calendar_count() {
-		let menstrual_calendar_count = <MenstrualCalendarCount<T>>::get().unwrap_or(0);
-		<MenstrualCalendarCount<T>>::put(menstrual_calendar_count.wrapping_add(1));
-	}
-
-	// Add menstrual_calendar count by owner
-	pub fn add_menstrual_calendar_count_by_owner(address_id: &T::AccountId) {
-		let menstrual_calendar_count =
-			MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(0);
-		MenstrualCalendarCountByOwner::<T>::insert(
-			address_id,
-			menstrual_calendar_count.wrapping_add(1),
-		)
-	}
-
-	// Subtract menstrual_calendar count
-	pub fn sub_menstrual_calendar_count() {
-		let menstrual_calendar_count = <MenstrualCalendarCount<T>>::get().unwrap_or(1);
-		MenstrualCalendarCount::<T>::put(menstrual_calendar_count - 1);
-	}
-
-	// Subtract menstrual_calendar count by owner
-	pub fn sub_menstrual_calendar_count_by_owner(address_id: &T::AccountId) {
-		let menstrual_calendar_count =
-			MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(1);
-		MenstrualCalendarCountByOwner::<T>::insert(address_id, menstrual_calendar_count - 1);
-	}
-	// Add menstrual_cycle_log by owner
-	pub fn add_menstrual_cycle_log_by_owner(
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_id: &T::Hash,
-	) {
-		let mut menstrual_cycle_log =
-			MenstrualCycleLogByOwner::<T>::get(menstrual_calendar_id).unwrap_or_default();
-
-		menstrual_cycle_log.push(*menstrual_cycle_log_id);
-		MenstrualCycleLogByOwner::<T>::insert(menstrual_calendar_id, &menstrual_cycle_log)
-	}
-
-	// Subtract menstrual_cycle_log by owner
-	pub fn sub_menstrual_cycle_log_by_owner(
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_id: &T::Hash,
-	) {
-		let mut menstrual_cycle_log =
-			MenstrualCycleLogByOwner::<T>::get(menstrual_calendar_id).unwrap_or_default();
-		menstrual_cycle_log.retain(|&x| x != *menstrual_cycle_log_id);
-		MenstrualCycleLogByOwner::<T>::insert(menstrual_calendar_id, menstrual_cycle_log);
-	}
-
-	// Add menstrual_cycle_log count
-	pub fn add_menstrual_cycle_log_count() {
-		let menstrual_cycle_log_count = <MenstrualCycleLogCount<T>>::get().unwrap_or(0);
-		<MenstrualCycleLogCount<T>>::put(menstrual_cycle_log_count.wrapping_add(1));
-	}
-
-	// Add menstrual_cycle_log count by owner
-	pub fn add_menstrual_cycle_log_count_by_owner(menstrual_calendar_id: &T::Hash) {
-		let menstrual_cycle_log_count =
-			MenstrualCycleLogCountByOwner::<T>::get(menstrual_calendar_id).unwrap_or(0);
-		MenstrualCycleLogCountByOwner::<T>::insert(
-			menstrual_calendar_id,
-			menstrual_cycle_log_count.wrapping_add(1),
-		)
-	}
-
-	// Subtract menstrual_cycle_log count
-	pub fn sub_menstrual_cycle_log_count() {
-		let menstrual_cycle_log_count = <MenstrualCycleLogCount<T>>::get().unwrap_or(1);
-		MenstrualCycleLogCount::<T>::put(menstrual_cycle_log_count - 1);
-	}
-
-	// Subtract menstrual_cycle_log count by owner
-	pub fn sub_menstrual_cycle_log_count_by_owner(menstrual_calendar_id: &T::Hash) {
-		let menstrual_cycle_log_count =
-			MenstrualCycleLogCountByOwner::<T>::get(menstrual_calendar_id).unwrap_or(1);
-		MenstrualCycleLogCountByOwner::<T>::insert(
-			menstrual_calendar_id,
-			menstrual_cycle_log_count - 1,
-		);
-	}
-}
-
-/// MenstrualCalendarProvider Trait Implementation
-impl<T: Config> MenstrualCalendarProvider<T> for Pallet<T> {
-	type Error = Error<T>;
-	type MenstrualCalendar = MenstrualCalendarOf<T>;
-
-	fn menstrual_calendar_by_id(id: &T::Hash) -> Option<MenstrualCalendarOf<T>> {
-		<Self as MenstrualCalendarInterface<T>>::menstrual_calendar_by_id(id)
 	}
 }
