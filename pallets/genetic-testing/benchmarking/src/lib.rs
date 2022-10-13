@@ -87,7 +87,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin,
+			caller_origin.clone(),
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -99,6 +99,8 @@ benchmarks! {
 			.unwrap();
 		let _order = Orders::<T>::order_by_id(_order_id_list[0])
 			.unwrap();
+
+		let _order_paid = Orders::<T>::set_order_paid(caller_origin, _order_id_list[0]);
 	}: reject_dna_sample(
 		RawOrigin::Signed(caller),
 		_order.dna_sample_tracking_id,
@@ -148,7 +150,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin,
+			caller_origin.clone(),
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -160,6 +162,7 @@ benchmarks! {
 			.unwrap();
 		let _order = Orders::<T>::order_by_id(_order_id_list[0])
 			.unwrap();
+		let _order_paid = Orders::<T>::set_order_paid(caller_origin, _order_id_list[0]);
 	}: process_dna_sample(
 		RawOrigin::Signed(caller),
 		_order.dna_sample_tracking_id,
@@ -208,7 +211,7 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin,
+			caller_origin.clone(),
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -220,6 +223,8 @@ benchmarks! {
 			.unwrap();
 		let _order = Orders::<T>::order_by_id(_order_id_list[0])
 			.unwrap();
+
+		let _order_paid = Orders::<T>::set_order_paid(caller_origin, _order_id_list[0]);
 
 		let _dna_test_result = DnaTestResultSubmission {
 			comments: Some("DNA Test Result comments".as_bytes().to_vec()),

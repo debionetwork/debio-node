@@ -1,13 +1,12 @@
 use super::*;
 
-#[allow(unused)]
-use crate::{Pallet as MenstrualSubscription, AccountKeyType, Config};
+use crate::{AccountKeyType, Config, Pallet as MenstrualSubscription};
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::{sp_runtime::SaturatedConversion, traits::Currency};
 use frame_system::RawOrigin;
+use primitives_duration::MenstrualSubscriptionDuration;
 use primitives_menstrual_status::MenstrualSubscriptionStatus;
 use primitives_price_and_currency::CurrencyType;
-use primitives_duration::MenstrualSubscriptionDuration;
 
 const SEED: u32 = 0;
 

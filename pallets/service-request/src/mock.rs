@@ -144,7 +144,7 @@ impl pallet_assets::Config for Test {
 }
 
 parameter_types! {
-	pub const UnstakePeriode: Moment = 0;
+	pub const UnstakePeriode: Moment = 10;
 }
 
 impl service_request::Config for Test {
