@@ -713,6 +713,7 @@ parameter_types! {
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 parameter_types! {
@@ -785,6 +786,7 @@ impl orders::Config for Runtime {
 	type Currency = Balances;
 	type Assets = OctopusAssets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 impl genetic_testing::Config for Runtime {
