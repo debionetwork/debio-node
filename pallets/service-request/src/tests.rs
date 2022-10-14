@@ -6,6 +6,7 @@ use frame_support::{
 use genetic_testing::{DnaSampleStatus, DnaTestResultSubmission};
 use labs::{LabInfo, LabVerifierKey};
 use orders::EscrowKey;
+use pallet_timestamp::Now;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
 use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::{CurrencyType, Price, PriceByCurrency};
@@ -128,6 +129,8 @@ fn retrieve_unstake_works() {
 		let request_id = ServiceRequest::request_by_account_id(customer)[0];
 
 		assert_ok!(ServiceRequest::unstake(Origin::signed(customer), request_id));
+
+		Now::<Test>::put(10);
 
 		assert_ok!(ServiceRequest::retrieve_unstaked_amount(Origin::signed(customer), request_id));
 
@@ -1980,6 +1983,31 @@ fn cant_retrieve_unstake_when_not_unstaked() {
 		assert_noop!(
 			ServiceRequest::retrieve_unstaked_amount(Origin::signed(customer), request_id,),
 			Error::<Test>::RequestUnableToRetrieveUnstake
+		);
+	})
+}
+
+#[test]
+fn cant_retrieve_unstake_when_unstaked_periode_not_fulfilled() {
+	<ExternalityBuilder>::default().existential_deposit(2).build().execute_with(|| {
+		let customer = account_key("customer");
+
+		assert_ok!(ServiceRequest::create_request(
+			Origin::signed(customer),
+			String::from("Indonesia").into_bytes(),
+			String::from("West Java").into_bytes(),
+			String::from("Bogor").into_bytes(),
+			String::from("Vaksin").into_bytes(),
+			10
+		));
+
+		let request_id = ServiceRequest::request_by_account_id(customer)[0];
+
+		assert_ok!(ServiceRequest::unstake(Origin::signed(customer), request_id));
+
+		assert_noop!(
+			ServiceRequest::retrieve_unstaked_amount(Origin::signed(customer), request_id),
+			Error::<Test>::RequestWaitingForUnstaked,
 		);
 	})
 }

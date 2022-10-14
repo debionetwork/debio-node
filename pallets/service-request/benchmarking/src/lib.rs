@@ -13,6 +13,7 @@ use genetic_testing::{
 };
 use labs::{Config as LabsConfig, LabInfo, LabVerifierKey, Pallet as Labs};
 use orders::{Config as OrdersConfig, Pallet as Orders};
+use pallet_timestamp::{Config as TimestampConfig, Now};
 use services::{Config as ServiceConfig, Pallet as Services, ServiceInfo};
 
 #[allow(unused)]
@@ -28,7 +29,12 @@ use sp_std::vec;
 use traits_services::types::ServiceFlow;
 
 pub trait Config:
-	ServiceRequestConfig + LabsConfig + OrdersConfig + ServiceConfig + GeneticTestingConfig
+	ServiceRequestConfig
+	+ LabsConfig
+	+ OrdersConfig
+	+ ServiceConfig
+	+ GeneticTestingConfig
+	+ TimestampConfig
 {
 }
 
@@ -126,6 +132,11 @@ benchmarks! {
 		let request_ids = RequestByAccountId::<T>::get(caller.clone());
 		let request_id = request_ids[0];
 		let _request_unstake = ServiceRequest::<T>::unstake(origin, request_id);
+
+		// Set timestamp
+		let now = 518400000u128.saturated_into::<<T as pallet_timestamp::Config>::Moment>();
+
+		Now::<T>::put(now);
 	}: retrieve_unstaked_amount(RawOrigin::Signed(caller), request_id)
 
 	claim_request {

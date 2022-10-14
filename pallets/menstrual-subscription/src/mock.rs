@@ -1,5 +1,6 @@
 use crate as menstrual_subscription;
-use frame_support::parameter_types;
+use frame_support::{parameter_types, traits::GenesisBuild};
+use pallet_balances::AccountData;
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
@@ -21,6 +22,8 @@ frame_support::construct_runtime!(
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		MenstrualSubscription: menstrual_subscription::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
 );
 
@@ -49,15 +52,66 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
+type Balance = u64;
+
+parameter_types! {
+	pub static ExistentialDeposit: Balance = 0;
+}
+
+impl pallet_balances::Config for Test {
+	type MaxLocks = ();
+	type MaxReserves = ();
+	type ReserveIdentifier = [u8; 8];
+	/// The type for recording an account's balance.
+	type Balance = Balance;
+	/// The ubiquitous event type.
+	type Event = Event;
+	type DustRemoval = ();
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
+	type WeightInfo = ();
+}
+
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetAccountDeposit: Balance = 10;
+	pub const AssetDeposit: Balance = 1;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = AssetAccountDeposit;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
 impl menstrual_subscription::Config for Test {
 	type Event = Event;
+	type Currency = Balances;
+	type Assets = Assets;
 	type MenstrualSubscriptionWeightInfo = ();
 }
 
@@ -77,11 +131,57 @@ impl pallet_timestamp::Config for Test {
 	type WeightInfo = ();
 }
 
+pub fn account_key(s: &str) -> u64 {
+	match s {
+		"admin" => 1,
+		"treasure" => 2,
+		"customer" => 3,
+		"lab" => 4,
+		_ => 5,
+	}
+}
+
 pub struct ExternalityBuilder;
 
 impl ExternalityBuilder {
 	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+		let mut storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
+
+		let admin = account_key("admin");
+		let lab = account_key("lab");
+		let customer = account_key("customer");
+		let treasure = account_key("treasure");
+		let other = account_key("other");
+		let owner = account_key("owner");
+
+		pallet_balances::GenesisConfig::<Test> {
+			balances: vec![
+				(admin, 100),
+				(customer, 200),
+				(lab, 300),
+				(other, 400),
+				(treasure, 500),
+			],
+		}
+		.assimilate_storage(&mut storage)
+		.unwrap();
+
+		pallet_assets::GenesisConfig::<Test> {
+			assets: vec![(1, owner, true, 1)],
+			metadata: vec![(1, b"USDT".to_vec(), b"USDT".to_vec(), 6)],
+			accounts: vec![
+				(1, admin, 100),
+				(1, customer, 200),
+				(1, lab, 300),
+				(1, other, 400),
+				(1, treasure, 500),
+			],
+		}
+		.assimilate_storage(&mut storage)
+		.unwrap();
+
+		let mut ext = sp_io::TestExternalities::new(storage);
+		ext.execute_with(|| System::set_block_number(1));
+		ext
 	}
 }

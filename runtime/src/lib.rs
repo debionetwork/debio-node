@@ -801,6 +801,8 @@ impl menstrual_calendar::Config for Runtime {
 
 impl menstrual_subscription::Config for Runtime {
 	type Event = Event;
+	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type MenstrualSubscriptionWeightInfo = ();
 }
 

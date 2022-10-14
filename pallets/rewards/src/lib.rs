@@ -7,7 +7,7 @@ use interface::RewardInterface;
 use frame_support::{
 	pallet_prelude::*,
 	sp_runtime::traits::AccountIdConversion,
-	traits::{Currency, ExistenceRequirement, StorageVersion, WithdrawReasons},
+	traits::{Currency, ExistenceRequirement, StorageVersion},
 	PalletId,
 };
 
@@ -208,23 +208,22 @@ impl<T: Config> RewardInterface<T> for Pallet<T> {
 		to_reward: &T::AccountId,
 		reward: Self::Balance,
 	) -> Result<(), Self::Error> {
-		let pallet_id = Self::account_id();
-		if rewarder_account_id.clone() != RewarderKey::<T>::get().unwrap() {
-			return Err(Error::<T>::Unauthorized)
+		let _ = RewarderKey::<T>::get()
+			.filter(|account_id| account_id == rewarder_account_id)
+			.ok_or(Error::<T>::Unauthorized)?;
+
+		let result = CurrencyOf::<T>::transfer(
+			&Self::account_id(),
+			to_reward,
+			reward,
+			ExistenceRequirement::KeepAlive,
+		);
+
+		if result.is_err() {
+			return Err(Error::<T>::BadSignature)
 		}
 
-		match CurrencyOf::<T>::withdraw(
-			&pallet_id,
-			reward,
-			WithdrawReasons::TRANSFER,
-			ExistenceRequirement::KeepAlive,
-		) {
-			Ok(imb) => {
-				CurrencyOf::<T>::resolve_creating(to_reward, imb);
-				Self::set_total_reward_amount();
-			},
-			_ => return Err(Error::<T>::BadSignature),
-		}
+		Self::set_total_reward_amount();
 
 		Ok(())
 	}

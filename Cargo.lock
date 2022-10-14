@@ -1358,7 +1358,7 @@ dependencies = [
 
 [[package]]
 name = "debio"
-version = "2.2.0"
+version = "2.2.2"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -4636,6 +4636,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "log",
  "pallet-timestamp",
  "parity-scale-codec",
  "scale-info",
@@ -4654,10 +4655,13 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-assets",
+ "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-duration",
  "primitives-menstrual-status",
+ "primitives-price-and-currency",
  "scale-info",
  "serde",
  "sp-core",
