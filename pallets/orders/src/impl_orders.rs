@@ -67,12 +67,12 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		customer_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error> {
-		let order = Orders::<T>::get(order_id).ok_or(Error::<T>::OrderNotFound)?;
-		let can_transfer = order.currency.can_transfer();
-
-		if order.get_customer_id() != customer_id {
-			return Err(Error::<T>::UnauthorizedOrderCancellation)
-		}
+		let order = Orders::<T>::get(order_id)
+			.ok_or(Error::<T>::OrderNotFound)?
+			.is_authorized_customer(customer_id)
+			.ok_or(Error::<T>::UnauthorizedOrderCancellation)?
+			.can_cancelled()
+			.ok_or(Error::<T>::OrderCannotBeCancelled)?;
 
 		let dna_sample_opt =
 			T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id);
@@ -83,28 +83,25 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 			}
 		}
 
-		match order.status {
-			OrderStatus::Paid => Ok(()),
-			OrderStatus::Unpaid => Ok(()),
-			_ => Err(Error::<T>::OrderCannotBeCancelled),
-		}?;
-
+		let can_transfer = order.currency.can_transfer();
 		let mut order_status = OrderStatus::Cancelled;
 
 		if can_transfer && order.status == OrderStatus::Paid {
 			// Transfer
-			if order.status == OrderStatus::Paid {
-				Self::do_transfer(
-					&order.currency,
-					&Self::staking_account_id(order.id),
-					&order.customer_id,
-					order.total_price,
-					false,
-					order.asset_id,
-				)?;
+			let _ = match Self::pallet_id() {
+				Some(pallet_id) => {
+					order_status = OrderStatus::Refunded;
 
-				order_status = OrderStatus::Refunded;
-			}
+					Self::do_transfer(
+						&order.currency,
+						&pallet_id,
+						&order.customer_id,
+						order.total_price,
+						order.asset_id,
+					)
+				},
+				None => Err(Error::<T>::PalletAccountNotFound),
+			}?;
 		}
 
 		// Delete dna sample associated with the order
@@ -121,9 +118,8 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error> {
 		let order = Orders::<T>::get(order_id).ok_or(Error::<T>::OrderNotFound)?;
-		let can_transfer = order.currency.can_transfer();
 
-		if can_transfer {
+		if order.currency.can_transfer() {
 			if account_id != &order.customer_id {
 				return Err(Error::<T>::Unauthorized)
 			}
@@ -133,19 +129,19 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 				.ok_or(Error::<T>::Unauthorized)?;
 		}
 
-		if order.status != OrderStatus::Unpaid {
-			return Err(Error::<T>::OrderCannotBePaid)
-		}
+		let order = order.can_paid().ok_or(Error::<T>::OrderCannotBePaid)?;
 
-		if can_transfer {
-			Self::do_transfer(
-				&order.currency,
-				&order.customer_id,
-				&Self::staking_account_id(order.id),
-				order.total_price,
-				true,
-				order.asset_id,
-			)?;
+		if order.currency.can_transfer() {
+			let _ = match Self::pallet_id() {
+				Some(pallet_id) => Self::do_transfer(
+					&order.currency,
+					&order.customer_id,
+					&pallet_id,
+					order.total_price,
+					order.asset_id,
+				),
+				None => Err(Error::<T>::PalletAccountNotFound),
+			}?;
 		}
 
 		let order = Self::update_order_status(order_id, OrderStatus::Paid)
@@ -158,12 +154,12 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		seller_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error> {
-		let order = Orders::<T>::get(order_id).ok_or(Error::<T>::OrderNotFound)?;
-
-		// Only the sell[er can fulfill the order
-		if order.seller_id != seller_id.clone() {
-			return Err(Error::<T>::UnauthorizedOrderFulfillment)
-		}
+		let order = Orders::<T>::get(order_id)
+			.ok_or(Error::<T>::OrderNotFound)?
+			.is_authorized_seller(seller_id)
+			.ok_or(Error::<T>::UnauthorizedOrderFulfillment)?
+			.can_fulfilled()
+			.ok_or(Error::<T>::OrderCannotBeFulfilled)?;
 
 		let dna_sample_opt =
 			T::GeneticTesting::dna_sample_by_tracking_id(&order.dna_sample_tracking_id);
@@ -174,20 +170,18 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 			}
 		}
 
-		if order.status == OrderStatus::Fulfilled {
-			return Err(Error::<T>::OrderAlreadyFulfilled)
-		}
-
 		if order.currency.can_transfer() {
 			// Transfer testing price and QC price to lab
-			Self::do_transfer(
-				&order.currency,
-				&Self::staking_account_id(order.id),
-				order.get_seller_id(),
-				order.total_price,
-				false,
-				order.asset_id,
-			)?;
+			let _ = match Self::pallet_id() {
+				Some(pallet_id) => Self::do_transfer(
+					&order.currency,
+					&pallet_id,
+					order.get_seller_id(),
+					order.total_price,
+					order.asset_id,
+				),
+				None => Err(Error::<T>::PalletAccountNotFound),
+			}?;
 		}
 
 		let order = Self::update_order_status(order_id, OrderStatus::Fulfilled)
@@ -204,45 +198,49 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 			.filter(|account_id| account_id == escrow_account_id)
 			.ok_or(Error::<T>::Unauthorized)?;
 
-		let order = Orders::<T>::get(order_id).ok_or(Error::<T>::OrderNotFound)?;
+		let order = Orders::<T>::get(order_id)
+			.ok_or(Error::<T>::OrderNotFound)?
+			.can_refunded()
+			.ok_or(Error::<T>::OrderCannotBeRefunded)?;
 
 		if !Self::order_can_be_refunded(&order) {
 			return Err(Error::<T>::OrderNotYetExpired)
 		}
 
-		if order.status == OrderStatus::Refunded {
-			return Err(Error::<T>::OrderAlreadyRefunded)
-		}
-
 		if order.currency.can_transfer() {
-			let mut testing_price = Zero::zero();
-			let mut qc_price = Zero::zero();
+			let _ = match Self::pallet_id() {
+				Some(pallet_id) => {
+					let mut testing_price = Zero::zero();
+					let mut qc_price = Zero::zero();
 
-			for price in order.prices.iter() {
-				testing_price += price.value;
-			}
+					for price in order.prices.iter() {
+						testing_price += price.value;
+					}
 
-			for price in order.additional_prices.iter() {
-				qc_price += price.value;
-			}
+					for price in order.additional_prices.iter() {
+						qc_price += price.value;
+					}
 
-			Self::do_transfer(
-				&order.currency,
-				&Self::staking_account_id(order.id),
-				order.get_seller_id(),
-				qc_price,
-				false,
-				order.asset_id,
-			)?;
+					Self::do_transfer(
+						&order.currency,
+						&pallet_id,
+						order.get_seller_id(),
+						qc_price,
+						order.asset_id,
+					)?;
 
-			Self::do_transfer(
-				&order.currency,
-				&Self::staking_account_id(order.id),
-				&order.customer_id,
-				testing_price,
-				false,
-				order.asset_id,
-			)?;
+					Self::do_transfer(
+						&order.currency,
+						&pallet_id,
+						&order.customer_id,
+						testing_price,
+						order.asset_id,
+					)?;
+
+					Ok(())
+				},
+				None => Err(Error::<T>::PalletAccountNotFound),
+			}?;
 		}
 
 		let order = Self::update_order_status(order_id, OrderStatus::Refunded)
