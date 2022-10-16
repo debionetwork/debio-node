@@ -87,11 +87,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
 		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id)
-			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?;
-
-		if &genetic_analysis_order.customer_id != customer_id {
-			return Err(Error::<T>::UnauthorizedGeneticAnalysisOrderCancellation)
-		}
+			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?
+			.is_authorized_customer(customer_id)
+			.ok_or(Error::<T>::UnauthorizedGeneticAnalysisOrderCancellation)?
+			.can_cancelled()
+			.ok_or(Error::<T>::GeneticAnalysisOrderCannotBeCancelled)?;
 
 		let tracking_id = &genetic_analysis_order.genetic_analysis_tracking_id;
 		let _ = T::GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(tracking_id)
@@ -103,18 +103,15 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		if genetic_analysis_order.status == GeneticAnalysisOrderStatus::Paid {
 			let total_price = genetic_analysis_order.total_price;
-
-			if !Self::is_pallet_balance_sufficient_for_transfer(total_price) {
-				return Err(Error::<T>::InsufficientPalletFunds)
-			}
+			let asset_id = genetic_analysis_order.asset_id;
+			let account_id = Self::account_id();
 
 			Self::do_transfer(
 				&genetic_analysis_order.currency,
-				&Self::account_id(),
+				&account_id,
 				customer_id,
 				total_price,
-				false,
-				genetic_analysis_order.asset_id,
+				asset_id,
 			)?;
 
 			// If code reaches here change status to Refunded
@@ -137,32 +134,25 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 	}
 
 	fn set_genetic_analysis_order_paid(
-		account_id: &T::AccountId,
+		customer_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
 		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id)
-			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?;
+			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?
+			.is_authorized_customer(customer_id)
+			.ok_or(Error::<T>::Unauthorized)?
+			.can_paid()
+			.ok_or(Error::<T>::GeneticAnalysisOrderCannotBePaid)?;
 
-		if account_id != &genetic_analysis_order.customer_id {
-			let _ = EscrowKey::<T>::get()
-				.filter(|admin| admin == account_id)
-				.ok_or(Error::<T>::Unauthorized)?;
-		}
-
-		let customer_id = &genetic_analysis_order.customer_id;
 		let total_price = genetic_analysis_order.total_price;
-
-		if !Self::is_balance_sufficient_for_payment(customer_id, total_price) {
-			return Err(Error::<T>::InsufficientFunds)
-		}
+		let asset_id = genetic_analysis_order.asset_id;
 
 		Self::do_transfer(
 			&genetic_analysis_order.currency,
 			customer_id,
 			&Self::account_id(),
 			total_price,
-			true,
-			genetic_analysis_order.asset_id, // Set AssetId
+			asset_id,
 		)?;
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -183,16 +173,18 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			.ok_or(Error::<T>::Unauthorized)?;
 
 		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id)
-			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?;
+			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?
+			.can_fulfilled()
+			.ok_or(Error::<T>::GeneticAnalysisOrderCannotBeFulfilled)?;
 
 		let tracking_id = &genetic_analysis_order.genetic_analysis_tracking_id;
 		let _ = T::GeneticAnalysis::genetic_analysis_by_genetic_analysis_tracking_id(tracking_id)
 			.filter(|genetic_analysis| genetic_analysis.process_success())
 			.ok_or(Error::<T>::GeneticAnalysisNotSuccessfullyProcessed)?;
 
-		if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price) {
-			return Err(Error::<T>::InsufficientPalletFunds)
-		}
+		let total_price = genetic_analysis_order.total_price;
+		let asset_id = genetic_analysis_order.asset_id;
+		let account_id = Self::account_id();
 
 		// Calculate 5% of the price_component_value
 		let mut price_component_substracted_value: BalanceOf<T> = 0u128.saturated_into();
@@ -201,27 +193,24 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		}
 
 		// 5% of the price_component_value is substracted
-		let total_price_paid =
-			genetic_analysis_order.total_price - price_component_substracted_value;
+		let total_price_paid = total_price - price_component_substracted_value;
 
 		// Withhold 5% for DBIO
 		Self::do_transfer(
 			&genetic_analysis_order.currency,
-			&Self::account_id(),
+			&account_id,
 			&genetic_analysis_order.seller_id,
 			total_price_paid,
-			true,
-			genetic_analysis_order.asset_id, // Set AssetId
+			asset_id,
 		)?;
 
 		// Transfer 5% to DBIO Treasury
 		Self::do_transfer(
 			&genetic_analysis_order.currency,
-			&Self::account_id(),
+			&account_id,
 			&TreasuryKey::<T>::get().unwrap(),
 			price_component_substracted_value,
-			false,
-			genetic_analysis_order.asset_id, // Set AssetId
+			asset_id,
 		)?;
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -236,30 +225,31 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		escrow_account_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error> {
-		if escrow_account_id.clone() != EscrowKey::<T>::get().unwrap() {
-			return Err(Error::<T>::Unauthorized)
-		}
+		let _ = EscrowKey::<T>::get()
+			.filter(|admin| admin == escrow_account_id)
+			.ok_or(Error::<T>::Unauthorized)?;
 
 		let genetic_analysis_order = GeneticAnalysisOrders::<T>::get(genetic_analysis_order_id)
-			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?;
+			.ok_or(Error::<T>::GeneticAnalysisOrderNotFound)?
+			.can_refunded()
+			.ok_or(Error::<T>::GeneticAnalysisOrderCannotBeRefunded)?;
 
 		let tracking_id = &genetic_analysis_order.genetic_analysis_tracking_id;
 		if !Self::genetic_analysis_order_can_be_refunded(tracking_id) {
 			return Err(Error::<T>::GeneticAnalysisOrderNotYetExpired)
 		}
 
-		if !Self::is_pallet_balance_sufficient_for_transfer(genetic_analysis_order.total_price) {
-			return Err(Error::<T>::InsufficientPalletFunds)
-		}
+		let total_price = genetic_analysis_order.total_price;
+		let asset_id = genetic_analysis_order.asset_id;
+		let account_id = Self::account_id();
 
 		// Transfer 5% to DBIO Treasury
 		Self::do_transfer(
 			&genetic_analysis_order.currency,
-			&Self::account_id(),
+			&account_id,
 			&genetic_analysis_order.customer_id,
-			genetic_analysis_order.total_price,
-			false,
-			genetic_analysis_order.asset_id, // Set AssetId
+			total_price,
+			asset_id,
 		)?;
 
 		let genetic_analysis_order = Self::update_genetic_analysis_order_status(
@@ -343,5 +333,11 @@ impl<T: Config> GeneticAnalysisOrderStatusUpdater<T> for Pallet<T> {
 
 	fn is_pending_genetic_analysis_order_by_seller_exist(seller_id: &AccountIdOf<T>) -> bool {
 		Self::is_pending_genetic_analysis_order_ids_by_seller_exist(seller_id)
+	}
+
+	fn is_genetic_analysis_order_paid(order_id: &HashOf<T>) -> bool {
+		Self::genetic_analysis_order_by_id(order_id)
+			.filter(|order| order.status == GeneticAnalysisOrderStatus::Paid)
+			.is_some()
 	}
 }

@@ -52,11 +52,11 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-		type Assets: fungibles::Transfer<
+		type Assets: fungibles::InspectMetadata<
 				<Self as frame_system::Config>::AccountId,
 				AssetId = AssetId,
 				Balance = AssetBalance,
-			> + fungibles::InspectMetadata<<Self as frame_system::Config>::AccountId>;
+			> + fungibles::Transfer<<Self as frame_system::Config>::AccountId>;
 		type GeneticAnalysts: GeneticAnalystsProvider<Self>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticData: GeneticDataProvider<Self>;
@@ -230,8 +230,6 @@ pub mod pallet {
 		PriceIndexNotFound,
 		// GeneticAnalyst is unavailable
 		GeneticAnalystUnavailable,
-		/// Insufficient pallet funds
-		InsufficientPalletFunds,
 		// Dispatch Errors
 		Module,
 		Other,
@@ -244,6 +242,10 @@ pub mod pallet {
 		Arithmetic,
 		WrongAssetIdFormat,
 		AssetIdNotFound,
+		GeneticAnalysisOrderCannotBePaid,
+		GeneticAnalysisOrderCannotBeCancelled,
+		GeneticAnalysisOrderCannotBeFulfilled,
+		GeneticAnalysisOrderCannotBeRefunded,
 	}
 
 	#[pallet::call]
