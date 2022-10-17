@@ -1,4 +1,4 @@
-use crate::{mock::*, Error, EscrowKey, Order, OrderStatus};
+use crate::{mock::*, Error, EscrowKey, Order, OrderStatus, PalletAccount};
 use frame_support::{
 	assert_noop, assert_ok,
 	sp_runtime::traits::{Hash, Keccak256},
@@ -222,6 +222,9 @@ fn set_order_paid_with_dbio_works() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -310,7 +313,7 @@ fn set_order_paid_with_dbio_works() {
 		);
 
 		assert_eq!(Balances::free_balance(customer), 190);
-		assert_eq!(Balances::free_balance(Orders::staking_account_id(_order_id)), 10);
+		assert_eq!(Balances::free_balance(pallet_id), 11);
 	})
 }
 
@@ -320,6 +323,9 @@ fn set_order_paid_with_app_chain_token_works() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -409,7 +415,7 @@ fn set_order_paid_with_app_chain_token_works() {
 		);
 
 		assert_eq!(Assets::balance(asset_id, customer), 190);
-		assert_eq!(Assets::balance(asset_id, Orders::staking_account_id(_order_id)), 10);
+		assert_eq!(Assets::balance(asset_id, pallet_id), 11);
 	})
 }
 
@@ -418,6 +424,9 @@ fn cancel_order_works_when_order_status_paid() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		let lab = account_key("lab");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -481,7 +490,7 @@ fn cancel_order_works_when_order_status_paid() {
 		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
 
 		assert_eq!(Balances::free_balance(customer), 190);
-		assert_eq!(Balances::free_balance(Orders::staking_account_id(_order_id)), 10);
+		assert_eq!(Balances::free_balance(pallet_id), 11);
 
 		assert_ok!(Orders::cancel_order(Origin::signed(customer), _order_id));
 
@@ -516,7 +525,7 @@ fn cancel_order_works_when_order_status_paid() {
 		);
 
 		assert_eq!(Balances::free_balance(customer), 200);
-		assert_eq!(Balances::free_balance(Orders::staking_account_id(_order_id)), 0);
+		assert_eq!(Balances::free_balance(pallet_id), 1);
 	})
 }
 
@@ -526,6 +535,9 @@ fn fulfill_order_works() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -633,7 +645,7 @@ fn fulfill_order_works() {
 
 		assert_eq!(Balances::free_balance(customer), 190);
 		assert_eq!(Balances::free_balance(lab), 310);
-		assert_eq!(Balances::free_balance(Orders::staking_account_id(_order_id)), 0);
+		assert_eq!(Balances::free_balance(pallet_id), 1);
 	})
 }
 
@@ -643,7 +655,9 @@ fn set_order_refunded_works() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
 
+		PalletAccount::<Test>::put(pallet_id);
 		EscrowKey::<Test>::put(admin);
 
 		assert_ok!(Labs::register_lab(
@@ -750,7 +764,7 @@ fn set_order_refunded_works() {
 
 		assert_eq!(Balances::free_balance(customer), 195);
 		assert_eq!(Balances::free_balance(lab), 305);
-		assert_eq!(Balances::free_balance(Orders::staking_account_id(_order_id)), 0);
+		assert_eq!(Balances::free_balance(pallet_id), 1);
 	})
 }
 
@@ -924,6 +938,9 @@ fn cant_cancel_order_when_order_ongoing() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		let lab = account_key("lab");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1244,6 +1261,9 @@ fn cant_set_order_paid_when_already_finished() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		let lab = account_key("lab");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1333,6 +1353,9 @@ fn cant_fulfill_order_when_unauthorized() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let other_lab = account_key("other_lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1426,6 +1449,9 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1478,6 +1504,8 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
+		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+
 		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
@@ -1493,6 +1521,9 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1576,7 +1607,7 @@ fn cant_fulfill_order_when_already_fulfilled() {
 
 		assert_noop!(
 			Orders::fulfill_order(Origin::signed(lab), _order_id),
-			Error::<Test>::OrderAlreadyFulfilled
+			Error::<Test>::OrderCannotBeFulfilled
 		);
 	})
 }
@@ -1587,6 +1618,9 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1649,6 +1683,8 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 
 		EscrowKey::<Test>::put(admin);
 
+		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+
 		assert_noop!(
 			Orders::set_order_refunded(Origin::signed(admin), _order_id),
 			Error::<Test>::OrderNotYetExpired
@@ -1662,6 +1698,9 @@ fn cant_set_order_refunded_when_already_refunded() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1746,7 +1785,7 @@ fn cant_set_order_refunded_when_already_refunded() {
 
 		assert_noop!(
 			Orders::set_order_refunded(Origin::signed(admin), _order_id),
-			Error::<Test>::OrderAlreadyRefunded
+			Error::<Test>::OrderCannotBeRefunded
 		);
 	})
 }
@@ -1759,6 +1798,9 @@ fn call_event_should_work() {
 		let lab = account_key("lab");
 		let admin = account_key("admin");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),

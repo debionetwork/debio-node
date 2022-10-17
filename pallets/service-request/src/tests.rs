@@ -5,7 +5,7 @@ use frame_support::{
 };
 use genetic_testing::{DnaSampleStatus, DnaTestResultSubmission};
 use labs::{LabInfo, LabVerifierKey};
-use orders::EscrowKey;
+use orders::{EscrowKey, PalletAccount};
 use pallet_timestamp::Now;
 use primitives_area_code::{CityCode, CountryCode, RegionCode};
 use primitives_duration::ExpectedDuration;
@@ -376,6 +376,9 @@ fn finalize_request_works() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -746,6 +749,9 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -1314,6 +1320,9 @@ fn cant_process_request_when_order_fullfilled() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -1771,6 +1780,9 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		let customer = account_key("customer");
 		let admin = account_key("admin");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -2018,6 +2030,9 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		let customer = account_key("customer");
 		let admin = account_key("admin");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -2142,6 +2157,9 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
@@ -2262,6 +2280,9 @@ fn call_event_should_work() {
 		let customer = account_key("customer");
 		let admin = account_key("admin");
 		let lab = account_key("lab");
+		let pallet_id = account_key("pallet_id");
+
+		PalletAccount::<Test>::put(pallet_id);
 
 		System::set_block_number(1);
 
