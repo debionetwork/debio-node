@@ -43,7 +43,6 @@ pub struct MenstrualSubscription<AccountId, Hash, Moment> {
 	pub created_at: Moment,
 	pub updated_at: Moment,
 }
-
 impl<AccountId, Hash, Moment: Default> MenstrualSubscription<AccountId, Hash, Moment> {
 	pub fn new(
 		id: Hash,

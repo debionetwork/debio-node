@@ -65,6 +65,5 @@ std = [
 
     'traits-menstrual-subscription/std',
 ]
-runtime-benchmarks = [
-	'frame-benchmarking'
-]
+runtime-benchmarks = ['frame-benchmarking']
+try-runtime = ['frame-support/try-runtime']
