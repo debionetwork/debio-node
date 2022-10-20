@@ -10,6 +10,7 @@ mod tests {
 	};
 
 	use genetic_analysis::{Error, GeneticAnalysisStatus};
+	use genetic_analysis_orders::PalletAccount;
 	use genetic_analyst_services::GeneticAnalystServiceInfo;
 	use genetic_analysts::GeneticAnalystInfo;
 
@@ -23,6 +24,8 @@ mod tests {
 	#[test]
 	fn reject_genetic_analysis_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -83,6 +86,14 @@ mod tests {
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
@@ -207,6 +218,8 @@ mod tests {
 	#[test]
 	fn process_genetic_analysis_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -267,6 +280,14 @@ mod tests {
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
@@ -323,6 +344,8 @@ mod tests {
 	#[test]
 	fn accept_genetic_analysis_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -383,6 +406,14 @@ mod tests {
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
@@ -425,6 +456,8 @@ mod tests {
 	#[test]
 	fn cannot_process_genetic_analysis_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -485,6 +518,14 @@ mod tests {
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
@@ -532,6 +573,8 @@ mod tests {
 	#[test]
 	fn cannot_process_genetic_analysis_not_submitted() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -592,6 +635,14 @@ mod tests {
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
@@ -611,6 +662,8 @@ mod tests {
 	#[test]
 	fn submit_genetic_analysis_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(0);
+
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
 				Origin::signed(1),
 				GeneticAnalystInfo {
@@ -671,6 +724,14 @@ mod tests {
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
 				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
