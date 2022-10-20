@@ -237,7 +237,7 @@ pub mod pallet {
 				Ok(balance) => {
 					Self::deposit_event(Event::StakingAmountRefunded(
 						who.clone(),
-						request_id.clone(),
+						request_id,
 						balance,
 					));
 

@@ -88,7 +88,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 
 		if can_transfer && order.status == OrderStatus::Paid {
 			// Transfer
-			let _ = match Self::pallet_id() {
+			match Self::pallet_id() {
 				Some(pallet_id) => {
 					order_status = OrderStatus::Refunded;
 
@@ -132,7 +132,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		let order = order.can_paid().ok_or(Error::<T>::OrderCannotBePaid)?;
 
 		if order.currency.can_transfer() {
-			let _ = match Self::pallet_id() {
+			match Self::pallet_id() {
 				Some(pallet_id) => Self::do_transfer(
 					&order.currency,
 					&order.customer_id,
@@ -172,7 +172,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 
 		if order.currency.can_transfer() {
 			// Transfer testing price and QC price to lab
-			let _ = match Self::pallet_id() {
+			match Self::pallet_id() {
 				Some(pallet_id) => Self::do_transfer(
 					&order.currency,
 					&pallet_id,
@@ -208,7 +208,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		}
 
 		if order.currency.can_transfer() {
-			let _ = match Self::pallet_id() {
+			match Self::pallet_id() {
 				Some(pallet_id) => {
 					let mut testing_price = Zero::zero();
 					let mut qc_price = Zero::zero();
