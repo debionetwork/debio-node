@@ -26,7 +26,7 @@ pub use weights::WeightInfo;
 pub use frame_support::traits::StorageVersion;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -35,7 +35,9 @@ pub mod pallet {
 	use frame_support::{
 		dispatch::DispatchResultWithPostInfo,
 		pallet_prelude::*,
+		sp_runtime::traits::AccountIdConversion,
 		traits::{tokens::fungibles, Currency},
+		PalletId,
 	};
 	use frame_system::pallet_prelude::*;
 
@@ -45,12 +47,14 @@ pub mod pallet {
 		type Services: ServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticTesting: GeneticTestingProvider<Self>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
-		type Assets: fungibles::Transfer<
+		type Assets: fungibles::InspectMetadata<
 				<Self as frame_system::Config>::AccountId,
 				AssetId = AssetId,
 				Balance = AssetBalance,
-			> + fungibles::InspectMetadata<<Self as frame_system::Config>::AccountId>;
+			> + fungibles::Transfer<<Self as frame_system::Config>::AccountId>;
 		type OrdersWeightInfo: WeightInfo;
+		#[pallet::constant]
+		type PalletId: Get<PalletId>;
 	}
 
 	// ----- This is template code, every pallet needs this ---
@@ -93,6 +97,10 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn admin_key)]
 	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn pallet_id)]
+	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 	// -----------------------------------------
 
 	// ----- Genesis Configs ------------------
@@ -111,6 +119,9 @@ pub mod pallet {
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
+			let account_id: T::AccountId = T::PalletId::get().into_account();
+			PalletAccount::<T>::put(account_id);
+
 			if let Some(ref escrow_key) = self.escrow_key {
 				EscrowKey::<T>::put(escrow_key);
 			}
@@ -175,10 +186,11 @@ pub mod pallet {
 		PriceIndexNotFound,
 		/// Asset Id not found
 		AssetIdNotFound,
+		PalletAccountNotFound,
 		OrderCannotBeCancelled,
 		OrderCannotBePaid,
-		OrderAlreadyRefunded,
-		OrderAlreadyFulfilled,
+		OrderCannotBeRefunded,
+		OrderCannotBeFulfilled,
 		Module,
 		Other,
 		BadOrigin,

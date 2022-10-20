@@ -5,6 +5,7 @@ mod tests {
 	use crate::mock::*;
 
 	use labs::{Error, Event as EventC, Lab, LabInfo, LabVerifierKey, PalletAccount};
+	use orders::PalletAccount as OrderPalletAccount;
 
 	use frame_support::{
 		assert_noop, assert_ok,
@@ -1261,6 +1262,7 @@ mod tests {
 
 			PalletAccount::<Test>::put(4);
 			LabVerifierKey::<Test>::put(2);
+			OrderPalletAccount::<Test>::put(5);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
 				Origin::signed(2),
@@ -1351,6 +1353,7 @@ mod tests {
 
 			PalletAccount::<Test>::put(4);
 			LabVerifierKey::<Test>::put(2);
+			OrderPalletAccount::<Test>::put(5);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
 				Origin::signed(2),

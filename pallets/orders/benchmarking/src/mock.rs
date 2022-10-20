@@ -43,6 +43,7 @@ parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 impl frame_system::Config for Test {
@@ -159,6 +160,7 @@ impl orders::Config for Test {
 	type Currency = Balances;
 	type Assets = Assets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 impl certifications::Config for Test {

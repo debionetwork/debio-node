@@ -134,6 +134,7 @@ impl pallet_timestamp::Config for Test {
 
 parameter_types! {
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 impl labs::Config for Test {
@@ -176,6 +177,7 @@ impl orders::Config for Test {
 	type Currency = Balances;
 	type Assets = Assets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 impl user_profile::Config for Test {
