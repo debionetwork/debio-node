@@ -1,9 +1,13 @@
-use crate::{AccountIdOf, BalanceOf, Config, HashOf, MomentOf, Order, OrderStatus, Orders, Pallet};
+use crate::{
+	AccountIdOf, BalanceOf, Config, CurrencyOf, HashOf, MomentOf, Order, OrderOf, OrderStatus,
+	Orders, Pallet, PalletAccount,
+};
 use frame_support::{
 	pallet_prelude::*,
-	sp_runtime::traits::Zero,
-	traits::{fungibles, Get},
+	sp_runtime::traits::{AccountIdConversion, Zero},
+	traits::{fungibles, Currency, ExistenceRequirement, Get},
 	weights::Weight,
+	PalletId,
 };
 use primitives_price_and_currency::{CurrencyType, Price};
 use scale_info::prelude::string::String;
@@ -20,6 +24,11 @@ pub fn migrate<T: Config>() -> Weight {
 	if version < 1 {
 		weight = weight.saturating_add(version::v1::migrate::<T>());
 		version = StorageVersion::new(1);
+	}
+
+	if version == 1 {
+		weight = weight.saturating_add(version::v2::migrate::<T>());
+		version = StorageVersion::new(2);
 	}
 
 	version.put::<Pallet<T>>();
@@ -108,6 +117,54 @@ mod version {
 					created_at: old_order.created_at,
 					updated_at: old_order.updated_at,
 				})
+			});
+
+			weight
+		}
+	}
+
+	pub mod v2 {
+		use super::*;
+
+		pub const PALLET_ID: PalletId = PalletId(*b"orders!!");
+
+		pub fn migrate<T: Config>() -> Weight {
+			let mut weight = T::DbWeight::get().writes(1);
+			let receiver: T::AccountId = T::PalletId::get().into_account();
+
+			PalletAccount::<T>::put(&receiver);
+
+			Orders::<T>::translate(|order_id: HashOf<T>, order: OrderOf<T>| {
+				weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
+
+				let sender: T::AccountId = PALLET_ID.into_sub_account(order_id);
+
+				if order.currency.can_transfer() {
+					if order.currency == CurrencyType::DBIO {
+						let balance = T::Currency::free_balance(&sender);
+
+						if !balance.is_zero() {
+							let _ = CurrencyOf::<T>::transfer(
+								&sender,
+								&receiver,
+								balance,
+								ExistenceRequirement::AllowDeath,
+							);
+						}
+					} else if let Some(asset_id) = &order.asset_id {
+						let balance = <T::Assets as fungibles::Inspect<T::AccountId>>::balance(
+							*asset_id, &sender,
+						);
+
+						if !balance.is_zero() {
+							let _ = <T::Assets as fungibles::Transfer<T::AccountId>>::transfer(
+								*asset_id, &sender, &receiver, balance, false,
+							);
+						}
+					}
+				}
+
+				Some(order)
 			});
 
 			weight

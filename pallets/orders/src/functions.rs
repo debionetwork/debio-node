@@ -2,25 +2,15 @@ use crate::*;
 
 use frame_support::{
 	pallet_prelude::*,
-	sp_runtime::{
-		traits::{AccountIdConversion, Hash},
-		SaturatedConversion,
-	},
+	sp_runtime::{traits::Hash, SaturatedConversion},
 	traits::{fungibles, Currency, ExistenceRequirement},
-	PalletId,
 };
 use primitives_price_and_currency::CurrencyType;
 use scale_info::prelude::string::String;
 use sp_std::vec;
 use traits_order::OrderProvider;
 
-pub const PALLET_ID: PalletId = PalletId(*b"orders!!");
-
 impl<T: Config> Pallet<T> {
-	pub fn staking_account_id(order_id: HashOf<T>) -> AccountIdOf<T> {
-		PALLET_ID.into_sub_account(order_id)
-	}
-
 	pub fn generate_order_id(customer_id: &T::AccountId, service_id: &T::Hash) -> T::Hash {
 		let mut customer_id_bytes = customer_id.encode();
 		let mut service_id_bytes = service_id.encode();
@@ -150,16 +140,10 @@ impl<T: Config> Pallet<T> {
 		sender: &T::AccountId,
 		receiver: &T::AccountId,
 		amount: BalanceOf<T>,
-		keep_alive: bool,
 		asset_id: Option<u32>,
 	) -> Result<(), Error<T>> {
 		if currency == &CurrencyType::DBIO {
-			let existence = if keep_alive {
-				ExistenceRequirement::KeepAlive
-			} else {
-				ExistenceRequirement::AllowDeath
-			};
-
+			let existence = ExistenceRequirement::KeepAlive;
 			let result = CurrencyOf::<T>::transfer(sender, receiver, amount, existence);
 
 			if let Err(dispatch) = result {
@@ -182,7 +166,7 @@ impl<T: Config> Pallet<T> {
 				sender,
 				receiver,
 				amount.saturated_into(),
-				keep_alive,
+				true,
 			);
 
 			if let Err(dispatch) = result {

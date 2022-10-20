@@ -12,6 +12,7 @@ mod tests {
 	use frame_system::RawOrigin;
 	use genetic_testing::{DnaSampleStatus, DnaTestResultSubmission, Error};
 	use labs::LabInfo;
+	use orders::PalletAccount;
 	use services::ServiceInfo;
 
 	use primitives_area_code::{CityCode, CountryCode, RegionCode};
@@ -24,6 +25,8 @@ mod tests {
 	#[test]
 	fn reject_dna_sample_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
@@ -195,6 +198,8 @@ mod tests {
 	#[test]
 	fn process_dna_sample_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
@@ -322,6 +327,8 @@ mod tests {
 	#[test]
 	fn cannot_process_dna_sample_works_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
@@ -432,6 +439,8 @@ mod tests {
 	#[test]
 	fn cannot_process_dna_sample_works_not_submitted() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
@@ -505,6 +514,8 @@ mod tests {
 	#[test]
 	fn submit_test_result_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),

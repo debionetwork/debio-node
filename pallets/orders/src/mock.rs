@@ -108,6 +108,7 @@ impl orders::Config for Test {
 	type Currency = Balances;
 	type Assets = Assets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 type Balance = u64;
@@ -115,6 +116,7 @@ type Balance = u64;
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 impl pallet_balances::Config for Test {
@@ -197,7 +199,8 @@ pub fn account_key(s: &str) -> u64 {
 		"admin" => 1,
 		"customer" => 2,
 		"lab" => 3,
-		_ => 4,
+		"pallet_id" => 4,
+		_ => 5,
 	}
 }
 
@@ -226,19 +229,26 @@ impl ExternalityBuilder {
 		let admin = account_key("admin");
 		let lab = account_key("lab");
 		let customer = account_key("customer");
+		let pallet_id = account_key("pallet_id");
 		let other = account_key("other");
 		let owner = account_key("owner");
 
 		pallet_assets::GenesisConfig::<Test> {
 			assets: vec![(1, owner, true, 1)],
 			metadata: vec![(1, b"USDT".to_vec(), b"USDT".to_vec(), 6)],
-			accounts: vec![(1, admin, 100), (1, customer, 200), (1, lab, 300), (1, other, 400)],
+			accounts: vec![
+				(1, admin, 100),
+				(1, customer, 200),
+				(1, lab, 300),
+				(1, other, 400),
+				(1, pallet_id, 1),
+			],
 		}
 		.assimilate_storage(&mut storage)
 		.unwrap();
 
 		pallet_balances::GenesisConfig::<Test> {
-			balances: vec![(admin, 100), (customer, 200), (lab, 300), (other, 400)],
+			balances: vec![(admin, 100), (customer, 200), (lab, 300), (other, 400), (pallet_id, 1)],
 		}
 		.assimilate_storage(&mut storage)
 		.unwrap();

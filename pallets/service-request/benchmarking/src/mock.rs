@@ -94,6 +94,7 @@ type Balance = u64;
 parameter_types! {
 	pub static ExistentialDeposit: Balance = 0;
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 impl pallet_balances::Config for Test {
@@ -181,6 +182,7 @@ impl orders::Config for Test {
 	type Currency = Balances;
 	type Assets = Assets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 impl genetic_testing::Config for Test {
