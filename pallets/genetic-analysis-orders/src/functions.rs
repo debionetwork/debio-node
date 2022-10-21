@@ -146,16 +146,14 @@ impl<T: Config> Pallet<T> {
 		sender: &T::AccountId,
 		receiver: &T::AccountId,
 		amount: BalanceOf<T>,
-		keep_alive: bool,
 		asset_id: Option<u32>,
 	) -> Result<(), Error<T>> {
-		if currency == &CurrencyType::DBIO {
-			let existence = if keep_alive {
-				ExistenceRequirement::KeepAlive
-			} else {
-				ExistenceRequirement::AllowDeath
-			};
+		if !Self::is_balance_sufficient(sender, amount, asset_id) {
+			return Err(Error::<T>::InsufficientFunds)
+		}
 
+		if currency == &CurrencyType::DBIO {
+			let existence = ExistenceRequirement::KeepAlive;
 			let result = CurrencyOf::<T>::transfer(sender, receiver, amount, existence);
 
 			if let Err(dispatch) = result {
@@ -178,7 +176,7 @@ impl<T: Config> Pallet<T> {
 				sender,
 				receiver,
 				amount.saturated_into(),
-				keep_alive,
+				true,
 			);
 
 			if let Err(dispatch) = result {
@@ -228,19 +226,19 @@ impl<T: Config> Pallet<T> {
 		<PalletAccount<T>>::get().unwrap()
 	}
 
-	/// Is the balance sufficient for payment
-	pub fn is_balance_sufficient_for_payment(
+	/// Is the balance sufficient for transfer
+	pub fn is_balance_sufficient(
 		account_id: &AccountIdOf<T>,
 		price: BalanceOf<T>,
+		asset_id: Option<AssetId>,
 	) -> bool {
-		let balance = T::Currency::free_balance(account_id);
-		balance >= price
-	}
+		let balance: AssetBalance = if let Some(asset_id) = asset_id {
+			<T::Assets as fungibles::Inspect<T::AccountId>>::balance(asset_id, account_id)
+		} else {
+			T::Currency::free_balance(account_id).saturated_into()
+		};
 
-	/// Is the pallet balance sufficient for transfer
-	pub fn is_pallet_balance_sufficient_for_transfer(price: BalanceOf<T>) -> bool {
-		let balance = T::Currency::free_balance(&Self::account_id());
-		balance >= price
+		balance >= price.saturated_into()
 	}
 
 	/// Set current escrow amount

@@ -81,7 +81,7 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		ServiceRequestCreated(AccountIdOf<T>, RequestOf<T>),
 		ServiceRequestUpdated(AccountIdOf<T>, HashOf<T>, RequestStatus),
-		StakingAmountRefunded(AccountIdOf<T>, BalanceOf<T>),
+		StakingAmountRefunded(AccountIdOf<T>, HashOf<T>, BalanceOf<T>),
 		UpdateServiceRequestAdminKeySuccessful(AccountIdOf<T>),
 	}
 
@@ -235,7 +235,12 @@ pub mod pallet {
 
 			match <Self as SeviceRequestInterface<T>>::retrieve_unstaked_amount(&who, &request_id) {
 				Ok(balance) => {
-					Self::deposit_event(Event::StakingAmountRefunded(who.clone(), balance));
+					Self::deposit_event(Event::StakingAmountRefunded(
+						who.clone(),
+						request_id,
+						balance,
+					));
+
 					Self::deposit_event(Event::ServiceRequestUpdated(
 						who,
 						request_id,

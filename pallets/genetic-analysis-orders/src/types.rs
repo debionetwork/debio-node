@@ -42,6 +42,8 @@ pub struct GeneticAnalysisOrder<Hash, AccountId, Balance, Moment> {
 #[allow(clippy::too_many_arguments)]
 impl<Hash, AccountId, Balance, Moment: Default>
 	GeneticAnalysisOrder<Hash, AccountId, Balance, Moment>
+where
+	AccountId: PartialEq + Eq,
 {
 	pub fn new(
 		id: Hash,
@@ -89,5 +91,45 @@ impl<Hash, AccountId, Balance, Moment: Default>
 
 	pub fn get_service_id(&self) -> &Hash {
 		&self.service_id
+	}
+
+	pub fn is_authorized_customer(self, account_id: &AccountId) -> Option<Self> {
+		if &self.customer_id == account_id {
+			Some(self)
+		} else {
+			None
+		}
+	}
+
+	pub fn can_cancelled(self) -> Option<Self> {
+		match self.status {
+			GeneticAnalysisOrderStatus::Paid => Some(self),
+			GeneticAnalysisOrderStatus::Unpaid => Some(self),
+			_ => None,
+		}
+	}
+
+	pub fn can_paid(self) -> Option<Self> {
+		if self.status == GeneticAnalysisOrderStatus::Unpaid {
+			Some(self)
+		} else {
+			None
+		}
+	}
+
+	pub fn can_fulfilled(self) -> Option<Self> {
+		if self.status == GeneticAnalysisOrderStatus::Paid {
+			Some(self)
+		} else {
+			None
+		}
+	}
+
+	pub fn can_refunded(self) -> Option<Self> {
+		if self.status == GeneticAnalysisOrderStatus::Paid {
+			Some(self)
+		} else {
+			None
+		}
 	}
 }
