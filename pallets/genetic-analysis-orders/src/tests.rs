@@ -1,6 +1,6 @@
 use crate::{
-	mock::*, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrderStatus, PalletAccount,
-	TreasuryKey,
+	mock::*, AccountKeyType, Error, EscrowKey, GeneticAnalysisOrder, GeneticAnalysisOrderStatus,
+	PalletAccount, TreasuryKey,
 };
 use frame_support::{
 	assert_noop, assert_ok,
@@ -1946,38 +1946,22 @@ fn update_escrow_key_works() {
 
 		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(2));
 
-		assert_ok!(GeneticAnalysisOrders::update_escrow_key(Origin::signed(2), 1,));
+		assert_ok!(GeneticAnalysisOrders::update_key(
+			Origin::signed(2),
+			AccountKeyType::EscrowKey(1)
+		));
 
 		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(1));
-	})
-}
-
-#[test]
-fn sudo_update_escrow_key_works() {
-	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-		assert_ok!(GeneticAnalysisOrders::sudo_update_escrow_key(Origin::root(), 1));
-
-		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(1));
-	})
-}
-
-#[test]
-fn update_treasury_key_works() {
-	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-		TreasuryKey::<Test>::put(2);
-
-		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(2));
-
-		assert_ok!(GeneticAnalysisOrders::update_treasury_key(Origin::signed(2), 1,));
-
-		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(1));
 	})
 }
 
 #[test]
 fn sudo_update_treasury_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-		assert_ok!(GeneticAnalysisOrders::sudo_update_treasury_key(Origin::root(), 1));
+		assert_ok!(GeneticAnalysisOrders::sudo_update_key(
+			Origin::root(),
+			AccountKeyType::EscrowKey(1)
+		));
 
 		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(1));
 	})

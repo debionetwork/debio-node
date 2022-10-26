@@ -133,3 +133,9 @@ where
 		}
 	}
 }
+
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub enum AccountKeyType<AccountId> {
+	TreasuryKey(AccountId),
+	EscrowKey(AccountId),
+}

@@ -259,39 +259,6 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 
 		Ok(genetic_analysis_order)
 	}
-
-	fn update_escrow_key(
-		account_id: &T::AccountId,
-		escrow_key: &T::AccountId,
-	) -> Result<(), Self::Error> {
-		if account_id.clone() != EscrowKey::<T>::get().unwrap() {
-			return Err(Error::<T>::Unauthorized)
-		}
-
-		EscrowKey::<T>::put(escrow_key);
-
-		Ok(())
-	}
-
-	fn update_treasury_key(
-		account_id: &T::AccountId,
-		treasury_key: &T::AccountId,
-	) -> Result<(), Self::Error> {
-		if account_id.clone() != TreasuryKey::<T>::get().unwrap() {
-			return Err(Error::<T>::Unauthorized)
-		}
-
-		TreasuryKey::<T>::put(treasury_key);
-
-		Ok(())
-	}
-
-	fn is_pending_genetic_analysis_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool {
-		match PendingGeneticAnalysisOrdersBySeller::<T>::get(account_id) {
-			Some(_arr) => !_arr.is_empty(),
-			None => false,
-		}
-	}
 }
 
 impl<T: Config> GeneticAnalysisOrderEventEmitter<T> for Pallet<T> {

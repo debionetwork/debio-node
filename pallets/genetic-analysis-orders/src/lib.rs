@@ -92,6 +92,7 @@ pub mod pallet {
 	pub type GeneticAnalysisOrderOf<T> =
 		GeneticAnalysisOrder<HashOf<T>, AccountIdOf<T>, BalanceOf<T>, MomentOf<T>>;
 	type GeneticAnalysisOrderIdsOf<T> = Vec<HashOf<T>>;
+	pub type AccountKeyTypeOf<T> = AccountKeyType<AccountIdOf<T>>;
 	// -------------------------------------------------------
 
 	// ------ Storage --------------------------
@@ -183,12 +184,9 @@ pub mod pallet {
 		/// GeneticAnalysisOrder Cancelled
 		/// parameters, [GeneticAnalysisOrder]
 		GeneticAnalysisOrderCancelled(GeneticAnalysisOrderOf<T>),
-		/// Update GeneticAnalysisOrder escrow key
+		/// Update GeneticAnalysisOrder key
 		/// parameters. [who]
-		UpdateGeneticAnalysisOrderEscrowKeySuccessful(AccountIdOf<T>),
-		/// Update GeneticAnalysisOrder treasury key
-		/// parameters. [who]
-		UpdateGeneticAnalysisOrderTreasuryKeySuccessful(AccountIdOf<T>),
+		UpdateGeneticAnalysisOrderKeySuccessful(AccountKeyTypeOf<T>),
 		/// GeneticAnalysisOrder Not Found
 		/// parameters, []
 		GeneticAnalysisOrderNotFound,
@@ -365,67 +363,44 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::update_escrow_key())]
-		pub fn update_escrow_key(
+		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::update_key())]
+		pub fn update_key(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
+			account_key_type: AccountKeyTypeOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as GeneticAnalysisOrderInterface<T>>::update_escrow_key(&who, &account_id) {
-				Ok(_) => {
-					Self::deposit_event(Event::UpdateGeneticAnalysisOrderEscrowKeySuccessful(
-						who.clone(),
-					));
-					Ok(().into())
+			match account_key_type.clone() {
+				AccountKeyType::TreasuryKey(account_id) => {
+					let result = TreasuryKey::<T>::get().filter(|account_id| account_id == &who);
+					ensure!(result.is_some(), Error::<T>::Unauthorized);
+					TreasuryKey::<T>::put(&account_id);
 				},
-				Err(error) => Err(error.into()),
-			}
+				AccountKeyType::EscrowKey(account_id) => {
+					let result = EscrowKey::<T>::get().filter(|account_id| account_id == &who);
+					ensure!(result.is_some(), Error::<T>::Unauthorized);
+					EscrowKey::<T>::put(&account_id);
+				},
+			};
+
+			Self::deposit_event(Event::UpdateGeneticAnalysisOrderKeySuccessful(account_key_type));
+
+			Ok(().into())
 		}
 
 		#[pallet::weight(0)]
-		pub fn sudo_update_escrow_key(
+		pub fn sudo_update_key(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
+			account_key_type: AccountKeyTypeOf<T>,
 		) -> DispatchResultWithPostInfo {
 			ensure_root(origin)?;
 
-			EscrowKey::<T>::put(&account_id);
+			match account_key_type.clone() {
+				AccountKeyType::TreasuryKey(account_id) => TreasuryKey::<T>::put(&account_id),
+				AccountKeyType::EscrowKey(account_id) => EscrowKey::<T>::put(&account_id),
+			};
 
-			Self::deposit_event(Event::UpdateGeneticAnalysisOrderEscrowKeySuccessful(account_id));
-
-			Ok(Pays::No.into())
-		}
-
-		#[pallet::weight(T::GeneticAnalysisOrdersWeightInfo::update_treasury_key())]
-		pub fn update_treasury_key(
-			origin: OriginFor<T>,
-			account_id: T::AccountId,
-		) -> DispatchResultWithPostInfo {
-			let who = ensure_signed(origin)?;
-
-			match <Self as GeneticAnalysisOrderInterface<T>>::update_treasury_key(&who, &account_id)
-			{
-				Ok(_) => {
-					Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(
-						who.clone(),
-					));
-					Ok(().into())
-				},
-				Err(error) => Err(error.into()),
-			}
-		}
-
-		#[pallet::weight(0)]
-		pub fn sudo_update_treasury_key(
-			origin: OriginFor<T>,
-			account_id: T::AccountId,
-		) -> DispatchResultWithPostInfo {
-			ensure_root(origin)?;
-
-			TreasuryKey::<T>::put(&account_id);
-
-			Self::deposit_event(Event::UpdateGeneticAnalysisOrderTreasuryKeySuccessful(account_id));
+			Self::deposit_event(Event::UpdateGeneticAnalysisOrderKeySuccessful(account_key_type));
 
 			Ok(Pays::No.into())
 		}
