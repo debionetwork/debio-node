@@ -23,7 +23,7 @@ use primitives_price_and_currency::PriceByCurrency;
 
 #[allow(unused)]
 use orders::Pallet as Orders;
-use orders::{Config as OrdersConfig, EscrowKey};
+use orders::{AccountKeyType, Config as OrdersConfig, EscrowKey};
 
 #[allow(unused)]
 use genetic_testing::Pallet as GeneticTesting;
@@ -364,11 +364,12 @@ benchmarks! {
 		_order.id
 	)
 
-	update_escrow_key {
+	update_key {
 		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
-	}: update_escrow_key(
+		let account_key_type = AccountKeyType::EscrowKey(caller2);
+	}: update_key(
 		RawOrigin::Signed(caller),
-		caller2
+		account_key_type
 	)
 }

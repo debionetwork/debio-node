@@ -1,4 +1,6 @@
-use crate::{mock::*, Error, EscrowKey, Order, OrderStatus, PalletAccount};
+use crate::{
+	mock::*, AccountKeyType, Error, EscrowKey, Order, OrderStatus, PalletAccount, TreasuryKey,
+};
 use frame_support::{
 	assert_noop, assert_ok,
 	sp_runtime::traits::{Hash, Keccak256},
@@ -536,8 +538,10 @@ fn fulfill_order_works() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let pallet_id = account_key("pallet_id");
+		let treasury_key = account_key("treasury_key");
 
 		PalletAccount::<Test>::put(pallet_id);
+		TreasuryKey::<Test>::put(treasury_key);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -563,9 +567,9 @@ fn fulfill_order_works() {
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
-			total_price: 10,
-			price_components: vec![Price { component: b"testing_price".to_vec(), value: 5 }],
-			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 5 }],
+			total_price: 30,
+			price_components: vec![Price { component: b"testing_price".to_vec(), value: 20 }],
+			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 10 }],
 		};
 
 		assert_ok!(Services::create_service(
@@ -632,7 +636,7 @@ fn fulfill_order_works() {
 				seller_id: lab,
 				dna_sample_tracking_id: _dna_sample[0].clone(),
 				asset_id: None,
-				total_price: 10,
+				total_price: 30,
 				currency: CurrencyType::default(),
 				prices: prices_by_currency_dbio.price_components,
 				additional_prices: prices_by_currency_dbio.additional_prices,
@@ -643,9 +647,10 @@ fn fulfill_order_works() {
 			})
 		);
 
-		assert_eq!(Balances::free_balance(customer), 190);
-		assert_eq!(Balances::free_balance(lab), 310);
+		assert_eq!(Balances::free_balance(customer), 170);
+		assert_eq!(Balances::free_balance(lab), 329);
 		assert_eq!(Balances::free_balance(pallet_id), 1);
+		assert_eq!(Balances::free_balance(treasury_key), 401);
 	})
 }
 
@@ -1522,8 +1527,10 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let pallet_id = account_key("pallet_id");
+		let treasury_key = account_key("treasury_key");
 
 		PalletAccount::<Test>::put(pallet_id);
+		TreasuryKey::<Test>::put(treasury_key);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1799,8 +1806,10 @@ fn call_event_should_work() {
 		let admin = account_key("admin");
 		let customer = account_key("customer");
 		let pallet_id = account_key("pallet_id");
+		let treasury_key = account_key("treasury_key");
 
 		PalletAccount::<Test>::put(pallet_id);
+		TreasuryKey::<Test>::put(treasury_key);
 
 		assert_ok!(Labs::register_lab(
 			Origin::signed(lab),
@@ -1980,23 +1989,23 @@ fn call_event_should_work() {
 }
 
 #[test]
-fn update_escrow_key_works() {
+fn update_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		EscrowKey::<Test>::put(2);
 
 		assert_eq!(Orders::admin_key(), Some(2));
 
-		assert_ok!(Orders::update_escrow_key(Origin::signed(2), 1,));
+		assert_ok!(Orders::update_key(Origin::signed(2), AccountKeyType::EscrowKey(1)));
 
 		assert_eq!(Orders::admin_key(), Some(1));
 	})
 }
 
 #[test]
-fn sudo_update_escrow_key_works() {
+fn sudo_update_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-		assert_ok!(Orders::sudo_update_escrow_key(Origin::root(), 1));
+		assert_ok!(Orders::sudo_update_key(Origin::root(), AccountKeyType::TreasuryKey(1)));
 
-		assert_eq!(Orders::admin_key(), Some(1));
+		assert_eq!(Orders::treasury_key(), Some(1));
 	})
 }

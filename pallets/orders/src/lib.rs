@@ -99,6 +99,10 @@ pub mod pallet {
 	pub type EscrowKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn treasury_key)]
+	pub type TreasuryKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn pallet_id)]
 	pub type PalletAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 	// -----------------------------------------
@@ -107,12 +111,13 @@ pub mod pallet {
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
 		pub escrow_key: Option<T::AccountId>,
+		pub treasury_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { escrow_key: None }
+			Self { escrow_key: None, treasury_key: None }
 		}
 	}
 
@@ -124,6 +129,10 @@ pub mod pallet {
 
 			if let Some(ref escrow_key) = self.escrow_key {
 				EscrowKey::<T>::put(escrow_key);
+			}
+
+			if let Some(ref treasury_key) = self.treasury_key {
+				TreasuryKey::<T>::put(treasury_key);
 			}
 		}
 	}
@@ -152,7 +161,7 @@ pub mod pallet {
 		OrderNotFound,
 		/// Update Order escrow key
 		/// parameters. [who]
-		UpdateOrderEscrowKeySuccessful(AccountIdOf<T>),
+		UpdateOrderKeySuccessful(AccountKeyTypeOf<T>),
 		/// Order Failed
 		/// parameters, [Order]
 		OrderFailed(OrderOf<T>),
@@ -292,32 +301,44 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::OrdersWeightInfo::update_escrow_key())]
-		pub fn update_escrow_key(
+		#[pallet::weight(T::OrdersWeightInfo::update_key())]
+		pub fn update_key(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
+			account_key_type: AccountKeyTypeOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as OrderInterface<T>>::update_escrow_key(&who, &account_id) {
-				Ok(_) => {
-					Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(who));
-					Ok(().into())
+			match account_key_type.clone() {
+				AccountKeyType::TreasuryKey(account_id) => {
+					let result = TreasuryKey::<T>::get().filter(|account_id| account_id == &who);
+					ensure!(result.is_some(), Error::<T>::Unauthorized);
+					TreasuryKey::<T>::put(&account_id);
 				},
-				Err(error) => Err(error.into()),
-			}
+				AccountKeyType::EscrowKey(account_id) => {
+					let result = EscrowKey::<T>::get().filter(|account_id| account_id == &who);
+					ensure!(result.is_some(), Error::<T>::Unauthorized);
+					EscrowKey::<T>::put(&account_id);
+				},
+			};
+
+			Self::deposit_event(Event::UpdateOrderKeySuccessful(account_key_type));
+
+			Ok(().into())
 		}
 
 		#[pallet::weight(0)]
-		pub fn sudo_update_escrow_key(
+		pub fn sudo_update_key(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
+			account_key_type: AccountKeyTypeOf<T>,
 		) -> DispatchResultWithPostInfo {
 			ensure_root(origin)?;
 
-			EscrowKey::<T>::put(&account_id);
+			match account_key_type.clone() {
+				AccountKeyType::TreasuryKey(account_id) => TreasuryKey::<T>::put(&account_id),
+				AccountKeyType::EscrowKey(account_id) => EscrowKey::<T>::put(&account_id),
+			};
 
-			Self::deposit_event(Event::UpdateOrderEscrowKeySuccessful(account_id));
+			Self::deposit_event(Event::UpdateOrderKeySuccessful(account_key_type));
 
 			Ok(Pays::No.into())
 		}

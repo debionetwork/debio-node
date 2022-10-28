@@ -29,8 +29,4 @@ pub trait OrderInterface<T: frame_system::Config> {
 		escrow_account_id: &T::AccountId,
 		order_id: &T::Hash,
 	) -> Result<Self::Order, Self::Error>;
-	fn update_escrow_key(
-		account_id: &T::AccountId,
-		escrow_key: &T::AccountId,
-	) -> Result<(), Self::Error>;
 }

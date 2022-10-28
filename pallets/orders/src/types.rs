@@ -18,6 +18,7 @@ pub type CurrencyOf<T> = <T as self::Config>::Currency;
 pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
 pub type OrderOf<T> = Order<HashOf<T>, AccountIdOf<T>, BalanceOf<T>, MomentOf<T>>;
 pub type OrderIdsOf<T> = Vec<HashOf<T>>;
+pub type AccountKeyTypeOf<T> = AccountKeyType<AccountIdOf<T>>;
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum OrderStatus {
@@ -203,4 +204,10 @@ where
 	fn is_order_from_service(&self, service_id: &T::Hash) -> bool {
 		&self.service_id == service_id
 	}
+}
+
+#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub enum AccountKeyType<AccountId> {
+	TreasuryKey(AccountId),
+	EscrowKey(AccountId),
 }

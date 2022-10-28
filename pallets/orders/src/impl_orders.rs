@@ -1,6 +1,6 @@
 use crate::*;
 
-use frame_support::sp_runtime::traits::Zero;
+use frame_support::sp_runtime::{traits::Zero, SaturatedConversion};
 
 impl<T: Config> OrderInterface<T> for Pallet<T> {
 	type Order = OrderOf<T>;
@@ -171,17 +171,34 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		}
 
 		if order.currency.can_transfer() {
+			let treasury_key = Self::treasury_key().ok_or(Error::<T>::PalletAccountNotFound)?;
+			let pallet_id = Self::pallet_id().ok_or(Error::<T>::PalletAccountNotFound)?;
+
 			// Transfer testing price and QC price to lab
-			match Self::pallet_id() {
-				Some(pallet_id) => Self::do_transfer(
-					&order.currency,
-					&pallet_id,
-					order.get_seller_id(),
-					order.total_price,
-					order.asset_id,
-				),
-				None => Err(Error::<T>::PalletAccountNotFound),
-			}?;
+			let mut price_component_substracted_value: BalanceOf<T> = 0u128.saturated_into();
+			for price in order.prices.iter() {
+				price_component_substracted_value += price.value / 20u128.saturated_into();
+			}
+
+			let total_price_paid = order.total_price - price_component_substracted_value;
+
+			// Transfer 5% to treasury
+			Self::do_transfer(
+				&order.currency,
+				&pallet_id,
+				&treasury_key,
+				price_component_substracted_value,
+				order.asset_id,
+			)?;
+
+			// Withhold 5%
+			Self::do_transfer(
+				&order.currency,
+				&pallet_id,
+				order.get_seller_id(),
+				total_price_paid,
+				order.asset_id,
+			)?;
 		}
 
 		let order = Self::update_order_status(order_id, OrderStatus::Fulfilled)
@@ -247,18 +264,5 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 			.ok_or(Error::<T>::OrderNotFound)?;
 
 		Ok(order)
-	}
-
-	fn update_escrow_key(
-		account_id: &T::AccountId,
-		escrow_key: &T::AccountId,
-	) -> Result<(), Self::Error> {
-		let _ = EscrowKey::<T>::get()
-			.filter(|e| e == account_id)
-			.ok_or(Error::<T>::Unauthorized)?;
-
-		EscrowKey::<T>::put(escrow_key);
-
-		Ok(())
 	}
 }

@@ -27,13 +27,4 @@ pub trait GeneticAnalysisOrderInterface<T: frame_system::Config> {
 		escrow_account_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
 	) -> Result<Self::GeneticAnalysisOrder, Self::Error>;
-	fn update_escrow_key(
-		account_id: &T::AccountId,
-		escrow_key: &T::AccountId,
-	) -> Result<(), Self::Error>;
-	fn update_treasury_key(
-		account_id: &T::AccountId,
-		escrow_key: &T::AccountId,
-	) -> Result<(), Self::Error>;
-	fn is_pending_genetic_analysis_order_ids_by_seller_exist(account_id: &T::AccountId) -> bool;
 }

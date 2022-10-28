@@ -124,6 +124,15 @@ impl<T: Config> Pallet<T> {
 		}
 	}
 
+	pub fn is_pending_genetic_analysis_order_ids_by_seller_exist(
+		account_id: &T::AccountId,
+	) -> bool {
+		match PendingGeneticAnalysisOrdersBySeller::<T>::get(account_id) {
+			Some(_arr) => !_arr.is_empty(),
+			None => false,
+		}
+	}
+
 	pub fn remove_genetic_analysis_order_id_from_pending_genetic_analysis_orders_by_seller(
 		seller_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,
