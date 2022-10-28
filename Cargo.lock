@@ -1358,7 +1358,7 @@ dependencies = [
 
 [[package]]
 name = "debio"
-version = "2.2.4"
+version = "2.2.5"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -1417,7 +1417,7 @@ dependencies = [
 
 [[package]]
 name = "debio-runtime"
-version = "2.2.4"
+version = "2.2.5"
 dependencies = [
  "beefy-primitives",
  "certifications",
