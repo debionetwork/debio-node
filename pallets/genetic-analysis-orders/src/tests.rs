@@ -1960,7 +1960,7 @@ fn sudo_update_treasury_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysisOrders::sudo_update_key(
 			Origin::root(),
-			AccountKeyType::EscrowKey(1)
+			AccountKeyType::TreasuryKey(1)
 		));
 
 		assert_eq!(GeneticAnalysisOrders::treasury_key(), Some(1));
