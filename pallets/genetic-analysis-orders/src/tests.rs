@@ -621,8 +621,8 @@ fn fulfill_genetic_analysis_order_works() {
 			_genetic_analysis_order_id
 		));
 
-		assert_eq!(Balances::free_balance(1), 9975);
-		assert_eq!(Balances::free_balance(2), 25);
+		assert_eq!(Balances::free_balance(1), 9950);
+		assert_eq!(Balances::free_balance(2), 50);
 
 		assert_eq!(
 			GeneticAnalysisOrders::genetic_analysis_order_by_id(&_genetic_analysis_order_id),
@@ -1902,40 +1902,6 @@ fn call_event_should_work() {
 				updated_at: 0,
 			}),
 		));
-
-		// assert_ok!(GeneticAnalysis::process_genetic_analysis(
-		// 	Origin::signed(1),
-		// 	_genetic_analysis[0].clone(),
-		// 	GeneticAnalysisStatus::Rejected,
-		// ));
-
-		// assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_refunded(
-		// 	Origin::signed(3),
-		// 	_genetic_analysis_order_id
-		// ));
-
-		// System::assert_last_event(Event::GeneticAnalysisOrders(
-		// 	crate::Event::GeneticAnalysisOrderRefunded(GeneticAnalysisOrder {
-		// 		id: _genetic_analysis_order_id,
-		// 		genetic_data_id: _genetic_data_ids[0],
-		// 		service_id: _genetic_analyst.services[0],
-		// 		customer_id: 1,
-		// 		customer_box_public_key: Keccak256::hash(
-		// 			"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes(),
-		// 		),
-		// 		seller_id: 1,
-		// 		genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
-		// 		genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
-		// 		asset_id: None,
-		// 		currency: CurrencyType::default(),
-		// 		prices: PriceByCurrency::default().price_components,
-		// 		additional_prices: PriceByCurrency::default().additional_prices,
-		// 		total_price: PriceByCurrency::default().total_price,
-		// 		status: GeneticAnalysisOrderStatus::Refunded,
-		// 		created_at: 0,
-		// 		updated_at: 0,
-		// 	}),
-		// ));
 	});
 }
 
