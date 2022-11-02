@@ -1,4 +1,7 @@
-use crate::{mock::*, Error, MenstrualCalendar as MenstrualCalendarS, MenstrualCycleLog, Symptom};
+use crate::{
+	mock::*, Error, MenstrualCalendar as MenstrualCalendarS, MenstrualCycleLog, MenstrualInfo,
+	Symptom,
+};
 use frame_support::{
 	assert_noop, assert_ok,
 	sp_runtime::traits::{Hash, Keccak256},
@@ -52,13 +55,13 @@ fn add_menstrual_cycle_log_works() {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
 
 		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
 
 		assert_ok!(MenstrualCalendar::add_menstrual_cycle_log(
 			Origin::signed(customer),
 			menstrual_ids[0],
-			0,
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		));
 
 		let cycle_log_ids =
@@ -91,13 +94,13 @@ fn update_menstrual_cycle_log_works() {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
 
 		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
 
 		assert_ok!(MenstrualCalendar::add_menstrual_cycle_log(
 			Origin::signed(customer),
 			menstrual_ids[0],
-			0,
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		));
 
 		let cycle_log_ids =
@@ -134,13 +137,13 @@ fn remove_menstrual_cycle_log_works() {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
 
 		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
 
 		assert_ok!(MenstrualCalendar::add_menstrual_cycle_log(
 			Origin::signed(customer),
 			menstrual_ids[0],
-			0,
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		));
 
 		let cycle_log_ids =
@@ -200,13 +203,14 @@ fn cant_update_menstrual_calendar_when_not_owner() {
 #[test]
 fn cant_add_menstrual_cycle_log_when_menstrual_calendar_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
+
 		assert_noop!(
 			MenstrualCalendar::add_menstrual_cycle_log(
 				Origin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				0,
-				vec![Symptom::from(b"pain")],
-				false
+				vec![menstrual_info],
 			),
 			Error::<Test>::MenstrualCalendarDoesNotExist
 		);
@@ -222,14 +226,14 @@ fn cant_add_menstrual_cycle_log_when_not_owner() {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
 
 		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
 
 		assert_noop!(
 			MenstrualCalendar::add_menstrual_cycle_log(
 				Origin::signed(other_customer),
 				menstrual_ids[0],
-				0,
-				vec![Symptom::from(b"pain")],
-				true,
+				vec![menstrual_info],
 			),
 			Error::<Test>::NotMenstrualCalendarOwner
 		);
@@ -325,13 +329,13 @@ fn cant_remove_menstrual_cycle_log_when_not_owner() {
 		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
 
 		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
 
 		assert_ok!(MenstrualCalendar::add_menstrual_cycle_log(
 			Origin::signed(customer),
 			menstrual_ids[0],
-			0,
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		));
 
 		let cycle_log_ids =
@@ -397,26 +401,27 @@ fn call_event_should_works() {
 			),
 		));
 
+		let menstrual_info =
+			MenstrualInfo { date: 0, symptoms: vec![Symptom::from(b"pain")], menstruation: true };
+
 		assert_ok!(MenstrualCalendar::add_menstrual_cycle_log(
 			Origin::signed(customer),
 			menstrual_ids[0],
-			0,
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		));
 
 		let cycle_log_ids =
 			MenstrualCalendar::menstrual_cycle_log_by_owner_id(menstrual_ids[0]).unwrap();
 
-		System::assert_last_event(Event::MenstrualCalendar(crate::Event::MenstrualCycleLogAdded(
-			MenstrualCycleLog::new(
+		System::assert_last_event(Event::MenstrualCalendar(crate::Event::MenstrualCycleLogsAdded(
+			vec![MenstrualCycleLog::new(
 				cycle_log_ids[0],
 				menstrual_ids[0],
 				0,
 				true,
 				vec![Symptom::from(b"pain")],
 				0,
-			),
+			)],
 			customer,
 		)));
 

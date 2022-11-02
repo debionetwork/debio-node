@@ -1,7 +1,7 @@
 use super::*;
 
 #[allow(unused)]
-use crate::{Pallet as MenstrualCalendar, Symptom};
+use crate::{MenstrualInfo, Pallet as MenstrualCalendar, Symptom};
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::sp_runtime::SaturatedConversion;
 use frame_system::RawOrigin;
@@ -37,12 +37,16 @@ benchmarks! {
 		let menstrual_ids = MenstrualCalendar::<T>::menstrual_calendar_by_owner(
 			caller.clone()
 		).unwrap();
+
+		let menstrual_info = MenstrualInfo {
+			date: 0u128.saturated_into(),
+			symptoms: vec![Symptom::from(b"pain")],
+			menstruation: true,
+		};
 	}: add_menstrual_cycle_log(
 		RawOrigin::Signed(caller),
 		menstrual_ids[0],
-		0u128.saturated_into(),
-		vec![Symptom::from(b"pain")],
-		true
+		vec![menstrual_info],
 	)
 
 	update_menstrual_cycle_log {
@@ -58,12 +62,16 @@ benchmarks! {
 			caller.clone()
 		).unwrap();
 
+		let menstrual_info = MenstrualInfo {
+			date: 0u128.saturated_into(),
+			symptoms: vec![Symptom::from(b"pain")],
+			menstruation: true,
+		};
+
 		let _ = MenstrualCalendar::<T>::add_menstrual_cycle_log(
 			caller_origin.clone(),
 			menstrual_ids[0],
-			0u128.saturated_into(),
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		);
 
 		let cycle_log_ids = MenstrualCalendar::<T>::menstrual_cycle_log_by_owner_id(menstrual_ids[0]).unwrap();
@@ -89,12 +97,16 @@ benchmarks! {
 			caller.clone()
 		).unwrap();
 
+		let menstrual_info = MenstrualInfo {
+			date: 0u128.saturated_into(),
+			symptoms: vec![Symptom::from(b"pain")],
+			menstruation: true,
+		};
+
 		let _ = MenstrualCalendar::<T>::add_menstrual_cycle_log(
 			caller_origin.clone(),
 			menstrual_ids[0],
-			0u128.saturated_into(),
-			vec![Symptom::from(b"pain")],
-			true,
+			vec![menstrual_info],
 		);
 
 		let cycle_log_ids = MenstrualCalendar::<T>::menstrual_cycle_log_by_owner_id(menstrual_ids[0]).unwrap();

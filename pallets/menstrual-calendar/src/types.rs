@@ -15,6 +15,13 @@ impl Symptom {
 	}
 }
 
+#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+pub struct MenstrualInfo<Moment> {
+	pub date: Moment,
+	pub symptoms: Vec<Symptom>,
+	pub menstruation: bool,
+}
+
 // MenstrualCycleLog
 #[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub struct MenstrualCycleLog<Hash, Moment> {
