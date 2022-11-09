@@ -186,14 +186,11 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 		let asset_id = genetic_analysis_order.asset_id;
 		let account_id = Self::account_id();
 
-		// Calculate 5% of the price_component_value
-		let mut price_component_substracted_value: BalanceOf<T> = 0u128.saturated_into();
-		for analysis_order in genetic_analysis_order.prices.iter() {
-			price_component_substracted_value += analysis_order.value / 20u128.saturated_into();
-		}
+		// Calculate 5% of the total price
+		let price_substracted_value: BalanceOf<T> = total_price / 20u128.saturated_into();
 
-		// 5% of the price_component_value is substracted
-		let total_price_paid = total_price - price_component_substracted_value;
+		// 5% of the total price is substracted
+		let total_price_paid = total_price - price_substracted_value;
 
 		// Withhold 5% for DBIO
 		Self::do_transfer(
@@ -209,7 +206,7 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&genetic_analysis_order.currency,
 			&account_id,
 			&TreasuryKey::<T>::get().unwrap(),
-			price_component_substracted_value,
+			price_substracted_value,
 			asset_id,
 		)?;
 

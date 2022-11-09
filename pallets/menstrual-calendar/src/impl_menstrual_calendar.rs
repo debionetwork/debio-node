@@ -5,6 +5,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type MenstrualCycleLog = MenstrualCycleLogOf<T>;
 	type MenstrualCalendar = MenstrualCalendarOf<T>;
+	type MenstrualInfo = SymptomInfoOf<T>;
 	type Date = MomentOf<T>;
 
 	fn add_menstrual_calendar(
@@ -52,10 +53,8 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	fn add_menstrual_cycle_log(
 		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
-		date: &Self::Date,
-		symptoms: &[Symptom],
-		menstruation: bool,
-	) -> Result<Self::MenstrualCycleLog, Self::Error> {
+		menstrual_infos: &[Self::MenstrualInfo],
+	) -> Result<Vec<Self::MenstrualCycleLog>, Self::Error> {
 		let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id)
 			.ok_or(Error::<T>::MenstrualCalendarDoesNotExist)?;
 
@@ -63,34 +62,42 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 			return Err(Error::<T>::NotMenstrualCalendarOwner)
 		}
 
-		let owner_menstrual_cycle_log_count =
-			MenstrualCycleLogCountByOwner::<T>::get(menstrual_calendar_id).unwrap_or(0);
-
-		let menstrual_cycle_log_id = Self::generate_id(
-			address_id,
-			owner_menstrual_cycle_log_count,
-			Some(*menstrual_calendar_id),
-		);
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
 		// Store to MenstrualCycleLogById storage
-		let _menstrual_cycle_log = MenstrualCycleLog::new(
-			menstrual_cycle_log_id,
-			*menstrual_calendar_id,
-			*date,
-			menstruation,
-			symptoms.to_vec(),
-			now,
-		);
+		let mut menstrual_cycle_logs: Vec<MenstrualCycleLogOf<T>> = Vec::new();
 
-		MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, &_menstrual_cycle_log);
+		for menstrual_info in menstrual_infos.iter() {
+			let owner_menstrual_cycle_log_count =
+				MenstrualCycleLogCountByOwner::<T>::get(menstrual_calendar_id).unwrap_or(0);
 
-		Self::add_menstrual_cycle_log_by_owner(menstrual_calendar_id, &menstrual_cycle_log_id);
-		Self::add_menstrual_cycle_log_count();
-		Self::add_menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
+			let menstrual_cycle_log_id = Self::generate_id(
+				address_id,
+				owner_menstrual_cycle_log_count,
+				Some(*menstrual_calendar_id),
+			);
 
-		Ok(_menstrual_cycle_log)
+			let now = pallet_timestamp::Pallet::<T>::get();
+			let date = &menstrual_info.date;
+			let symptoms = &menstrual_info.symptoms;
+			let menstruation = menstrual_info.menstruation;
+			let menstrual_cycle_log = MenstrualCycleLog::new(
+				menstrual_cycle_log_id,
+				*menstrual_calendar_id,
+				*date,
+				menstruation,
+				symptoms.to_vec(),
+				now,
+			);
+
+			MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, &menstrual_cycle_log);
+
+			Self::add_menstrual_cycle_log_by_owner(menstrual_calendar_id, &menstrual_cycle_log_id);
+			Self::add_menstrual_cycle_log_count();
+			Self::add_menstrual_cycle_log_count_by_owner(menstrual_calendar_id);
+
+			menstrual_cycle_logs.push(menstrual_cycle_log);
+		}
+
+		Ok(menstrual_cycle_logs)
 	}
 
 	fn update_menstrual_cycle_log(

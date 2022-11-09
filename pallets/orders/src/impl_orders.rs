@@ -173,21 +173,15 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		if order.currency.can_transfer() {
 			let treasury_key = Self::treasury_key().ok_or(Error::<T>::PalletAccountNotFound)?;
 			let pallet_id = Self::pallet_id().ok_or(Error::<T>::PalletAccountNotFound)?;
-
-			// Transfer testing price and QC price to lab
-			let mut price_component_substracted_value: BalanceOf<T> = 0u128.saturated_into();
-			for price in order.prices.iter() {
-				price_component_substracted_value += price.value / 20u128.saturated_into();
-			}
-
-			let total_price_paid = order.total_price - price_component_substracted_value;
+			let price_substracted_value: BalanceOf<T> = order.total_price / 20u128.saturated_into();
+			let total_price_paid = order.total_price - price_substracted_value;
 
 			// Transfer 5% to treasury
 			Self::do_transfer(
 				&order.currency,
 				&pallet_id,
 				&treasury_key,
-				price_component_substracted_value,
+				price_substracted_value,
 				order.asset_id,
 			)?;
 

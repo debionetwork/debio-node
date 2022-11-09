@@ -569,7 +569,7 @@ fn fulfill_order_works() {
 			currency: CurrencyType::DBIO,
 			total_price: 30,
 			price_components: vec![Price { component: b"testing_price".to_vec(), value: 20 }],
-			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 10 }],
+			additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 20 }],
 		};
 
 		assert_ok!(Services::create_service(
@@ -636,7 +636,7 @@ fn fulfill_order_works() {
 				seller_id: lab,
 				dna_sample_tracking_id: _dna_sample[0].clone(),
 				asset_id: None,
-				total_price: 30,
+				total_price: 40,
 				currency: CurrencyType::default(),
 				prices: prices_by_currency_dbio.price_components,
 				additional_prices: prices_by_currency_dbio.additional_prices,
@@ -647,10 +647,10 @@ fn fulfill_order_works() {
 			})
 		);
 
-		assert_eq!(Balances::free_balance(customer), 170);
-		assert_eq!(Balances::free_balance(lab), 329);
+		assert_eq!(Balances::free_balance(customer), 160);
+		assert_eq!(Balances::free_balance(lab), 338);
 		assert_eq!(Balances::free_balance(pallet_id), 1);
-		assert_eq!(Balances::free_balance(treasury_key), 401);
+		assert_eq!(Balances::free_balance(treasury_key), 402);
 	})
 }
 

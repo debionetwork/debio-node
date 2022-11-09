@@ -65,6 +65,7 @@ pub mod pallet {
 	pub type MenstrualCalendarIdOf<T> = HashOf<T>;
 	pub type MenstrualCycleLogOf<T> = MenstrualCycleLog<HashOf<T>, MomentOf<T>>;
 	pub type MenstrualCycleLogIdOf<T> = HashOf<T>;
+	pub type SymptomInfoOf<T> = MenstrualInfo<MomentOf<T>>;
 
 	// ------- Storage -------------
 	#[pallet::storage]
@@ -120,7 +121,7 @@ pub mod pallet {
 		MenstrualCalendarRemoved(HashOf<T>, AccountIdOf<T>),
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters, [MenstrualCycleLog, who]
-		MenstrualCycleLogAdded(MenstrualCycleLogOf<T>, AccountIdOf<T>),
+		MenstrualCycleLogsAdded(Vec<MenstrualCycleLogOf<T>>, AccountIdOf<T>),
 		//// MenstrualCycleLog updated
 		/// parameters, [MenstrualCycleLog, who]
 		MenstrualCycleLogUpdated(MenstrualCycleLogOf<T>, AccountIdOf<T>),
@@ -190,21 +191,17 @@ pub mod pallet {
 		pub fn add_menstrual_cycle_log(
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
-			date: MomentOf<T>,
-			symptoms: Vec<Symptom>,
-			menstruation: bool,
+			menstrual_infos: Vec<SymptomInfoOf<T>>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::add_menstrual_cycle_log(
 				&who,
 				&menstrual_calendar_id,
-				&date,
-				&symptoms,
-				menstruation,
+				&menstrual_infos,
 			) {
-				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogAdded(menstrual_cycle_log, who));
+				Ok(menstrual_cycle_logs) => {
+					Self::deposit_event(Event::MenstrualCycleLogsAdded(menstrual_cycle_logs, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

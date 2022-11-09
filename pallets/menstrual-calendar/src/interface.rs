@@ -4,6 +4,7 @@ pub trait MenstrualCalendarInterface<T: frame_system::Config> {
 	type Error;
 	type MenstrualCycleLog;
 	type MenstrualCalendar;
+	type MenstrualInfo;
 	type Date;
 
 	fn add_menstrual_calendar(
@@ -20,10 +21,8 @@ pub trait MenstrualCalendarInterface<T: frame_system::Config> {
 	fn add_menstrual_cycle_log(
 		address_id: &T::AccountId,
 		menstrual_calendar_id: &T::Hash,
-		date: &Self::Date,
-		symptoms: &[Symptom],
-		menstruation: bool,
-	) -> Result<Self::MenstrualCycleLog, Self::Error>;
+		menstrual_infos: &[Self::MenstrualInfo],
+	) -> Result<Vec<Self::MenstrualCycleLog>, Self::Error>;
 
 	fn update_menstrual_cycle_log(
 		address_id: &T::AccountId,
