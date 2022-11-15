@@ -59,6 +59,8 @@ fn add_menstrual_subscription_works() {
 #[test]
 fn set_menstrual_subscription_paid_works() {
 	ExternalityBuilder::build().execute_with(|| {
+		let total_issuance = Balances::total_issuance();
+
 		let customer = account_key("customer");
 		let treasure = account_key("treasure");
 		let admin = account_key("admin");
@@ -110,7 +112,9 @@ fn set_menstrual_subscription_paid_works() {
 		);
 
 		assert_eq!(Balances::free_balance(customer), 190);
-		assert_eq!(Balances::free_balance(treasure), 510);
+		assert_eq!(Balances::total_issuance(), total_issuance - 10);
+
+		let total_issuance = Balances::total_issuance();
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
 			Origin::signed(customer),
@@ -135,7 +139,7 @@ fn set_menstrual_subscription_paid_works() {
 		);
 
 		assert_eq!(Balances::free_balance(customer), 180);
-		assert_eq!(Balances::free_balance(treasure), 520);
+		assert_eq!(Balances::total_issuance(), total_issuance - 10);
 	})
 }
 
@@ -309,21 +313,6 @@ fn cant_change_menstrual_subscription_status_when_not_paid() {
 				MenstrualSubscriptionStatus::default(),
 			),
 			Error::<Test>::MenstrualSubscriptionNotPaid,
-		);
-	})
-}
-
-#[test]
-fn cant_set_menstrual_subscription_paid_when_no_treasury_key() {
-	ExternalityBuilder::build().execute_with(|| {
-		let customer = account_key("customer");
-
-		assert_noop!(
-			MenstrualSubscription::set_menstrual_subscription_paid(
-				Origin::signed(customer),
-				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
-			),
-			Error::<Test>::NoProviders
 		);
 	})
 }

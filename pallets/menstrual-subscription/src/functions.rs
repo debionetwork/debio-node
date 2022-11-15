@@ -2,8 +2,11 @@ use crate::*;
 use frame_support::{
 	codec::Encode,
 	dispatch::DispatchError,
-	sp_runtime::{traits::Hash, SaturatedConversion},
-	traits::{fungibles, Currency, ExistenceRequirement},
+	sp_runtime::{
+		traits::{CheckedSub, Hash},
+		SaturatedConversion,
+	},
+	traits::{fungibles, Currency, ExistenceRequirement, WithdrawReasons},
 };
 use primitives_price_and_currency::CurrencyType;
 use scale_info::prelude::string::String;
@@ -95,6 +98,25 @@ impl<T: Config> Pallet<T> {
 		}
 
 		Ok(Some(asset_id))
+	}
+
+	pub fn do_burn(who: &T::AccountId, amount: BalanceOf<T>) -> Result<(), Error<T>> {
+		let _ = CurrencyOf::<T>::total_issuance()
+			.checked_sub(&amount)
+			.ok_or(Error::<T>::InsufficientBalance)?;
+
+		let result = CurrencyOf::<T>::withdraw(
+			who,
+			amount,
+			WithdrawReasons::TRANSFER,
+			ExistenceRequirement::KeepAlive,
+		);
+
+		if result.is_ok() {
+			CurrencyOf::<T>::burn(amount);
+		}
+
+		Ok(())
 	}
 
 	pub fn do_transfer(

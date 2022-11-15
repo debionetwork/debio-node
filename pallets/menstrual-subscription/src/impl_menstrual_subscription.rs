@@ -88,7 +88,6 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		address_id: &T::AccountId,
 		menstrual_subscription_id: &T::Hash,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
-		let treasury_key = TreasuryKey::<T>::get().ok_or(Error::<T>::NoProviders)?;
 		let mut menstrual_subscription =
 			MenstrualSubscriptionById::<T>::get(menstrual_subscription_id)
 				.ok_or(Error::<T>::MenstrualSubscriptionDoesNotExist)?;
@@ -107,10 +106,13 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 			MenstrualSubscriptionPrices::<T>::get(subscription_duration, currency)
 				.ok_or(Error::<T>::MenstrualSubscriptionPriceNotExist)?;
 
-		let asset_id = subscription_price.asset_id;
 		let amount = subscription_price.amount;
 
-		Self::do_transfer(currency, address_id, &treasury_key, amount, asset_id)?;
+		if currency != &CurrencyType::DBIO {
+			return Err(Error::<T>::Token)
+		}
+
+		Self::do_burn(address_id, amount)?;
 
 		if Self::active_subscription_by_owner(address_id).is_none() {
 			menstrual_subscription.status = MenstrualSubscriptionStatus::Active;
