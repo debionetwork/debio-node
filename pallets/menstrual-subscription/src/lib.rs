@@ -167,6 +167,7 @@ pub mod pallet {
 		/// Update menstrual subscription admin key successful
 		/// parameters. [who]
 		UpdateMenstrualSubscriptionKeySuccessful(AccountKeyTypeOf<T>),
+		TotalSupplyDecreased(BalanceOf<T>),
 		MenstrualSubscriptionPriceAdded(MenstrualSubscriptionPriceOf<T>),
 	}
 
