@@ -416,6 +416,43 @@ fn cant_set_menstrual_subscription_paid_when_already_paid() {
 }
 
 #[test]
+fn cant_set_menstrual_subscription_paid_when_balance_not_enough() {
+	ExternalityBuilder::build().execute_with(|| {
+		let customer = account_key("customer");
+		let treasure = account_key("treasure");
+		let admin = account_key("admin");
+
+		AdminKey::<Test>::put(admin);
+		TreasuryKey::<Test>::put(treasure);
+
+		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
+			Origin::signed(admin),
+			MenstrualSubscriptionDuration::default(),
+			CurrencyType::DBIO,
+			1000,
+			None,
+		));
+
+		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
+			Origin::signed(customer),
+			MenstrualSubscriptionDuration::default(),
+			CurrencyType::DBIO,
+		));
+
+		let menstrual_subscription_ids =
+			MenstrualSubscription::menstrual_subscription_by_address_id(customer).unwrap();
+
+		assert_noop!(
+			MenstrualSubscription::set_menstrual_subscription_paid(
+				Origin::signed(customer),
+				menstrual_subscription_ids[0]
+			),
+			Error::<Test>::InsufficientBalance,
+		);
+	})
+}
+
+#[test]
 fn cant_change_menstrual_subscription_status_when_unauthorized() {
 	ExternalityBuilder::build().execute_with(|| {
 		let other = account_key("other");

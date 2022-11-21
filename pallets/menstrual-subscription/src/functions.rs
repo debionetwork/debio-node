@@ -112,9 +112,12 @@ impl<T: Config> Pallet<T> {
 			ExistenceRequirement::KeepAlive,
 		);
 
-		if result.is_ok() {
-			CurrencyOf::<T>::burn(amount);
+		if result.is_err() {
+			return Err(Error::<T>::InsufficientBalance)
 		}
+
+		CurrencyOf::<T>::burn(amount);
+		Self::deposit_event(Event::TotalSupplyDecreased(amount));
 
 		Ok(())
 	}
