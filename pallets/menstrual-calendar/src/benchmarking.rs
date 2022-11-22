@@ -1,7 +1,7 @@
 use super::*;
 
 #[allow(unused)]
-use crate::{MenstrualInfo, Pallet as MenstrualCalendar, Symptom};
+use crate::{MenstrualCycleLog, MenstrualInfo, Pallet as MenstrualCalendar, Symptom};
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::sp_runtime::SaturatedConversion;
 use frame_system::RawOrigin;
@@ -75,13 +75,17 @@ benchmarks! {
 		);
 
 		let cycle_log_ids = MenstrualCalendar::<T>::menstrual_cycle_log_by_owner_id(menstrual_ids[0]).unwrap();
+		let menstrual_cycle_log = MenstrualCycleLog::new(
+			cycle_log_ids[0],
+			menstrual_ids[0],
+			1u128.saturated_into(),
+			false,
+			vec![Symptom::from(b"headache")],
+			0u128.saturated_into(),
+		);
 	}: update_menstrual_cycle_log(
 		RawOrigin::Signed(caller),
-		menstrual_ids[0],
-		cycle_log_ids[0],
-		1u128.saturated_into(),
-		vec![Symptom::from(b"headache")],
-		false
+		menstrual_cycle_log
 	)
 
 	remove_menstrual_cycle_log {

@@ -5,7 +5,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type MenstrualCycleLog = MenstrualCycleLogOf<T>;
 	type MenstrualCalendar = MenstrualCalendarOf<T>;
-	type MenstrualInfo = SymptomInfoOf<T>;
+	type MenstrualInfo = MenstrualInfoOf<T>;
 	type Date = MomentOf<T>;
 
 	fn add_menstrual_calendar(
@@ -102,37 +102,47 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 
 	fn update_menstrual_cycle_log(
 		address_id: &T::AccountId,
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_id: &T::Hash,
-		date: &Self::Date,
-		symptoms: &[Symptom],
-		menstruation: bool,
-	) -> Result<Self::MenstrualCycleLog, Self::Error> {
-		let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id)
-			.ok_or(Error::<T>::MenstrualCalendarDoesNotExist)?;
-
-		if &menstrual_calendar.address_id != address_id {
-			return Err(Error::<T>::NotMenstrualCalendarOwner)
-		}
-
-		let mut menstrual_cycle_log = MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id)
-			.ok_or(Error::<T>::MenstrualCycleLogDoesNotExist)?;
-
-		if &menstrual_cycle_log.menstrual_calendar_id != menstrual_calendar_id {
-			return Err(Error::<T>::NotMenstrualCycleLogOwner)
-		}
-
+		menstrual_cycle_logs: &[Self::MenstrualCycleLog],
+	) -> Result<Vec<Self::MenstrualCycleLog>, Self::Error> {
 		let now = pallet_timestamp::Pallet::<T>::get();
+		let mut updated_menstrual_cycle_logs: Vec<MenstrualCycleLogOf<T>> = Vec::new();
 
-		menstrual_cycle_log.date = *date;
-		menstrual_cycle_log.menstruation = menstruation;
-		menstrual_cycle_log.symptoms = symptoms.to_vec();
-		menstrual_cycle_log.updated_at = now;
+		for menstrual_cycle_log in menstrual_cycle_logs.iter() {
+			let menstrual_calendar_id = &menstrual_cycle_log.menstrual_calendar_id;
+			let menstrual_cycle_log_id = &menstrual_cycle_log.id;
+			let date = &menstrual_cycle_log.date;
+			let symptoms = &menstrual_cycle_log.symptoms;
+			let menstruation = menstrual_cycle_log.menstruation;
 
-		// Store to MenstrualCycleLogById storage
-		MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, &menstrual_cycle_log);
+			let menstrual_calendar = MenstrualCalendarById::<T>::get(menstrual_calendar_id);
+			let new_menstrual_cycle_log = MenstrualCycleLogById::<T>::get(menstrual_cycle_log_id);
 
-		Ok(menstrual_cycle_log)
+			if menstrual_calendar.is_none() || new_menstrual_cycle_log.is_none() {
+				continue
+			}
+
+			let menstrual_calendar = menstrual_calendar.unwrap();
+			let mut new_menstrual_cycle_log = new_menstrual_cycle_log.unwrap();
+
+			if &menstrual_calendar.address_id != address_id {
+				continue
+			}
+
+			if &new_menstrual_cycle_log.menstrual_calendar_id != menstrual_calendar_id {
+				continue
+			}
+
+			new_menstrual_cycle_log.date = *date;
+			new_menstrual_cycle_log.menstruation = menstruation;
+			new_menstrual_cycle_log.symptoms = symptoms.to_vec();
+			new_menstrual_cycle_log.updated_at = now;
+
+			MenstrualCycleLogById::<T>::insert(menstrual_cycle_log_id, &new_menstrual_cycle_log);
+
+			updated_menstrual_cycle_logs.push(new_menstrual_cycle_log);
+		}
+
+		Ok(updated_menstrual_cycle_logs)
 	}
 
 	fn remove_menstrual_cycle_log(
