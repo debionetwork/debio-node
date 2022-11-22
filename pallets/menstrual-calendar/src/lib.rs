@@ -65,7 +65,7 @@ pub mod pallet {
 	pub type MenstrualCalendarIdOf<T> = HashOf<T>;
 	pub type MenstrualCycleLogOf<T> = MenstrualCycleLog<HashOf<T>, MomentOf<T>>;
 	pub type MenstrualCycleLogIdOf<T> = HashOf<T>;
-	pub type SymptomInfoOf<T> = MenstrualInfo<MomentOf<T>>;
+	pub type MenstrualInfoOf<T> = MenstrualInfo<MomentOf<T>>;
 
 	// ------- Storage -------------
 	#[pallet::storage]
@@ -124,7 +124,7 @@ pub mod pallet {
 		MenstrualCycleLogsAdded(Vec<MenstrualCycleLogOf<T>>, AccountIdOf<T>),
 		//// MenstrualCycleLog updated
 		/// parameters, [MenstrualCycleLog, who]
-		MenstrualCycleLogUpdated(MenstrualCycleLogOf<T>, AccountIdOf<T>),
+		MenstrualCycleLogUpdated(Vec<MenstrualCycleLogOf<T>>, AccountIdOf<T>),
 		//// MenstrualCycleLog deleted
 		/// parameters, [MenstrualCycleLogId, who]
 		MenstrualCycleLogRemoved(HashOf<T>, AccountIdOf<T>),
@@ -191,7 +191,7 @@ pub mod pallet {
 		pub fn add_menstrual_cycle_log(
 			origin: OriginFor<T>,
 			menstrual_calendar_id: HashOf<T>,
-			menstrual_infos: Vec<SymptomInfoOf<T>>,
+			menstrual_infos: Vec<MenstrualInfoOf<T>>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
@@ -211,24 +211,16 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualCalendarWeightInfo::update_menstrual_cycle_log())]
 		pub fn update_menstrual_cycle_log(
 			origin: OriginFor<T>,
-			menstrual_calendar_id: HashOf<T>,
-			menstrual_cycle_log_id: HashOf<T>,
-			date: MomentOf<T>,
-			symptoms: Vec<Symptom>,
-			menstruation: bool,
+			menstrual_cycle_logs: Vec<MenstrualCycleLogOf<T>>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualCalendarInterface<T>>::update_menstrual_cycle_log(
 				&who,
-				&menstrual_calendar_id,
-				&menstrual_cycle_log_id,
-				&date,
-				&symptoms,
-				menstruation,
+				&menstrual_cycle_logs,
 			) {
-				Ok(menstrual_cycle_log) => {
-					Self::deposit_event(Event::MenstrualCycleLogUpdated(menstrual_cycle_log, who));
+				Ok(menstrual_cycle_logs) => {
+					Self::deposit_event(Event::MenstrualCycleLogUpdated(menstrual_cycle_logs, who));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

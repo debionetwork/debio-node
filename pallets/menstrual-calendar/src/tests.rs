@@ -105,14 +105,17 @@ fn update_menstrual_cycle_log_works() {
 
 		let cycle_log_ids =
 			MenstrualCalendar::menstrual_cycle_log_by_owner_id(menstrual_ids[0]).unwrap();
-
+		let menstrual_cycle_log = MenstrualCycleLog::new(
+			cycle_log_ids[0],
+			menstrual_ids[0],
+			1,
+			false,
+			vec![Symptom::from(b"headache")],
+			0,
+		);
 		assert_ok!(MenstrualCalendar::update_menstrual_cycle_log(
 			Origin::signed(customer),
-			menstrual_ids[0],
-			cycle_log_ids[0],
-			1,
-			vec![Symptom::from(b"headache")],
-			false,
+			vec![menstrual_cycle_log],
 		));
 
 		assert_eq!(
@@ -241,70 +244,6 @@ fn cant_add_menstrual_cycle_log_when_not_owner() {
 }
 
 #[test]
-fn cant_update_menstrual_cycle_log_when_menstrual_calendar_not_exists() {
-	ExternalityBuilder::build().execute_with(|| {
-		assert_noop!(
-			MenstrualCalendar::update_menstrual_cycle_log(
-				Origin::signed(1),
-				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				0,
-				vec![Symptom::from(b"pain")],
-				false
-			),
-			Error::<Test>::MenstrualCalendarDoesNotExist
-		);
-	})
-}
-
-#[test]
-fn cant_update_menstrual_cycle_log_when_not_owner() {
-	ExternalityBuilder::build().execute_with(|| {
-		let customer = 1;
-		let other_customer = 2;
-
-		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
-
-		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
-
-		assert_noop!(
-			MenstrualCalendar::update_menstrual_cycle_log(
-				Origin::signed(other_customer),
-				menstrual_ids[0],
-				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				1,
-				vec![Symptom::from(b"headache")],
-				false,
-			),
-			Error::<Test>::NotMenstrualCalendarOwner
-		);
-	})
-}
-
-#[test]
-fn cant_update_menstrual_cycle_log_when_menstrual_cycle_log_not_exists() {
-	ExternalityBuilder::build().execute_with(|| {
-		let customer = 1;
-
-		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
-
-		let menstrual_ids = MenstrualCalendar::menstrual_calendar_by_owner(customer).unwrap();
-
-		assert_noop!(
-			MenstrualCalendar::update_menstrual_cycle_log(
-				Origin::signed(customer),
-				menstrual_ids[0],
-				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
-				1,
-				vec![Symptom::from(b"headache")],
-				false,
-			),
-			Error::<Test>::MenstrualCycleLogDoesNotExist
-		);
-	})
-}
-
-#[test]
 fn cant_remove_menstrual_cycle_log_when_menstrual_calendar_not_exists() {
 	ExternalityBuilder::build().execute_with(|| {
 		let customer = 1;
@@ -425,27 +364,22 @@ fn call_event_should_works() {
 			customer,
 		)));
 
+		let menstrual_cycle_log = MenstrualCycleLog::new(
+			cycle_log_ids[0],
+			menstrual_ids[0],
+			1,
+			false,
+			vec![Symptom::from(b"headache")],
+			0,
+		);
+
 		assert_ok!(MenstrualCalendar::update_menstrual_cycle_log(
 			Origin::signed(customer),
-			menstrual_ids[0],
-			cycle_log_ids[0],
-			1,
-			vec![Symptom::from(b"headache")],
-			false,
+			vec![menstrual_cycle_log.clone()],
 		));
 
 		System::assert_last_event(Event::MenstrualCalendar(
-			crate::Event::MenstrualCycleLogUpdated(
-				MenstrualCycleLog::new(
-					cycle_log_ids[0],
-					menstrual_ids[0],
-					1,
-					false,
-					vec![Symptom::from(b"headache")],
-					0,
-				),
-				customer,
-			),
+			crate::Event::MenstrualCycleLogUpdated(vec![menstrual_cycle_log], customer),
 		));
 
 		assert_ok!(MenstrualCalendar::remove_menstrual_cycle_log(

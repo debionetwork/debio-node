@@ -26,12 +26,8 @@ pub trait MenstrualCalendarInterface<T: frame_system::Config> {
 
 	fn update_menstrual_cycle_log(
 		address_id: &T::AccountId,
-		menstrual_calendar_id: &T::Hash,
-		menstrual_cycle_log_id: &T::Hash,
-		date: &Self::Date,
-		symptoms: &[Symptom],
-		menstruation: bool,
-	) -> Result<Self::MenstrualCycleLog, Self::Error>;
+		menstrual_cycle_logs: &[Self::MenstrualCycleLog],
+	) -> Result<Vec<Self::MenstrualCycleLog>, Self::Error>;
 
 	fn remove_menstrual_cycle_log(
 		address_id: &T::AccountId,
