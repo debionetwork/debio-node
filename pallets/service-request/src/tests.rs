@@ -2385,10 +2385,12 @@ fn call_event_should_work() {
 
 		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
 
+		let request = ServiceRequest::request_by_id(request_id);
+
 		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestUpdated(
-			lab,
 			request_id,
 			RequestStatus::Claimed,
+			request,
 		)));
 
 		assert_ok!(Orders::create_order(
@@ -2406,10 +2408,12 @@ fn call_event_should_work() {
 			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
 		);
 
+		let request = ServiceRequest::request_by_id(request_id);
+
 		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestUpdated(
-			customer,
 			request_id,
 			RequestStatus::Processed,
+			request,
 		)));
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
@@ -2440,10 +2444,12 @@ fn call_event_should_work() {
 
 		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
 
+		let request = ServiceRequest::request_by_id(request_id);
+
 		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestUpdated(
-			lab,
 			request_id,
 			RequestStatus::Finalized,
+			request,
 		)));
 	})
 }

@@ -80,7 +80,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		ServiceRequestCreated(AccountIdOf<T>, RequestOf<T>),
-		ServiceRequestUpdated(AccountIdOf<T>, HashOf<T>, RequestStatus),
+		ServiceRequestUpdated(HashOf<T>, RequestStatus, Option<RequestOf<T>>),
 		StakingAmountRefunded(AccountIdOf<T>, HashOf<T>, BalanceOf<T>),
 		UpdateServiceRequestAdminKeySuccessful(AccountIdOf<T>),
 	}
@@ -214,11 +214,11 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::unstake(&who, &request_id) {
-				Ok(_) => {
+				Ok(request) => {
 					Self::deposit_event(Event::ServiceRequestUpdated(
-						who,
 						request_id,
 						RequestStatus::WaitingForUnstaked,
+						Some(request),
 					));
 					Ok(().into())
 				},
@@ -234,17 +234,17 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::retrieve_unstaked_amount(&who, &request_id) {
-				Ok(balance) => {
+				Ok(request) => {
 					Self::deposit_event(Event::StakingAmountRefunded(
-						who.clone(),
+						who,
 						request_id,
-						balance,
+						request.staking_amount,
 					));
 
 					Self::deposit_event(Event::ServiceRequestUpdated(
-						who,
 						request_id,
 						RequestStatus::Unstaked,
+						Some(request),
 					));
 
 					Ok(().into())
@@ -263,11 +263,14 @@ pub mod pallet {
 
 			match <Self as SeviceRequestInterface<T>>::claim_request(&who, &request_id, &service_id)
 			{
-				Ok(claimed) => {
-					let status =
-						if claimed { RequestStatus::Claimed } else { RequestStatus::InLabList };
+				Ok(request) => {
+					let status = if request.is_some() {
+						RequestStatus::Claimed
+					} else {
+						RequestStatus::InLabList
+					};
 
-					Self::deposit_event(Event::ServiceRequestUpdated(who, request_id, status));
+					Self::deposit_event(Event::ServiceRequestUpdated(request_id, status, request));
 
 					Ok(().into())
 				},
@@ -285,11 +288,11 @@ pub mod pallet {
 
 			match <Self as SeviceRequestInterface<T>>::process_request(&who, &request_id, &order_id)
 			{
-				Ok(_) => {
+				Ok(request) => {
 					Self::deposit_event(Event::ServiceRequestUpdated(
-						who,
 						request_id,
 						RequestStatus::Processed,
+						Some(request),
 					));
 					Ok(().into())
 				},
@@ -305,11 +308,11 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as SeviceRequestInterface<T>>::finalize_request(&who, &request_id) {
-				Ok(_) => {
+				Ok(request) => {
 					Self::deposit_event(Event::ServiceRequestUpdated(
-						who,
 						request_id,
 						RequestStatus::Finalized,
+						Some(request),
 					));
 					Ok(().into())
 				},
