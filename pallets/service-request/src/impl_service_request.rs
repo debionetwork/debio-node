@@ -58,7 +58,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	}
 
 	// Unstake DBIO
-	fn unstake(requester_id: &T::AccountId, request_id: &T::Hash) -> Result<(), Self::Error> {
+	fn unstake(
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
+	) -> Result<Self::Request, Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
 
 		if &request.requester_address != requester_id {
@@ -76,14 +79,14 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		RequestById::<T>::insert(request_id, &request);
 
-		Ok(())
+		Ok(request)
 	}
 
 	// Unstake DBIO
 	fn retrieve_unstaked_amount(
 		requester_id: &T::AccountId,
 		request_id: &T::Hash,
-	) -> Result<Self::Balance, Self::Error> {
+	) -> Result<Self::Request, Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
 
 		if requester_id != &request.requester_address {
@@ -114,7 +117,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		RequestById::<T>::insert(request_id, &request);
 
-		Ok(request.staking_amount)
+		Ok(request)
 	}
 
 	// Claim request by lab
@@ -122,9 +125,10 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		lab_id: &T::AccountId,
 		request_id: &T::Hash,
 		service_id: &T::Hash,
-	) -> Result<bool, Self::Error> {
+	) -> Result<Option<Self::Request>, Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
-		let mut is_claimed = true;
+		let mut claimed_request: Option<Self::Request> = None;
+
 		match request.status {
 			RequestStatus::WaitingForUnstaked => Err(Error::<T>::RequestAlreadyUnstaked),
 			RequestStatus::Unstaked => Err(Error::<T>::RequestAlreadyUnstaked),
@@ -149,7 +153,9 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			request.service_id = Some(*service_id);
 			request.updated_at = Some(now);
 
-			RequestById::<T>::insert(request_id, request);
+			RequestById::<T>::insert(request_id, &request);
+
+			claimed_request = Some(request);
 		} else {
 			RequestsByLabId::<T>::try_mutate(lab_id, |value| {
 				if value.iter().any(|x| x == request_id) {
@@ -160,11 +166,9 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 				Ok(())
 			})?;
-
-			is_claimed = false;
 		}
 
-		Ok(is_claimed)
+		Ok(claimed_request)
 	}
 
 	// Process request by customer
@@ -172,8 +176,8 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		requester_id: &T::AccountId,
 		request_id: &T::Hash,
 		order_id: &T::Hash,
-	) -> Result<(), Self::Error> {
-		RequestById::<T>::try_mutate(request_id, |result| match result {
+	) -> Result<Self::Request, Self::Error> {
+		let request = RequestById::<T>::mutate(request_id, |result| match result {
 			Some(request) => {
 				match request.status {
 					RequestStatus::WaitingForUnstaked => Err(Error::<T>::RequestAlreadyUnstaked),
@@ -211,19 +215,22 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 				request.status = RequestStatus::Processed;
 				request.updated_at = Some(now);
 
-				Ok(())
+				Ok(request.clone())
 			},
 			None => Err(Error::<T>::RequestNotFound),
 		})?;
 
 		RequestByOrderId::<T>::insert(order_id, request_id);
 
-		Ok(())
+		Ok(request)
 	}
 
 	// Finalize request with assetId
-	fn finalize_request(lab_id: &T::AccountId, request_id: &T::Hash) -> Result<(), Self::Error> {
-		RequestById::<T>::try_mutate(request_id, |result| match result {
+	fn finalize_request(
+		lab_id: &T::AccountId,
+		request_id: &T::Hash,
+	) -> Result<Self::Request, Self::Error> {
+		let request = RequestById::<T>::mutate(request_id, |result| match result {
 			Some(request) => {
 				if request.status != RequestStatus::Processed {
 					return Err(Error::<T>::RequestUnableToFinalize)
@@ -286,11 +293,11 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 					|value| *value = value.wrapping_sub(1),
 				);
 
-				Ok(())
+				Ok(request.clone())
 			},
 			None => Err(Error::<T>::RequestNotFound),
 		})?;
 
-		Ok(())
+		Ok(request)
 	}
 }
