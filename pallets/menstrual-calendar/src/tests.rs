@@ -172,6 +172,20 @@ fn remove_menstrual_cycle_log_works() {
 }
 
 #[test]
+fn cant_add_menstrual_calendar_when_already_exist() {
+	ExternalityBuilder::build().execute_with(|| {
+		let customer = 1;
+
+		assert_ok!(MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16));
+
+		assert_noop!(
+			MenstrualCalendar::add_menstrual_calendar(Origin::signed(customer), 16),
+			Error::<Test>::MenstrualCalendarAlreadyExist,
+		);
+	})
+}
+
+#[test]
 fn cant_update_menstrual_calendar_when_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(

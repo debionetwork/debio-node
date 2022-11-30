@@ -143,6 +143,8 @@ pub mod pallet {
 		NotMenstrualCycleLogOwner,
 		/// Ordering a menstrual_cycle_log that does not exist
 		MenstrualCycleLogDoesNotExist,
+		/// User is not allowed to have more than 1 menstrual calendar
+		MenstrualCalendarAlreadyExist,
 	}
 
 	#[pallet::call]

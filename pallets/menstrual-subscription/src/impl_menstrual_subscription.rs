@@ -20,7 +20,7 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 			.ok_or(Error::<T>::MenstrualSubscriptionPriceNotExist)?;
 
 		let owner_menstrual_subscription_count =
-			MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(1);
+			MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(0);
 
 		let menstrual_subscription_id = Self::generate_menstrual_subscription_id(
 			address_id,

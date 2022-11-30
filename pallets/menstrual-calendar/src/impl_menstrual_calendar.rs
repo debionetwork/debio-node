@@ -14,6 +14,11 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 	) -> Result<Self::MenstrualCalendar, Self::Error> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 		let total_count = MenstrualCalendarCountByOwner::<T>::get(address_id).unwrap_or(0);
+
+		if total_count > 0 {
+			return Err(Error::<T>::MenstrualCalendarAlreadyExist)
+		}
+
 		let id = Self::generate_id(address_id, total_count, None);
 		let menstrual_calendar = MenstrualCalendar::new(id, address_id.clone(), average_cycle, now);
 
@@ -46,6 +51,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 
 		// Store to MenstrualCalendarById storage
 		MenstrualCalendarById::<T>::insert(menstrual_calendar_id, &menstrual_calendar);
+		MenstrualCalendarByOwner::<T>::insert(address_id, vec![*menstrual_calendar_id]);
 
 		Ok(menstrual_calendar)
 	}
