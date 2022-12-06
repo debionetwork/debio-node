@@ -15,6 +15,7 @@ pub enum CurrencyType {
 	USDO,
 	USN,
 	USDT,
+	USDTE,
 }
 impl Default for CurrencyType {
 	fn default() -> Self {
@@ -34,6 +35,7 @@ impl CurrencyType {
 			CurrencyType::DAI => "dai".to_owned(),
 			CurrencyType::USDO => "usdo".to_owned(),
 			CurrencyType::ETH => "eth".to_owned(),
+			CurrencyType::USDTE => "usdt.e".to_owned(),
 		}
 	}
 
@@ -45,6 +47,7 @@ impl CurrencyType {
 			CurrencyType::DAI => "DAI".to_owned(),
 			CurrencyType::USDO => "USDO".to_owned(),
 			CurrencyType::ETH => "ETH".to_owned(),
+			CurrencyType::USDTE => "USDT.e".to_owned(),
 		}
 	}
 
@@ -56,6 +59,7 @@ impl CurrencyType {
 			CurrencyType::DAI => false,
 			CurrencyType::USDO => false,
 			CurrencyType::ETH => false,
+			CurrencyType::USDTE => true,
 		}
 	}
 }
