@@ -1,3 +1,5 @@
+use super::*;
+
 use crate::{AccountKeyType, Config, Pallet as MenstrualSubscription};
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::{sp_runtime::SaturatedConversion, traits::Currency};
