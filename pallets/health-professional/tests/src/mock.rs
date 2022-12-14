@@ -80,7 +80,7 @@ impl pallet_timestamp::Config for Test {
 type Balance = u64;
 
 parameter_types! {
-	pub const ExistentialDeposit: Balance = 0;
+	pub static ExistentialDeposit: Balance = 0;
 }
 
 impl pallet_balances::Config for Test {
@@ -117,12 +117,56 @@ use sp_io::TestExternalities;
 use frame_system as system;
 
 #[cfg(test)]
-pub struct ExternalityBuilder {}
+pub fn account_key(s: &str) -> u64 {
+	match s {
+		"admin" => 1,
+		"customer" => 2,
+		"doctor" => 3,
+		_ => 4,
+	}
+}
+
+#[cfg(test)]
+pub struct ExternalityBuilder {
+	existential_deposit: u64,
+}
+
+#[cfg(test)]
+impl Default for ExternalityBuilder {
+	fn default() -> Self {
+		Self { existential_deposit: 1 }
+	}
+}
 
 #[cfg(test)]
 impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
+	pub fn existential_deposit(mut self, existential_deposit: u64) -> Self {
+		self.existential_deposit = existential_deposit;
+		self
+	}
+
+	pub fn set_associated_consts(&self) {
+		EXISTENTIAL_DEPOSIT.with(|v| *v.borrow_mut() = self.existential_deposit);
+	}
+
+	pub fn build(&self) -> TestExternalities {
+		self.set_associated_consts();
+
+		let mut storage = system::GenesisConfig::default().build_storage::<Test>().unwrap();
+
+		let admin = account_key("admin");
+		let customer = account_key("customer");
+		let doctor = account_key("doctor");
+		let other = account_key("other");
+
+		pallet_balances::GenesisConfig::<Test> {
+			balances: vec![(admin, 100), (customer, 200), (doctor, 300), (other, 400)],
+		}
+		.assimilate_storage(&mut storage)
+		.unwrap();
+
+		let mut ext = sp_io::TestExternalities::new(storage);
+		ext.execute_with(|| System::set_block_number(1));
+		ext
 	}
 }
