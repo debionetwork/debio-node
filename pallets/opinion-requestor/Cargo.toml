@@ -1,0 +1,51 @@
+[package]
+name = 'opinion-requestor'
+version = '1.0.0'
+edition = '2021'
+homepage = 'https://debio.network/'
+repository = 'https://github.com/debionetwork/debio-node'
+authors = ['DeBio Dev Team <debio_dev@blocksphere.id>']
+description = ''
+license = 'AGPL-3.0'
+
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+## Substrate Pallet Dependencies
+pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+traits-genetic-data = { path = '../genetic-data/traits', default-features = false }
+traits-opinion-requestor = { path = '../opinion-requestor/traits', default-features = false }
+
+[dev-dependencies]
+serde = { default-features = false, version = "1.0.136" }
+sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+	'scale-info/std',
+    'frame-support/std',
+    'frame-system/std',
+    'sp-std/std',
+    'sp-io/std',
+
+	'traits-genetic-data/std',
+	'traits-opinion-requestor/std',
+
+	'pallet-timestamp/std',
+]
+runtime-benchmarks = []
+try-runtime = ['frame-support/try-runtime']
