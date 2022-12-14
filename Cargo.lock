@@ -1445,6 +1445,10 @@ dependencies = [
  "genetic-data",
  "genetic-testing",
  "genetic-testing-benchmarking",
+ "health-professional",
+ "health-professional-benchmarking",
+ "health-professional-qualification",
+ "health-professional-qualification-benchmarking",
  "hex-literal",
  "hospital-certifications",
  "hospital-certifications-benchmarking",
@@ -3083,6 +3087,128 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c21d40587b92fa6a6c6e3c1bdbf87d75511db5672f9c93175574b3a00df1758"
 dependencies = [
  "ahash",
+]
+
+[[package]]
+name = "health-professional"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-health-professional",
+ "traits-health-professional-qualifications",
+]
+
+[[package]]
+name = "health-professional-benchmarking"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "health-professional-qualification"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-health-professional-qualifications",
+]
+
+[[package]]
+name = "health-professional-qualification-benchmarking"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "health-professional-qualification-tests"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "health-professional-tests"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
 ]
 
 [[package]]
@@ -9389,6 +9515,28 @@ dependencies = [
 [[package]]
 name = "traits-genetic-testing"
 version = "2.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-health-professional"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-health-professional-qualifications"
+version = "1.0.0"
 dependencies = [
  "frame-support",
  "frame-system",

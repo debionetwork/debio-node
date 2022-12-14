@@ -141,6 +141,8 @@ mod benches {
 		[genetic_testing_benchmarking, GeneticTestingBench::<Runtime>]
 		[genetic_analysis_orders_benchmarking, GeneticAnalysisOrdersBench::<Runtime>]
 		[genetic_analysis_benchmarking, GeneticAnalysisBench::<Runtime>]
+		[health_professional_benchmarking, HealthProfessionalBench::<Runtime>]
+		[health_professional_qualification_benchmarking, HealthProfessionalQualificationBench::<Runtime>]
 	);
 }
 
@@ -889,6 +891,19 @@ impl genetic_analysis_orders::Config for Runtime {
 	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
+impl health_professional::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type HealthProfessionalQualifications = HealthProfessionalQualification;
+	type HealthProfessionalWeightInfo = ();
+}
+
+impl health_professional_qualification::Config for Runtime {
+	type Event = Event;
+	type HealthProfessionalQualificationOwner = HealthProfessional;
+	type WeightInfo = ();
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -940,6 +955,8 @@ construct_runtime!(
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
+		HealthProfessional: health_professional::{Pallet, Call, Storage, Config<T>, Event<T>},
+		HealthProfessionalQualification: health_professional_qualification::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -1187,6 +1204,8 @@ impl_runtime_apis! {
 			use genetic_analysts_benchmarking::Pallet as GeneticAnalystsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
+			use health_professional_qualification_benchmarking::Pallet as HealthProfessionalQualificationBench;
+			use health_professional_benchmarking::Pallet as HealthProfessionalBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
 			list_benchmarks!(list, extra);
@@ -1217,6 +1236,8 @@ impl_runtime_apis! {
 			use labs_benchmarking::Pallet as LabsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
+			use health_professional_benchmarking::Pallet as HealthProfessionalBench;
+			use health_professional_qualification_benchmarking::Pallet as HealthProfessionalQualificationBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl baseline::Config for Runtime {}
@@ -1235,6 +1256,8 @@ impl_runtime_apis! {
 			impl genetic_analysis_orders_benchmarking::Config for Runtime {}
 			impl labs_benchmarking::Config for Runtime {}
 			impl service_request_benchmarking::Config for Runtime {}
+			impl health_professional_benchmarking::Config for Runtime {}
+			impl health_professional_qualification_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
