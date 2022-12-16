@@ -46,7 +46,7 @@ benchmarks! {
 	}: add_menstrual_cycle_log(
 		RawOrigin::Signed(caller),
 		menstrual_ids[0],
-		vec![menstrual_info],
+		vec![menstrual_info]
 	)
 
 	update_menstrual_cycle_log {
@@ -85,7 +85,7 @@ benchmarks! {
 		);
 	}: update_menstrual_cycle_log(
 		RawOrigin::Signed(caller),
-		menstrual_cycle_log
+		vec![menstrual_cycle_log]
 	)
 
 	remove_menstrual_cycle_log {
