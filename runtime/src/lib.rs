@@ -143,6 +143,8 @@ mod benches {
 		[genetic_analysis_benchmarking, GeneticAnalysisBench::<Runtime>]
 		[health_professional_benchmarking, HealthProfessionalBench::<Runtime>]
 		[health_professional_qualification_benchmarking, HealthProfessionalQualificationBench::<Runtime>]
+		[opinion_requestor_benchmarking, OpinionRequestorBench::<Runtime>]
+		[opinion_benchmarking, OpinionBench::<Runtime>]
 	);
 }
 
@@ -904,6 +906,20 @@ impl health_professional_qualification::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl opinion_requestor::Config for Runtime {
+	type Event = Event;
+	type GeneticData = GeneticData;
+	type OpinionRequestorWeightInfo = ();
+}
+
+impl opinion::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type Assets = OctopusAssets;
+	type OpinionRequestor = OpinionRequestor;
+	type OpinionWeightInfo = ();
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -957,6 +973,8 @@ construct_runtime!(
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		HealthProfessional: health_professional::{Pallet, Call, Storage, Config<T>, Event<T>},
 		HealthProfessionalQualification: health_professional_qualification::{Pallet, Call, Storage, Event<T>},
+		OpinionRequestor: opinion_requestor::{Pallet, Call, Storage, Event<T>},
+		Opinion: opinion::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
 );
 
@@ -1206,6 +1224,8 @@ impl_runtime_apis! {
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 			use health_professional_qualification_benchmarking::Pallet as HealthProfessionalQualificationBench;
 			use health_professional_benchmarking::Pallet as HealthProfessionalBench;
+			use opinion_requestor_benchmarking::Pallet as OpinionRequestorBench;
+			use opinion_benchmarking::Pallet as OpinionBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
 			list_benchmarks!(list, extra);
@@ -1238,6 +1258,8 @@ impl_runtime_apis! {
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
 			use health_professional_benchmarking::Pallet as HealthProfessionalBench;
 			use health_professional_qualification_benchmarking::Pallet as HealthProfessionalQualificationBench;
+			use opinion_requestor_benchmarking::Pallet as OpinionRequestorBench;
+			use opinion_benchmarking::Pallet as OpinionBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl baseline::Config for Runtime {}
@@ -1258,6 +1280,8 @@ impl_runtime_apis! {
 			impl service_request_benchmarking::Config for Runtime {}
 			impl health_professional_benchmarking::Config for Runtime {}
 			impl health_professional_qualification_benchmarking::Config for Runtime {}
+			impl opinion_requestor_benchmarking::Config for Runtime {}
+			impl opinion_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number

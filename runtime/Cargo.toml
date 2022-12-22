@@ -110,6 +110,10 @@ health-professional = { path = '../pallets/health-professional/', default-featur
 health-professional-benchmarking = { path = '../pallets/health-professional/benchmarking', default-features = false, optional = true }
 health-professional-qualification = { path = '../pallets/health-professional-qualification', default-features = false }
 health-professional-qualification-benchmarking = { path = '../pallets/health-professional-qualification/benchmarking', default-features = false, optional = true }
+opinion-requestor = { path = '../pallets/opinion-requestor', default-features = false }
+opinion-requestor-benchmarking = { path = '../pallets/opinion-requestor/benchmarking', default-features = false, optional = true }
+opinion = { path = '../pallets/opinion', default-features = false }
+opinion-benchmarking = { path = '../pallets/opinion/benchmarking', default-features = false, optional = true }
 
 # Local Primitives
 primitives-profile-roles = { path = '../primitives/profile-roles', default-features = false }
@@ -195,6 +199,8 @@ std = [
     'genetic-analysis-orders/std',
 	'health-professional/std',
 	'health-professional-qualification/std',
+	'opinion-requestor/std',
+	'opinion/std',
 
     # Local Primitives
     'primitives-profile-roles/std',
@@ -240,4 +246,6 @@ runtime-benchmarks = [
 	'genetic-analyst-qualifications-benchmarking',
 	'health-professional-benchmarking',
 	'health-professional-qualification-benchmarking',
+	'opinion-requestor-benchmarking',
+	'opinion-benchmarking',
 ]

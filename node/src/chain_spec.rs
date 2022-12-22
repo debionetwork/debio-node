@@ -17,8 +17,8 @@ use debio_runtime::{
 	opaque::{Block, SessionKeys},
 	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GeneticAnalysisOrdersConfig,
 	GeneticAnalystsConfig, HealthProfessionalConfig, LabsConfig, MenstrualSubscriptionConfig,
-	OctopusAppchainConfig, OctopusLposConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig,
-	SessionConfig, Signature, SudoConfig, SystemConfig, UserProfileConfig,
+	OctopusAppchainConfig, OctopusLposConfig, OpinionConfig, OrdersConfig, RewardsConfig,
+	ServiceRequestConfig, SessionConfig, Signature, SudoConfig, SystemConfig, UserProfileConfig,
 	BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
 
@@ -332,6 +332,7 @@ fn genesis(
 			admin_key: Some(api_admin_key.clone()),
 			treasury_key: Some(treasury_key),
 		},
-		health_professional: HealthProfessionalConfig { verifier_key: Some(api_admin_key) },
+		health_professional: HealthProfessionalConfig { verifier_key: Some(api_admin_key.clone()) },
+		opinion: OpinionConfig { admin_key: Some(api_admin_key) },
 	}
 }
