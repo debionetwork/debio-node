@@ -33,7 +33,7 @@ mod test {
 			let info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&vec![genetic_data_id, random_genetic_data_id],
+				&[genetic_data_id, random_genetic_data_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
@@ -43,7 +43,7 @@ mod test {
 			let info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&vec![genetic_data_id],
+				&[genetic_data_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
@@ -87,7 +87,7 @@ mod test {
 			let updated_info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&vec![genetic_data_id],
+				&[genetic_data_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
@@ -153,7 +153,7 @@ mod test {
 			let updated_info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&vec![genetic_data_id],
+				&[genetic_data_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
