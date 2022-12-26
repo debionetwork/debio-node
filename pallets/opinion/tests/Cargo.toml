@@ -1,0 +1,68 @@
+[package]
+name = "opinion-tests"
+version = "1.0.0"
+authors = ['DeBio Dev Team <debio_dev@blocksphere.id>']
+edition = '2021'
+description = ''
+homepage = ''
+license = 'Unlicense'
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+# alias "parity-scale-code" to "codec"
+[dependencies]
+# External Dependencies
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+
+# Substrate packages
+## Substrate Primitive Dependencies
+sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+## Substrate Frame Dependencies
+frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18", optional = true }
+
+## Substrate Pallet Dependencies
+pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-assets = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
+pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
+
+# Local Dependencies
+opinion = { path = '../../opinion', default-features = false }
+opinion-requestor = { path = '../../opinion-requestor', default-features = false }
+genetic-data = { path = '../../genetic-data', default-features = false }
+
+[dev-dependencies]
+serde = { default-features = false, version = "1.0.136" }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+
+    'sp-io/std',
+    'sp-core/std',
+    'sp-runtime/std',
+
+    'frame-benchmarking/std',
+    'frame-support/std',
+    'frame-system/std',
+
+	'pallet-assets/std',
+	'pallet-balances/std',
+	'pallet-timestamp/std',
+
+	'primitives-price-and-currency/std',
+
+	'opinion/std',
+    'opinion-requestor/std',
+	'genetic-data/std',
+]

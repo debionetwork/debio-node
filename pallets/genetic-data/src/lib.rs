@@ -386,4 +386,24 @@ impl<T: Config> GeneticDataProvider<T> for Pallet<T> {
 	fn genetic_data_by_id(id: &T::Hash) -> Option<GeneticDataOf<T>> {
 		<Self as GeneticDataInterface<T>>::genetic_data_by_id(id)
 	}
+
+	fn valid_genetic_data_ids(
+		account_id: &T::AccountId,
+		genetic_data_ids: &[T::Hash],
+	) -> Vec<T::Hash> {
+		let mut valid_ids = Vec::new();
+
+		for genetic_data_id in genetic_data_ids.iter() {
+			let genetic_data =
+				<Self as GeneticDataInterface<T>>::genetic_data_by_id(genetic_data_id);
+
+			if let Some(genetic_data) = genetic_data {
+				if genetic_data.get_owner_id() == account_id {
+					valid_ids.push(genetic_data.id);
+				}
+			}
+		}
+
+		valid_ids
+	}
 }

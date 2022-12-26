@@ -483,7 +483,7 @@ mod tests {
 			assert_ok!(HealthProfessional::register(Origin::signed(doctor), info.clone()));
 
 			assert_noop!(
-				HealthProfessional::register(Origin::signed(doctor), info.clone()),
+				HealthProfessional::register(Origin::signed(doctor), info),
 				Error::<Test>::AlreadyRegistered,
 			);
 		});
@@ -916,7 +916,7 @@ mod tests {
 			));
 
 			let admin = account_key("admin");
-			let _ = HealthProfessionalVerifierKey::<Test>::put(admin);
+			HealthProfessionalVerifierKey::<Test>::put(admin);
 
 			assert_ok!(HealthProfessional::update_availability_status(
 				Origin::signed(admin),
