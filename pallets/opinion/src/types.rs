@@ -63,6 +63,10 @@ where
 		self.info = info.clone();
 	}
 
+	pub fn update_status(&mut self, status: &Status) {
+		self.status = status.clone();
+	}
+
 	pub fn update_asset_id(&mut self, asset_id: Option<u32>) {
 		self.info.asset_id = asset_id;
 	}

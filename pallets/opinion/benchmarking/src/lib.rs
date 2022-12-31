@@ -7,7 +7,7 @@ use opinion_requestor::{
 };
 
 #[allow(unused)]
-use opinion::{Config as OpinionConfig, OpinionAdminKey, OpinionInfo, Pallet as Opinion};
+use opinion::{Config as OpinionConfig, OpinionAdminKey, OpinionInfo, Pallet as Opinion, Status};
 
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
@@ -84,7 +84,7 @@ benchmarks! {
 
 		let _ = Opinion::<T>::create(caller_origin, requestor_id, doctor.clone(), info);
 
-		let opinion_ids = Opinion::<T>::opinion_by_owner(doctor.clone());
+		let opinion_ids = Opinion::<T>::opinion_by_owner(doctor);
 		let opinion_id = opinion_ids[0];
 
 		let updated_info = OpinionInfo::new(
@@ -94,7 +94,42 @@ benchmarks! {
 			CurrencyType::DBIO,
 			1000,
 		);
-	}: update(RawOrigin::Signed(caller), opinion_id, doctor, updated_info)
+	}: update(RawOrigin::Signed(caller), opinion_id, updated_info)
+
+	update_status {
+		let caller: T::AccountId = OpinionAdminKey::<T>::get().unwrap();
+		let doctor: T::AccountId = account("doctor", 0, SEED);
+		let customer: T::AccountId = whitelisted_caller();
+
+		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let customer_origin = T::Origin::from(RawOrigin::Signed(customer.clone()));
+
+		let info = RequestorInfo::new(
+			b"category",
+			b"description",
+			&Vec::new(),
+			&Vec::new(),
+			b"myriad_url",
+		);
+
+		let _ = OpinionRequestor::<T>::request_opinion(customer_origin, info);
+
+		let requestor_ids = OpinionRequestor::<T>::opinion_requestor_by_owner(customer);
+		let requestor_id = requestor_ids[0];
+
+		let info = OpinionInfo::new(
+			b"description".to_vec(),
+			b"myriad_url".to_vec(),
+			None,
+			CurrencyType::DBIO,
+			1000,
+		);
+
+		let _ = Opinion::<T>::create(caller_origin, requestor_id, doctor.clone(), info);
+
+		let opinion_ids = Opinion::<T>::opinion_by_owner(doctor);
+		let opinion_id = opinion_ids[0];
+	}: update_status(RawOrigin::Signed(caller), opinion_id, Status::Paid)
 
 	delete {
 		let caller: T::AccountId = OpinionAdminKey::<T>::get().unwrap();
@@ -127,9 +162,9 @@ benchmarks! {
 
 		let _ = Opinion::<T>::create(caller_origin, requestor_id, doctor.clone(), info);
 
-		let opinion_ids = Opinion::<T>::opinion_by_owner(doctor.clone());
+		let opinion_ids = Opinion::<T>::opinion_by_owner(doctor);
 		let opinion_id = opinion_ids[0];
-	}: delete(RawOrigin::Signed(caller), doctor, opinion_id)
+	}: delete(RawOrigin::Signed(caller), opinion_id)
 
 	update_admin_key {
 		let caller: T::AccountId = OpinionAdminKey::<T>::get().unwrap();

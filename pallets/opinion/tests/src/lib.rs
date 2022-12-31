@@ -13,6 +13,7 @@ mod test {
 	};
 	use opinion::{
 		Error, Event as OpinionEvent, Opinion as OpinionStruct, OpinionAdminKey, OpinionInfo,
+		Status,
 	};
 	use opinion_requestor::RequestorInfo;
 	use primitives_price_and_currency::CurrencyType;
@@ -107,12 +108,7 @@ mod test {
 				1000,
 			);
 
-			assert_ok!(Opinion::update(
-				Origin::signed(admin),
-				opinion_id,
-				doctor,
-				updated_info.clone()
-			));
+			assert_ok!(Opinion::update(Origin::signed(admin), opinion_id, updated_info.clone()));
 
 			let opinion = OpinionStruct::new(&opinion_id, &requestor_id, &doctor, &updated_info, 0);
 
@@ -155,7 +151,7 @@ mod test {
 			let opinion_ids = Opinion::opinion_by_owner(doctor);
 			let opinion_id = opinion_ids[0];
 
-			assert_ok!(Opinion::delete(Origin::signed(admin), doctor, opinion_id));
+			assert_ok!(Opinion::delete(Origin::signed(admin), opinion_id));
 
 			let opinion_requestor =
 				OpinionRequestor::opinion_requestor_by_id(requestor_id).unwrap();
@@ -164,6 +160,51 @@ mod test {
 			assert_eq!(Opinion::opinion_count(), 0);
 			assert_eq!(Opinion::opinion_count_by_owner(doctor), 0);
 			assert_eq!(opinion_requestor.opinion_ids(), Vec::new());
+		});
+	}
+
+	#[test]
+	fn update_opinion_status_works() {
+		ExternalityBuilder::build().execute_with(|| {
+			let admin = 1;
+			let doctor = 2;
+			let customer = 3;
+
+			let info = RequestorInfo::new(
+				b"category",
+				b"description",
+				&Vec::new(),
+				&Vec::new(),
+				b"myriad_url",
+			);
+
+			assert_ok!(OpinionRequestor::request_opinion(Origin::signed(customer), info));
+
+			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(customer);
+			let requestor_id = requestor_ids[0];
+
+			OpinionAdminKey::<Test>::put(admin);
+
+			let info = OpinionInfo::new(
+				b"description".to_vec(),
+				b"myriad_url".to_vec(),
+				None,
+				CurrencyType::DBIO,
+				1000,
+			);
+
+			assert_ok!(Opinion::create(Origin::signed(admin), requestor_id, doctor, info.clone()));
+
+			let opinion_ids = Opinion::opinion_by_owner(doctor);
+			let opinion_id = opinion_ids[0];
+
+			let mut opinion = OpinionStruct::new(&opinion_id, &requestor_id, &doctor, &info, 0);
+
+			assert_ok!(Opinion::update_status(Origin::signed(admin), opinion_id, Status::Paid));
+
+			opinion.update_status(&Status::Paid);
+
+			assert_eq!(Opinion::opinion_by_id(opinion_id), Some(opinion));
 		});
 	}
 
@@ -334,7 +375,7 @@ mod test {
 			);
 
 			assert_noop!(
-				Opinion::update(Origin::signed(other_admin), opinion_id, doctor, updated_info),
+				Opinion::update(Origin::signed(other_admin), opinion_id, updated_info),
 				Error::<Test>::Unauthorized,
 			);
 		});
@@ -343,7 +384,6 @@ mod test {
 	#[test]
 	fn cant_update_opinion_info_when_not_found() {
 		ExternalityBuilder::build().execute_with(|| {
-			let doctor = 1;
 			let admin = 2;
 
 			let opinion_id =
@@ -359,7 +399,7 @@ mod test {
 			OpinionAdminKey::<Test>::put(admin);
 
 			assert_noop!(
-				Opinion::update(Origin::signed(admin), opinion_id, doctor, info),
+				Opinion::update(Origin::signed(admin), opinion_id, info),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -409,51 +449,8 @@ mod test {
 			);
 
 			assert_noop!(
-				Opinion::update(Origin::signed(admin), opinion_id, doctor, updated_info),
+				Opinion::update(Origin::signed(admin), opinion_id, updated_info),
 				Error::<Test>::NotFound,
-			);
-		});
-	}
-
-	#[test]
-	fn cant_update_opinion_info_when_unauthorized() {
-		ExternalityBuilder::build().execute_with(|| {
-			let admin = 1;
-			let doctor = 2;
-			let other_doctor = 3;
-			let customer = 4;
-
-			let info = RequestorInfo::new(
-				b"category",
-				b"description",
-				&Vec::new(),
-				&Vec::new(),
-				b"myriad_url",
-			);
-
-			assert_ok!(OpinionRequestor::request_opinion(Origin::signed(customer), info));
-
-			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(customer);
-			let requestor_id = requestor_ids[0];
-
-			OpinionAdminKey::<Test>::put(admin);
-
-			let info = OpinionInfo::new(
-				b"description".to_vec(),
-				b"myriad_url".to_vec(),
-				None,
-				CurrencyType::DBIO,
-				1000,
-			);
-
-			assert_ok!(Opinion::create(Origin::signed(admin), requestor_id, doctor, info.clone()));
-
-			let opinion_ids = Opinion::opinion_by_owner(doctor);
-			let opinion_id = opinion_ids[0];
-
-			assert_noop!(
-				Opinion::update(Origin::signed(admin), opinion_id, other_doctor, info),
-				Error::<Test>::Unauthorized,
 			);
 		});
 	}
@@ -462,13 +459,12 @@ mod test {
 	fn cant_remove_opinion_when_not_admin() {
 		ExternalityBuilder::build().execute_with(|| {
 			let admin = 1;
-			let doctor = 2;
 
 			let opinion_id =
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes());
 
 			assert_noop!(
-				Opinion::delete(Origin::signed(admin), doctor, opinion_id),
+				Opinion::delete(Origin::signed(admin), opinion_id),
 				Error::<Test>::Unauthorized,
 			);
 		});
@@ -478,7 +474,6 @@ mod test {
 	fn cant_remove_opinion_when_not_found() {
 		ExternalityBuilder::build().execute_with(|| {
 			let admin = 1;
-			let doctor = 2;
 
 			OpinionAdminKey::<Test>::put(admin);
 
@@ -486,19 +481,18 @@ mod test {
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes());
 
 			assert_noop!(
-				Opinion::delete(Origin::signed(admin), doctor, opinion_id),
+				Opinion::delete(Origin::signed(admin), opinion_id),
 				Error::<Test>::NotFound,
 			);
 		});
 	}
 
 	#[test]
-	fn cant_remove_opinion_when_unauthorized() {
+	fn cant_update_opinion_status_when_not_admin() {
 		ExternalityBuilder::build().execute_with(|| {
 			let admin = 1;
 			let doctor = 2;
 			let customer = 3;
-			let other_doctor = 4;
 
 			let info = RequestorInfo::new(
 				b"category",
@@ -513,8 +507,6 @@ mod test {
 			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(customer);
 			let requestor_id = requestor_ids[0];
 
-			OpinionAdminKey::<Test>::put(admin);
-
 			let info = OpinionInfo::new(
 				b"description".to_vec(),
 				b"myriad_url".to_vec(),
@@ -523,14 +515,33 @@ mod test {
 				1000,
 			);
 
-			assert_ok!(Opinion::create(Origin::signed(admin), requestor_id, doctor, info));
+			OpinionAdminKey::<Test>::put(admin);
+
+			assert_ok!(Opinion::create(Origin::signed(admin), requestor_id, doctor, info.clone()));
 
 			let opinion_ids = Opinion::opinion_by_owner(doctor);
 			let opinion_id = opinion_ids[0];
+			let other_admin = 4;
 
 			assert_noop!(
-				Opinion::delete(Origin::signed(admin), other_doctor, opinion_id),
+				Opinion::update_status(Origin::signed(other_admin), opinion_id, Status::Paid,),
 				Error::<Test>::Unauthorized,
+			);
+		});
+	}
+
+	#[test]
+	fn cant_update_opinion_status_when_not_found() {
+		ExternalityBuilder::build().execute_with(|| {
+			let admin = 1;
+			let opinion_id =
+				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes());
+
+			OpinionAdminKey::<Test>::put(admin);
+
+			assert_noop!(
+				Opinion::update_status(Origin::signed(admin), opinion_id, Status::Paid,),
+				Error::<Test>::NotFound,
 			);
 		});
 	}
@@ -588,6 +599,40 @@ mod test {
 			let opinion = OpinionStruct::new(&opinion_id, &requestor_id, &doctor, &info, 0);
 
 			System::assert_last_event(Event::Opinion(OpinionEvent::OpinionAdded(admin, opinion)));
+
+			let updated_info = OpinionInfo::new(
+				b"description".to_vec(),
+				b"myriad_url".to_vec(),
+				Some(1),
+				CurrencyType::USDT,
+				1000,
+			);
+
+			let opinion = OpinionStruct::new(&opinion_id, &requestor_id, &doctor, &updated_info, 0);
+
+			assert_ok!(Opinion::update(Origin::signed(admin), opinion_id, updated_info));
+
+			System::assert_last_event(Event::Opinion(OpinionEvent::OpinionUpdated(admin, opinion)));
+
+			assert_ok!(Opinion::update_status(Origin::signed(admin), opinion_id, Status::Paid));
+
+			System::assert_last_event(Event::Opinion(OpinionEvent::OpinionStatusUpdated(
+				admin,
+				opinion_id,
+				Status::Paid,
+			)));
+
+			assert_ok!(Opinion::delete(Origin::signed(admin), opinion_id));
+
+			System::assert_last_event(Event::Opinion(OpinionEvent::OpinionRemoved(
+				admin, opinion_id,
+			)));
+
+			let new_admin = 4;
+
+			assert_ok!(Opinion::update_admin_key(Origin::signed(admin), new_admin));
+
+			System::assert_last_event(Event::Opinion(OpinionEvent::AdminKeyUpdated(new_admin)))
 		});
 	}
 }
