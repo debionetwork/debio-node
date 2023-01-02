@@ -84,6 +84,7 @@ pub mod pallet {
 		OpinionAdded(AccountIdOf<T>, OpinionOf<T>),
 		OpinionUpdated(AccountIdOf<T>, OpinionOf<T>),
 		OpinionRemoved(AccountIdOf<T>, HashOf<T>),
+		OpinionStatusUpdated(AccountIdOf<T>, HashOf<T>, Status),
 		AdminKeyUpdated(AccountIdOf<T>),
 	}
 
@@ -143,17 +144,11 @@ pub mod pallet {
 		pub fn update(
 			origin: OriginFor<T>,
 			opinion_id: HashOf<T>,
-			account_id: AccountIdOf<T>,
 			info: OpinionInfo,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as OpinionInterface<T>>::update_opinion(
-				&who,
-				&opinion_id,
-				&account_id,
-				&info,
-			) {
+			match <Self as OpinionInterface<T>>::update_opinion(&who, &opinion_id, &info) {
 				Ok(opinion) => {
 					Self::deposit_event(Event::OpinionUpdated(who, opinion));
 					Ok(().into())
@@ -163,16 +158,29 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(T::OpinionWeightInfo::delete())]
-		pub fn delete(
+		pub fn delete(origin: OriginFor<T>, opinion_id: HashOf<T>) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+
+			match <Self as OpinionInterface<T>>::remove_opinion(&who, &opinion_id) {
+				Ok(()) => {
+					Self::deposit_event(Event::OpinionRemoved(who, opinion_id));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(T::OpinionWeightInfo::update_status())]
+		pub fn update_status(
 			origin: OriginFor<T>,
-			account_id: AccountIdOf<T>,
 			opinion_id: HashOf<T>,
+			status: Status,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as OpinionInterface<T>>::remove_opinion(&who, &opinion_id, &account_id) {
+			match <Self as OpinionInterface<T>>::update_status(&who, &opinion_id, &status) {
 				Ok(()) => {
-					Self::deposit_event(Event::OpinionRemoved(who, opinion_id));
+					Self::deposit_event(Event::OpinionStatusUpdated(who, opinion_id, status));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -188,7 +196,7 @@ pub mod pallet {
 
 			match <Self as OpinionInterface<T>>::update_admin_key(&who, &account_id) {
 				Ok(_) => {
-					Self::deposit_event(Event::AdminKeyUpdated(who));
+					Self::deposit_event(Event::AdminKeyUpdated(account_id));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
