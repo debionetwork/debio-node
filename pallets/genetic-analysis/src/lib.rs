@@ -128,6 +128,7 @@ pub mod pallet {
 		GeneticAnalysisOrderNotFound,
 		GeneticAnalysisNotFound,
 		GeneticAnalysisNotYetSubmitted,
+		UnpaidGeneticAnalysisOrder,
 		Unauthorized,
 		TrackingIdCollision,
 		ResultLinkRequired,
@@ -303,6 +304,12 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 			return Err(Error::<T>::Unauthorized)
 		}
 
+		let order_id = &genetic_analysis.genetic_analysis_order_id;
+
+		if !T::GeneticAnalysisOrders::is_genetic_analysis_order_paid(order_id) {
+			return Err(Error::<T>::UnpaidGeneticAnalysisOrder)
+		};
+
 		let now = pallet_timestamp::Pallet::<T>::get();
 		genetic_analysis.rejected_title = Some(rejected_title.to_vec());
 		genetic_analysis.rejected_description = Some(rejected_description.to_vec());
@@ -337,6 +344,12 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 		if genetic_analysis.genetic_analyst_id != *genetic_analyst_id {
 			return Err(Error::<T>::Unauthorized)
 		}
+
+		let order_id = &genetic_analysis.genetic_analysis_order_id;
+
+		if !T::GeneticAnalysisOrders::is_genetic_analysis_order_paid(order_id) {
+			return Err(Error::<T>::UnpaidGeneticAnalysisOrder)
+		};
 
 		if status == GeneticAnalysisStatus::ResultReady {
 			let result = Self::genetic_analysis_by_genetic_analysis_tracking_id(
@@ -375,6 +388,12 @@ impl<T: Config> GeneticAnalysisInterface<T> for Pallet<T> {
 		if genetic_analysis.genetic_analyst_id != *genetic_analyst_id {
 			return Err(Error::<T>::Unauthorized)
 		}
+
+		let order_id = &genetic_analysis.genetic_analysis_order_id;
+
+		if !T::GeneticAnalysisOrders::is_genetic_analysis_order_paid(order_id) {
+			return Err(Error::<T>::UnpaidGeneticAnalysisOrder)
+		};
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 		genetic_analysis.report_link = report_link.to_vec();

@@ -15,7 +15,7 @@ use user_profile::Pallet as UserProfile;
 
 #[allow(unused)]
 use genetic_analysis_orders::Pallet as GeneticAnalysisOrders;
-use genetic_analysis_orders::{Config as GeneticAnalysisOrdersConfig, EscrowKey, TreasuryKey};
+use genetic_analysis_orders::{AccountKeyType, Config as GeneticAnalysisOrdersConfig, EscrowKey};
 
 #[allow(unused)]
 use genetic_analysis::Pallet as GeneticAnalysis;
@@ -37,7 +37,7 @@ pub trait Config:
 
 pub struct Pallet<T: Config>(GeneticAnalysisOrders<T>);
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
+use frame_benchmarking::{benchmarks, vec, whitelisted_caller};
 use frame_support::sp_runtime::traits::Hash;
 use frame_system::RawOrigin;
 use genetic_analysis_orders::Call;
@@ -103,7 +103,8 @@ benchmarks! {
 		_genetic_analyst.services[0],
 		0,
 		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-		"DeBio Genetic Genetic Link".as_bytes().to_vec()
+		"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+		None
 	)
 
 	cancel_genetic_analysis_order {
@@ -164,6 +165,7 @@ benchmarks! {
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		);
 
 		let _genetic_analysis_order_id_list = GeneticAnalysisOrders::<T>::genetic_analysis_orders_by_genetic_analyst_id(caller.clone())
@@ -230,6 +232,7 @@ benchmarks! {
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		);
 
 		let _genetic_analysis_order_id_list = GeneticAnalysisOrders::<T>::genetic_analysis_orders_by_genetic_analyst_id(caller.clone())
@@ -296,6 +299,7 @@ benchmarks! {
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		);
 
 		let _genetic_analysis_order_id_list = GeneticAnalysisOrders::<T>::genetic_analysis_orders_by_genetic_analyst_id(caller.clone())
@@ -380,6 +384,7 @@ benchmarks! {
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 			"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+			None,
 		);
 
 		let _genetic_analysis_order_id_list = GeneticAnalysisOrders::<T>::genetic_analysis_orders_by_genetic_analyst_id(caller.clone())
@@ -403,21 +408,12 @@ benchmarks! {
 		_genetic_analysis_order.id
 	)
 
-	update_escrow_key {
+	update_key {
 		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
-	}: update_escrow_key(
+		let account_type = AccountKeyType::EscrowKey(caller2);
+	}: update_key(
 		RawOrigin::Signed(caller),
-		caller2
-	)
-
-	update_treasury_key {
-		let caller: T::AccountId = TreasuryKey::<T>::get().unwrap();
-		let caller2: T::AccountId = whitelisted_caller();
-	}: update_treasury_key(
-		RawOrigin::Signed(caller),
-		caller2
+		account_type
 	)
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

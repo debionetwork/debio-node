@@ -3,5 +3,5 @@
 use frame_system::Config;
 
 pub trait GeneticAnalystsProvider<T: Config> {
-	fn is_genetic_analyst_available(owner_id: &T::AccountId) -> Option<bool>;
+	fn is_genetic_analyst_available(owner_id: &T::AccountId) -> bool;
 }

@@ -1,11 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{
-	codec::{Decode, Encode},
-	pallet_prelude::*,
-};
 pub use pallet::*;
-pub use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -16,97 +11,59 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+pub mod functions;
+pub mod impl_menstrual_subscription;
 pub mod interface;
+pub mod migrations;
+pub mod types;
 pub mod weights;
+
 pub use interface::MenstrualSubscriptionInterface;
-use primitives_duration::MenstrualSubscriptionDuration;
-use primitives_menstrual_status::{MenstrualSubscriptionStatus, PaymentStatus};
-use sp_std::prelude::*;
-use traits_menstrual_subscription::{
-	MenstrualSubscription as MenstrualSubscriptionT, MenstrualSubscriptionProvider,
-};
+pub use types::*;
+pub use weights::WeightInfo;
 
-#[derive(Encode, Decode, Clone, Default, RuntimeDebug, PartialEq, Eq, TypeInfo)]
-pub struct MenstrualSubscription<AccountId, Hash, Moment> {
-	pub id: Hash,
-	pub address_id: AccountId,
-	pub duration: MenstrualSubscriptionDuration,
-	pub price: u8,
-	pub payment_status: PaymentStatus,
-	pub status: MenstrualSubscriptionStatus,
-	pub created_at: Moment,
-	pub updated_at: Moment,
-}
+pub use frame_support::traits::StorageVersion;
 
-impl<AccountId, Hash, Moment: Default> MenstrualSubscription<AccountId, Hash, Moment> {
-	pub fn new(
-		id: Hash,
-		address_id: AccountId,
-		duration: MenstrualSubscriptionDuration,
-		price: u8,
-		payment_status: PaymentStatus,
-		status: MenstrualSubscriptionStatus,
-		created_at: Moment,
-	) -> Self {
-		Self {
-			id,
-			address_id,
-			duration,
-			price,
-			payment_status,
-			status,
-			created_at,
-			updated_at: Moment::default(),
-		}
-	}
-
-	pub fn get_id(&self) -> &Hash {
-		&self.id
-	}
-
-	pub fn get_address_id(&self) -> &AccountId {
-		&self.address_id
-	}
-}
-
-impl<T, AccountId, Hash, Moment: Default> MenstrualSubscriptionT<T>
-	for MenstrualSubscription<AccountId, Hash, Moment>
-where
-	T: frame_system::Config<AccountId = AccountId, Hash = Hash>,
-{
-	fn get_id(&self) -> &Hash {
-		self.get_id()
-	}
-	fn get_address_id(&self) -> &AccountId {
-		self.get_address_id()
-	}
-}
+/// The current storage version
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::{
-		interface::MenstrualSubscriptionInterface, weights::WeightInfo, MenstrualSubscription,
-		MenstrualSubscriptionDuration, MenstrualSubscriptionStatus, PaymentStatus,
+	use super::*;
+
+	use frame_support::{
+		dispatch::DispatchResultWithPostInfo,
+		pallet_prelude::*,
+		traits::{tokens::fungibles, Currency},
 	};
-	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
-	pub use sp_std::prelude::*;
+	use primitives_duration::MenstrualSubscriptionDuration;
+	use primitives_menstrual_status::MenstrualSubscriptionStatus;
+	use primitives_price_and_currency::CurrencyType;
+	use sp_std::vec::Vec;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
+		type Assets: fungibles::Transfer<
+				<Self as frame_system::Config>::AccountId,
+				AssetId = AssetId,
+				Balance = AssetBalance,
+			> + fungibles::InspectMetadata<<Self as frame_system::Config>::AccountId>;
 		type MenstrualSubscriptionWeightInfo: WeightInfo;
 	}
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
 		pub admin_key: Option<T::AccountId>,
+		pub treasury_key: Option<T::AccountId>,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			Self { admin_key: None }
+			Self { admin_key: None, treasury_key: None }
 		}
 	}
 
@@ -116,17 +73,25 @@ pub mod pallet {
 			if let Some(ref admin_key) = self.admin_key {
 				AdminKey::<T>::put(admin_key);
 			}
+			if let Some(ref treasury_key) = self.treasury_key {
+				TreasuryKey::<T>::put(treasury_key);
+			}
 		}
 	}
 
 	// ----- This is template code, every pallet needs this ---
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 	// --------------------------------------------------------
 
 	// ----- Types -------
@@ -135,7 +100,11 @@ pub mod pallet {
 	pub type MomentOf<T> = <T as pallet_timestamp::Config>::Moment;
 	pub type MenstrualSubscriptionOf<T> =
 		MenstrualSubscription<AccountIdOf<T>, HashOf<T>, MomentOf<T>>;
+	pub type MenstrualSubscriptionPriceOf<T> = MenstrualSubscriptionPrice<BalanceOf<T>>;
 	pub type MenstrualSubscriptionIdOf<T> = HashOf<T>;
+	pub type CurrencyOf<T> = <T as self::Config>::Currency;
+	pub type BalanceOf<T> = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::Balance;
+	pub type AccountKeyTypeOf<T> = AccountKeyType<AccountIdOf<T>>;
 
 	// ------- Storage -------------
 	#[pallet::storage]
@@ -143,9 +112,18 @@ pub mod pallet {
 	pub type AdminKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn treasury_key)]
+	pub type TreasuryKey<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn menstrual_subscription_by_address_id)]
 	pub type MenstrualSubscriptionByOwner<T> =
 		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, Vec<MenstrualSubscriptionIdOf<T>>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn active_subscription_by_owner)]
+	pub type ActiveSubscriptionByOwner<T> =
+		StorageMap<_, Blake2_128Concat, AccountIdOf<T>, HashOf<T>>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_subscription_by_id)]
@@ -160,7 +138,18 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn menstrual_subscription_count)]
 	pub type MenstrualSubscriptionCount<T> = StorageValue<_, u64>;
-	//                                _,  Hasher         ,  Key     ,  Value
+
+	#[pallet::storage]
+	#[pallet::getter(fn menstrual_subscription_prices)]
+	pub type MenstrualSubscriptionPrices<T> = StorageDoubleMap<
+		_,
+		Blake2_128Concat,
+		MenstrualSubscriptionDuration,
+		Blake2_128Concat,
+		CurrencyType,
+		MenstrualSubscriptionPriceOf<T>,
+	>;
+
 	// -----------------------------
 
 	#[pallet::event]
@@ -170,14 +159,16 @@ pub mod pallet {
 		/// parameters, [MenstrualSubscription, who]
 		MenstrualSubscriptionAdded(MenstrualSubscriptionOf<T>, AccountIdOf<T>),
 		//// MenstrualSubscription updated
+		/// parameters, [MenstrualSubscription]
+		MenstrualSubscriptionUpdated(MenstrualSubscriptionOf<T>),
+		//// MenstrualSubscription paid
 		/// parameters, [MenstrualSubscription, who]
-		MenstrualSubscriptionUpdated(MenstrualSubscriptionOf<T>, AccountIdOf<T>),
-		//// MenstrualSubscription deleted
-		/// parameters, [MenstrualSubscription, who]
-		MenstrualSubscriptionRemoved(MenstrualSubscriptionOf<T>, AccountIdOf<T>),
+		MenstrualSubscriptionPaid(MenstrualSubscriptionOf<T>, AccountIdOf<T>),
 		/// Update menstrual subscription admin key successful
 		/// parameters. [who]
-		UpdateMenstrualSubscriptionAdminKeySuccessful(AccountIdOf<T>),
+		UpdateMenstrualSubscriptionKeySuccessful(AccountKeyTypeOf<T>),
+		TotalSupplyDecreased(BalanceOf<T>),
+		MenstrualSubscriptionPriceAdded(MenstrualSubscriptionPriceOf<T>),
 	}
 
 	// Errors inform users that something went wrong.
@@ -191,6 +182,20 @@ pub mod pallet {
 		MenstrualSubscriptionDoesNotExist,
 		// Unauthorized access of an Admin key
 		Unauthorized,
+		MenstrualSubscriptionPriceNotExist,
+		MenstrualSubscriptionAlreadyPaid,
+		MenstrualSubscriptionNotPaid,
+		AssetIdNotFound,
+		Module,
+		Other,
+		BadOrigin,
+		CannotLookup,
+		ConsumerRemaining,
+		TooManyConsumers,
+		NoProviders,
+		Token,
+		Arithmetic,
+		InsufficientBalance,
 	}
 
 	#[pallet::call]
@@ -199,23 +204,17 @@ pub mod pallet {
 		pub fn add_menstrual_subscription(
 			origin: OriginFor<T>,
 			duration: MenstrualSubscriptionDuration,
-			price: u8,
-			payment_status: PaymentStatus,
-			status: MenstrualSubscriptionStatus,
+			currency: CurrencyType,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			match <Self as MenstrualSubscriptionInterface<T>>::add_menstrual_subscription(
-				&who,
-				&duration,
-				&price,
-				&payment_status,
-				&status,
+				&who, &duration, &currency,
 			) {
 				Ok(menstrual_subscription) => {
 					Self::deposit_event(Event::MenstrualSubscriptionAdded(
 						menstrual_subscription,
-						who.clone(),
+						who,
 					));
 					Ok(().into())
 				},
@@ -226,23 +225,21 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::change_menstrual_subscription_status())]
 		pub fn change_menstrual_subscription_status(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
 			menstrual_subscription_id: HashOf<T>,
 			status: MenstrualSubscriptionStatus,
 		) -> DispatchResultWithPostInfo {
 			let admin = ensure_signed(origin)?;
+			let admin_key = AdminKey::<T>::get().filter(|account_id| account_id == &admin);
 
-			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
+			ensure!(admin_key.is_some(), Error::<T>::Unauthorized);
 
 			match <Self as MenstrualSubscriptionInterface<T>>::change_menstrual_subscription_status(
-				&account_id,
 				&menstrual_subscription_id,
 				&status,
 			) {
 				Ok(menstrual_subscription) => {
 					Self::deposit_event(Event::MenstrualSubscriptionUpdated(
 						menstrual_subscription,
-						account_id.clone(),
 					));
 					Ok(().into())
 				},
@@ -253,21 +250,18 @@ pub mod pallet {
 		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::set_menstrual_subscription_paid())]
 		pub fn set_menstrual_subscription_paid(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
 			menstrual_subscription_id: HashOf<T>,
 		) -> DispatchResultWithPostInfo {
-			let admin = ensure_signed(origin)?;
-
-			ensure!(admin == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
+			let account_id = ensure_signed(origin)?;
 
 			match <Self as MenstrualSubscriptionInterface<T>>::set_menstrual_subscription_paid(
 				&account_id,
 				&menstrual_subscription_id,
 			) {
 				Ok(menstrual_subscription) => {
-					Self::deposit_event(Event::MenstrualSubscriptionRemoved(
+					Self::deposit_event(Event::MenstrualSubscriptionPaid(
 						menstrual_subscription,
-						account_id.clone(),
+						account_id,
 					));
 					Ok(().into())
 				},
@@ -275,226 +269,72 @@ pub mod pallet {
 			}
 		}
 
-		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::set_menstrual_subscription_paid())]
-		pub fn update_admin_key(
+		#[pallet::weight(T::MenstrualSubscriptionWeightInfo::set_menstrual_subscription_price())]
+		pub fn set_menstrual_subscription_price(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
+			duration: MenstrualSubscriptionDuration,
+			currency: CurrencyType,
+			price: BalanceOf<T>,
+			asset_id: Option<AssetId>,
+		) -> DispatchResultWithPostInfo {
+			let admin = ensure_signed(origin)?;
+			let admin_key = AdminKey::<T>::get().filter(|account_id| account_id == &admin);
+
+			ensure!(admin_key.is_some(), Error::<T>::Unauthorized);
+
+			match <Self as MenstrualSubscriptionInterface<T>>::set_menstrual_subscription_price(
+				&duration, &currency, price, asset_id,
+			) {
+				Ok(menstrual_subscription_price) => {
+					Self::deposit_event(Event::MenstrualSubscriptionPriceAdded(
+						menstrual_subscription_price,
+					));
+					Ok(().into())
+				},
+				Err(error) => Err(error.into()),
+			}
+		}
+
+		#[pallet::weight(0)]
+		pub fn update_key(
+			origin: OriginFor<T>,
+			account_key_type: AccountKeyTypeOf<T>,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			ensure!(who == AdminKey::<T>::get().unwrap(), Error::<T>::Unauthorized);
+			match account_key_type.clone() {
+				AccountKeyType::TreasuryKey(account_id) => {
+					let result = TreasuryKey::<T>::get().filter(|account_id| account_id == &who);
+					ensure!(result.is_some(), Error::<T>::Unauthorized);
+					TreasuryKey::<T>::put(&account_id);
+				},
+				AccountKeyType::AdminKey(account_id) => {
+					let result = AdminKey::<T>::get().filter(|account_id| account_id == &who);
+					ensure!(result.is_some(), Error::<T>::Unauthorized);
+					AdminKey::<T>::put(&account_id);
+				},
+			};
 
-			AdminKey::<T>::put(&account_id);
-
-			Self::deposit_event(Event::UpdateMenstrualSubscriptionAdminKeySuccessful(account_id));
+			Self::deposit_event(Event::UpdateMenstrualSubscriptionKeySuccessful(account_key_type));
 
 			Ok(Pays::No.into())
 		}
 
 		#[pallet::weight(0)]
-		pub fn sudo_update_admin_key(
+		pub fn sudo_update_key(
 			origin: OriginFor<T>,
-			account_id: T::AccountId,
+			account_key_type: AccountKeyTypeOf<T>,
 		) -> DispatchResultWithPostInfo {
 			ensure_root(origin)?;
 
-			AdminKey::<T>::put(&account_id);
+			match account_key_type.clone() {
+				AccountKeyType::TreasuryKey(account_id) => TreasuryKey::<T>::put(&account_id),
+				AccountKeyType::AdminKey(account_id) => AdminKey::<T>::put(&account_id),
+			};
 
-			Self::deposit_event(Event::UpdateMenstrualSubscriptionAdminKeySuccessful(account_id));
+			Self::deposit_event(Event::UpdateMenstrualSubscriptionKeySuccessful(account_key_type));
 
 			Ok(Pays::No.into())
 		}
-	}
-}
-
-use frame_support::sp_runtime::traits::Hash;
-
-/// MenstrualSubscription Interface Implementation
-impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
-	type Error = Error<T>;
-	type MenstrualSubscriptionId = T::Hash;
-	type MenstrualSubscription = MenstrualSubscriptionOf<T>;
-
-	fn generate_menstrual_subscription_id(
-		address_id: &T::AccountId,
-		menstrual_subscription_count: u64,
-	) -> Self::MenstrualSubscriptionId {
-		let mut account_id_bytes = address_id.encode();
-		let mut menstrual_subscription_count_bytes = menstrual_subscription_count.encode();
-		account_id_bytes.append(&mut menstrual_subscription_count_bytes);
-
-		let seed = &account_id_bytes;
-		T::Hashing::hash(seed)
-	}
-
-	fn add_menstrual_subscription(
-		address_id: &T::AccountId,
-		duration: &MenstrualSubscriptionDuration,
-		price: &u8,
-		payment_status: &PaymentStatus,
-		status: &MenstrualSubscriptionStatus,
-	) -> Result<Self::MenstrualSubscription, Self::Error> {
-		let owner_menstrual_subscription_count =
-			<Self as MenstrualSubscriptionInterface<T>>::menstrual_subscription_count_by_owner(
-				address_id,
-			);
-		let menstrual_subscription_id = Self::generate_menstrual_subscription_id(
-			address_id,
-			owner_menstrual_subscription_count,
-		);
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		let menstrual_subscription = MenstrualSubscription::new(
-			menstrual_subscription_id,
-			address_id.clone(),
-			duration.clone(),
-			*price,
-			payment_status.clone(),
-			status.clone(),
-			now,
-		);
-
-		// Store to MenstrualSubscriptionById storage
-		MenstrualSubscriptionById::<T>::insert(menstrual_subscription_id, &menstrual_subscription);
-
-		Self::add_menstrual_subscription_by_owner(address_id, &menstrual_subscription_id);
-		Self::add_menstrual_subscription_count();
-		Self::add_menstrual_subscription_count_by_owner(address_id);
-
-		Ok(menstrual_subscription)
-	}
-
-	fn change_menstrual_subscription_status(
-		address_id: &T::AccountId,
-		menstrual_subscription_id: &T::Hash,
-		status: &MenstrualSubscriptionStatus,
-	) -> Result<Self::MenstrualSubscription, Self::Error> {
-		let menstrual_subscription = MenstrualSubscriptionById::<T>::get(menstrual_subscription_id);
-		if menstrual_subscription.is_none() {
-			return Err(Error::<T>::MenstrualSubscriptionDoesNotExist)
-		}
-
-		let mut menstrual_subscription = menstrual_subscription.unwrap();
-		if menstrual_subscription.address_id != address_id.clone() {
-			return Err(Error::<T>::NotMenstrualSubscriptionOwner)
-		}
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		menstrual_subscription.status = status.clone();
-		menstrual_subscription.updated_at = now;
-
-		// Store to MenstrualSubscriptionById storage
-		MenstrualSubscriptionById::<T>::insert(menstrual_subscription_id, &menstrual_subscription);
-
-		Ok(menstrual_subscription)
-	}
-
-	fn set_menstrual_subscription_paid(
-		address_id: &T::AccountId,
-		menstrual_subscription_id: &T::Hash,
-	) -> Result<Self::MenstrualSubscription, Self::Error> {
-		let menstrual_subscription = MenstrualSubscriptionById::<T>::get(menstrual_subscription_id);
-		if menstrual_subscription.is_none() {
-			return Err(Error::<T>::MenstrualSubscriptionDoesNotExist)
-		}
-
-		let mut menstrual_subscription = menstrual_subscription.unwrap();
-		if menstrual_subscription.address_id != address_id.clone() {
-			return Err(Error::<T>::NotMenstrualSubscriptionOwner)
-		}
-
-		let now = pallet_timestamp::Pallet::<T>::get();
-
-		menstrual_subscription.payment_status = PaymentStatus::Paid;
-		menstrual_subscription.updated_at = now;
-
-		// Store to MenstrualSubscriptionById storage
-		MenstrualSubscriptionById::<T>::insert(menstrual_subscription_id, &menstrual_subscription);
-
-		Ok(menstrual_subscription)
-	}
-
-	fn menstrual_subscription_by_address_id(address_id: &T::AccountId) -> Option<Vec<T::Hash>> {
-		MenstrualSubscriptionByOwner::<T>::get(address_id)
-	}
-
-	fn menstrual_subscription_count_by_owner(address_id: &T::AccountId) -> u64 {
-		MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(0)
-	}
-
-	fn menstrual_subscription_by_id(
-		menstrual_subscription_id: &Self::MenstrualSubscriptionId,
-	) -> Option<Self::MenstrualSubscription> {
-		MenstrualSubscriptionById::<T>::get(menstrual_subscription_id)
-	}
-}
-
-/// Pallet Methods
-impl<T: Config> Pallet<T> {
-	// Add menstrual_subscription by owner
-	pub fn add_menstrual_subscription_by_owner(
-		address_id: &T::AccountId,
-		menstrual_subscription_id: &T::Hash,
-	) {
-		let mut menstrual_subscription =
-			MenstrualSubscriptionByOwner::<T>::get(address_id).unwrap_or_default();
-
-		menstrual_subscription.push(*menstrual_subscription_id);
-		MenstrualSubscriptionByOwner::<T>::insert(address_id, &menstrual_subscription)
-	}
-
-	// Subtract menstrual_subscription by owner
-	pub fn sub_menstrual_subscription_by_owner(
-		address_id: &T::AccountId,
-		menstrual_subscription_id: &T::Hash,
-	) {
-		let mut menstrual_subscription =
-			MenstrualSubscriptionByOwner::<T>::get(address_id).unwrap_or_default();
-		menstrual_subscription.retain(|&x| x != *menstrual_subscription_id);
-		MenstrualSubscriptionByOwner::<T>::insert(address_id, menstrual_subscription);
-	}
-
-	// Add menstrual_subscription count
-	pub fn add_menstrual_subscription_count() {
-		let menstrual_subscription_count = <MenstrualSubscriptionCount<T>>::get().unwrap_or(0);
-		<MenstrualSubscriptionCount<T>>::put(menstrual_subscription_count.wrapping_add(1));
-	}
-
-	// Add menstrual_subscription count by owner
-	pub fn add_menstrual_subscription_count_by_owner(address_id: &T::AccountId) {
-		let menstrual_subscription_count =
-			MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(0);
-		MenstrualSubscriptionCountByOwner::<T>::insert(
-			address_id,
-			menstrual_subscription_count.wrapping_add(1),
-		)
-	}
-
-	// Subtract menstrual_subscription count
-	pub fn sub_menstrual_subscription_count() {
-		let menstrual_subscription_count = <MenstrualSubscriptionCount<T>>::get().unwrap_or(1);
-		MenstrualSubscriptionCount::<T>::put(menstrual_subscription_count - 1);
-	}
-
-	// Subtract menstrual_subscription count by owner
-	pub fn sub_menstrual_subscription_count_by_owner(address_id: &T::AccountId) {
-		let menstrual_subscription_count =
-			MenstrualSubscriptionCountByOwner::<T>::get(address_id).unwrap_or(1);
-		MenstrualSubscriptionCountByOwner::<T>::insert(
-			address_id,
-			menstrual_subscription_count - 1,
-		);
-	}
-}
-
-/// MenstrualSubscriptionProvider Trait Implementation
-impl<T: Config> MenstrualSubscriptionProvider<T> for Pallet<T> {
-	type Error = Error<T>;
-	type MenstrualSubscription = MenstrualSubscriptionOf<T>;
-
-	fn menstrual_subscription_by_id(id: &T::Hash) -> Option<MenstrualSubscriptionOf<T>> {
-		<Self as MenstrualSubscriptionInterface<T>>::menstrual_subscription_by_id(id)
 	}
 }

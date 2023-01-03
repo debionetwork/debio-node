@@ -141,6 +141,10 @@ mod benches {
 		[genetic_testing_benchmarking, GeneticTestingBench::<Runtime>]
 		[genetic_analysis_orders_benchmarking, GeneticAnalysisOrdersBench::<Runtime>]
 		[genetic_analysis_benchmarking, GeneticAnalysisBench::<Runtime>]
+		[health_professional_benchmarking, HealthProfessionalBench::<Runtime>]
+		[health_professional_qualification_benchmarking, HealthProfessionalQualificationBench::<Runtime>]
+		[opinion_requestor_benchmarking, OpinionRequestorBench::<Runtime>]
+		[opinion_benchmarking, OpinionBench::<Runtime>]
 	);
 }
 
@@ -202,7 +206,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 2020,
+	spec_version: 2032,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -713,6 +717,12 @@ parameter_types! {
 	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
+}
+
+parameter_types! {
+	// Six days in milliseconds
+	pub const UnstakePeriode: Moment = 6 * 24 * 60 * 60 * 1000;
 }
 
 impl labs::Config for Runtime {
@@ -766,8 +776,10 @@ impl service_request::Config for Runtime {
 	type Event = Event;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
-	type Assets = OctopusAssets;
 	type Labs = Labs;
+	type Orders = Orders;
+	type Services = Services;
+	type UnstakePeriode = UnstakePeriode;
 	type ServiceRequestWeightInfo = ();
 }
 
@@ -776,7 +788,9 @@ impl orders::Config for Runtime {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 impl genetic_testing::Config for Runtime {
@@ -793,6 +807,8 @@ impl menstrual_calendar::Config for Runtime {
 
 impl menstrual_subscription::Config for Runtime {
 	type Event = Event;
+	type Currency = Balances;
+	type Assets = OctopusAssets;
 	type MenstrualSubscriptionWeightInfo = ();
 }
 
@@ -877,6 +893,33 @@ impl genetic_analysis_orders::Config for Runtime {
 	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
+impl health_professional::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type HealthProfessionalQualifications = HealthProfessionalQualification;
+	type HealthProfessionalWeightInfo = ();
+}
+
+impl health_professional_qualification::Config for Runtime {
+	type Event = Event;
+	type HealthProfessionalQualificationOwner = HealthProfessional;
+	type WeightInfo = ();
+}
+
+impl opinion_requestor::Config for Runtime {
+	type Event = Event;
+	type GeneticData = GeneticData;
+	type OpinionRequestorWeightInfo = ();
+}
+
+impl opinion::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type Assets = OctopusAssets;
+	type OpinionRequestor = OpinionRequestor;
+	type OpinionWeightInfo = ();
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -928,6 +971,10 @@ construct_runtime!(
 		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
+		HealthProfessional: health_professional::{Pallet, Call, Storage, Config<T>, Event<T>},
+		HealthProfessionalQualification: health_professional_qualification::{Pallet, Call, Storage, Event<T>},
+		OpinionRequestor: opinion_requestor::{Pallet, Call, Storage, Event<T>},
+		Opinion: opinion::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
 );
 
@@ -1175,6 +1222,10 @@ impl_runtime_apis! {
 			use genetic_analysts_benchmarking::Pallet as GeneticAnalystsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
+			use health_professional_qualification_benchmarking::Pallet as HealthProfessionalQualificationBench;
+			use health_professional_benchmarking::Pallet as HealthProfessionalBench;
+			use opinion_requestor_benchmarking::Pallet as OpinionRequestorBench;
+			use opinion_benchmarking::Pallet as OpinionBench;
 
 			let mut list = Vec::<BenchmarkList>::new();
 			list_benchmarks!(list, extra);
@@ -1205,6 +1256,10 @@ impl_runtime_apis! {
 			use labs_benchmarking::Pallet as LabsBench;
 			use orders_benchmarking::Pallet as OrdersBench;
 			use genetic_analysis_orders_benchmarking::Pallet as GeneticAnalysisOrdersBench;
+			use health_professional_benchmarking::Pallet as HealthProfessionalBench;
+			use health_professional_qualification_benchmarking::Pallet as HealthProfessionalQualificationBench;
+			use opinion_requestor_benchmarking::Pallet as OpinionRequestorBench;
+			use opinion_benchmarking::Pallet as OpinionBench;
 
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl baseline::Config for Runtime {}
@@ -1223,6 +1278,10 @@ impl_runtime_apis! {
 			impl genetic_analysis_orders_benchmarking::Config for Runtime {}
 			impl labs_benchmarking::Config for Runtime {}
 			impl service_request_benchmarking::Config for Runtime {}
+			impl health_professional_benchmarking::Config for Runtime {}
+			impl health_professional_qualification_benchmarking::Config for Runtime {}
+			impl opinion_requestor_benchmarking::Config for Runtime {}
+			impl opinion_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number

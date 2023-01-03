@@ -13,11 +13,15 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-assets = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
+pallet-randomness-collective-flip = { default-features = false, git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.18" }
+pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
 sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -29,6 +33,7 @@ services = { path = '../../services', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
 orders = { path = '../../orders', default-features = false }
 genetic-testing = { path = '../../genetic-testing', default-features = false }
+certifications = { path = '../../certifications', default-features = false }
 
 primitives-duration = { path = '../../../primitives/duration', default-features = false }
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
@@ -57,11 +62,15 @@ std = [
     'frame-support/std',
     'frame-system/std',
 
+	'pallet-assets/std',
 	'pallet-balances/std',
+	'pallet-timestamp/std',
+	'pallet-randomness-collective-flip/std',
 
     'labs/std',
     'services/std',
     'user-profile/std',
+	'certifications/std',
     'genetic-testing/std',
 
     'primitives-duration/std',

@@ -9,8 +9,10 @@ mod tests {
 		sp_runtime::traits::{Hash, Keccak256},
 	};
 
+	use frame_system::RawOrigin;
 	use genetic_testing::{DnaSampleStatus, DnaTestResultSubmission, Error};
 	use labs::LabInfo;
+	use orders::PalletAccount;
 	use services::ServiceInfo;
 
 	use primitives_area_code::{CityCode, CountryCode, RegionCode};
@@ -18,11 +20,14 @@ mod tests {
 	use traits_services::types::ServiceFlow;
 
 	use primitives_duration::ExpectedDuration;
-	use primitives_price_and_currency::PriceByCurrency;
+	use primitives_price_and_currency::{CurrencyType, Price, PriceByCurrency};
 
 	#[test]
 	fn reject_dna_sample_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
+			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
 				LabInfo {
@@ -48,11 +53,18 @@ mod tests {
 				EthereumAddress([b'X'; 20])
 			));
 
+			let prices_by_currency_dbio = PriceByCurrency {
+				currency: CurrencyType::DBIO,
+				total_price: 10,
+				price_components: vec![Price { component: b"testing_price".to_vec(), value: 5 }],
+				additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 5 }],
+			};
+
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![PriceByCurrency::default()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
@@ -73,10 +85,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 
 			assert_ok!(GeneticTesting::reject_dna_sample(
 				Origin::signed(1),
@@ -89,7 +105,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.is_rejected(), true);
+			assert!(_dna_sample_info.is_rejected());
 		})
 	}
 
@@ -161,7 +177,8 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
@@ -181,6 +198,9 @@ mod tests {
 	#[test]
 	fn process_dna_sample_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
+			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
 				LabInfo {
@@ -206,11 +226,18 @@ mod tests {
 				EthereumAddress([b'X'; 20])
 			));
 
+			let prices_by_currency_dbio = PriceByCurrency {
+				currency: CurrencyType::DBIO,
+				total_price: 10,
+				price_components: vec![Price { component: b"testing_price".to_vec(), value: 5 }],
+				additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 5 }],
+			};
+
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![PriceByCurrency::default()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
@@ -231,10 +258,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None
 			));
 
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 
 			assert_ok!(GeneticTesting::submit_test_result(
 				Origin::signed(1),
@@ -275,7 +306,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.process_success(), true);
+			assert!(_dna_sample_info.process_success());
 		})
 	}
 
@@ -296,6 +327,9 @@ mod tests {
 	#[test]
 	fn cannot_process_dna_sample_works_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
+			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
 				LabInfo {
@@ -321,11 +355,18 @@ mod tests {
 				EthereumAddress([b'X'; 20])
 			));
 
+			let prices_by_currency_dbio = PriceByCurrency {
+				currency: CurrencyType::DBIO,
+				total_price: 10,
+				price_components: vec![Price { component: b"testing_price".to_vec(), value: 5 }],
+				additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 5 }],
+			};
+
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![PriceByCurrency::default()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
@@ -346,10 +387,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 
 			assert_ok!(GeneticTesting::submit_test_result(
 				Origin::signed(1),
@@ -394,6 +439,9 @@ mod tests {
 	#[test]
 	fn cannot_process_dna_sample_works_not_submitted() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
+			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
 				LabInfo {
@@ -444,11 +492,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 			assert_noop!(
 				GeneticTesting::process_dna_sample(
 					Origin::signed(1),
@@ -463,6 +514,9 @@ mod tests {
 	#[test]
 	fn submit_test_result_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			PalletAccount::<Test>::put(5);
+
+			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
 				Origin::signed(1),
 				LabInfo {
@@ -488,11 +542,18 @@ mod tests {
 				EthereumAddress([b'X'; 20])
 			));
 
+			let prices_by_currency_dbio = PriceByCurrency {
+				currency: CurrencyType::DBIO,
+				total_price: 10,
+				price_components: vec![Price { component: b"testing_price".to_vec(), value: 5 }],
+				additional_prices: vec![Price { component: b"qc_price".to_vec(), value: 5 }],
+			};
+
 			assert_ok!(Services::create_service(
 				Origin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
-					prices_by_currency: vec![PriceByCurrency::default()],
+					prices_by_currency: vec![prices_by_currency_dbio],
 					expected_duration: ExpectedDuration::default(),
 					category: "DeBio service category".as_bytes().to_vec(),
 					description: "DeBio service description".as_bytes().to_vec(),
@@ -513,11 +574,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::submit_test_result(
 				Origin::signed(1),
 				_dna_sample[0].clone(),
@@ -602,7 +666,8 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			assert_noop!(
@@ -673,7 +738,8 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();

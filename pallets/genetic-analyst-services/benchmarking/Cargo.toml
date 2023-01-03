@@ -30,17 +30,24 @@ frame-system = { default-features = false, git = "https://github.com/paritytech/
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
 ## Substrate Pallet Dependencies
+pallet-assets = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 
 # Local Dependencies
 genetic-analysts = { path = '../../genetic-analysts', default-features = false }
 genetic-analyst-services = { path = '../../genetic-analyst-services', default-features = false }
 genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications', default-features = false }
 user-profile = { path = '../../user-profile', default-features = false }
+genetic-analysis = { path = '../../genetic-analysis', default-features = false }
+genetic-analysis-orders = { path = '../../genetic-analysis-orders', default-features = false }
+genetic-data = { path = '../../genetic-data', default-features = false }
 
 primitives-duration = { path = '../../../primitives/duration', default-features = false }
 primitives-price-and-currency = { path = '../../../primitives/price-and-currency', default-features = false }
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 
 traits-genetic-analyst-services = { path = '../../genetic-analyst-services/traits', default-features = false }
 traits-genetic-analyst-qualifications = { path = '../../genetic-analyst-qualifications/traits', default-features = false }
@@ -61,16 +68,22 @@ std = [
     'frame-support/std',
     'frame-system/std',
 
+	'pallet-assets/std',
 	'pallet-balances/std',
     'pallet-timestamp/std',
 
+	'genetic-data/std',
+	'genetic-analysis/std',
     'genetic-analysts/std',
     'genetic-analyst-services/std',
     'genetic-analyst-qualifications/std',
+	'genetic-analysis-orders/std',
     'user-profile/std',
 
     'primitives-duration/std',
     'primitives-price-and-currency/std',
+	'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
 
     'traits-genetic-analyst-services/std',
     'traits-genetic-analyst-qualifications/std',

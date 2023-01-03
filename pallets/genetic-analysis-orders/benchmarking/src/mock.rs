@@ -1,15 +1,15 @@
 #![cfg(test)]
 
-use super::*;
-
-use frame_support::{parameter_types, traits::ConstU128};
+use frame_support::{parameter_types, traits::ConstU128, PalletId};
 use frame_system::EnsureRoot;
-use sp_io::TestExternalities;
+use pallet_balances::AccountData;
 use sp_runtime::{
-	testing::Header,
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
 	MultiSignature,
 };
+
+use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -32,6 +32,9 @@ frame_support::construct_runtime!(
 		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		OctopusAssets: pallet_assets::<Instance1>::{Call, Config<T>, Event<T>, Pallet, Storage},
+		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 	}
 );
 
@@ -60,7 +63,7 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -77,6 +80,8 @@ pub mod currency {
 
 pub type OctopusAssetId = u32;
 pub type OctopusAssetBalance = u128;
+
+impl pallet_randomness_collective_flip::Config for Test {}
 
 parameter_types! {
 	pub const ApprovalDeposit: Balance = currency::DOLLARS;
@@ -129,6 +134,8 @@ impl genetic_data::Config for Test {
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
@@ -161,33 +168,35 @@ impl genetic_analysis_orders::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
 	type Assets = OctopusAssets;
+	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
+	type PalletId = GeneticAnalysisOrdersEscrowPalletId;
 }
 
-impl user_profile::Config for Runtime {
+impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
+	type WeightInfo = ();
 }
 
-pub struct ExternalityBuilder;
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 
-impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let mut storage = system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
-		storage.extend(
-			GenesisConfig::<Runtime> {
-				orders: OrdersConfig {
-					escrow_key: hex![
-						"18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b"
-					]
-					.into(),
-				},
-			}
-			.build_storage()
-			.unwrap(),
-		);
-		storage.into()
-	}
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
+	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
 }

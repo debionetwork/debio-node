@@ -32,6 +32,7 @@ frame-benchmarking = { default-features = false, git = "https://github.com/parit
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-randomness-collective-flip = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-assets = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 
 # Local Dependencies
 labs = { path = '../../labs', default-features = false }
@@ -70,6 +71,7 @@ std = [
 	'pallet-balances/std',
 	'pallet-timestamp/std',
 	'pallet-randomness-collective-flip/std',
+	'pallet-assets/std',
 
     'traits-order/std',
     'traits-services/std',
@@ -87,6 +89,6 @@ std = [
     'primitives-area-code/std',
     'primitives-profile-roles/std',
     'primitives-ethereum-address/std',
-    
+
     'traits-certifications/std',
 ]

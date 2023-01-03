@@ -174,6 +174,7 @@ pub mod pallet {
 		DnaTestResultNotYetSubmitted,
 		DataStakerNotFound,
 		DataHashNotFound,
+		UnpaidOrder,
 	}
 
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
@@ -401,6 +402,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 			return Err(Error::<T>::Unauthorized)
 		}
 
+		if !T::Orders::is_order_paid(&dna_sample.order_id) {
+			return Err(Error::<T>::UnpaidOrder)
+		}
+
 		let now = pallet_timestamp::Pallet::<T>::get();
 		dna_sample.rejected_title = Some(rejected_title.to_vec());
 		dna_sample.rejected_description = Some(rejected_description.to_vec());
@@ -430,6 +435,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
 		if dna_sample.lab_id != *lab_id {
 			return Err(Error::<T>::Unauthorized)
+		}
+
+		if !T::Orders::is_order_paid(&dna_sample.order_id) {
+			return Err(Error::<T>::UnpaidOrder)
 		}
 
 		if status == DnaSampleStatus::ResultReady {
@@ -464,6 +473,10 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 
 		if dna_sample.lab_id != *lab_id {
 			return Err(Error::<T>::Unauthorized)
+		}
+
+		if !T::Orders::is_order_paid(&dna_sample.order_id) {
+			return Err(Error::<T>::UnpaidOrder)
 		}
 
 		let now = pallet_timestamp::Pallet::<T>::get();

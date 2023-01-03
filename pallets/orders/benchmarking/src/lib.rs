@@ -23,13 +23,13 @@ use primitives_price_and_currency::PriceByCurrency;
 
 #[allow(unused)]
 use orders::Pallet as Orders;
-use orders::{Config as OrdersConfig, EscrowKey};
+use orders::{AccountKeyType, Config as OrdersConfig, EscrowKey};
 
 #[allow(unused)]
 use genetic_testing::Pallet as GeneticTesting;
 use genetic_testing::{Config as GeneticTestingConfig, DnaSampleStatus, DnaTestResultSubmission};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec, whitelisted_caller};
+use frame_benchmarking::{benchmarks, vec, whitelisted_caller};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(Orders<T>);
@@ -89,7 +89,8 @@ benchmarks! {
 		_lab.services[0],
 		0,
 		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-		StakingRequestService
+		StakingRequestService,
+		None
 	)
 
 	cancel_order {
@@ -138,7 +139,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			RequestTest
+			RequestTest,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -196,7 +198,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			StakingRequestService
+			StakingRequestService,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -254,7 +257,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			RequestTest
+			RequestTest,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -335,7 +339,8 @@ benchmarks! {
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			StakingRequestService
+			StakingRequestService,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
@@ -359,13 +364,12 @@ benchmarks! {
 		_order.id
 	)
 
-	update_escrow_key {
+	update_key {
 		let caller: T::AccountId = EscrowKey::<T>::get().unwrap();
 		let caller2: T::AccountId = whitelisted_caller();
-	}: update_escrow_key(
+		let account_key_type = AccountKeyType::EscrowKey(caller2);
+	}: update_key(
 		RawOrigin::Signed(caller),
-		caller2
+		account_key_type
 	)
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

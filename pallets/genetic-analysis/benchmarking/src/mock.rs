@@ -1,18 +1,19 @@
 #![cfg(test)]
 
-use super::*;
-
 use frame_support::{parameter_types, traits::ConstU128, PalletId};
 use frame_system::EnsureRoot;
-use sp_io::TestExternalities;
+use pallet_balances::AccountData;
+
 use sp_runtime::{
-	testing::Header,
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
 	MultiSignature,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
+
+use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
 
 pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
@@ -63,7 +64,7 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -106,6 +107,14 @@ impl pallet_assets::Config<pallet_assets::Instance1> for Test {
 	type WeightInfo = ();
 }
 
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+}
+
 impl pallet_timestamp::Config for Test {
 	/// A timestamp: milliseconds since the unix epoch.
 	type Moment = Moment;
@@ -120,7 +129,7 @@ type Balance = u128;
 
 parameter_types! {
 	pub const ExistentialDeposit: Balance = 10;
-	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
+	pub const GeneticAnalystPalletId: PalletId = PalletId(*b"dbio/gen");
 	pub const GeneticAnalysisOrdersEscrowPalletId: PalletId = PalletId(*b"dbio/esc");
 }
 
@@ -144,6 +153,8 @@ impl genetic_data::Config for Test {
 impl genetic_analysts::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
+	type PalletId = GeneticAnalystPalletId;
+	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalystQualifications = GeneticAnalystQualifications;
 	type EthereumAddress = EthereumAddress;
@@ -177,6 +188,7 @@ impl genetic_analysis_orders::Config for Test {
 	type Currency = Balances;
 	type Assets = OctopusAssets;
 	type GeneticData = GeneticData;
+	type GeneticAnalysts = GeneticAnalysts;
 	type GeneticAnalysis = GeneticAnalysis;
 	type GeneticAnalystServices = GeneticAnalystServices;
 	type GeneticAnalysisOrdersWeightInfo = ();
@@ -187,13 +199,5 @@ impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
-}
-
-pub struct ExternalityBuilder;
-
-impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-		TestExternalities::from(storage)
-	}
+	type WeightInfo = ();
 }

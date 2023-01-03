@@ -13,6 +13,7 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -26,7 +27,10 @@ sp-runtime = { default-features = false, git = "https://github.com/paritytech/su
 
 doctors = { path = '../../doctors', default-features = false }
 doctor-certifications = { path = '../../doctor-certifications', default-features = false }
+user-profile = { path = '../../user-profile', default-features = false }
 
+primitives-profile-roles = { path = '../../../primitives/profile-roles', default-features = false }
+primitives-ethereum-address = { path = '../../../primitives/ethereum-address', default-features = false }
 primitives-area-code = { path = '../../../primitives/area-code', default-features = false }
 traits-doctor-certifications = { path = '../../doctor-certifications/traits', default-features = false }
 
@@ -48,9 +52,12 @@ std = [
 
 	'pallet-balances/std',
 
+    'user-profile/std',
     'doctors/std',
     'doctor-certifications/std',
 
     'primitives-area-code/std',
+	'primitives-profile-roles/std',
+    'primitives-ethereum-address/std',
     'traits-doctor-certifications/std',
 ]

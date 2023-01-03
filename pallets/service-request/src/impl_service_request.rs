@@ -1,34 +1,23 @@
 use super::*;
 
-use frame_support::sp_runtime::traits::Zero;
+use frame_support::{sp_runtime::traits::Zero, traits::ExistenceRequirement};
+use primitives_verification_status::VerificationStatusTrait;
+use traits_order::OrderInfo;
+use traits_services::ServiceInfo;
 
 /// Service Request Interface Implementation
 impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 	type Error = Error<T>;
-	type Balance = BalanceOf<T>;
 	type Request = RequestOf<T>;
-	type Admin = AdminOf<T>;
-	type ServiceOffer = ServiceOfferOf<T>;
-	type ServiceInvoice = ServiceInvoiceOf<T>;
-	type RequestId = RequestIdOf<T>;
-	type RequesterId = RequesterIdOf<T>;
-	type LabId = LabIdOf<T>;
-	type Country = CountryOf;
-	type Region = RegionOf;
-	type City = CityOf;
-	type ServiceCategory = ServiceCategoryOf;
-	type ServiceId = ServiceIdOf<T>;
-	type OrderId = OrderIdOf<T>;
-	type DNASampleTrackingId = DNASampleTrackingIdOf;
-	type ServicePrice = LabPriceOf<T>;
+	type Balance = BalanceOf<T>;
 
 	// Stake with DBIO
 	fn create_request(
-		requester_id: Self::RequesterId,
-		country: Self::Country,
-		region: Self::Region,
-		city: Self::City,
-		service_category: Self::ServiceCategory,
+		requester_id: &T::AccountId,
+		country: Vec<u8>,
+		region: Vec<u8>,
+		city: Vec<u8>,
+		service_category: Vec<u8>,
 		staking_amount: Self::Balance,
 	) -> Result<Self::Request, Self::Error> {
 		if staking_amount.is_zero() {
@@ -36,21 +25,20 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		}
 
 		let request_id =
-			Self::generate_request_id(&requester_id, &country, &region, &city, &service_category);
+			Self::generate_request_id(requester_id, &country, &region, &city, &service_category);
 
 		let now = T::TimeProvider::now().as_millis();
 
 		Self::do_transfer(
-			b"native",
-			&requester_id,
+			requester_id,
 			&Self::staking_account_id(request_id),
 			staking_amount,
-			true,
+			ExistenceRequirement::KeepAlive,
 		)?;
 
 		let request = Request::new(
 			request_id,
-			&requester_id,
+			requester_id,
 			&country,
 			&region,
 			&city,
@@ -71,12 +59,12 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 	// Unstake DBIO
 	fn unstake(
-		requester_id: Self::RequesterId,
-		request_id: Self::RequestId,
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
 	) -> Result<Self::Request, Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
 
-		if request.requester_address != requester_id {
+		if &request.requester_address != requester_id {
 			return Err(Error::<T>::Unauthorized)
 		}
 
@@ -84,7 +72,7 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 			return Err(Error::<T>::RequestUnableToUnstake)
 		}
 
-		let now: u128 = T::TimeProvider::now().as_millis();
+		let now = T::TimeProvider::now().as_millis();
 
 		request.status = RequestStatus::WaitingForUnstaked;
 		request.unstaked_at = Some(now);
@@ -96,14 +84,14 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 	// Unstake DBIO
 	fn retrieve_unstaked_amount(
-		admin: Self::Admin,
-		request_id: Self::RequestId,
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
 	) -> Result<Self::Request, Self::Error> {
-		let _ = AdminKey::<T>::get()
-			.filter(|account_id| account_id == &admin)
-			.ok_or(Error::<T>::Unauthorized)?;
-
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
+
+		if requester_id != &request.requester_address {
+			return Err(Error::<T>::Unauthorized)
+		}
 
 		if request.status != RequestStatus::WaitingForUnstaked {
 			return Err(Error::<T>::RequestUnableToRetrieveUnstake)
@@ -111,28 +99,19 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 
 		let requester_id = request.requester_address.clone();
 
-		let now: u128 = T::TimeProvider::now().as_millis();
-		let unstaked_at: u128 = request.unstaked_at.unwrap();
-		// TODO: move to constant runtime config
-		let six_days: u128 = 3600_u128 * 144_u128 * 1000_u128;
+		let now = T::TimeProvider::now().as_millis();
+		let unstaked_at = request.unstaked_at.unwrap();
 
-		if (now - unstaked_at) == six_days {
+		if (now - unstaked_at) < T::UnstakePeriode::get() as u128 {
 			return Err(Error::<T>::RequestWaitingForUnstaked)
 		}
 
 		Self::do_transfer(
-			b"native",
-			&Self::staking_account_id(request_id),
+			&Self::staking_account_id(*request_id),
 			&requester_id,
 			request.staking_amount,
-			false,
+			ExistenceRequirement::AllowDeath,
 		)?;
-
-		Self::deposit_event(Event::StakingAmountRefunded(
-			requester_id,
-			request_id,
-			request.staking_amount,
-		));
 
 		request.status = RequestStatus::Unstaked;
 
@@ -141,213 +120,184 @@ impl<T: Config> SeviceRequestInterface<T> for Pallet<T> {
 		Ok(request)
 	}
 
-	// Claim request with AssetId
+	// Claim request by lab
 	fn claim_request(
-		lab_id: Self::LabId,
-		request_id: Self::RequestId,
-		service_id: Self::ServiceId,
-		service_price: Self::ServicePrice,
-	) -> Result<(Self::Request, Self::ServiceOffer), Self::Error> {
+		lab_id: &T::AccountId,
+		request_id: &T::Hash,
+		service_id: &T::Hash,
+	) -> Result<Option<Self::Request>, Self::Error> {
 		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
+		let mut claimed_request: Option<Self::Request> = None;
 
-		if request.status == RequestStatus::WaitingForUnstaked ||
-			request.status == RequestStatus::Unstaked
-		{
-			return Err(Error::<T>::RequestAlreadyUnstaked)
+		match request.status {
+			RequestStatus::WaitingForUnstaked => Err(Error::<T>::RequestAlreadyUnstaked),
+			RequestStatus::Unstaked => Err(Error::<T>::RequestAlreadyUnstaked),
+			RequestStatus::Claimed => Err(Error::<T>::RequestAlreadyClaimed),
+			RequestStatus::Open => Ok(()),
+			_ => Err(Error::<T>::RequestUnableToClaimed),
+		}?;
+
+		let lab_status = T::Labs::lab_verification_status(lab_id).ok_or(Error::<T>::LabNotFound)?;
+
+		let service = T::Services::service_by_id(service_id).ok_or(Error::<T>::ServiceNotFound)?;
+
+		if !service.is_service_owner(lab_id) {
+			return Err(Error::<T>::Unauthorized)
 		}
-
-		if request.status == RequestStatus::Claimed {
-			return Err(Error::<T>::RequestAlreadyClaimed)
-		}
-
-		if request.status != RequestStatus::Open {
-			return Err(Error::<T>::RequestUnableToClaimed)
-		}
-
-		let lab_status =
-			T::Labs::lab_verification_status(&lab_id).ok_or(Error::<T>::LabNotFound)?;
-
-		let _ = Self::do_asset_exist(service_price.get_asset_id())?;
-
-		let service_offer = ServiceOffer::new(request_id, &lab_id, service_id, &service_price);
 
 		if lab_status.is_verified() {
 			let now = T::TimeProvider::now().as_millis();
 
 			request.status = RequestStatus::Claimed;
-			request.lab_address = Some(lab_id);
+			request.lab_address = Some(lab_id.clone());
+			request.service_id = Some(*service_id);
 			request.updated_at = Some(now);
 
 			RequestById::<T>::insert(request_id, &request);
-			ServiceOfferById::<T>::insert(request_id, &service_offer);
+
+			claimed_request = Some(request);
 		} else {
 			RequestsByLabId::<T>::try_mutate(lab_id, |value| {
-				if value.iter().any(|x| x == &request_id) {
+				if value.iter().any(|x| x == request_id) {
 					return Err(Error::<T>::RequestAlreadyInList)
 				}
 
-				value.push(request_id);
+				value.push(*request_id);
 
 				Ok(())
 			})?;
 		}
 
-		Ok((request, service_offer))
+		Ok(claimed_request)
 	}
 
-	// Process request with assetId
+	// Process request by customer
 	fn process_request(
-		requester_id: Self::RequesterId,
-		lab_id: Self::LabId,
-		request_id: Self::RequestId,
-		order_id: Self::OrderId,
-		dna_sample_tracking_id: Self::DNASampleTrackingId,
-	) -> Result<Self::ServiceInvoice, Self::Error> {
-		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
+		order_id: &T::Hash,
+	) -> Result<Self::Request, Self::Error> {
+		let request = RequestById::<T>::mutate(request_id, |result| match result {
+			Some(request) => {
+				match request.status {
+					RequestStatus::WaitingForUnstaked => Err(Error::<T>::RequestAlreadyUnstaked),
+					RequestStatus::Unstaked => Err(Error::<T>::RequestAlreadyUnstaked),
+					RequestStatus::Claimed => Ok(()),
+					_ => Err(Error::<T>::RequestUnableToProccess),
+				}?;
 
-		if requester_id != request.requester_address {
-			return Err(Error::<T>::Unauthorized)
-		}
+				if requester_id != &request.requester_address {
+					return Err(Error::<T>::Unauthorized)
+				}
 
-		if request.status == RequestStatus::WaitingForUnstaked ||
-			request.status == RequestStatus::Unstaked
-		{
-			return Err(Error::<T>::RequestAlreadyUnstaked)
-		}
+				let order =
+					T::Orders::get_order_by_id(order_id).ok_or(Error::<T>::OrderNotFound)?;
 
-		let lab_address = request.get_lab_address().as_ref().ok_or(Error::<T>::LabNotFound)?;
+				if !order.is_order_unpaid() && !order.is_order_paid() {
+					return Err(Error::<T>::RequestUnableToProccess)
+				}
 
-		if lab_address != &lab_id {
-			return Err(Error::<T>::LabNotFound)
-		}
+				if !order.is_order_to_lab(request.lab_address.as_ref().unwrap()) {
+					return Err(Error::<T>::RequestUnableToProccess)
+				}
 
-		if request.status != RequestStatus::Claimed {
-			return Err(Error::<T>::RequestUnableToProccess)
-		}
+				if !order.is_account_order(&request.requester_address) {
+					return Err(Error::<T>::RequestUnableToProccess)
+				}
 
-		let service_offer =
-			ServiceOfferById::<T>::get(request_id).ok_or(Error::<T>::ServiceOfferNotFound)?;
+				if !order.is_order_from_service(request.service_id.as_ref().unwrap()) {
+					return Err(Error::<T>::RequestUnableToProccess)
+				}
 
-		let service_price = service_offer.get_service_price();
-		let asset_id = service_price.get_asset_id();
-		let total_price = service_price.total_price();
+				let now = T::TimeProvider::now().as_millis();
 
-		Self::do_transfer(
-			asset_id,
-			&requester_id,
-			&Self::staking_account_id(request_id),
-			total_price,
-			true,
-		)?;
+				request.order_id = Some(*order_id);
+				request.status = RequestStatus::Processed;
+				request.updated_at = Some(now);
 
-		Self::deposit_event(Event::StakingAmountIncreased(
-			requester_id.clone(),
-			request_id,
-			total_price,
-		));
+				Ok(request.clone())
+			},
+			None => Err(Error::<T>::RequestNotFound),
+		})?;
 
-		let service_invoice = ServiceInvoice::new(
-			request_id,
-			order_id,
-			service_offer.service_id,
-			requester_id,
-			lab_id,
-			dna_sample_tracking_id,
-			service_price,
-		);
+		RequestByOrderId::<T>::insert(order_id, request_id);
 
-		let now = T::TimeProvider::now().as_millis();
-
-		request.status = RequestStatus::Processed;
-		request.updated_at = Some(now);
-
-		RequestById::<T>::insert(request_id, request);
-		ServiceInvoiceById::<T>::insert(request_id, &service_invoice);
-		ServiceInvoiceByOrderId::<T>::insert(order_id, &service_invoice);
-
-		Ok(service_invoice)
+		Ok(request)
 	}
 
 	// Finalize request with assetId
 	fn finalize_request(
-		admin: Self::Admin,
-		request_id: Self::RequestId,
-		test_result_success: bool,
-	) -> Result<Self::ServiceInvoice, Self::Error> {
-		let _ = AdminKey::<T>::get()
-			.filter(|account_id| account_id == &admin)
-			.ok_or(Error::<T>::Unauthorized)?;
+		lab_id: &T::AccountId,
+		request_id: &T::Hash,
+	) -> Result<Self::Request, Self::Error> {
+		let request = RequestById::<T>::mutate(request_id, |result| match result {
+			Some(request) => {
+				if request.status != RequestStatus::Processed {
+					return Err(Error::<T>::RequestUnableToFinalize)
+				}
 
-		let mut request = RequestById::<T>::get(request_id).ok_or(Error::<T>::RequestNotFound)?;
-		let service_invoice =
-			ServiceInvoiceById::<T>::get(request_id).ok_or(Error::<T>::ServiceInvoiceNotFound)?;
+				let _ = request
+					.lab_address
+					.as_ref()
+					.filter(|account_id| account_id == &lab_id)
+					.ok_or(Error::<T>::LabNotFound)?;
 
-		if request.status != RequestStatus::Processed {
-			return Err(Error::<T>::RequestUnableToFinalize)
-		}
+				let order_id = request.order_id.ok_or(Error::<T>::OrderNotFound)?;
+				let order =
+					T::Orders::get_order_by_id(&order_id).ok_or(Error::<T>::OrderNotFound)?;
 
-		let requester_id = service_invoice.customer_address.clone();
-		let lab_id = service_invoice.seller_address.clone();
+				// Ketika order di cancelled ?
+				if !order.is_order_fullfilled() &&
+					!order.is_order_refunded() &&
+					!order.is_order_failed()
+				{
+					return Err(Error::<T>::RequestUnableToFinalize)
+				}
 
-		let service_price = service_invoice.get_service_price();
-		let asset_id = service_price.get_asset_id();
-		let mut pay_amount = service_price.total_price();
+				if !order.is_order_to_lab(request.lab_address.as_ref().unwrap()) {
+					return Err(Error::<T>::RequestUnableToFinalize)
+				}
 
-		if !test_result_success {
-			pay_amount = service_price.get_qc_price();
+				if !order.is_account_order(&request.requester_address) {
+					return Err(Error::<T>::RequestUnableToFinalize)
+				}
 
-			let testing_price = service_price.get_testing_price();
+				if !order.is_order_from_service(request.service_id.as_ref().unwrap()) {
+					return Err(Error::<T>::RequestUnableToFinalize)
+				}
 
-			// Transfer testing price back to customer
-			Self::do_transfer(
-				asset_id,
-				&Self::staking_account_id(request_id),
-				&requester_id,
-				testing_price,
-				false,
-			)?;
-		}
+				let balance = request.staking_amount;
+				Self::do_transfer(
+					&Self::staking_account_id(*request_id),
+					&request.requester_address,
+					balance,
+					ExistenceRequirement::AllowDeath,
+				)?;
 
-		// Transfer qc_price to lab_id
-		Self::do_transfer(
-			asset_id,
-			&Self::staking_account_id(request_id),
-			&lab_id,
-			pay_amount,
-			false,
-		)?;
+				let now = T::TimeProvider::now().as_millis();
 
-		let balance = CurrencyOf::<T>::free_balance(&Self::staking_account_id(request_id));
+				request.status = RequestStatus::Finalized;
+				request.updated_at = Some(now);
 
-		if !balance.is_zero() {
-			// Transfer DBIO to requester_id
-			Self::do_transfer(
-				b"native",
-				&Self::staking_account_id(request_id),
-				&requester_id,
-				balance,
-				false,
-			)?;
-		}
+				// Removed from order request
+				RequestByOrderId::<T>::remove(order_id);
 
-		let now = T::TimeProvider::now().as_millis();
+				// Removed from customer request list
+				RequestByAccountId::<T>::mutate(&request.requester_address, |request_ids| {
+					request_ids.retain(|&x| x != *request_id);
+				});
 
-		request.status = RequestStatus::Finalized;
-		request.updated_at = Some(now);
+				// Update service count request
+				ServiceCountRequest::<T>::mutate(
+					(&request.country, &request.region, &request.city, &request.service_category),
+					|value| *value = value.wrapping_sub(1),
+				);
 
-		RequestById::<T>::insert(request_id, &request);
+				Ok(request.clone())
+			},
+			None => Err(Error::<T>::RequestNotFound),
+		})?;
 
-		// Removed from customer request list
-		RequestByAccountId::<T>::mutate(&requester_id, |request_ids| {
-			request_ids.retain(|&x| x != request_id);
-		});
-
-		// Update service count request
-		ServiceCountRequest::<T>::mutate(
-			(&request.country, &request.region, &request.city, &request.service_category),
-			|value| *value = value.wrapping_sub(1),
-		);
-
-		Ok(service_invoice)
+		Ok(request)
 	}
 }

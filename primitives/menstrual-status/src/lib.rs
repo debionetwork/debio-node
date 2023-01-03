@@ -37,6 +37,7 @@ impl PaymentStatusTrait for PaymentStatus {
 pub enum MenstrualSubscriptionStatus {
 	Inactive,
 	Active,
+	InQueue,
 }
 impl Default for MenstrualSubscriptionStatus {
 	fn default() -> Self {
@@ -47,6 +48,7 @@ impl Default for MenstrualSubscriptionStatus {
 pub trait MenstrualSubscriptionStatusTrait {
 	fn is_inactive(&self) -> bool;
 	fn is_active(&self) -> bool;
+	fn is_in_queue(&self) -> bool;
 }
 
 impl MenstrualSubscriptionStatusTrait for MenstrualSubscriptionStatus {
@@ -55,5 +57,8 @@ impl MenstrualSubscriptionStatusTrait for MenstrualSubscriptionStatus {
 	}
 	fn is_active(&self) -> bool {
 		matches!(*self, MenstrualSubscriptionStatus::Active)
+	}
+	fn is_in_queue(&self) -> bool {
+		matches!(*self, MenstrualSubscriptionStatus::InQueue)
 	}
 }

@@ -29,7 +29,7 @@ use orders::Pallet as Orders;
 use genetic_testing::Pallet as GeneticTesting;
 use genetic_testing::{Config as GeneticTestingConfig, DnaSampleStatus, DnaTestResultSubmission};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, vec};
+use frame_benchmarking::{benchmarks, vec};
 use frame_system::RawOrigin;
 
 pub struct Pallet<T: Config>(GeneticTesting<T>);
@@ -87,17 +87,20 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin,
+			caller_origin.clone(),
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			RequestTest
+			RequestTest,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
 			.unwrap();
 		let _order = Orders::<T>::order_by_id(_order_id_list[0])
 			.unwrap();
+
+		let _order_paid = Orders::<T>::set_order_paid(caller_origin, _order_id_list[0]);
 	}: reject_dna_sample(
 		RawOrigin::Signed(caller),
 		_order.dna_sample_tracking_id,
@@ -147,17 +150,19 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin,
+			caller_origin.clone(),
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			RequestTest
+			RequestTest,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
 			.unwrap();
 		let _order = Orders::<T>::order_by_id(_order_id_list[0])
 			.unwrap();
+		let _order_paid = Orders::<T>::set_order_paid(caller_origin, _order_id_list[0]);
 	}: process_dna_sample(
 		RawOrigin::Signed(caller),
 		_order.dna_sample_tracking_id,
@@ -206,17 +211,20 @@ benchmarks! {
 			.unwrap();
 
 		let _create_order = Orders::<T>::create_order(
-			caller_origin,
+			caller_origin.clone(),
 			_lab.services[0],
 			0,
 			T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-			StakingRequestService
+			StakingRequestService,
+			None,
 		);
 
 		let _order_id_list = Orders::<T>::orders_by_lab_id(caller.clone())
 			.unwrap();
 		let _order = Orders::<T>::order_by_id(_order_id_list[0])
 			.unwrap();
+
+		let _order_paid = Orders::<T>::set_order_paid(caller_origin, _order_id_list[0]);
 
 		let _dna_test_result = DnaTestResultSubmission {
 			comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -250,5 +258,3 @@ benchmarks! {
 		T::Hashing::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes())
 	)
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

@@ -16,9 +16,10 @@ use debio_runtime::{
 	currency::{OCTS, UNITS as DBIO},
 	opaque::{Block, SessionKeys},
 	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GeneticAnalysisOrdersConfig,
-	GeneticAnalystsConfig, LabsConfig, MenstrualSubscriptionConfig, OctopusAppchainConfig,
-	OctopusLposConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig, SessionConfig, Signature,
-	SudoConfig, SystemConfig, UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
+	GeneticAnalystsConfig, HealthProfessionalConfig, LabsConfig, MenstrualSubscriptionConfig,
+	OctopusAppchainConfig, OctopusLposConfig, OpinionConfig, OrdersConfig, RewardsConfig,
+	ServiceRequestConfig, SessionConfig, Signature, SudoConfig, SystemConfig, UserProfileConfig,
+	BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
 
 use serde::{Deserialize, Serialize};
@@ -313,17 +314,25 @@ fn genesis(
 		octopus_assets: Default::default(),
 		sudo: SudoConfig { key: Some(root_key) },
 		labs: LabsConfig { lab_verifier_key: Some(api_admin_key.clone()) },
-		orders: OrdersConfig { escrow_key: Some(api_admin_key.clone()) },
+		orders: OrdersConfig {
+			escrow_key: Some(api_admin_key.clone()),
+			treasury_key: Some(treasury_key.clone()),
+		},
 		rewards: RewardsConfig { rewarder_key: Some(api_admin_key.clone()) },
 		genetic_analysts: GeneticAnalystsConfig {
 			genetic_analyst_verifier_key: Some(api_admin_key.clone()),
 		},
 		genetic_analysis_orders: GeneticAnalysisOrdersConfig {
 			escrow_key: Some(api_admin_key.clone()),
-			treasury_key: Some(treasury_key),
+			treasury_key: Some(treasury_key.clone()),
 		},
 		service_request: ServiceRequestConfig { admin_key: Some(api_admin_key.clone()) },
 		user_profile: UserProfileConfig { admin_key: Some(api_admin_key.clone()) },
-		menstrual_subscription: MenstrualSubscriptionConfig { admin_key: Some(api_admin_key) },
+		menstrual_subscription: MenstrualSubscriptionConfig {
+			admin_key: Some(api_admin_key.clone()),
+			treasury_key: Some(treasury_key),
+		},
+		health_professional: HealthProfessionalConfig { verifier_key: Some(api_admin_key.clone()) },
+		opinion: OpinionConfig { admin_key: Some(api_admin_key) },
 	}
 }

@@ -19,7 +19,9 @@ mod tests {
 	use frame_system::RawOrigin;
 
 	use genetic_analysis::{GeneticAnalysisStatus, GeneticAnalysisTracking};
-	use genetic_analysis_orders::{GeneticAnalysisOrder, GeneticAnalysisOrderStatus};
+	use genetic_analysis_orders::{
+		GeneticAnalysisOrder, GeneticAnalysisOrderStatus, PalletAccount as OrderPalletAccount,
+	};
 	use genetic_analyst_services::GeneticAnalystServiceInfo;
 
 	use primitives_availability_status::AvailabilityStatus;
@@ -1509,6 +1511,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1529,6 +1532,7 @@ mod tests {
 					seller_id: 1,
 					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					asset_id: None,
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
 					additional_prices: PriceByCurrency::default().additional_prices,
@@ -1619,6 +1623,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1639,6 +1644,7 @@ mod tests {
 					seller_id: 1,
 					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					asset_id: None,
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
 					additional_prices: PriceByCurrency::default().additional_prices,
@@ -1732,6 +1738,7 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
@@ -1752,6 +1759,7 @@ mod tests {
 					seller_id: 1,
 					genetic_analysis_tracking_id: _genetic_analysis[0].clone(),
 					genetic_link: "DeBio Genetic Genetic Link".as_bytes().to_vec(),
+					asset_id: None,
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
 					additional_prices: PriceByCurrency::default().additional_prices,
@@ -1776,6 +1784,8 @@ mod tests {
 	#[test]
 	fn unstake_genetic_analyst_after_pending_order_is_rejected() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			OrderPalletAccount::<Test>::put(0);
+
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
@@ -1847,10 +1857,16 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
 			));
 
 			let _genetic_analysis_order_id =
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
+			));
 
 			let _genetic_analysis =
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
@@ -1872,7 +1888,7 @@ mod tests {
 				_genetic_analysis_info.get_genetic_analysis_tracking_id(),
 				&_genetic_analysis[0]
 			);
-			assert_eq!(_genetic_analysis_info.is_rejected(), true);
+			assert!(_genetic_analysis_info.is_rejected());
 
 			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
 		})
@@ -1881,6 +1897,8 @@ mod tests {
 	#[test]
 	fn unstake_genetic_analyst_after_pending_order_is_result_ready() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
+			OrderPalletAccount::<Test>::put(0);
+
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
 				1,
@@ -1957,6 +1975,15 @@ mod tests {
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
 				"DeBio Genetic Genetic Link".as_bytes().to_vec(),
+				None,
+			));
+
+			let _genetic_analysis_order_id =
+				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
+
+			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
+				Origin::signed(1),
+				_genetic_analysis_order_id
 			));
 
 			let _genetic_analysis =
@@ -2006,7 +2033,7 @@ mod tests {
 				_genetic_analysis_info.get_genetic_analysis_tracking_id(),
 				&_genetic_analysis[0]
 			);
-			assert_eq!(_genetic_analysis_info.process_success(), true);
+			assert!(_genetic_analysis_info.process_success());
 
 			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
 		})

@@ -5,6 +5,7 @@ mod tests {
 	use crate::mock::*;
 
 	use labs::{Error, Event as EventC, Lab, LabInfo, LabVerifierKey, PalletAccount};
+	use orders::PalletAccount as OrderPalletAccount;
 
 	use frame_support::{
 		assert_noop, assert_ok,
@@ -1215,7 +1216,8 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
@@ -1231,6 +1233,8 @@ mod tests {
 						"0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()
 					),
 					seller_id: 1,
+					total_price: 0,
+					asset_id: None,
 					dna_sample_tracking_id: _dna_sample[0].clone(),
 					currency: CurrencyType::default(),
 					prices: PriceByCurrency::default().price_components,
@@ -1258,6 +1262,7 @@ mod tests {
 
 			PalletAccount::<Test>::put(4);
 			LabVerifierKey::<Test>::put(2);
+			OrderPalletAccount::<Test>::put(5);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
 				Origin::signed(2),
@@ -1311,11 +1316,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::reject_dna_sample(
 				Origin::signed(1),
 				_dna_sample[0].clone(),
@@ -1327,7 +1335,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.is_rejected(), true);
+			assert!(_dna_sample_info.is_rejected());
 
 			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
 		})
@@ -1345,6 +1353,7 @@ mod tests {
 
 			PalletAccount::<Test>::put(4);
 			LabVerifierKey::<Test>::put(2);
+			OrderPalletAccount::<Test>::put(5);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
 				Origin::signed(2),
@@ -1403,11 +1412,14 @@ mod tests {
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
-				ServiceFlow::StakingRequestService
+				ServiceFlow::StakingRequestService,
+				None,
 			));
 
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
+			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
+			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::submit_test_result(
 				Origin::signed(1),
 				_dna_sample[0].clone(),
@@ -1447,7 +1459,7 @@ mod tests {
 				GeneticTesting::dna_sample_by_tracking_id(_dna_sample[0].clone()).unwrap();
 
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
-			assert_eq!(_dna_sample_info.process_success(), true);
+			assert!(_dna_sample_info.process_success());
 
 			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
 		})

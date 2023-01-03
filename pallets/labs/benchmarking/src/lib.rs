@@ -9,7 +9,7 @@ pub struct Pallet<T: Config>(Labs<T>);
 
 pub trait Config: LabsConfig {}
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 
 use frame_support::{
@@ -234,5 +234,3 @@ benchmarks! {
 		caller2
 	)
 }
-
-impl_benchmark_test_suite! {Labs, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

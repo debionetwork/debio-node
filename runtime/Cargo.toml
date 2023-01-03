@@ -1,6 +1,6 @@
 [package]
 name = 'debio-runtime'
-version = '2.2.0'
+version = '2.3.1'
 edition = '2021'
 license = 'AGPL-3.0'
 authors = ['DeBio Dev Team <debio_dev@blocksphere.id>']
@@ -106,6 +106,14 @@ genetic-analysis = { path = '../pallets/genetic-analysis', default-features = fa
 genetic-analysis-orders = { path = '../pallets/genetic-analysis-orders', default-features = false }
 genetic-analysis-orders-benchmarking = { path = '../pallets/genetic-analysis-orders/benchmarking', default-features = false, optional = true }
 genetic-analysis-benchmarking = { path = '../pallets/genetic-analysis/benchmarking', default-features = false, optional = true }
+health-professional = { path = '../pallets/health-professional/', default-features = false }
+health-professional-benchmarking = { path = '../pallets/health-professional/benchmarking', default-features = false, optional = true }
+health-professional-qualification = { path = '../pallets/health-professional-qualification', default-features = false }
+health-professional-qualification-benchmarking = { path = '../pallets/health-professional-qualification/benchmarking', default-features = false, optional = true }
+opinion-requestor = { path = '../pallets/opinion-requestor', default-features = false }
+opinion-requestor-benchmarking = { path = '../pallets/opinion-requestor/benchmarking', default-features = false, optional = true }
+opinion = { path = '../pallets/opinion', default-features = false }
+opinion-benchmarking = { path = '../pallets/opinion/benchmarking', default-features = false, optional = true }
 
 # Local Primitives
 primitives-profile-roles = { path = '../primitives/profile-roles', default-features = false }
@@ -189,6 +197,10 @@ std = [
     'genetic-analyst-qualifications/std',
     'genetic-analysis/std',
     'genetic-analysis-orders/std',
+	'health-professional/std',
+	'health-professional-qualification/std',
+	'opinion-requestor/std',
+	'opinion/std',
 
     # Local Primitives
     'primitives-profile-roles/std',
@@ -232,4 +244,8 @@ runtime-benchmarks = [
 	'menstrual-subscription/runtime-benchmarks',
 	'genetic-analysts-benchmarking',
 	'genetic-analyst-qualifications-benchmarking',
+	'health-professional-benchmarking',
+	'health-professional-qualification-benchmarking',
+	'opinion-requestor-benchmarking',
+	'opinion-benchmarking',
 ]

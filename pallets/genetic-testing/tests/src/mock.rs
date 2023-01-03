@@ -1,4 +1,4 @@
-use frame_support::{parameter_types, PalletId};
+use frame_support::{parameter_types, traits::ConstU64, PalletId};
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
@@ -33,6 +33,7 @@ frame_support::construct_runtime!(
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -75,6 +76,7 @@ pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 parameter_types! {
 	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 impl pallet_timestamp::Config for Test {
@@ -99,7 +101,9 @@ impl orders::Config for Test {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = Assets;
 	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
 type Balance = u64;
@@ -119,6 +123,34 @@ impl pallet_balances::Config for Test {
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
+	type WeightInfo = ();
+}
+
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetDeposit: Balance = 1;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU64<10>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
 	type WeightInfo = ();
 }
 

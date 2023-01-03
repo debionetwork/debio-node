@@ -12,7 +12,7 @@ use genetic_analyst_qualifications::{
 use genetic_analysts::Pallet as GeneticAnalysts;
 use genetic_analysts::{Config as GeneticAnalystsConfig, GeneticAnalystInfo};
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_support::sp_runtime::traits::Hash;
 use frame_system::RawOrigin;
 
@@ -449,5 +449,3 @@ benchmarks! {
 			.unwrap();
 	}: delete_qualification(RawOrigin::Signed(caller), _genetic_analyst.qualifications[0])
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

@@ -820,16 +820,26 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "labs",
+ "orders",
+ "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-ethereum-address",
+ "primitives-profile-roles",
+ "scale-info",
  "serde",
+ "services",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
  "traits-certifications",
+ "user-profile",
 ]
 
 [[package]]
@@ -843,6 +853,7 @@ dependencies = [
  "genetic-testing",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -1347,7 +1358,11 @@ dependencies = [
 
 [[package]]
 name = "debio"
+<<<<<<< HEAD
 version = "2.2.0"
+=======
+version = "2.3.1"
+>>>>>>> ccbc8e2027959b10c1e7702a79f6530f3b6ac380
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -1406,7 +1421,7 @@ dependencies = [
 
 [[package]]
 name = "debio-runtime"
-version = "2.2.0"
+version = "2.3.1"
 dependencies = [
  "beefy-primitives",
  "certifications",
@@ -1434,6 +1449,10 @@ dependencies = [
  "genetic-data",
  "genetic-testing",
  "genetic-testing-benchmarking",
+ "health-professional",
+ "health-professional-benchmarking",
+ "health-professional-qualification",
+ "health-professional-qualification-benchmarking",
  "hex-literal",
  "hospital-certifications",
  "hospital-certifications-benchmarking",
@@ -1443,6 +1462,10 @@ dependencies = [
  "log",
  "menstrual-calendar",
  "menstrual-subscription",
+ "opinion",
+ "opinion-benchmarking",
+ "opinion-requestor",
+ "opinion-requestor-benchmarking",
  "orders",
  "orders-benchmarking",
  "pallet-assets",
@@ -1622,12 +1645,16 @@ dependencies = [
  "pallet-balances",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-ethereum-address",
+ "primitives-profile-roles",
+ "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
  "traits-doctor-certifications",
+ "user-profile",
 ]
 
 [[package]]
@@ -2416,6 +2443,7 @@ dependencies = [
  "primitives-price-and-currency",
  "primitives-profile-roles",
  "primitives-tracking-id",
+ "scale-info",
  "serde",
  "sp-core",
  "sp-io",
@@ -2483,12 +2511,16 @@ dependencies = [
  "hex-literal",
  "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-availability-status",
  "primitives-duration",
+ "primitives-ethereum-address",
  "primitives-price-and-currency",
+ "primitives-profile-roles",
  "primitives-tracking-id",
+ "scale-info",
  "serde",
  "sp-core",
  "sp-io",
@@ -2563,18 +2595,28 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
  "genetic-analyst-qualifications",
+ "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
+ "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-ethereum-address",
+ "primitives-profile-roles",
+ "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
  "traits-genetic-analyst-qualifications",
+ "user-profile",
 ]
 
 [[package]]
@@ -2632,14 +2674,21 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-analysis",
+ "genetic-analysis-orders",
  "genetic-analyst-qualifications",
  "genetic-analyst-services",
  "genetic-analysts",
+ "genetic-data",
+ "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-duration",
+ "primitives-ethereum-address",
  "primitives-price-and-currency",
+ "primitives-profile-roles",
  "scale-info",
  "serde",
  "sp-core",
@@ -2829,19 +2878,24 @@ dependencies = [
 name = "genetic-testing-benchmarking"
 version = "2.1.0"
 dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "genetic-testing",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "primitives-duration",
  "primitives-ethereum-address",
  "primitives-price-and-currency",
  "primitives-profile-roles",
+ "scale-info",
  "serde",
  "services",
  "sp-core",
@@ -2866,6 +2920,7 @@ dependencies = [
  "genetic-testing",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -3043,6 +3098,128 @@ dependencies = [
 ]
 
 [[package]]
+name = "health-professional"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-health-professional",
+ "traits-health-professional-qualifications",
+]
+
+[[package]]
+name = "health-professional-benchmarking"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "health-professional-qualification"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-health-professional-qualifications",
+]
+
+[[package]]
+name = "health-professional-qualification-benchmarking"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "health-professional-qualification-tests"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "health-professional-tests"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "health-professional",
+ "health-professional-qualification",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-availability-status",
+ "primitives-stake-status",
+ "primitives-verification-status",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "heck"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3145,12 +3322,14 @@ dependencies = [
  "primitives-area-code",
  "primitives-ethereum-address",
  "primitives-profile-roles",
+ "scale-info",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
  "traits-hospital-certifications",
+ "user-profile",
 ]
 
 [[package]]
@@ -3738,11 +3917,14 @@ dependencies = [
  "genetic-testing",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-ethereum-address",
+ "primitives-profile-roles",
  "primitives-stake-status",
  "primitives-verification-status",
  "scale-info",
@@ -3771,6 +3953,7 @@ dependencies = [
  "genetic-testing",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -4587,6 +4770,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "log",
  "pallet-timestamp",
  "parity-scale-codec",
  "scale-info",
@@ -4605,10 +4789,13 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-assets",
+ "pallet-balances",
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-duration",
  "primitives-menstrual-status",
+ "primitives-price-and-currency",
  "scale-info",
  "serde",
  "sp-core",
@@ -5033,6 +5220,129 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
 
 [[package]]
+name = "opinion"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-assets",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-price-and-currency",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-opinion",
+ "traits-opinion-requestor",
+]
+
+[[package]]
+name = "opinion-benchmarking"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-data",
+ "opinion",
+ "opinion-requestor",
+ "pallet-assets",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-price-and-currency",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "opinion-requestor"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "traits-genetic-data",
+ "traits-opinion-requestor",
+]
+
+[[package]]
+name = "opinion-requestor-benchmarking"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-data",
+ "opinion-requestor",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "opinion-requestor-tests"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-data",
+ "opinion-requestor",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "opinion-tests"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "genetic-data",
+ "opinion",
+ "opinion-requestor",
+ "pallet-assets",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives-price-and-currency",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "orders"
 version = "2.1.0"
 dependencies = [
@@ -5042,6 +5352,7 @@ dependencies = [
  "frame-system",
  "genetic-testing",
  "labs",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -5068,6 +5379,7 @@ dependencies = [
 name = "orders-benchmarking"
 version = "2.1.0"
 dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
@@ -5075,11 +5387,17 @@ dependencies = [
  "hex-literal",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "primitives-duration",
+ "primitives-ethereum-address",
  "primitives-price-and-currency",
+ "primitives-profile-roles",
+ "scale-info",
  "serde",
  "services",
  "sp-core",
@@ -7769,7 +8087,9 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-duration",
  "primitives-ethereum-address",
+ "primitives-price-and-currency",
  "primitives-profile-roles",
  "primitives-verification-status",
  "scale-info",
@@ -7779,6 +8099,8 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-labs",
+ "traits-order",
+ "traits-services",
  "user-profile",
 ]
 
@@ -7800,7 +8122,9 @@ dependencies = [
  "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
+ "primitives-duration",
  "primitives-ethereum-address",
+ "primitives-price-and-currency",
  "primitives-profile-roles",
  "primitives-verification-status",
  "scale-info",
@@ -7811,6 +8135,8 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "traits-labs",
+ "traits-order",
+ "traits-services",
  "user-profile",
 ]
 
@@ -7836,17 +8162,24 @@ dependencies = [
 name = "services-benchmarking"
 version = "2.1.0"
 dependencies = [
+ "certifications",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "genetic-testing",
  "labs",
+ "orders",
+ "pallet-assets",
  "pallet-balances",
+ "pallet-randomness-collective-flip",
+ "pallet-timestamp",
  "parity-scale-codec",
  "primitives-area-code",
  "primitives-duration",
  "primitives-ethereum-address",
  "primitives-price-and-currency",
  "primitives-profile-roles",
+ "scale-info",
  "serde",
  "services",
  "sp-core",
@@ -7868,6 +8201,7 @@ dependencies = [
  "genetic-testing",
  "labs",
  "orders",
+ "pallet-assets",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-timestamp",
@@ -9321,6 +9655,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "traits-health-professional"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-health-professional-qualifications"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
 name = "traits-hospital-certifications"
 version = "2.1.0"
 dependencies = [
@@ -9356,6 +9712,28 @@ dependencies = [
 [[package]]
 name = "traits-menstrual-subscription"
 version = "2.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-opinion"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "traits-opinion-requestor"
+version = "1.0.0"
 dependencies = [
  "frame-support",
  "frame-system",

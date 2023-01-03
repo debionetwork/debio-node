@@ -29,9 +29,12 @@ sp-runtime = { default-features = false, git = "https://github.com/paritytech/su
 
 ## Substrate Pallet Dependencies
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-assets = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18', default-features = false }
 
 primitives-duration = { path = '../../primitives/duration', default-features = false }
 primitives-menstrual-status = { path = '../../primitives/menstrual-status', default-features = false }
+primitives-price-and-currency = { path = '../../primitives/price-and-currency', default-features = false }
 
 traits-menstrual-subscription = { path = './traits', default-features = false }
 
@@ -53,12 +56,14 @@ std = [
 	'sp-runtime/std',
 
     'pallet-timestamp/std',
+	'pallet-balances/std',
+	'pallet-assets/std',
 
     'primitives-duration/std',
     'primitives-menstrual-status/std',
+	'primitives-price-and-currency/std',
 
     'traits-menstrual-subscription/std',
 ]
-runtime-benchmarks = [
-	'frame-benchmarking'
-]
+runtime-benchmarks = ['frame-benchmarking']
+try-runtime = ['frame-support/try-runtime']

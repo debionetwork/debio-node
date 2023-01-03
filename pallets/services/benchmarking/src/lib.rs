@@ -17,7 +17,7 @@ use primitives_duration::ExpectedDuration;
 use primitives_price_and_currency::PriceByCurrency;
 use traits_services::types::ServiceFlow;
 
-use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_std::vec;
 
@@ -163,5 +163,3 @@ benchmarks! {
 			.unwrap();
 	}: delete_service(RawOrigin::Signed(caller), _lab.services[0])
 }
-
-impl_benchmark_test_suite! {Pallet, crate::mock::ExternalityBuilder::build(), crate::mock::Test}

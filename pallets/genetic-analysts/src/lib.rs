@@ -1067,9 +1067,10 @@ impl<T: Config> GeneticAnalystQualificationOwner<T> for Pallet<T> {
 
 /// GeneticAnalystsProvider Trait Implementation
 impl<T: Config> GeneticAnalystsProvider<T> for Pallet<T> {
-	fn is_genetic_analyst_available(id: &T::AccountId) -> Option<bool> {
-		let genetic_analyst =
-			<Self as GeneticAnalystInterface<T>>::genetic_analyst_by_account_id(id);
-		genetic_analyst.map(|genetic_analyst| genetic_analyst.is_available())
+	fn is_genetic_analyst_available(id: &T::AccountId) -> bool {
+		match <Self as GeneticAnalystInterface<T>>::genetic_analyst_by_account_id(id) {
+			Some(genetic_analyst) => genetic_analyst.is_available(),
+			None => false,
+		}
 	}
 }

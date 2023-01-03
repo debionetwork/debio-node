@@ -1,59 +1,43 @@
+use sp_std::vec::Vec;
+
 pub trait SeviceRequestInterface<T: frame_system::Config> {
 	type Error;
-	type Balance;
-	type Admin;
 	type Request;
-	type ServiceOffer;
-	type ServiceInvoice;
-	type RequestId;
-	type RequesterId;
-	type LabId;
-	type Country;
-	type Region;
-	type City;
-	type ServiceCategory;
-	type ServiceId;
-	type OrderId;
-	type DNASampleTrackingId;
-	type ServicePrice;
+	type Balance;
 
 	fn create_request(
-		requester_id: Self::RequesterId,
-		country: Self::Country,
-		region: Self::Region,
-		city: Self::City,
-		service_category: Self::ServiceCategory,
+		requester_id: &T::AccountId,
+		country: Vec<u8>,
+		region: Vec<u8>,
+		city: Vec<u8>,
+		service_category: Vec<u8>,
 		staking_amount: Self::Balance,
 	) -> Result<Self::Request, Self::Error>;
 
 	fn unstake(
-		requester_id: Self::RequesterId,
-		request_id: Self::RequestId,
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
 	) -> Result<Self::Request, Self::Error>;
 
 	fn retrieve_unstaked_amount(
-		admin: Self::Admin,
-		request_id: Self::RequestId,
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
 	) -> Result<Self::Request, Self::Error>;
 
 	fn claim_request(
-		lab_id: Self::LabId,
-		request_id: Self::RequestId,
-		service_id: Self::ServiceId,
-		lab_id: Self::ServicePrice,
-	) -> Result<(Self::Request, Self::ServiceOffer), Self::Error>;
+		lab_id: &T::AccountId,
+		request_id: &T::Hash,
+		service_id: &T::Hash,
+	) -> Result<Option<Self::Request>, Self::Error>;
 
 	fn process_request(
-		requester_id: Self::RequesterId,
-		lab_id: Self::LabId,
-		request_id: Self::RequestId,
-		order_id: Self::OrderId,
-		dna_sample_tracking_id: Self::DNASampleTrackingId,
-	) -> Result<Self::ServiceInvoice, Self::Error>;
+		requester_id: &T::AccountId,
+		request_id: &T::Hash,
+		order_id: &T::Hash,
+	) -> Result<Self::Request, Self::Error>;
 
 	fn finalize_request(
-		admin: Self::Admin,
-		request_id: Self::RequestId,
-		test_result_success: bool,
-	) -> Result<Self::ServiceInvoice, Self::Error>;
+		lab_id: &T::AccountId,
+		request_id: &T::Hash,
+	) -> Result<Self::Request, Self::Error>;
 }

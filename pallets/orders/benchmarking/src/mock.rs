@@ -1,14 +1,15 @@
 #![cfg(test)]
 
-use super::*;
+use frame_support::{parameter_types, traits::ConstU64, PalletId};
 
-use frame_support::{parameter_types, PalletId};
-use sp_io::TestExternalities;
+use pallet_balances::AccountData;
 use sp_runtime::{
-	testing::Header,
 	traits::{AccountIdLookup, IdentifyAccount, Verify},
 	MultiSignature,
 };
+
+use primitives_ethereum_address::EthereumAddress;
+use primitives_profile_roles::ProfileRoles;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -29,13 +30,20 @@ frame_support::construct_runtime!(
 		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
 		Orders: orders::{Pallet, Call, Storage, Config<T>, Event<T>},
 		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
+		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
 	}
 );
+
+impl pallet_randomness_collective_flip::Config for Test {}
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
 	pub const LabPalletId: PalletId = PalletId(*b"dbio/lab");
+	pub const OrderPalletId: PalletId = PalletId(*b"dbio/ord");
 }
 
 impl frame_system::Config for Test {
@@ -58,7 +66,7 @@ impl frame_system::Config for Test {
 	type PalletInfo = PalletInfo;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
-	type AccountData = ();
+	type AccountData = AccountData<Balance>;
 	type SystemWeightInfo = ();
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
@@ -83,6 +91,34 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
+pub type AssetId = u32;
+pub type AssetBalance = u128;
+
+parameter_types! {
+	pub const ApprovalDeposit: Balance = 1;
+	pub const AssetDeposit: Balance = 1;
+	pub const MetadataDepositBase: Balance = 1;
+	pub const MetadataDepositPerByte: Balance = 1;
+	pub const StringLimit: u32 = 50;
+}
+
+impl pallet_assets::Config for Test {
+	type Event = Event;
+	type Balance = AssetBalance;
+	type AssetId = AssetId;
+	type Currency = Balances;
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type AssetAccountDeposit = ConstU64<10>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
 impl labs::Config for Test {
 	type Event = Event;
 	type Currency = Balances;
@@ -97,19 +133,24 @@ impl labs::Config for Test {
 }
 
 impl services::Config for Test {
+	type Event = Event;
 	type Currency = Balances;
 	type ServiceOwner = Labs;
+	type WeightInfo = ();
 }
 
-impl user_profile::Config for Runtime {
+impl user_profile::Config for Test {
 	type Event = Event;
 	type EthereumAddress = EthereumAddress;
+	type ProfileRoles = ProfileRoles;
+	type WeightInfo = ();
 }
 
 impl genetic_testing::Config for Test {
 	type Event = Event;
 	type Orders = Orders;
 	type RandomnessSource = RandomnessCollectiveFlip;
+	type GeneticTestingWeightInfo = ();
 }
 
 impl orders::Config for Test {
@@ -117,25 +158,29 @@ impl orders::Config for Test {
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
+	type Assets = Assets;
+	type OrdersWeightInfo = ();
+	type PalletId = OrderPalletId;
 }
 
-pub struct ExternalityBuilder;
+impl certifications::Config for Test {
+	type Event = Event;
+	type CertificationOwner = Labs;
+	type WeightInfo = ();
+}
 
-impl ExternalityBuilder {
-	pub fn build() -> TestExternalities {
-		let mut storage = system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
-		storage.extend(
-			GenesisConfig::<Runtime> {
-				orders: OrdersConfig {
-					escrow_key: hex![
-						"18c79faa6203d8b8349b19cc72cc6bfd008c243ea998435847abf6618756ca0b"
-					]
-					.into(),
-				},
-			}
-			.build_storage()
-			.unwrap(),
-		);
-		storage.into()
-	}
+pub type Moment = u64;
+pub const MILLISECS_PER_BLOCK: Moment = 6000;
+pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+
+parameter_types! {
+	pub const MinimumPeriod: Moment = SLOT_DURATION / 2;
+}
+
+impl pallet_timestamp::Config for Test {
+	/// A timestamp: milliseconds since the unix epoch.
+	type Moment = Moment;
+	type OnTimestampSet = ();
+	type MinimumPeriod = MinimumPeriod;
+	type WeightInfo = ();
 }
