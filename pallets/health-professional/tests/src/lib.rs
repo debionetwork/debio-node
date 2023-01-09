@@ -914,7 +914,11 @@ mod tests {
 			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
 
 			System::assert_last_event(Event::HealthProfessional(
-				HealthProfessionalEvent::HealthProfessionalUnstaked(doctor),
+				HealthProfessionalEvent::HealthProfessionalWaitingForUnstaked(
+					doctor,
+					StakeStatus::WaitingForUnstaked,
+					0,
+				),
 			));
 
 			UnstakeTime::<Test>::put(10);
@@ -923,7 +927,12 @@ mod tests {
 			assert_ok!(HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)));
 
 			System::assert_last_event(Event::HealthProfessional(
-				HealthProfessionalEvent::HealthProfessionalUnstakedAmount(doctor, 10),
+				HealthProfessionalEvent::HealthProfessionalUnstaked(
+					doctor,
+					10,
+					StakeStatus::Unstaked,
+					10,
+				),
 			));
 
 			assert_ok!(HealthProfessional::deregister(Origin::signed(doctor)));

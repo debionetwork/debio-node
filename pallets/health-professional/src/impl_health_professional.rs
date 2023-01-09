@@ -11,6 +11,7 @@ use traits_health_professional::HealthProfessionalCountT;
 impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 	type Error = Error<T>;
 	type Balance = BalanceOf<T>;
+	type Moment = MomentOf<T>;
 	type HealthProfessional = HealthProfessionalOf<T>;
 	type HealthProfessionalInfo = HealthProfessionalInfoOf<T>;
 
@@ -121,7 +122,7 @@ impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 		})
 	}
 
-	fn unstake_health_professional(account_id: &T::AccountId) -> Result<(), Self::Error> {
+	fn unstake_health_professional(account_id: &T::AccountId) -> Result<Self::Moment, Self::Error> {
 		HealthProfessionals::<T>::mutate(account_id, |result| match result {
 			None => Err(Error::<T>::NotFound),
 			Some(health_professional) => {
@@ -135,12 +136,14 @@ impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 				health_professional.update_stake_status(status, Zero::zero());
 				health_professional.update_unstaked_at(Some(now));
 
-				Ok(())
+				Ok(now)
 			},
 		})
 	}
 
-	fn retrieve_unstaked_amount(account_id: &T::AccountId) -> Result<Self::Balance, Self::Error> {
+	fn retrieve_unstaked_amount(
+		account_id: &T::AccountId,
+	) -> Result<(Self::Balance, Self::Moment), Self::Error> {
 		let staking_account_id = Self::staking_account_id(account_id);
 		let unstake_time =
 			UnstakeTime::<T>::get().ok_or(Error::<T>::CannotRetrieveUnstakedAmount)?;
@@ -158,9 +161,9 @@ impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 					.saturated_into::<u128>();
 
 				let staking_balance = *health_professional.stake_amount();
-				let now = pallet_timestamp::Pallet::<T>::get().saturated_into::<u128>();
+				let now = pallet_timestamp::Pallet::<T>::get();
 
-				if now.saturating_sub(unstaked_at) < unstake_time {
+				if now.saturated_into::<u128>().saturating_sub(unstaked_at) < unstake_time {
 					return Err(Error::<T>::NotReadyToUnstaked)
 				}
 
@@ -177,7 +180,7 @@ impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 					*value = value.saturating_sub(staking_balance);
 				});
 
-				Ok(staking_balance)
+				Ok((staking_balance, now))
 			},
 		})
 	}
