@@ -71,7 +71,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		OpinionRequested(AccountIdOf<T>, OpinionRequestorOf<T>),
-		OpinionRequestorInfoUpdated(AccountIdOf<T>, HashOf<T>),
+		OpinionRequestorInfoUpdated(AccountIdOf<T>, RequestorInfoOf<T>),
 	}
 
 	#[pallet::error]
@@ -111,8 +111,8 @@ pub mod pallet {
 				&who,
 				info,
 			) {
-				Ok(_) => {
-					Self::deposit_event(Event::OpinionRequestorInfoUpdated(who, requestor_id));
+				Ok(info) => {
+					Self::deposit_event(Event::OpinionRequestorInfoUpdated(who, info));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

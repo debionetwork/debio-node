@@ -12,5 +12,5 @@ pub trait OpinionRequestorInterface<T: frame_system::Config> {
 		id: &T::Hash,
 		account_id: &T::AccountId,
 		info: Self::RequestorInfo,
-	) -> Result<(), Self::Error>;
+	) -> Result<Self::RequestorInfo, Self::Error>;
 }
