@@ -64,7 +64,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		HealthProfessionalQualificationCreated(AccountIdOf<T>, QualificationOf<T>),
-		HealthProfessionalQualificationUpdated(AccountIdOf<T>, HashOf<T>),
+		HealthProfessionalQualificationUpdated(AccountIdOf<T>, QualificationOf<T>),
 		HealthProfessionalQualificationDeleted(AccountIdOf<T>, HashOf<T>),
 	}
 
@@ -116,10 +116,10 @@ pub mod pallet {
 				&experiences,
 				&certifications,
 			) {
-				Ok(_) => {
+				Ok(qualification) => {
 					Self::deposit_event(Event::HealthProfessionalQualificationUpdated(
 						who,
-						qualification_id,
+						qualification,
 					));
 					Ok(().into())
 				},

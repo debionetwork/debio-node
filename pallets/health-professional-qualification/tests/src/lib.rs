@@ -500,6 +500,9 @@ mod tests {
 				supporting_document: Some(b"DeBio Profile Image uwu".to_vec()),
 			};
 
+			let qualification =
+				Qualification::new(id, &1, &[experience.clone()], &[certification.clone()]);
+
 			assert_ok!(HealthProfessionalQualification::update(
 				Origin::signed(1),
 				id,
@@ -508,7 +511,10 @@ mod tests {
 			));
 
 			System::assert_last_event(Event::HealthProfessionalQualification(
-				HealthProfessionalQualificationEvent::HealthProfessionalQualificationUpdated(1, id),
+				HealthProfessionalQualificationEvent::HealthProfessionalQualificationUpdated(
+					1,
+					qualification,
+				),
 			));
 
 			assert_ok!(HealthProfessionalQualification::delete(Origin::signed(1), id,));
