@@ -44,13 +44,12 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
 
 		let _ = HealthProfessional::<T>::register(caller_origin, health_professional_info);
-
 
 		let experience = Experience { title: b"DeBio title".to_vec() };
 		let certification = Certification {
@@ -78,13 +77,12 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
 
 		let _ = HealthProfessional::<T>::register(caller_origin.clone(), health_professional_info);
-
 
 		let experience = Experience { title: b"DeBio title".to_vec() };
 		let certification = Certification {
@@ -127,13 +125,12 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
 
 		let _ = HealthProfessional::<T>::register(caller_origin.clone(), health_professional_info);
-
 		let experience = Experience { title: b"DeBio title".to_vec() };
 		let certification = Certification {
 			title: b"DeBio title".to_vec(),

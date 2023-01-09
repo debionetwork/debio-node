@@ -24,7 +24,6 @@ pub trait HealthProfessionalInterface<T: frame_system::Config> {
 	) -> Result<VerificationStatus, Self::Error>;
 
 	fn update_health_professional_availability_status(
-		verifier_key: &T::AccountId,
 		account_id: &T::AccountId,
 		status: &AvailabilityStatus,
 	) -> Result<AvailabilityStatus, Self::Error>;

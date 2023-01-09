@@ -173,14 +173,13 @@ pub mod pallet {
 		#[pallet::weight(T::HealthProfessionalWeightInfo::update_availability_status())]
 		pub fn update_availability_status(
 			origin: OriginFor<T>,
-			account_id: AccountIdOf<T>,
 			status: AvailabilityStatus,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as HealthProfessionalInterface<T>>::update_health_professional_availability_status(&who, &account_id, &status) {
+			match <Self as HealthProfessionalInterface<T>>::update_health_professional_availability_status(&who, &status) {
 				Ok(_) => {
-					Self::deposit_event(Event::HealthProfessionalAvailabilityStatusUpdated(account_id, status));
+					Self::deposit_event(Event::HealthProfessionalAvailabilityStatusUpdated(who, status));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),

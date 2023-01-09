@@ -51,7 +51,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
@@ -72,7 +72,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
@@ -90,16 +90,15 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
 	}: update_info(RawOrigin::Signed(caller), updated_info)
 
 	update_availability_status {
-		let caller: T::AccountId = HealthProfessionalVerifierKey::<T>::get().unwrap();
-		let doctor: T::AccountId = whitelisted_caller();
-		let doctor_origin = T::Origin::from(RawOrigin::Signed(doctor.clone()));
+		let caller: T::AccountId = whitelisted_caller();
+		let doctor_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -112,13 +111,13 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
 
 		let _ = HealthProfessional::<T>::register(doctor_origin, health_professional_info);
-	}: update_availability_status(RawOrigin::Signed(caller), doctor, AvailabilityStatus::Unavailable)
+	}: update_availability_status(RawOrigin::Signed(caller), AvailabilityStatus::Unavailable)
 
 	update_verification_status {
 		let caller: T::AccountId = HealthProfessionalVerifierKey::<T>::get().unwrap();
@@ -136,7 +135,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
@@ -159,7 +158,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
@@ -188,7 +187,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
@@ -218,7 +217,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};
@@ -250,7 +249,7 @@ benchmarks! {
 			phone_number: b"+6893026516".to_vec(),
 			role: b"doctor".to_vec(),
 			category: b"Mental Health".to_vec(),
-			profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+			profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 			profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 			anonymous: false,
 		};

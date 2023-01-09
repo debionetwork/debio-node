@@ -61,12 +61,9 @@ impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 	}
 
 	fn update_health_professional_availability_status(
-		verifier_key: &T::AccountId,
 		account_id: &T::AccountId,
 		status: &AvailabilityStatus,
 	) -> Result<AvailabilityStatus, Self::Error> {
-		Self::can_verified(verifier_key)?;
-
 		HealthProfessionals::<T>::mutate(account_id, |result| match result {
 			None => Err(Error::<T>::NotFound),
 			Some(health_professional) => {
