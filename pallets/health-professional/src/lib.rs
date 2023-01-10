@@ -25,6 +25,7 @@ pub mod pallet {
 	use frame_support::{pallet_prelude::*, traits::Currency};
 	use frame_system::pallet_prelude::*;
 	use primitives_availability_status::AvailabilityStatus;
+	use primitives_stake_status::StakeStatus;
 	use primitives_verification_status::VerificationStatus;
 
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
@@ -87,8 +88,8 @@ pub mod pallet {
 		HealthProfessionalVerificationStatusUpdated(AccountIdOf<T>, VerificationStatus),
 		HealthProfessionalAvailabilityStatusUpdated(AccountIdOf<T>, AvailabilityStatus),
 		HealthProfessionalStaked(AccountIdOf<T>, BalanceOf<T>),
-		HealthProfessionalUnstaked(AccountIdOf<T>),
-		HealthProfessionalUnstakedAmount(AccountIdOf<T>, BalanceOf<T>),
+		HealthProfessionalWaitingForUnstaked(AccountIdOf<T>, StakeStatus, MomentOf<T>),
+		HealthProfessionalUnstaked(AccountIdOf<T>, BalanceOf<T>, StakeStatus, MomentOf<T>),
 		VerifierKeyUpdated(AccountIdOf<T>),
 		MinimumStakeAmountUpdated(BalanceOf<T>),
 		UnstakeTimeUpdated(u128),
@@ -173,14 +174,13 @@ pub mod pallet {
 		#[pallet::weight(T::HealthProfessionalWeightInfo::update_availability_status())]
 		pub fn update_availability_status(
 			origin: OriginFor<T>,
-			account_id: AccountIdOf<T>,
 			status: AvailabilityStatus,
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
-			match <Self as HealthProfessionalInterface<T>>::update_health_professional_availability_status(&who, &account_id, &status) {
+			match <Self as HealthProfessionalInterface<T>>::update_health_professional_availability_status(&who, &status) {
 				Ok(_) => {
-					Self::deposit_event(Event::HealthProfessionalAvailabilityStatusUpdated(account_id, status));
+					Self::deposit_event(Event::HealthProfessionalAvailabilityStatusUpdated(who, status));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -235,8 +235,12 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as HealthProfessionalInterface<T>>::unstake_health_professional(&who) {
-				Ok(_) => {
-					Self::deposit_event(Event::HealthProfessionalUnstaked(who));
+				Ok(waiting_at) => {
+					Self::deposit_event(Event::HealthProfessionalWaitingForUnstaked(
+						who,
+						StakeStatus::WaitingForUnstaked,
+						waiting_at,
+					));
 					Ok(().into())
 				},
 				Err(error) => Err(error.into()),
@@ -248,10 +252,12 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			match <Self as HealthProfessionalInterface<T>>::retrieve_unstaked_amount(&who) {
-				Ok(staking_balance) => {
-					Self::deposit_event(Event::HealthProfessionalUnstakedAmount(
+				Ok((staking_balance, unstaked_at)) => {
+					Self::deposit_event(Event::HealthProfessionalUnstaked(
 						who,
 						staking_balance,
+						StakeStatus::Unstaked,
+						unstaked_at,
 					));
 					Ok(().into())
 				},

@@ -37,7 +37,7 @@ impl<T: Config> HealthProfessionalQualificationInterface<T> for Pallet<T> {
 		qualification_id: &T::Hash,
 		experiences: &Option<Vec<Self::Experience>>,
 		certifications: &Option<Vec<Self::Certification>>,
-	) -> Result<(), Self::Error> {
+	) -> Result<Self::Qualification, Self::Error> {
 		let mut qualification = HealthProfessionalQualifications::<T>::get(qualification_id)
 			.ok_or(Error::<T>::NotFound)?
 			.is_authorized_owner(owner)
@@ -51,9 +51,9 @@ impl<T: Config> HealthProfessionalQualificationInterface<T> for Pallet<T> {
 			qualification.set_certifications(certifications);
 		}
 
-		HealthProfessionalQualifications::<T>::insert(qualification_id, qualification);
+		HealthProfessionalQualifications::<T>::insert(qualification_id, &qualification);
 
-		Ok(())
+		Ok(qualification)
 	}
 
 	fn delete_qualification(

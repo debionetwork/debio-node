@@ -31,7 +31,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -110,7 +110,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -191,7 +191,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -337,7 +337,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -402,7 +402,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -454,7 +454,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -500,6 +500,9 @@ mod tests {
 				supporting_document: Some(b"DeBio Profile Image uwu".to_vec()),
 			};
 
+			let qualification =
+				Qualification::new(id, &1, &[experience.clone()], &[certification.clone()]);
+
 			assert_ok!(HealthProfessionalQualification::update(
 				Origin::signed(1),
 				id,
@@ -508,7 +511,10 @@ mod tests {
 			));
 
 			System::assert_last_event(Event::HealthProfessionalQualification(
-				HealthProfessionalQualificationEvent::HealthProfessionalQualificationUpdated(1, id),
+				HealthProfessionalQualificationEvent::HealthProfessionalQualificationUpdated(
+					1,
+					qualification,
+				),
 			));
 
 			assert_ok!(HealthProfessionalQualification::delete(Origin::signed(1), id,));

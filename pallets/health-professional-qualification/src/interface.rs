@@ -17,7 +17,7 @@ pub trait HealthProfessionalQualificationInterface<T: frame_system::Config> {
 		qualification_id: &T::Hash,
 		experiences: &Option<Vec<Self::Experience>>,
 		certifications: &Option<Vec<Self::Certification>>,
-	) -> Result<(), Self::Error>;
+	) -> Result<Self::Qualification, Self::Error>;
 
 	fn delete_qualification(
 		owner: &T::AccountId,

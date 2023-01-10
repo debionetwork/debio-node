@@ -26,7 +26,7 @@ where
 	pub phone_number: Vec<u8>,
 	pub role: Vec<u8>,
 	pub category: Vec<u8>,
-	pub profile_link: Vec<u8>,
+	pub profile_link: Option<Vec<u8>>,
 	pub profile_image: Option<Vec<u8>>,
 	pub anonymous: bool,
 }
@@ -48,7 +48,7 @@ where
 }
 impl<AccountId, Hash, Moment, Balance> HealthProfessional<AccountId, Hash, Moment, Balance>
 where
-	AccountId: Clone,
+	AccountId: Clone + PartialEq + Eq,
 	Hash: PartialEq + Eq + Clone,
 	Moment: Default + Clone,
 	Balance: Default + Saturating,

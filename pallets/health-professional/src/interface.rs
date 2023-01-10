@@ -4,6 +4,7 @@ use primitives_verification_status::VerificationStatus;
 pub trait HealthProfessionalInterface<T: frame_system::Config> {
 	type Error;
 	type Balance;
+	type Moment;
 	type HealthProfessional;
 	type HealthProfessionalInfo;
 
@@ -24,7 +25,6 @@ pub trait HealthProfessionalInterface<T: frame_system::Config> {
 	) -> Result<VerificationStatus, Self::Error>;
 
 	fn update_health_professional_availability_status(
-		verifier_key: &T::AccountId,
 		account_id: &T::AccountId,
 		status: &AvailabilityStatus,
 	) -> Result<AvailabilityStatus, Self::Error>;
@@ -33,9 +33,11 @@ pub trait HealthProfessionalInterface<T: frame_system::Config> {
 
 	fn stake_health_professional(account_id: &T::AccountId) -> Result<Self::Balance, Self::Error>;
 
-	fn unstake_health_professional(account_id: &T::AccountId) -> Result<(), Self::Error>;
+	fn unstake_health_professional(account_id: &T::AccountId) -> Result<Self::Moment, Self::Error>;
 
-	fn retrieve_unstaked_amount(account_id: &T::AccountId) -> Result<Self::Balance, Self::Error>;
+	fn retrieve_unstaked_amount(
+		account_id: &T::AccountId,
+	) -> Result<(Self::Balance, Self::Moment), Self::Error>;
 
 	fn update_stake_amount(
 		account_id: &T::AccountId,

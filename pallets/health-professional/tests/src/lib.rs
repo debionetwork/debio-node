@@ -36,7 +36,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -73,7 +73,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -96,7 +96,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -133,7 +133,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -147,8 +147,7 @@ mod tests {
 			));
 
 			assert_ok!(HealthProfessional::update_availability_status(
-				Origin::signed(admin),
-				doctor,
+				Origin::signed(doctor),
 				AvailabilityStatus::Unavailable,
 			));
 
@@ -182,7 +181,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -234,7 +233,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -267,7 +266,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -315,7 +314,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -363,7 +362,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -475,7 +474,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -506,7 +505,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -519,55 +518,16 @@ mod tests {
 	}
 
 	#[test]
-	fn cant_update_health_professional_availability_status_when_not_admin() {
-		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			let admin = account_key("admin");
-			let doctor = account_key("doctor");
-			let other_admin = account_key("other_admin");
-
-			HealthProfessionalVerifierKey::<Test>::put(admin);
-
-			assert_noop!(
-				HealthProfessional::update_availability_status(
-					Origin::signed(other_admin),
-					doctor,
-					AvailabilityStatus::Unavailable,
-				),
-				Error::<Test>::Unauthorized,
-			);
-		});
-	}
-
-	#[test]
-	fn cant_update_health_professional_availability_status_when_not_registered() {
-		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			let admin = account_key("admin");
-			let doctor = account_key("doctor");
-
-			HealthProfessionalVerifierKey::<Test>::put(admin);
-
-			assert_noop!(
-				HealthProfessional::update_availability_status(
-					Origin::signed(admin),
-					doctor,
-					AvailabilityStatus::Unavailable,
-				),
-				Error::<Test>::NotFound,
-			);
-		});
-	}
-
-	#[test]
 	fn cant_update_health_professional_verification_status_when_not_admin() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			let admin = account_key("admin");
 			let doctor = account_key("doctor");
 
 			assert_noop!(
-				HealthProfessional::update_availability_status(
+				HealthProfessional::update_verification_status(
 					Origin::signed(admin),
 					doctor,
-					AvailabilityStatus::Unavailable,
+					VerificationStatus::Unverified,
 				),
 				Error::<Test>::Unauthorized,
 			);
@@ -641,7 +601,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -700,7 +660,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -764,7 +724,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -871,7 +831,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -901,7 +861,7 @@ mod tests {
 				phone_number: b"+6893026516".to_vec(),
 				role: b"doctor".to_vec(),
 				category: b"Mental Health".to_vec(),
-				profile_link: b"DeBio Genetic Analyst profile_link".to_vec(),
+				profile_link: Some(b"DeBio Genetic Analyst profile_link".to_vec()),
 				profile_image: Some(b"DeBio Genetic Analyst profile_image".to_vec()),
 				anonymous: false,
 			};
@@ -919,8 +879,7 @@ mod tests {
 			HealthProfessionalVerifierKey::<Test>::put(admin);
 
 			assert_ok!(HealthProfessional::update_availability_status(
-				Origin::signed(admin),
-				doctor,
+				Origin::signed(doctor),
 				AvailabilityStatus::Available
 			));
 
@@ -955,7 +914,11 @@ mod tests {
 			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
 
 			System::assert_last_event(Event::HealthProfessional(
-				HealthProfessionalEvent::HealthProfessionalUnstaked(doctor),
+				HealthProfessionalEvent::HealthProfessionalWaitingForUnstaked(
+					doctor,
+					StakeStatus::WaitingForUnstaked,
+					0,
+				),
 			));
 
 			UnstakeTime::<Test>::put(10);
@@ -964,7 +927,12 @@ mod tests {
 			assert_ok!(HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)));
 
 			System::assert_last_event(Event::HealthProfessional(
-				HealthProfessionalEvent::HealthProfessionalUnstakedAmount(doctor, 10),
+				HealthProfessionalEvent::HealthProfessionalUnstaked(
+					doctor,
+					10,
+					StakeStatus::Unstaked,
+					10,
+				),
 			));
 
 			assert_ok!(HealthProfessional::deregister(Origin::signed(doctor)));
