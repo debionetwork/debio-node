@@ -41,7 +41,7 @@ impl<T: Config> OpinionRequestorInterface<T> for Pallet<T> {
 		requestor_id: &T::Hash,
 		account_id: &T::AccountId,
 		info: Self::RequestorInfo,
-	) -> Result<(), Self::Error> {
+	) -> Result<Self::RequestorInfo, Self::Error> {
 		let now = pallet_timestamp::Pallet::<T>::get();
 
 		let mut requestor = OpinionRequestors::<T>::get(requestor_id)
@@ -58,10 +58,10 @@ impl<T: Config> OpinionRequestorInterface<T> for Pallet<T> {
 		requestor_info.update_genetic_data_ids(&valid_ids);
 		requestor_info.update_opinion_ids(opinion_ids);
 
-		requestor.update_info(requestor_info, now);
+		requestor.update_info(requestor_info.clone(), now);
 
-		OpinionRequestors::<T>::insert(requestor_id, requestor);
+		OpinionRequestors::<T>::insert(requestor_id, &requestor);
 
-		Ok(())
+		Ok(requestor_info)
 	}
 }

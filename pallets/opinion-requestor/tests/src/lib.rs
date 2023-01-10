@@ -203,11 +203,11 @@ mod test {
 			assert_ok!(OpinionRequestor::update_requestor_info(
 				Origin::signed(1),
 				requestor_id,
-				updated_info
+				updated_info.clone()
 			));
 
 			System::assert_last_event(Event::OpinionRequestor(
-				OpinionRequestorEvent::OpinionRequestorInfoUpdated(1, requestor_id),
+				OpinionRequestorEvent::OpinionRequestorInfoUpdated(1, updated_info),
 			));
 		});
 	}
