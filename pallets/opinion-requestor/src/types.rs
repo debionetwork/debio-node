@@ -84,7 +84,7 @@ where
 	description: Vec<u8>,
 	genetic_data_ids: Vec<Hash>,
 	opinion_ids: Vec<Hash>,
-	myriad_url: Vec<u8>,
+	myriad_post_id: Vec<u8>,
 }
 impl<Hash> RequestorInfo<Hash>
 where
@@ -95,14 +95,14 @@ where
 		description: &[u8],
 		genetic_data_ids: &[Hash],
 		opinion_ids: &[Hash],
-		myriad_url: &[u8],
+		myriad_post_id: &[u8],
 	) -> Self {
 		Self {
 			category: category.to_vec(),
 			description: description.to_vec(),
 			genetic_data_ids: genetic_data_ids.to_vec(),
 			opinion_ids: opinion_ids.to_vec(),
-			myriad_url: myriad_url.to_vec(),
+			myriad_post_id: myriad_post_id.to_vec(),
 		}
 	}
 
