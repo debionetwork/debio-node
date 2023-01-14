@@ -5,6 +5,7 @@ pub use pallet::*;
 pub mod functions;
 pub mod impl_opinion_requestor;
 pub mod interface;
+pub mod migrations;
 pub mod types;
 pub mod weights;
 
@@ -15,7 +16,7 @@ use interface::OpinionRequestorInterface;
 use weights::WeightInfo;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(0);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -39,7 +40,11 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_runtime_upgrade() -> Weight {
+			migrations::migrate::<T>()
+		}
+	}
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
