@@ -104,12 +104,20 @@ where
 		}
 	}
 
+	pub fn update_stake_amount(&mut self, amount: Balance) {
+		self.stake_amount = amount;
+	}
+
 	pub fn update_verification_status(&mut self, status: &VerificationStatus) {
 		self.verification_status = status.clone();
 	}
 
 	pub fn update_availability_status(&mut self, status: &AvailabilityStatus) {
 		self.availability_status = status.clone();
+	}
+
+	pub fn update_qualifications(&mut self, qualifications: Vec<Hash>) {
+		self.qualifications = qualifications;
 	}
 
 	pub fn add_qualification(&mut self, qualification_id: Hash) {

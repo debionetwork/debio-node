@@ -517,7 +517,7 @@ mod test {
 
 			OpinionAdminKey::<Test>::put(admin);
 
-			assert_ok!(Opinion::create(Origin::signed(admin), requestor_id, doctor, info.clone()));
+			assert_ok!(Opinion::create(Origin::signed(admin), requestor_id, doctor, info));
 
 			let opinion_ids = Opinion::opinion_by_owner(doctor);
 			let opinion_id = opinion_ids[0];
