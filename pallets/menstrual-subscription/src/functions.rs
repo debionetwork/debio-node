@@ -18,9 +18,14 @@ impl<T: Config> Pallet<T> {
 		address_id: &T::AccountId,
 		menstrual_subscription_count: u64,
 	) -> T::Hash {
+		let account_info = frame_system::Pallet::<T>::account(address_id);
+
 		let mut account_id_bytes = address_id.encode();
 		let mut menstrual_subscription_count_bytes = menstrual_subscription_count.encode();
+		let mut nonce_bytes = account_info.nonce.encode();
+
 		account_id_bytes.append(&mut menstrual_subscription_count_bytes);
+		account_id_bytes.append(&mut nonce_bytes);
 
 		let seed = &account_id_bytes;
 		T::Hashing::hash(seed)
