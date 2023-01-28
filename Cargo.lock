@@ -4780,7 +4780,7 @@ dependencies = [
 
 [[package]]
 name = "menstrual-subscription"
-version = "2.1.0"
+version = "2.1.1"
 dependencies = [
  "frame-benchmarking",
  "frame-support",

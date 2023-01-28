@@ -185,6 +185,7 @@ pub mod pallet {
 		MenstrualSubscriptionPriceNotExist,
 		MenstrualSubscriptionAlreadyPaid,
 		MenstrualSubscriptionNotPaid,
+		MenstrualSubscriptionAlreadyInQueue,
 		AssetIdNotFound,
 		Module,
 		Other,

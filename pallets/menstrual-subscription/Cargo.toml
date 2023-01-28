@@ -1,6 +1,6 @@
 [package]
 name = 'menstrual-subscription'
-version = "2.1.0"
+version = "2.1.1"
 repository = ''
 edition = '2021'
 authors = ['Agustinus Theodorus <agustinustheoo@gmail.com>']
