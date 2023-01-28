@@ -87,21 +87,18 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		let mut order_status = OrderStatus::Cancelled;
 
 		if can_transfer && order.status == OrderStatus::Paid {
-			// Transfer
-			match Self::pallet_id() {
-				Some(pallet_id) => {
-					order_status = OrderStatus::Refunded;
+			let pallet_id = Self::pallet_id().ok_or(Error::<T>::PalletAccountNotFound)?;
 
-					Self::do_transfer(
-						&order.currency,
-						&pallet_id,
-						&order.customer_id,
-						order.total_price,
-						order.asset_id,
-					)
-				},
-				None => Err(Error::<T>::PalletAccountNotFound),
-			}?;
+			order_status = OrderStatus::Refunded;
+
+			Self::do_transfer(
+				&order.currency,
+				&pallet_id,
+				&order.customer_id,
+				order.total_price,
+				order.asset_id,
+				false,
+			)?;
 		}
 
 		// Delete dna sample associated with the order
@@ -132,16 +129,16 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		let order = order.can_paid().ok_or(Error::<T>::OrderCannotBePaid)?;
 
 		if order.currency.can_transfer() {
-			match Self::pallet_id() {
-				Some(pallet_id) => Self::do_transfer(
-					&order.currency,
-					&order.customer_id,
-					&pallet_id,
-					order.total_price,
-					order.asset_id,
-				),
-				None => Err(Error::<T>::PalletAccountNotFound),
-			}?;
+			let pallet_id = Self::pallet_id().ok_or(Error::<T>::PalletAccountNotFound)?;
+
+			Self::do_transfer(
+				&order.currency,
+				&order.customer_id,
+				&pallet_id,
+				order.total_price,
+				order.asset_id,
+				true,
+			)?;
 		}
 
 		let order = Self::update_order_status(order_id, OrderStatus::Paid)
@@ -183,6 +180,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 				&treasury_key,
 				price_substracted_value,
 				order.asset_id,
+				false,
 			)?;
 
 			// Withhold 5%
@@ -192,6 +190,7 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 				order.get_seller_id(),
 				total_price_paid,
 				order.asset_id,
+				false,
 			)?;
 		}
 
@@ -219,39 +218,35 @@ impl<T: Config> OrderInterface<T> for Pallet<T> {
 		}
 
 		if order.currency.can_transfer() {
-			match Self::pallet_id() {
-				Some(pallet_id) => {
-					let mut testing_price = Zero::zero();
-					let mut qc_price = Zero::zero();
+			let pallet_id = Self::pallet_id().ok_or(Error::<T>::PalletAccountNotFound)?;
+			let mut testing_price = Zero::zero();
+			let mut qc_price = Zero::zero();
 
-					for price in order.prices.iter() {
-						testing_price += price.value;
-					}
+			for price in order.prices.iter() {
+				testing_price += price.value;
+			}
 
-					for price in order.additional_prices.iter() {
-						qc_price += price.value;
-					}
+			for price in order.additional_prices.iter() {
+				qc_price += price.value;
+			}
 
-					Self::do_transfer(
-						&order.currency,
-						&pallet_id,
-						order.get_seller_id(),
-						qc_price,
-						order.asset_id,
-					)?;
+			Self::do_transfer(
+				&order.currency,
+				&pallet_id,
+				order.get_seller_id(),
+				qc_price,
+				order.asset_id,
+				false,
+			)?;
 
-					Self::do_transfer(
-						&order.currency,
-						&pallet_id,
-						&order.customer_id,
-						testing_price,
-						order.asset_id,
-					)?;
-
-					Ok(())
-				},
-				None => Err(Error::<T>::PalletAccountNotFound),
-			}?;
+			Self::do_transfer(
+				&order.currency,
+				&pallet_id,
+				&order.customer_id,
+				testing_price,
+				order.asset_id,
+				false,
+			)?;
 		}
 
 		let order = Self::update_order_status(order_id, OrderStatus::Refunded)

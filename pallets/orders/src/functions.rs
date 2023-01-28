@@ -141,9 +141,14 @@ impl<T: Config> Pallet<T> {
 		receiver: &T::AccountId,
 		amount: BalanceOf<T>,
 		asset_id: Option<u32>,
+		keep_alive: bool,
 	) -> Result<(), Error<T>> {
 		if currency == &CurrencyType::DBIO {
-			let existence = ExistenceRequirement::KeepAlive;
+			let existence = if keep_alive {
+				ExistenceRequirement::KeepAlive
+			} else {
+				ExistenceRequirement::AllowDeath
+			};
 			let result = CurrencyOf::<T>::transfer(sender, receiver, amount, existence);
 
 			if let Err(dispatch) = result {
@@ -166,7 +171,7 @@ impl<T: Config> Pallet<T> {
 				sender,
 				receiver,
 				amount.saturated_into(),
-				true,
+				keep_alive,
 			);
 
 			if let Err(dispatch) = result {
