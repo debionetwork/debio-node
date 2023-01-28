@@ -8,6 +8,7 @@ use frame_support::{
 	},
 	traits::{fungibles, Currency, ExistenceRequirement, WithdrawReasons},
 };
+use primitives_menstrual_status::MenstrualSubscriptionStatus;
 use primitives_price_and_currency::CurrencyType;
 use scale_info::prelude::string::String;
 use traits_menstrual_subscription::MenstrualSubscriptionProvider;
@@ -18,12 +19,40 @@ impl<T: Config> Pallet<T> {
 		address_id: &T::AccountId,
 		menstrual_subscription_count: u64,
 	) -> T::Hash {
+		let account_info = frame_system::Pallet::<T>::account(address_id);
+
 		let mut account_id_bytes = address_id.encode();
 		let mut menstrual_subscription_count_bytes = menstrual_subscription_count.encode();
+		let mut nonce_bytes = account_info.nonce.encode();
+
 		account_id_bytes.append(&mut menstrual_subscription_count_bytes);
+		account_id_bytes.append(&mut nonce_bytes);
 
 		let seed = &account_id_bytes;
 		T::Hashing::hash(seed)
+	}
+
+	pub fn do_inqueue_exist(address_id: &T::AccountId) -> Result<(), Error<T>> {
+		let subscription_ids =
+			MenstrualSubscriptionByOwner::<T>::get(address_id).unwrap_or_default();
+
+		if subscription_ids.is_empty() {
+			return Ok(())
+		}
+
+		for subscription_id in subscription_ids {
+			if let Some(menstrual_subscription) =
+				MenstrualSubscriptionById::<T>::get(subscription_id)
+			{
+				if menstrual_subscription.status != MenstrualSubscriptionStatus::InQueue {
+					continue
+				}
+
+				return Err(Error::<T>::MenstrualSubscriptionAlreadyInQueue)
+			}
+		}
+
+		Ok(())
 	}
 
 	// Add menstrual_subscription by owner

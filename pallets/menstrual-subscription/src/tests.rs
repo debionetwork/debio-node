@@ -266,6 +266,39 @@ fn sudo_update_key_works() {
 }
 
 #[test]
+fn cant_add_menstrual_subscription_when_already_inqueue() {
+	ExternalityBuilder::build().execute_with(|| {
+		let customer = account_key("customer");
+		let admin = account_key("admin");
+
+		AdminKey::<Test>::put(admin);
+
+		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
+			Origin::signed(admin),
+			MenstrualSubscriptionDuration::default(),
+			CurrencyType::DBIO,
+			10,
+			None,
+		));
+
+		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
+			Origin::signed(customer),
+			MenstrualSubscriptionDuration::default(),
+			CurrencyType::DBIO,
+		));
+
+		assert_noop!(
+			MenstrualSubscription::add_menstrual_subscription(
+				Origin::signed(customer),
+				MenstrualSubscriptionDuration::default(),
+				CurrencyType::DBIO,
+			),
+			Error::<Test>::MenstrualSubscriptionAlreadyInQueue,
+		);
+	})
+}
+
+#[test]
 fn cant_add_menstrual_subcription_when_price_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		let customer = account_key("customer");
