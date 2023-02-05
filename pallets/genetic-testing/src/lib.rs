@@ -175,6 +175,7 @@ pub mod pallet {
 		DataStakerNotFound,
 		DataHashNotFound,
 		UnpaidOrder,
+		RefundFailed,
 	}
 
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
@@ -412,6 +413,14 @@ impl<T: Config> GeneticTestingInterface<T> for Pallet<T> {
 		dna_sample.status = DnaSampleStatus::Rejected;
 		dna_sample.updated_at = now;
 		DnaSamples::<T>::insert(tracking_id, &dna_sample);
+
+		let succeed = T::Orders::update_status_failed(&dna_sample.order_id);
+
+		if !succeed {
+			return Err(Error::<T>::RefundFailed)
+		}
+
+		T::Orders::emit_event_order_failed(&dna_sample.order_id);
 		T::Orders::remove_order_id_from_pending_orders_by_seller(
 			&dna_sample.lab_id,
 			&dna_sample.order_id,

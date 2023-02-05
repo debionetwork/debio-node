@@ -2,7 +2,10 @@ use crate::*;
 
 use frame_support::{
 	pallet_prelude::*,
-	sp_runtime::{traits::Hash, SaturatedConversion},
+	sp_runtime::{
+		traits::{Hash, Zero},
+		SaturatedConversion,
+	},
 	traits::{fungibles, Currency, ExistenceRequirement},
 };
 use primitives_price_and_currency::CurrencyType;
@@ -135,6 +138,44 @@ impl<T: Config> Pallet<T> {
 		Ok(Some(asset_id))
 	}
 
+	pub fn do_balance_sufficient(
+		sender: &T::AccountId,
+		amount: &BalanceOf<T>,
+		asset_id: Option<u32>,
+	) -> Result<(), Error<T>> {
+		if let Some(asset_id) = asset_id {
+			let min_asset_balance =
+				<T::Assets as fungibles::Inspect<T::AccountId>>::minimum_balance(asset_id);
+			let current_asset_balance =
+				<T::Assets as fungibles::Inspect<T::AccountId>>::balance(asset_id, sender);
+			let transferable_asset_balance = if current_asset_balance >= min_asset_balance {
+				current_asset_balance - min_asset_balance
+			} else {
+				0u128
+			};
+
+			if (*amount).saturated_into::<u128>() > transferable_asset_balance {
+				return Err(Error::<T>::InsufficientBalance)
+			}
+
+			return Ok(())
+		}
+
+		let minimum_balance = CurrencyOf::<T>::minimum_balance();
+		let current_balance = CurrencyOf::<T>::free_balance(sender);
+		let transferable_balance = if current_balance >= minimum_balance {
+			current_balance - minimum_balance
+		} else {
+			Zero::zero()
+		};
+
+		if *amount > transferable_balance {
+			return Err(Error::<T>::InsufficientBalance)
+		}
+
+		Ok(())
+	}
+
 	pub fn do_transfer(
 		currency: &CurrencyType,
 		sender: &T::AccountId,
@@ -143,12 +184,15 @@ impl<T: Config> Pallet<T> {
 		asset_id: Option<u32>,
 		keep_alive: bool,
 	) -> Result<(), Error<T>> {
+		let _ = Self::do_balance_sufficient(sender, &amount, asset_id)?;
+
 		if currency == &CurrencyType::DBIO {
 			let existence = if keep_alive {
 				ExistenceRequirement::KeepAlive
 			} else {
 				ExistenceRequirement::AllowDeath
 			};
+
 			let result = CurrencyOf::<T>::transfer(sender, receiver, amount, existence);
 
 			if let Err(dispatch) = result {
@@ -173,6 +217,8 @@ impl<T: Config> Pallet<T> {
 				amount.saturated_into(),
 				keep_alive,
 			);
+
+			// check balance
 
 			if let Err(dispatch) = result {
 				return match dispatch {
@@ -203,11 +249,59 @@ impl<T: Config> OrderEventEmitter<T> for Pallet<T> {
 }
 
 impl<T: Config> OrderStatusUpdater<T> for Pallet<T> {
-	fn update_status_failed(order_id: &HashOf<T>) {
+	fn update_status_failed(order_id: &HashOf<T>) -> bool {
 		match Self::order_by_id(order_id) {
-			None => Self::deposit_event(Event::OrderNotFound),
+			None => {
+				Self::deposit_event(Event::OrderNotFound);
+				false
+			},
 			Some(order) => {
+				if !order.currency.can_transfer() {
+					return false
+				}
+
+				let pallet_id = Self::pallet_id();
+
+				if pallet_id.is_none() {
+					return false
+				}
+
+				let pallet_id = pallet_id.unwrap();
+
+				let mut testing_price = Zero::zero();
+				let mut qc_price = Zero::zero();
+
+				for price in order.prices.iter() {
+					testing_price += price.value;
+				}
+
+				for price in order.additional_prices.iter() {
+					qc_price += price.value;
+				}
+
+				// TODO: check balance;
+
+				let _ = Self::do_transfer(
+					&order.currency,
+					&pallet_id,
+					order.get_seller_id(),
+					qc_price,
+					order.asset_id,
+					false,
+				);
+
+				let _ = Self::do_transfer(
+					&order.currency,
+					&pallet_id,
+					&order.customer_id,
+					testing_price,
+					order.asset_id,
+					false,
+				);
+
 				Self::update_order_status(&order.id, OrderStatus::Failed);
+
+				true
 			},
 		}
 	}
