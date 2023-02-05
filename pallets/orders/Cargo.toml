@@ -1,6 +1,6 @@
 [package]
 name = "orders"
-version = "2.1.1"
+version = "2.1.2"
 authors = ["kevin <kevin.janada@gmail.com>"]
 edition = '2021'
 description = ''
