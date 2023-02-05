@@ -7,7 +7,7 @@ pub trait OrderEventEmitter<T: Config> {
 }
 
 pub trait OrderStatusUpdater<T: Config> {
-	fn update_status_failed(order_id: &T::Hash);
+	fn update_status_failed(order_id: &T::Hash) -> bool;
 	fn remove_order_id_from_pending_orders_by_seller(
 		seller_id: &T::AccountId,
 		genetic_analysis_order_id: &T::Hash,

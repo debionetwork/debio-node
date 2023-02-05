@@ -209,6 +209,7 @@ pub mod pallet {
 		NoProviders,
 		Token,
 		Arithmetic,
+		InsufficientBalance,
 	}
 
 	#[pallet::call]
