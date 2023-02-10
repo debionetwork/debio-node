@@ -25,7 +25,7 @@ pub mod pallet {
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 	use sp_std::vec::Vec;
-	use traits_genetic_data::GeneticDataProvider;
+	use traits_electronic_medical_record::ElectronicMedicalRecordFilesProvider;
 
 	pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 	pub type HashOf<T> = <T as frame_system::Config>::Hash;
@@ -49,7 +49,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-		type GeneticData: GeneticDataProvider<Self>;
+		type ElectronicMedicalRecord: ElectronicMedicalRecordFilesProvider<Self>;
 		type OpinionRequestorWeightInfo: WeightInfo;
 	}
 

@@ -82,7 +82,7 @@ where
 {
 	category: Vec<u8>,
 	description: Vec<u8>,
-	genetic_data_ids: Vec<Hash>,
+	electronical_medical_record_ids: Vec<Hash>,
 	opinion_ids: Vec<Hash>,
 	myriad_post_id: Vec<u8>,
 }
@@ -93,14 +93,14 @@ where
 	pub fn new(
 		category: &[u8],
 		description: &[u8],
-		genetic_data_ids: &[Hash],
+		electronical_medical_record_ids: &[Hash],
 		opinion_ids: &[Hash],
 		myriad_post_id: &[u8],
 	) -> Self {
 		Self {
 			category: category.to_vec(),
 			description: description.to_vec(),
-			genetic_data_ids: genetic_data_ids.to_vec(),
+			electronical_medical_record_ids: electronical_medical_record_ids.to_vec(),
 			opinion_ids: opinion_ids.to_vec(),
 			myriad_post_id: myriad_post_id.to_vec(),
 		}
@@ -111,8 +111,8 @@ where
 		&self.opinion_ids
 	}
 
-	pub fn genetic_data_ids(&self) -> &[Hash] {
-		&self.genetic_data_ids
+	pub fn electronical_medical_record_ids(&self) -> &[Hash] {
+		&self.electronical_medical_record_ids
 	}
 
 	// SET Method
@@ -132,7 +132,10 @@ where
 		self.opinion_ids = opinion_ids.to_vec();
 	}
 
-	pub fn update_genetic_data_ids(&mut self, genetic_data_ids: &[Hash]) {
-		self.genetic_data_ids = genetic_data_ids.to_vec();
+	pub fn update_electronical_medical_record_ids(
+		&mut self,
+		electronical_medical_record_ids: &[Hash],
+	) {
+		self.electronical_medical_record_ids = electronical_medical_record_ids.to_vec();
 	}
 }

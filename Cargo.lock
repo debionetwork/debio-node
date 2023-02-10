@@ -5240,10 +5240,10 @@ dependencies = [
 name = "opinion-benchmarking"
 version = "1.0.0"
 dependencies = [
+ "electronic-medical-record",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "genetic-data",
  "opinion",
  "opinion-requestor",
  "pallet-assets",
@@ -5273,7 +5273,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "traits-genetic-data",
+ "traits-electronic-medical-record",
  "traits-opinion-requestor",
 ]
 
@@ -5281,10 +5281,10 @@ dependencies = [
 name = "opinion-requestor-benchmarking"
 version = "1.0.0"
 dependencies = [
+ "electronic-medical-record",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "genetic-data",
  "opinion-requestor",
  "pallet-balances",
  "pallet-timestamp",
@@ -5301,10 +5301,10 @@ dependencies = [
 name = "opinion-requestor-tests"
 version = "1.0.0"
 dependencies = [
+ "electronic-medical-record",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "genetic-data",
  "opinion-requestor",
  "pallet-balances",
  "pallet-timestamp",
@@ -5320,10 +5320,10 @@ dependencies = [
 name = "opinion-tests"
 version = "1.0.0"
 dependencies = [
+ "electronic-medical-record",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "genetic-data",
  "opinion",
  "opinion-requestor",
  "pallet-assets",

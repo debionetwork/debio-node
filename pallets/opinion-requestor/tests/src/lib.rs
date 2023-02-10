@@ -17,23 +17,23 @@ mod test {
 	#[test]
 	fn request_opinion_works() {
 		ExternalityBuilder::build().execute_with(|| {
-			assert_ok!(GeneticData::add_genetic_data(
+			assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
 				Origin::signed(1),
-				"DeBio Genetic Data".as_bytes().to_vec(),
-				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"Electronic Medical Record Title".as_bytes().to_vec(),
+				"Electronic Medical Record Category".as_bytes().to_vec(),
+				Vec::new(),
 			));
 
-			let result = GeneticData::genetic_data_by_owner_id(1);
-			let genetic_data_ids = result.unwrap();
-			let genetic_data_id = genetic_data_ids[0];
-			let random_genetic_data_id =
+			let result = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1);
+			let electronical_medical_record_ids = result.unwrap();
+			let electronical_medical_record_id = electronical_medical_record_ids[0];
+			let random_electronical_medical_record_id =
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes());
 
 			let info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&[genetic_data_id, random_genetic_data_id],
+				&[electronical_medical_record_id, random_electronical_medical_record_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
@@ -43,7 +43,7 @@ mod test {
 			let info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&[genetic_data_id],
+				&[electronical_medical_record_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
@@ -73,21 +73,21 @@ mod test {
 			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(1);
 			let requestor_id = requestor_ids[0];
 
-			assert_ok!(GeneticData::add_genetic_data(
+			assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
 				Origin::signed(1),
-				"DeBio Genetic Data".as_bytes().to_vec(),
-				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"Electronic Medical Record Title".as_bytes().to_vec(),
+				"Electronic Medical Record Category".as_bytes().to_vec(),
+				Vec::new(),
 			));
 
-			let result = GeneticData::genetic_data_by_owner_id(1);
-			let genetic_data_ids = result.unwrap();
-			let genetic_data_id = genetic_data_ids[0];
+			let result = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1);
+			let electronical_medical_record_ids = result.unwrap();
+			let electronical_medical_record_id = electronical_medical_record_ids[0];
 
 			let updated_info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&[genetic_data_id],
+				&[electronical_medical_record_id],
 				&Vec::new(),
 				b"myriad_url",
 			);
@@ -139,21 +139,21 @@ mod test {
 			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(1);
 			let requestor_id = requestor_ids[0];
 
-			assert_ok!(GeneticData::add_genetic_data(
+			assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
 				Origin::signed(1),
-				"DeBio Genetic Data".as_bytes().to_vec(),
-				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
-				"DeBio Genetic Data Link".as_bytes().to_vec()
+				"Electronic Medical Record Title".as_bytes().to_vec(),
+				"Electronic Medical Record Category".as_bytes().to_vec(),
+				Vec::new(),
 			));
 
-			let result = GeneticData::genetic_data_by_owner_id(1);
-			let genetic_data_ids = result.unwrap();
-			let genetic_data_id = genetic_data_ids[0];
+			let result = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1);
+			let electronical_medical_record_ids = result.unwrap();
+			let electronical_medical_record_id = electronical_medical_record_ids[0];
 
 			let updated_info = RequestorInfo::new(
 				b"category",
 				b"description",
-				&[genetic_data_id],
+				&[electronical_medical_record_id],
 				&Vec::new(),
 				b"myriad_url",
 			);

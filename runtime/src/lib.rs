@@ -908,7 +908,7 @@ impl health_professional_qualification::Config for Runtime {
 
 impl opinion_requestor::Config for Runtime {
 	type Event = Event;
-	type GeneticData = GeneticData;
+	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 	type OpinionRequestorWeightInfo = ();
 }
 

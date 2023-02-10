@@ -24,7 +24,7 @@ sp-runtime = { default-features = false, git = "https://github.com/paritytech/su
 ## Substrate Pallet Dependencies
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 
-traits-genetic-data = { path = '../genetic-data/traits', default-features = false }
+traits-electronic-medical-record = { path = '../electronic-medical-record/traits', default-features = false }
 traits-opinion-requestor = { path = '../opinion-requestor/traits', default-features = false }
 
 [dev-dependencies]
@@ -42,7 +42,7 @@ std = [
     'sp-std/std',
     'sp-io/std',
 
-	'traits-genetic-data/std',
+	'traits-electronic-medical-record/std',
 	'traits-opinion-requestor/std',
 
 	'pallet-timestamp/std',
