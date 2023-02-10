@@ -35,7 +35,7 @@ pallet-timestamp = { default-features = false, git = "https://github.com/parityt
 
 # Local Dependencies
 opinion-requestor = { path = '../../opinion-requestor', default-features = false }
-genetic-data = { path = '../../genetic-data', default-features = false }
+electronic-medical-record = { path = '../../electronic-medical-record', default-features = false }
 
 [dev-dependencies]
 serde = { default-features = false, version = "1.0.136" }
@@ -57,5 +57,5 @@ std = [
 	'pallet-timestamp/std',
 
     'opinion-requestor/std',
-	'genetic-data/std',
+	'electronic-medical-record/std',
 ]

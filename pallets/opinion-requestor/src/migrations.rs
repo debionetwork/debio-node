@@ -32,7 +32,7 @@ mod version {
 			pub struct OldRequestorInfo<Hash> {
 				category: Vec<u8>,
 				description: Vec<u8>,
-				genetic_data_ids: Vec<Hash>,
+				electronical_medical_record_ids: Vec<Hash>,
 				opinion_ids: Vec<Hash>,
 				myriad_url: Vec<u8>,
 			}
@@ -56,7 +56,7 @@ mod version {
 				let new_requester_info = RequestorInfo::new(
 					&old_requestor_info.category,
 					&old_requestor_info.description,
-					&old_requestor_info.genetic_data_ids,
+					&old_requestor_info.electronical_medical_record_ids,
 					&old_requestor_info.opinion_ids,
 					&old_requestor_info.myriad_url,
 				);

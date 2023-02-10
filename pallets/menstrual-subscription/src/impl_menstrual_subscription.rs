@@ -16,7 +16,7 @@ impl<T: Config> MenstrualSubscriptionInterface<T> for Pallet<T> {
 		duration: &MenstrualSubscriptionDuration,
 		currency: &CurrencyType,
 	) -> Result<Self::MenstrualSubscription, Self::Error> {
-		let _ = Self::do_inqueue_exist(address_id)?;
+		Self::do_inqueue_exist(address_id)?;
 		let _ = MenstrualSubscriptionPrices::<T>::get(duration, currency)
 			.ok_or(Error::<T>::MenstrualSubscriptionPriceNotExist)?;
 

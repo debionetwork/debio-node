@@ -22,8 +22,8 @@ construct_runtime!(
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		OpinionRequestor: opinion_requestor::{Pallet, Call, Storage, Event<T>},
-		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
@@ -95,13 +95,14 @@ impl pallet_balances::Config for Test {
 	type WeightInfo = ();
 }
 
-impl genetic_data::Config for Test {
+impl electronic_medical_record::Config for Test {
 	type Event = Event;
-	type GeneticDataWeightInfo = ();
+	type ElectronicMedicalRecord = ElectronicMedicalRecord;
+	type ElectronicMedicalRecordWeightInfo = ();
 }
 
 impl opinion_requestor::Config for Test {
 	type Event = Event;
-	type GeneticData = GeneticData;
+	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 	type OpinionRequestorWeightInfo = ();
 }

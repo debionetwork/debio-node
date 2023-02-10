@@ -566,6 +566,28 @@ impl<T: Config> ElectronicMedicalRecordFilesProvider<T> for Pallet<T> {
 			electronic_medical_record_file_id,
 		)
 	}
+
+	fn valid_electronic_medical_record_id(
+		account_id: &T::AccountId,
+		electronical_medical_record_ids: &[T::Hash],
+	) -> Vec<T::Hash> {
+		let mut valid_ids = Vec::new();
+
+		for electronic_medical_record_id in electronical_medical_record_ids.iter() {
+			let electronic_medical_record =
+				<Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_by_id(
+					electronic_medical_record_id,
+				);
+
+			if let Some(electronic_medical_record) = electronic_medical_record {
+				if electronic_medical_record.get_owner_id() == account_id {
+					valid_ids.push(electronic_medical_record.id);
+				}
+			}
+		}
+
+		valid_ids
+	}
 }
 
 impl<T, AccountId, Hash> ElectronicMedicalRecordFileOwnerInfo<T>

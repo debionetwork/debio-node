@@ -2,7 +2,7 @@
 
 use frame_system::Config;
 use pallet_timestamp::Config as TimeConfig;
-//use sp_std::prelude::*;
+use sp_std::vec::Vec;
 
 pub trait ElectronicMedicalRecordFile<T: Config + TimeConfig> {
 	fn get_id(&self) -> &T::Hash;
@@ -16,6 +16,10 @@ pub trait ElectronicMedicalRecordFilesProvider<T: Config + TimeConfig> {
 	fn electronic_medical_record_file_by_id(
 		electronic_medical_record_file_id: &T::Hash,
 	) -> Option<Self::ElectronicMedicalRecordFile>;
+	fn valid_electronic_medical_record_id(
+		account_id: &T::AccountId,
+		electronical_medical_record_ids: &[T::Hash],
+	) -> Vec<T::Hash>;
 }
 
 pub trait ElectronicMedicalRecordFileOwnerInfo<T: Config> {
