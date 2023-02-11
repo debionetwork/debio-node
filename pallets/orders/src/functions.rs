@@ -184,7 +184,7 @@ impl<T: Config> Pallet<T> {
 		asset_id: Option<u32>,
 		keep_alive: bool,
 	) -> Result<(), Error<T>> {
-		let _ = Self::do_balance_sufficient(sender, &amount, asset_id)?;
+		Self::do_balance_sufficient(sender, &amount, asset_id)?;
 
 		if currency == &CurrencyType::DBIO {
 			let existence = if keep_alive {

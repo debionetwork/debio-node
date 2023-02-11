@@ -569,11 +569,11 @@ impl<T: Config> ElectronicMedicalRecordFilesProvider<T> for Pallet<T> {
 
 	fn valid_electronic_medical_record_id(
 		account_id: &T::AccountId,
-		electronical_medical_record_ids: &[T::Hash],
+		electronic_medical_record_ids: &[T::Hash],
 	) -> Vec<T::Hash> {
 		let mut valid_ids = Vec::new();
 
-		for electronic_medical_record_id in electronical_medical_record_ids.iter() {
+		for electronic_medical_record_id in electronic_medical_record_ids.iter() {
 			let electronic_medical_record =
 				<Self as ElectronicMedicalRecordInterface<T>>::electronic_medical_record_by_id(
 					electronic_medical_record_id,

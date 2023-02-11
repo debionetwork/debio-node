@@ -15,16 +15,16 @@ impl<T: Config> OpinionRequestorInterface<T> for Pallet<T> {
 		let total_requestor = OpinionRequestorCount::<T>::get();
 
 		let id = Self::generate_opinion_requestor_id(account_id, total_requestor);
-		let electronical_medical_record_ids = info.electronical_medical_record_ids();
+		let electronic_medical_record_ids = info.electronic_medical_record_ids();
 		let valid_ids = T::ElectronicMedicalRecord::valid_electronic_medical_record_id(
 			account_id,
-			electronical_medical_record_ids,
+			electronic_medical_record_ids,
 		);
 
 		let mut requestor_info = info;
 
 		requestor_info.update_opinion_ids(&Vec::new());
-		requestor_info.update_electronical_medical_record_ids(&valid_ids);
+		requestor_info.update_electronic_medical_record_ids(&valid_ids);
 
 		let now = pallet_timestamp::Pallet::<T>::get();
 		let requestor = OpinionRequestor::new(&id, account_id, &requestor_info, now);
@@ -52,16 +52,16 @@ impl<T: Config> OpinionRequestorInterface<T> for Pallet<T> {
 			.is_authorized_owner(account_id)
 			.ok_or(Error::<T>::Unauthorized)?;
 
-		let electronical_medical_record_ids = info.electronical_medical_record_ids();
+		let electronic_medical_record_ids = info.electronic_medical_record_ids();
 		let valid_ids = T::ElectronicMedicalRecord::valid_electronic_medical_record_id(
 			account_id,
-			electronical_medical_record_ids,
+			electronic_medical_record_ids,
 		);
 
 		let opinion_ids = requestor.info().opinion_ids();
 		let mut requestor_info = info;
 
-		requestor_info.update_electronical_medical_record_ids(&valid_ids);
+		requestor_info.update_electronic_medical_record_ids(&valid_ids);
 		requestor_info.update_opinion_ids(opinion_ids);
 
 		requestor.update_info(requestor_info.clone(), now);

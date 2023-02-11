@@ -18,7 +18,7 @@ pub trait ElectronicMedicalRecordFilesProvider<T: Config + TimeConfig> {
 	) -> Option<Self::ElectronicMedicalRecordFile>;
 	fn valid_electronic_medical_record_id(
 		account_id: &T::AccountId,
-		electronical_medical_record_ids: &[T::Hash],
+		electronic_medical_record_ids: &[T::Hash],
 	) -> Vec<T::Hash>;
 }
 

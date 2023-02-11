@@ -25,8 +25,8 @@ mod test {
 			));
 
 			let result = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1);
-			let electronical_medical_record_ids = result.unwrap();
-			let electronical_medical_record_id = electronical_medical_record_ids[0];
+			let electronic_medical_record_ids = result.unwrap();
+			let electronical_medical_record_id = electronic_medical_record_ids[0];
 			let random_electronical_medical_record_id =
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes());
 
@@ -81,8 +81,8 @@ mod test {
 			));
 
 			let result = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1);
-			let electronical_medical_record_ids = result.unwrap();
-			let electronical_medical_record_id = electronical_medical_record_ids[0];
+			let electronic_medical_record_ids = result.unwrap();
+			let electronical_medical_record_id = electronic_medical_record_ids[0];
 
 			let updated_info = RequestorInfo::new(
 				b"category",
@@ -147,8 +147,8 @@ mod test {
 			));
 
 			let result = ElectronicMedicalRecord::electronic_medical_record_by_owner_id(1);
-			let electronical_medical_record_ids = result.unwrap();
-			let electronical_medical_record_id = electronical_medical_record_ids[0];
+			let electronic_medical_record_ids = result.unwrap();
+			let electronical_medical_record_id = electronic_medical_record_ids[0];
 
 			let updated_info = RequestorInfo::new(
 				b"category",
