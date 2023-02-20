@@ -11,7 +11,7 @@ pub const PALLET_ID: PalletId = PalletId(*b"hlthpro!");
 
 impl<T: Config> Pallet<T> {
 	pub fn staking_account_id(account_id: &T::AccountId) -> T::AccountId {
-		PALLET_ID.into_sub_account(account_id)
+		PALLET_ID.into_sub_account_truncating(account_id)
 	}
 
 	pub fn staking_balance(account_id: &T::AccountId) -> Result<BalanceOf<T>, Error<T>> {

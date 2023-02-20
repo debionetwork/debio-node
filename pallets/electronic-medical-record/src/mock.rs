@@ -18,9 +18,9 @@ frame_support::construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		System: frame_system,
+		ElectronicMedicalRecord: electronic_medical_record,
+		Timestamp: pallet_timestamp,
 	}
 );
 
@@ -34,15 +34,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -57,7 +57,7 @@ impl frame_system::Config for Test {
 }
 
 impl electronic_medical_record::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 	type ElectronicMedicalRecordWeightInfo = ();
 }

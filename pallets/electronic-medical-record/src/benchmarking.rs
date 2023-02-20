@@ -24,7 +24,7 @@ benchmarks! {
 	update_electronic_medical_record {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(
 			caller_origin.clone(),
 			"DeBio EMR".as_bytes().to_vec(),
@@ -58,7 +58,7 @@ benchmarks! {
 	remove_electronic_medical_record {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _add_electronic_medical_record = ElectronicMedicalRecord::<T>::add_electronic_medical_record(
 			caller_origin.clone(),
 			"DeBio EMR".as_bytes().to_vec(),

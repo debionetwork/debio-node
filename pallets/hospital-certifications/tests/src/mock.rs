@@ -21,11 +21,11 @@ frame_support::construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Hospitals: hospitals::{Pallet, Call, Storage, Event<T>},
-		HospitalCertifications: hospital_certifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		System: frame_system,
+		Balances: pallet_balances,
+		Hospitals: hospitals,
+		HospitalCertifications: hospital_certifications,
+		UserProfile: user_profile
 	}
 );
 
@@ -39,15 +39,15 @@ impl system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -74,7 +74,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
@@ -82,7 +82,7 @@ impl pallet_balances::Config for Test {
 }
 
 impl hospitals::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type HospitalCertifications = HospitalCertifications;
 	type EthereumAddress = EthereumAddress;
@@ -92,13 +92,13 @@ impl hospitals::Config for Test {
 }
 
 impl hospital_certifications::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type HospitalCertificationOwner = Hospitals;
 	type WeightInfo = ();
 }
 
 impl user_profile::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();

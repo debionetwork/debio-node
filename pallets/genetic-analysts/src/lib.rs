@@ -163,7 +163,7 @@ pub mod pallet {
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		type Currency: Currency<Self::AccountId>;
 		type GeneticAnalystServices: GeneticAnalystServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticAnalystQualifications: GeneticAnalystQualificationsProvider<Self>;
@@ -686,6 +686,8 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
 					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Transactional(_) =>
+						return Err(Error::<T>::Arithmetic),
 				},
 			}
 
@@ -762,6 +764,8 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 					sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 					sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
 					sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+					sp_runtime::DispatchError::Transactional(_) =>
+						return Err(Error::<T>::Arithmetic),
 				},
 			}
 		}
@@ -847,6 +851,7 @@ impl<T: Config> GeneticAnalystInterface<T> for Pallet<T> {
 				sp_runtime::DispatchError::Token(_) => return Err(Error::<T>::Token),
 				sp_runtime::DispatchError::Arithmetic(_) => return Err(Error::<T>::Arithmetic),
 				sp_runtime::DispatchError::Module(_) => return Err(Error::<T>::Arithmetic),
+				sp_runtime::DispatchError::Transactional(_) => return Err(Error::<T>::Arithmetic),
 			},
 		}
 
@@ -938,7 +943,7 @@ impl<T: Config> Pallet<T> {
 
 	/// The injected pallet ID
 	pub fn get_pallet_id() -> AccountIdOf<T> {
-		T::PalletId::get().into_account()
+		T::PalletId::get().into_account_truncating()
 	}
 
 	/// The account ID that holds the funds

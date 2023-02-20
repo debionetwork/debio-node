@@ -86,7 +86,7 @@ benchmarks! {
 		);
 
 		// Create request
-		let origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
 			origin,
 			"Indonesia".as_bytes().to_vec(),
@@ -118,7 +118,7 @@ benchmarks! {
 			init_balance
 		);
 
-		let origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
 			origin.clone(),
 			"Indonesia".as_bytes().to_vec(),
@@ -174,17 +174,17 @@ benchmarks! {
 		};
 
 		// register lab
-		let origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _add_labs = Labs::<T>::register_lab(origin.clone(), lab);
 
 		// Verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
-		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let admin_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(admin_key));
 		let status = VerificationStatus::Verified;
 		let _ = Labs::<T>::update_lab_verification_status(admin_origin, caller.clone(), status);
 
 		// Create request
-		let cust_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
+		let cust_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(customer.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
 			cust_origin,
 			"Indonesia".as_bytes().to_vec(),
@@ -261,12 +261,12 @@ benchmarks! {
 		};
 
 		// register lab
-		let lab_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(lab.clone()));
+		let lab_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(lab.clone()));
 		let _ = Labs::<T>::register_lab(lab_origin.clone(), lab_info);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
-		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let admin_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(admin_key));
 		let status = VerificationStatus::Verified;
 		let _verified = Labs::<T>::update_lab_verification_status(
 			admin_origin,
@@ -275,7 +275,7 @@ benchmarks! {
 		);
 
 		// Create request
-		let cust_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let cust_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
 			cust_origin.clone(),
 			"Indonesia".as_bytes().to_vec(),
@@ -369,12 +369,12 @@ benchmarks! {
 		};
 
 		// Register lab
-		let lab_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let lab_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = Labs::<T>::register_lab(lab_origin.clone(), lab);
 
 		// verified lab
 		let admin_key: T::AccountId = LabVerifierKey::<T>::get().unwrap();
-		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin_key));
+		let admin_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(admin_key));
 		let status = VerificationStatus::Verified;
 		let _verified_labs = Labs::<T>::update_lab_verification_status(
 			admin_origin,
@@ -383,7 +383,7 @@ benchmarks! {
 		);
 
 		// Create request
-		let cust_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(customer.clone()));
+		let cust_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(customer.clone()));
 		let _new_request = ServiceRequest::<T>::create_request(
 			cust_origin.clone(),
 			"Indonesia".as_bytes().to_vec(),

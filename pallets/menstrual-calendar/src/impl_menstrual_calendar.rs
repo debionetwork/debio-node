@@ -23,7 +23,7 @@ impl<T: Config> MenstrualCalendarInterface<T> for Pallet<T> {
 		let menstrual_calendar = MenstrualCalendar::new(id, address_id.clone(), average_cycle, now);
 
 		// Store to MenstrualCalendarById storage
-		MenstrualCalendarById::<T>::insert(&id, &menstrual_calendar);
+		MenstrualCalendarById::<T>::insert(id, &menstrual_calendar);
 
 		Self::add_menstrual_calendar_by_owner(address_id, &id);
 		Self::add_menstrual_calendar_count();

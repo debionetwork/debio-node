@@ -1,5 +1,5 @@
 use crate as rewards;
-use frame_support::{parameter_types, PalletId};
+use frame_support::{parameter_types, weights::Weight, PalletId};
 use pallet_balances::AccountData;
 use sp_core::H256;
 use sp_io::TestExternalities;
@@ -20,9 +20,9 @@ frame_support::construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Rewards: rewards::{Pallet, Call, Storage, Config<T>, Event<T>},
+		System: frame_system,
+		Balances: pallet_balances,
+		Rewards: rewards,
 	}
 );
 
@@ -30,7 +30,7 @@ parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
 	pub BlockWeights: frame_system::limits::BlockWeights =
-	frame_system::limits::BlockWeights::simple_max(1024);
+	frame_system::limits::BlockWeights::simple_max(Weight::from_ref_time(1024));
 }
 
 impl frame_system::Config for Test {
@@ -38,15 +38,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -74,7 +74,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
@@ -82,7 +82,7 @@ impl pallet_balances::Config for Test {
 }
 
 impl rewards::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type PalletId = RewardPalletId;
 	type WeightInfo = ();

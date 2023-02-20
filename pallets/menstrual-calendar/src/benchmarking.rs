@@ -14,7 +14,7 @@ benchmarks! {
 	update_menstrual_calendar {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = MenstrualCalendar::<T>::add_menstrual_calendar(
 			caller_origin.clone(),
 			16
@@ -28,7 +28,7 @@ benchmarks! {
 	add_menstrual_cycle_log {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = MenstrualCalendar::<T>::add_menstrual_calendar(
 			caller_origin.clone(),
 			16u8.saturated_into()
@@ -52,7 +52,7 @@ benchmarks! {
 	update_menstrual_cycle_log {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = MenstrualCalendar::<T>::add_menstrual_calendar(
 			caller_origin.clone(),
 			16
@@ -91,7 +91,7 @@ benchmarks! {
 	remove_menstrual_cycle_log {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = MenstrualCalendar::<T>::add_menstrual_calendar(
 			caller_origin.clone(),
 			16

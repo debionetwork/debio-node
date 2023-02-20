@@ -6,7 +6,7 @@ use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode}
 fn register_doctor_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Doctors::register_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "DeBio Doctor".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -43,7 +43,7 @@ fn register_doctor_works() {
 		let city_code = CityCode::from_vec("City".as_bytes().to_vec());
 
 		assert_ok!(Doctors::register_doctor(
-			Origin::signed(2),
+			RuntimeOrigin::signed(2),
 			DoctorInfo {
 				name: "DeBio Doctor".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -75,7 +75,7 @@ fn register_doctor_works() {
 fn update_doctor_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Doctors::register_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "DeBio Doctor".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -90,7 +90,7 @@ fn update_doctor_works() {
 		));
 
 		assert_ok!(Doctors::update_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "Abdul Hakim".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -127,7 +127,7 @@ fn update_doctor_works() {
 		let old_city_code = CityCode::from_vec("City".as_bytes().to_vec());
 
 		assert_ok!(Doctors::update_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "Abdul Hakim".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -170,7 +170,7 @@ fn update_doctor_works() {
 fn deregister_doctor_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Doctors::register_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "DeBio Doctor".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -184,7 +184,7 @@ fn deregister_doctor_works() {
 			}
 		));
 
-		assert_ok!(Doctors::deregister_doctor(Origin::signed(1),));
+		assert_ok!(Doctors::deregister_doctor(RuntimeOrigin::signed(1),));
 
 		assert_eq!(Doctors::doctor_by_account_id(1), None);
 
@@ -209,7 +209,7 @@ fn deregister_doctor_works() {
 fn cant_register_doctor_when_already_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Doctors::register_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "DeBio Doctor".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -225,7 +225,7 @@ fn cant_register_doctor_when_already_exist() {
 
 		assert_noop!(
 			Doctors::register_doctor(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				DoctorInfo {
 					name: "DeBio Doctor".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -248,7 +248,7 @@ fn cant_update_and_deregister_doctor_when_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
 			Doctors::update_doctor(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				DoctorInfo {
 					name: "DeBio Doctor".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -265,7 +265,7 @@ fn cant_update_and_deregister_doctor_when_not_exist() {
 		);
 
 		assert_noop!(
-			Doctors::deregister_doctor(Origin::signed(1)),
+			Doctors::deregister_doctor(RuntimeOrigin::signed(1)),
 			Error::<Test>::DoctorDoesNotExist
 		);
 	})
@@ -277,7 +277,7 @@ fn call_event_should_work() {
 		System::set_block_number(1);
 
 		assert_ok!(Doctors::register_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "DeBio Doctor".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -291,7 +291,7 @@ fn call_event_should_work() {
 			}
 		));
 
-		System::assert_last_event(Event::Doctors(crate::Event::DoctorRegistered(
+		System::assert_last_event(RuntimeEvent::Doctors(crate::Event::DoctorRegistered(
 			Doctor {
 				account_id: 1,
 				certifications: Vec::new(),
@@ -311,7 +311,7 @@ fn call_event_should_work() {
 		)));
 
 		assert_ok!(Doctors::update_doctor(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			DoctorInfo {
 				name: "Abdul Hakim".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -325,7 +325,7 @@ fn call_event_should_work() {
 			}
 		));
 
-		System::assert_last_event(Event::Doctors(crate::Event::DoctorUpdated(
+		System::assert_last_event(RuntimeEvent::Doctors(crate::Event::DoctorUpdated(
 			Doctor {
 				account_id: 1,
 				certifications: Vec::new(),
@@ -344,9 +344,9 @@ fn call_event_should_work() {
 			1,
 		)));
 
-		assert_ok!(Doctors::deregister_doctor(Origin::signed(1)));
+		assert_ok!(Doctors::deregister_doctor(RuntimeOrigin::signed(1)));
 
-		System::assert_last_event(Event::Doctors(crate::Event::DoctorDeleted(
+		System::assert_last_event(RuntimeEvent::Doctors(crate::Event::DoctorDeleted(
 			Doctor {
 				account_id: 1,
 				certifications: Vec::new(),

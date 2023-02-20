@@ -27,186 +27,186 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for labs.
-pub trait WeightInfo { 
-	fn register_lab() -> Weight; 
-	fn update_lab() -> Weight; 
-	fn update_lab_verification_status() -> Weight; 
-	fn deregister_lab() -> Weight; 
-	fn stake_lab() -> Weight; 
-	fn unstake_lab() -> Weight; 
-	fn retrieve_unstake_amount() -> Weight; 
-	fn update_minimum_stake_amount() -> Weight; 
-	fn update_unstake_time() -> Weight; 
-	fn update_admin_key() -> Weight; 
+pub trait WeightInfo {
+	fn register_lab() -> Weight;
+	fn update_lab() -> Weight;
+	fn update_lab_verification_status() -> Weight;
+	fn deregister_lab() -> Weight;
+	fn stake_lab() -> Weight;
+	fn unstake_lab() -> Weight;
+	fn retrieve_unstake_amount() -> Weight;
+	fn update_minimum_stake_amount() -> Weight;
+	fn update_unstake_time() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for labs using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Labs LabsByCountryRegionCity (r:1 w:1) 
-	// Storage: Labs LabCount (r:1 w:1) 
-	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1) 
-	fn register_lab() -> Weight { 
-		175_805_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Labs LabsByCountryRegionCity (r:1 w:1)
+	// Storage: Labs LabCount (r:1 w:1)
+	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
+	fn register_lab() -> Weight {
+		Weight::from_ref_time(175_805_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Labs LabsByCountryRegionCity (r:2 w:2) 
-	// Storage: Labs LabCountByCountryRegionCity (r:2 w:2) 
-	fn update_lab() -> Weight { 
-		158_515_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Labs LabsByCountryRegionCity (r:2 w:2)
+	// Storage: Labs LabCountByCountryRegionCity (r:2 w:2)
+	fn update_lab() -> Weight {
+		Weight::from_ref_time(158_515_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs Labs (r:1 w:1) 
-	fn update_lab_verification_status() -> Weight { 
-		86_844_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs Labs (r:1 w:1)
+	fn update_lab_verification_status() -> Weight {
+		Weight::from_ref_time(86_844_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Labs LabsByCountryRegionCity (r:1 w:1) 
-	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1) 
-	// Storage: Labs LabCount (r:1 w:1) 
-	fn deregister_lab() -> Weight { 
-		110_598_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Labs LabsByCountryRegionCity (r:1 w:1)
+	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
+	// Storage: Labs LabCount (r:1 w:1)
+	fn deregister_lab() -> Weight {
+		Weight::from_ref_time(110_598_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: System Account (r:2 w:2) 
-	// Storage: Labs MinimumStakeAmount (r:1 w:0) 
-	// Storage: Labs PalletAccount (r:1 w:0) 
-	fn stake_lab() -> Weight { 
-		190_990_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(3_u64)) 
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: Labs MinimumStakeAmount (r:1 w:0)
+	// Storage: Labs PalletAccount (r:1 w:0)
+	fn stake_lab() -> Weight {
+		Weight::from_ref_time(190_990_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Orders PendingOrdersBySeller (r:1 w:0) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: Labs UnstakeTime (r:1 w:0) 
-	fn unstake_lab() -> Weight { 
-		145_241_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Orders PendingOrdersBySeller (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:1 w:0)
+	fn unstake_lab() -> Weight {
+		Weight::from_ref_time(145_241_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: Labs PalletAccount (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	fn retrieve_unstake_amount() -> Weight { 
-		204_328_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs PalletAccount (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	fn retrieve_unstake_amount() -> Weight {
+		Weight::from_ref_time(204_328_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs MinimumStakeAmount (r:0 w:1) 
-	fn update_minimum_stake_amount() -> Weight { 
-		63_902_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs MinimumStakeAmount (r:0 w:1)
+	fn update_minimum_stake_amount() -> Weight {
+		Weight::from_ref_time(63_902_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs UnstakeTime (r:0 w:1) 
-	fn update_unstake_time() -> Weight { 
-		50_914_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:0 w:1)
+	fn update_unstake_time() -> Weight {
+		Weight::from_ref_time(50_914_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Labs LabVerifierKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		42_025_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Labs LabVerifierKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(42_025_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Labs LabsByCountryRegionCity (r:1 w:1) 
-	// Storage: Labs LabCount (r:1 w:1) 
-	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1) 
-	fn register_lab() -> Weight { 
-		175_805_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Labs LabsByCountryRegionCity (r:2 w:2) 
-	// Storage: Labs LabCountByCountryRegionCity (r:2 w:2) 
-	fn update_lab() -> Weight { 
-		158_515_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs Labs (r:1 w:1) 
-	fn update_lab_verification_status() -> Weight { 
-		86_844_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Labs LabsByCountryRegionCity (r:1 w:1) 
-	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1) 
-	// Storage: Labs LabCount (r:1 w:1) 
-	fn deregister_lab() -> Weight { 
-		110_598_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: System Account (r:2 w:2) 
-	// Storage: Labs MinimumStakeAmount (r:1 w:0) 
-	// Storage: Labs PalletAccount (r:1 w:0) 
-	fn stake_lab() -> Weight { 
-		190_990_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(3_u64)) 
-	} 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Orders PendingOrdersBySeller (r:1 w:0) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: Labs UnstakeTime (r:1 w:0) 
-	fn unstake_lab() -> Weight { 
-		145_241_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: Labs PalletAccount (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	fn retrieve_unstake_amount() -> Weight { 
-		204_328_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs MinimumStakeAmount (r:0 w:1) 
-	fn update_minimum_stake_amount() -> Weight { 
-		63_902_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Labs LabVerifierKey (r:1 w:0) 
-	// Storage: Labs UnstakeTime (r:0 w:1) 
-	fn update_unstake_time() -> Weight { 
-		50_914_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Labs LabVerifierKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		42_025_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Labs LabsByCountryRegionCity (r:1 w:1)
+	// Storage: Labs LabCount (r:1 w:1)
+	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
+	fn register_lab() -> Weight {
+		Weight::from_ref_time(175_805_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Labs LabsByCountryRegionCity (r:2 w:2)
+	// Storage: Labs LabCountByCountryRegionCity (r:2 w:2)
+	fn update_lab() -> Weight {
+		Weight::from_ref_time(158_515_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs Labs (r:1 w:1)
+	fn update_lab_verification_status() -> Weight {
+		Weight::from_ref_time(86_844_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Labs LabsByCountryRegionCity (r:1 w:1)
+	// Storage: Labs LabCountByCountryRegionCity (r:1 w:1)
+	// Storage: Labs LabCount (r:1 w:1)
+	fn deregister_lab() -> Weight {
+		Weight::from_ref_time(110_598_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: Labs MinimumStakeAmount (r:1 w:0)
+	// Storage: Labs PalletAccount (r:1 w:0)
+	fn stake_lab() -> Weight {
+		Weight::from_ref_time(190_990_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(3_u64))
+	}
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Orders PendingOrdersBySeller (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:1 w:0)
+	fn unstake_lab() -> Weight {
+		Weight::from_ref_time(145_241_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Labs PalletAccount (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	fn retrieve_unstake_amount() -> Weight {
+		Weight::from_ref_time(204_328_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs MinimumStakeAmount (r:0 w:1)
+	fn update_minimum_stake_amount() -> Weight {
+		Weight::from_ref_time(63_902_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs LabVerifierKey (r:1 w:0)
+	// Storage: Labs UnstakeTime (r:0 w:1)
+	fn update_unstake_time() -> Weight {
+		Weight::from_ref_time(50_914_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Labs LabVerifierKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(42_025_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

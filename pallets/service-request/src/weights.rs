@@ -27,151 +27,151 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for service_request.
-pub trait WeightInfo { 
-	fn create_request() -> Weight; 
-	fn unstake() -> Weight; 
-	fn retrieve_unstaked_amount() -> Weight; 
-	fn claim_request() -> Weight; 
-	fn process_request() -> Weight; 
-	fn finalize_request() -> Weight; 
-	fn update_admin_key() -> Weight; 
+pub trait WeightInfo {
+	fn create_request() -> Weight;
+	fn unstake() -> Weight;
+	fn retrieve_unstaked_amount() -> Weight;
+	fn claim_request() -> Weight;
+	fn process_request() -> Weight;
+	fn finalize_request() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for service_request using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: ServiceRequest RequestByAccountId (r:1 w:1) 
-	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1) 
-	// Storage: ServiceRequest StakingAccountIdByRequestId (r:0 w:1) 
-	// Storage: ServiceRequest RequestById (r:0 w:1) 
-	fn create_request() -> Weight { 
-		337_921_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: ServiceRequest RequestByAccountId (r:1 w:1)
+	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1)
+	// Storage: ServiceRequest StakingAccountIdByRequestId (r:0 w:1)
+	// Storage: ServiceRequest RequestById (r:0 w:1)
+	fn create_request() -> Weight {
+		Weight::from_ref_time(337_921_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn unstake() -> Weight { 
-		96_106_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn unstake() -> Weight {
+		Weight::from_ref_time(96_106_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: ServiceRequest AdminKey (r:1 w:0) 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:2 w:2) 
-	fn retrieve_unstaked_amount() -> Weight { 
-		241_061_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(3_u64)) 
+	// Storage: ServiceRequest AdminKey (r:1 w:0)
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:2 w:2)
+	fn retrieve_unstaked_amount() -> Weight {
+		Weight::from_ref_time(241_061_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: Labs Labs (r:1 w:0) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: ServiceRequest ServiceOfferById (r:0 w:1) 
-	fn claim_request() -> Weight { 
-		247_483_000_u64 
-			.saturating_add(T::DbWeight::get().reads(3_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: Labs Labs (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest ServiceOfferById (r:0 w:1)
+	fn claim_request() -> Weight {
+		Weight::from_ref_time(247_483_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: ServiceRequest ServiceOfferById (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: ServiceRequest ServiceInvoiceById (r:0 w:1) 
-	// Storage: ServiceRequest ServiceInvoiceByOrderId (r:0 w:1) 
-	fn process_request() -> Weight { 
-		455_429_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: ServiceRequest ServiceOfferById (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest ServiceInvoiceById (r:0 w:1)
+	// Storage: ServiceRequest ServiceInvoiceByOrderId (r:0 w:1)
+	fn process_request() -> Weight {
+		Weight::from_ref_time(455_429_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: ServiceRequest AdminKey (r:1 w:0) 
-	// Storage: ServiceRequest ServiceInvoiceById (r:1 w:0) 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: System Account (r:2 w:2) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: ServiceRequest RequestByAccountId (r:1 w:1) 
-	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1) 
-	fn finalize_request() -> Weight { 
-		515_290_000_u64 
-			.saturating_add(T::DbWeight::get().reads(8_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+	// Storage: ServiceRequest AdminKey (r:1 w:0)
+	// Storage: ServiceRequest ServiceInvoiceById (r:1 w:0)
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest RequestByAccountId (r:1 w:1)
+	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1)
+	fn finalize_request() -> Weight {
+		Weight::from_ref_time(515_290_000_u64)
+			.saturating_add(T::DbWeight::get().reads(8_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: ServiceRequest AdminKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		82_599_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: ServiceRequest AdminKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(82_599_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: ServiceRequest RequestByAccountId (r:1 w:1) 
-	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1) 
-	// Storage: ServiceRequest StakingAccountIdByRequestId (r:0 w:1) 
-	// Storage: ServiceRequest RequestById (r:0 w:1) 
-	fn create_request() -> Weight { 
-		337_921_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn unstake() -> Weight { 
-		96_106_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: ServiceRequest AdminKey (r:1 w:0) 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:2 w:2) 
-	fn retrieve_unstaked_amount() -> Weight { 
-		241_061_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(3_u64)) 
-	} 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: Labs Labs (r:1 w:0) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: ServiceRequest ServiceOfferById (r:0 w:1) 
-	fn claim_request() -> Weight { 
-		247_483_000_u64
-			.saturating_add(RocksDbWeight::get().reads(3_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: ServiceRequest ServiceOfferById (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: ServiceRequest ServiceInvoiceById (r:0 w:1) 
-	// Storage: ServiceRequest ServiceInvoiceByOrderId (r:0 w:1) 
-	fn process_request() -> Weight { 
-		455_429_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: ServiceRequest AdminKey (r:1 w:0) 
-	// Storage: ServiceRequest ServiceInvoiceById (r:1 w:0) 
-	// Storage: ServiceRequest RequestById (r:1 w:1) 
-	// Storage: System Account (r:2 w:2) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: ServiceRequest RequestByAccountId (r:1 w:1) 
-	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1) 
-	fn finalize_request() -> Weight { 
-		515_290_000_u64
-			.saturating_add(RocksDbWeight::get().reads(8_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: ServiceRequest AdminKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		82_599_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: ServiceRequest RequestByAccountId (r:1 w:1)
+	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1)
+	// Storage: ServiceRequest StakingAccountIdByRequestId (r:0 w:1)
+	// Storage: ServiceRequest RequestById (r:0 w:1)
+	fn create_request() -> Weight {
+		Weight::from_ref_time(337_921_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn unstake() -> Weight {
+		Weight::from_ref_time(96_106_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: ServiceRequest AdminKey (r:1 w:0)
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:2 w:2)
+	fn retrieve_unstaked_amount() -> Weight {
+		Weight::from_ref_time(241_061_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(3_u64))
+	}
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: Labs Labs (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest ServiceOfferById (r:0 w:1)
+	fn claim_request() -> Weight {
+		Weight::from_ref_time(247_483_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: ServiceRequest ServiceOfferById (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest ServiceInvoiceById (r:0 w:1)
+	// Storage: ServiceRequest ServiceInvoiceByOrderId (r:0 w:1)
+	fn process_request() -> Weight {
+		Weight::from_ref_time(455_429_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: ServiceRequest AdminKey (r:1 w:0)
+	// Storage: ServiceRequest ServiceInvoiceById (r:1 w:0)
+	// Storage: ServiceRequest RequestById (r:1 w:1)
+	// Storage: System Account (r:2 w:2)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: ServiceRequest RequestByAccountId (r:1 w:1)
+	// Storage: ServiceRequest ServiceCountRequest (r:1 w:1)
+	fn finalize_request() -> Weight {
+		Weight::from_ref_time(515_290_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(8_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: ServiceRequest AdminKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(82_599_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

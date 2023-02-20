@@ -19,7 +19,7 @@ fn add_menstrual_subscription_works() {
 		AdminKey::<Test>::put(admin);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -27,7 +27,7 @@ fn add_menstrual_subscription_works() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -69,7 +69,7 @@ fn set_menstrual_subscription_paid_works() {
 		TreasuryKey::<Test>::put(treasure);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -77,7 +77,7 @@ fn set_menstrual_subscription_paid_works() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -86,7 +86,7 @@ fn set_menstrual_subscription_paid_works() {
 			MenstrualSubscription::menstrual_subscription_by_address_id(customer).unwrap();
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			menstrual_subscription_ids[0]
 		));
 
@@ -117,7 +117,7 @@ fn set_menstrual_subscription_paid_works() {
 		let total_issuance = Balances::total_issuance();
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -126,7 +126,7 @@ fn set_menstrual_subscription_paid_works() {
 			MenstrualSubscription::menstrual_subscription_by_address_id(customer).unwrap();
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			menstrual_subscription_ids[1]
 		));
 
@@ -154,7 +154,7 @@ fn change_menstrual_subscription_status_works() {
 		TreasuryKey::<Test>::put(treasure);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -162,7 +162,7 @@ fn change_menstrual_subscription_status_works() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -171,12 +171,12 @@ fn change_menstrual_subscription_status_works() {
 			MenstrualSubscription::menstrual_subscription_by_address_id(customer).unwrap();
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			menstrual_subscription_ids[0]
 		));
 
 		assert_ok!(MenstrualSubscription::change_menstrual_subscription_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			menstrual_subscription_ids[0],
 			MenstrualSubscriptionStatus::default(),
 		));
@@ -210,7 +210,7 @@ fn set_menstrual_subscription_price_works() {
 		AdminKey::<Test>::put(admin);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::USDT,
 			10,
@@ -243,7 +243,7 @@ fn update_key_works() {
 		AdminKey::<Test>::put(admin);
 
 		assert_ok!(MenstrualSubscription::update_key(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			AccountKeyType::AdminKey(other_admin)
 		));
 
@@ -257,7 +257,7 @@ fn sudo_update_key_works() {
 		let treasure = account_key("treasure");
 
 		assert_ok!(MenstrualSubscription::sudo_update_key(
-			Origin::root(),
+			RuntimeOrigin::root(),
 			AccountKeyType::TreasuryKey(treasure)
 		));
 
@@ -274,7 +274,7 @@ fn cant_add_menstrual_subscription_when_already_inqueue() {
 		AdminKey::<Test>::put(admin);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -282,14 +282,14 @@ fn cant_add_menstrual_subscription_when_already_inqueue() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
 
 		assert_noop!(
 			MenstrualSubscription::add_menstrual_subscription(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				MenstrualSubscriptionDuration::default(),
 				CurrencyType::DBIO,
 			),
@@ -305,7 +305,7 @@ fn cant_add_menstrual_subcription_when_price_not_exist() {
 
 		assert_noop!(
 			MenstrualSubscription::add_menstrual_subscription(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				MenstrualSubscriptionDuration::default(),
 				CurrencyType::DBIO,
 			),
@@ -323,7 +323,7 @@ fn cant_change_menstrual_subscription_status_when_not_paid() {
 		AdminKey::<Test>::put(admin);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -331,7 +331,7 @@ fn cant_change_menstrual_subscription_status_when_not_paid() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -341,7 +341,7 @@ fn cant_change_menstrual_subscription_status_when_not_paid() {
 
 		assert_noop!(
 			MenstrualSubscription::change_menstrual_subscription_status(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				menstrual_subscription_ids[0],
 				MenstrualSubscriptionStatus::default(),
 			),
@@ -360,7 +360,7 @@ fn cant_set_menstrual_subscription_paid_when_not_exists() {
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_paid(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 			),
 			Error::<Test>::MenstrualSubscriptionDoesNotExist,
@@ -380,7 +380,7 @@ fn cant_set_menstrual_subscription_paid_when_not_owner() {
 		TreasuryKey::<Test>::put(treasure);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -388,7 +388,7 @@ fn cant_set_menstrual_subscription_paid_when_not_owner() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -398,7 +398,7 @@ fn cant_set_menstrual_subscription_paid_when_not_owner() {
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_paid(
-				Origin::signed(other),
+				RuntimeOrigin::signed(other),
 				menstrual_subscription_ids[0]
 			),
 			Error::<Test>::NotMenstrualSubscriptionOwner,
@@ -417,7 +417,7 @@ fn cant_set_menstrual_subscription_paid_when_already_paid() {
 		TreasuryKey::<Test>::put(treasure);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -425,7 +425,7 @@ fn cant_set_menstrual_subscription_paid_when_already_paid() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -434,13 +434,13 @@ fn cant_set_menstrual_subscription_paid_when_already_paid() {
 			MenstrualSubscription::menstrual_subscription_by_address_id(customer).unwrap();
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			menstrual_subscription_ids[0]
 		));
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_paid(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				menstrual_subscription_ids[0]
 			),
 			Error::<Test>::MenstrualSubscriptionAlreadyPaid,
@@ -459,7 +459,7 @@ fn cant_set_menstrual_subscription_paid_when_balance_not_enough() {
 		TreasuryKey::<Test>::put(treasure);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			1000,
@@ -467,7 +467,7 @@ fn cant_set_menstrual_subscription_paid_when_balance_not_enough() {
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -477,7 +477,7 @@ fn cant_set_menstrual_subscription_paid_when_balance_not_enough() {
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_paid(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				menstrual_subscription_ids[0]
 			),
 			Error::<Test>::InsufficientBalance,
@@ -493,7 +493,7 @@ fn cant_change_menstrual_subscription_status_when_unauthorized() {
 
 		assert_noop!(
 			MenstrualSubscription::change_menstrual_subscription_status(
-				Origin::signed(other),
+				RuntimeOrigin::signed(other),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 				MenstrualSubscriptionStatus::default()
 			),
@@ -504,7 +504,7 @@ fn cant_change_menstrual_subscription_status_when_unauthorized() {
 
 		assert_noop!(
 			MenstrualSubscription::change_menstrual_subscription_status(
-				Origin::signed(other),
+				RuntimeOrigin::signed(other),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 				MenstrualSubscriptionStatus::default()
 			),
@@ -522,7 +522,7 @@ fn cant_change_menstrual_subscription_status_when_not_exist() {
 
 		assert_noop!(
 			MenstrualSubscription::change_menstrual_subscription_status(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 				MenstrualSubscriptionStatus::default()
 			),
@@ -540,7 +540,7 @@ fn cant_set_menstrual_subscription_price_when_unauthorized() {
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_price(
-				Origin::signed(other),
+				RuntimeOrigin::signed(other),
 				MenstrualSubscriptionDuration::default(),
 				CurrencyType::USDT,
 				10,
@@ -553,7 +553,7 @@ fn cant_set_menstrual_subscription_price_when_unauthorized() {
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_price(
-				Origin::signed(other),
+				RuntimeOrigin::signed(other),
 				MenstrualSubscriptionDuration::default(),
 				CurrencyType::USDT,
 				10,
@@ -574,7 +574,7 @@ fn cant_set_menstrual_subscription_price_when_asset_id_not_found() {
 
 		assert_noop!(
 			MenstrualSubscription::set_menstrual_subscription_price(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				MenstrualSubscriptionDuration::default(),
 				CurrencyType::USDT,
 				10,
@@ -595,7 +595,7 @@ fn cant_update_key_when_unauthorized() {
 
 		assert_noop!(
 			MenstrualSubscription::update_key(
-				Origin::signed(other_treasure),
+				RuntimeOrigin::signed(other_treasure),
 				AccountKeyType::TreasuryKey(treasure)
 			),
 			Error::<Test>::Unauthorized,
@@ -614,7 +614,7 @@ fn call_event_should_work() {
 		AdminKey::<Test>::put(admin);
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_price(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 			10,
@@ -628,12 +628,12 @@ fn call_event_should_work() {
 			asset_id: None,
 		};
 
-		System::assert_last_event(Event::MenstrualSubscription(
+		System::assert_last_event(RuntimeEvent::MenstrualSubscription(
 			crate::Event::MenstrualSubscriptionPriceAdded(menstrual_subscription_price),
 		));
 
 		assert_ok!(MenstrualSubscription::add_menstrual_subscription(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			MenstrualSubscriptionDuration::default(),
 			CurrencyType::DBIO,
 		));
@@ -652,18 +652,18 @@ fn call_event_should_work() {
 			updated_at: 0,
 		};
 
-		System::assert_last_event(Event::MenstrualSubscription(
+		System::assert_last_event(RuntimeEvent::MenstrualSubscription(
 			crate::Event::MenstrualSubscriptionAdded(menstrual_subscription.clone(), customer),
 		));
 
 		let treasure = account_key("treasure");
 
 		assert_ok!(MenstrualSubscription::sudo_update_key(
-			Origin::root(),
+			RuntimeOrigin::root(),
 			AccountKeyType::TreasuryKey(treasure)
 		));
 
-		System::assert_last_event(Event::MenstrualSubscription(
+		System::assert_last_event(RuntimeEvent::MenstrualSubscription(
 			crate::Event::UpdateMenstrualSubscriptionKeySuccessful(AccountKeyType::TreasuryKey(
 				treasure,
 			)),
@@ -673,11 +673,11 @@ fn call_event_should_work() {
 		menstrual_subscription.status = MenstrualSubscriptionStatus::Active;
 
 		assert_ok!(MenstrualSubscription::set_menstrual_subscription_paid(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			menstrual_subscription_ids[0]
 		));
 
-		System::assert_last_event(Event::MenstrualSubscription(
+		System::assert_last_event(RuntimeEvent::MenstrualSubscription(
 			crate::Event::MenstrualSubscriptionPaid(menstrual_subscription.clone(), customer),
 		));
 
@@ -685,23 +685,23 @@ fn call_event_should_work() {
 		menstrual_subscription.status = MenstrualSubscriptionStatus::Inactive;
 
 		assert_ok!(MenstrualSubscription::change_menstrual_subscription_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			menstrual_subscription_ids[0],
 			MenstrualSubscriptionStatus::default(),
 		));
 
-		System::assert_last_event(Event::MenstrualSubscription(
+		System::assert_last_event(RuntimeEvent::MenstrualSubscription(
 			crate::Event::MenstrualSubscriptionUpdated(menstrual_subscription),
 		));
 
 		let other_admin = account_key("other_admin");
 
 		assert_ok!(MenstrualSubscription::update_key(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			AccountKeyType::AdminKey(other_admin)
 		));
 
-		System::assert_last_event(Event::MenstrualSubscription(
+		System::assert_last_event(RuntimeEvent::MenstrualSubscription(
 			crate::Event::UpdateMenstrualSubscriptionKeySuccessful(AccountKeyType::AdminKey(
 				other_admin,
 			)),

@@ -13,13 +13,13 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_octopus_appchain::sr25519::AuthorityId as OctopusId;
 
 use debio_runtime::{
-	currency::{OCTS, UNITS as DBIO},
+	currency::UNITS as DBIO,
 	opaque::{Block, SessionKeys},
 	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GeneticAnalysisOrdersConfig,
 	GeneticAnalystsConfig, HealthProfessionalConfig, LabsConfig, MenstrualSubscriptionConfig,
-	OctopusAppchainConfig, OctopusLposConfig, OpinionConfig, OrdersConfig, RewardsConfig,
-	ServiceRequestConfig, SessionConfig, Signature, SudoConfig, SystemConfig, UserProfileConfig,
-	BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
+	OctopusAppchainConfig, OctopusBridgeConfig, OctopusLposConfig, OctopusUpwardMessagesConfig,
+	OpinionConfig, OrdersConfig, RewardsConfig, ServiceRequestConfig, SessionConfig, Signature,
+	SudoConfig, SystemConfig, UserProfileConfig, BABE_GENESIS_EPOCH_CONFIG, WASM_BINARY,
 };
 
 use serde::{Deserialize, Serialize};
@@ -113,10 +113,6 @@ pub fn testnet_config() -> Result<ChainSpec, String> {
 	ChainSpec::from_json_bytes(&include_bytes!("../res/octopus-testnet.json")[..])
 }
 
-pub fn development_testnet_config() -> Result<ChainSpec, String> {
-	ChainSpec::from_json_bytes(&include_bytes!("../res/dev-testnet.json")[..])
-}
-
 pub fn local_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM not available".to_string())?;
 	let properties = get_properties("DBIO", 18, 42);
@@ -137,9 +133,9 @@ pub fn local_config() -> Result<ChainSpec, String> {
 				// Initial PoA authorities
 				vec![
 					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					authority_keys_from_seed("Alice", 50_000 * OCTS),
+					authority_keys_from_seed("Alice", 50_000 * DBIO),
 					// 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
-					authority_keys_from_seed("Bob", 50_000 * OCTS),
+					authority_keys_from_seed("Bob", 50_000 * DBIO),
 				],
 				// Pre-funded accounts
 				vec![
@@ -212,7 +208,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				// Initial PoA authorities
 				vec![
 					// 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					authority_keys_from_seed("Alice", 50_000 * OCTS),
+					authority_keys_from_seed("Alice", 50_000 * DBIO),
 				],
 				// Pre-funded accounts
 				vec![(
@@ -304,13 +300,17 @@ fn genesis(
 		grandpa: Default::default(),
 		beefy: Default::default(),
 		im_online: Default::default(),
+		transaction_payment: Default::default(),
 		octopus_appchain: OctopusAppchainConfig {
 			anchor_contract: appchain_config.0,
-			asset_id_by_token_id: vec![(appchain_config.1, 0)],
-			premined_amount: appchain_config.2,
 			validators: initial_authorities.iter().map(|x| (x.0.clone(), x.6)).collect(),
 		},
+		octopus_bridge: OctopusBridgeConfig {
+			asset_id_by_token_id: vec![(appchain_config.1, 0)],
+			premined_amount: appchain_config.2,
+		},
 		octopus_lpos: OctopusLposConfig { era_payout: appchain_config.3, ..Default::default() },
+		octopus_upward_messages: OctopusUpwardMessagesConfig { interval: 1 },
 		octopus_assets: Default::default(),
 		sudo: SudoConfig { key: Some(root_key) },
 		labs: LabsConfig { lab_verifier_key: Some(api_admin_key.clone()) },

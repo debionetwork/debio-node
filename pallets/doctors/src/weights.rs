@@ -26,71 +26,71 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for doctors.
-pub trait WeightInfo { 
-	fn register_doctor() -> Weight; 
-	fn update_doctor() -> Weight; 
-	fn deregister_doctor() -> Weight; 
+pub trait WeightInfo {
+	fn register_doctor() -> Weight;
+	fn update_doctor() -> Weight;
+	fn deregister_doctor() -> Weight;
 }
 
 /// Weights for doctors using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: Doctors Doctors (r:1 w:1) 
-	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1) 
-	// Storage: Doctors DoctorCount (r:1 w:1) 
-	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1) 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1) 
-	fn register_doctor() -> Weight { 
-		141_098_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: Doctors Doctors (r:1 w:1)
+	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1)
+	// Storage: Doctors DoctorCount (r:1 w:1)
+	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1)
+	fn register_doctor() -> Weight {
+		Weight::from_ref_time(141_098_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: Doctors Doctors (r:1 w:1) 
-	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2) 
-	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2) 
-	fn update_doctor() -> Weight { 
-		177_734_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+	// Storage: Doctors Doctors (r:1 w:1)
+	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2)
+	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2)
+	fn update_doctor() -> Weight {
+		Weight::from_ref_time(177_734_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: Doctors Doctors (r:1 w:1) 
-	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1) 
-	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1) 
-	// Storage: Doctors DoctorCount (r:1 w:1) 
-	fn deregister_doctor() -> Weight { 
-		130_303_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: Doctors Doctors (r:1 w:1)
+	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1)
+	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
+	// Storage: Doctors DoctorCount (r:1 w:1)
+	fn deregister_doctor() -> Weight {
+		Weight::from_ref_time(130_303_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: Doctors Doctors (r:1 w:1) 
-	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1) 
-	// Storage: Doctors DoctorCount (r:1 w:1) 
-	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1) 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1) 
-	fn register_doctor() -> Weight { 
-		141_098_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: Doctors Doctors (r:1 w:1) 
-	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2) 
-	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2) 
-	fn update_doctor() -> Weight { 
-		177_734_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: Doctors Doctors (r:1 w:1) 
-	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1) 
-	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1) 
-	// Storage: Doctors DoctorCount (r:1 w:1) 
-	fn deregister_doctor() -> Weight { 
-		130_303_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: Doctors Doctors (r:1 w:1)
+	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1)
+	// Storage: Doctors DoctorCount (r:1 w:1)
+	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1)
+	fn register_doctor() -> Weight {
+		Weight::from_ref_time(141_098_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: Doctors Doctors (r:1 w:1)
+	// Storage: Doctors DoctorsByCountryRegionCity (r:2 w:2)
+	// Storage: Doctors DoctorCountByCountryRegionCity (r:2 w:2)
+	fn update_doctor() -> Weight {
+		Weight::from_ref_time(177_734_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: Doctors Doctors (r:1 w:1)
+	// Storage: Doctors DoctorsByCountryRegionCity (r:1 w:1)
+	// Storage: Doctors DoctorCountByCountryRegionCity (r:1 w:1)
+	// Storage: Doctors DoctorCount (r:1 w:1)
+	fn deregister_doctor() -> Weight {
+		Weight::from_ref_time(130_303_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
 }

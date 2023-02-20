@@ -17,7 +17,7 @@ mod tests {
 	fn create_hospital_certification_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -32,7 +32,7 @@ mod tests {
 			));
 
 			assert_ok!(HospitalCertifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalCertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -69,7 +69,7 @@ mod tests {
 	fn update_hospital_certification_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -84,7 +84,7 @@ mod tests {
 			));
 
 			assert_ok!(HospitalCertifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalCertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -98,7 +98,7 @@ mod tests {
 			let hospital = Hospitals::hospital_by_account_id(1).unwrap();
 
 			assert_ok!(HospitalCertifications::update_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				hospital.certifications[0],
 				HospitalCertificationInfo {
 					title: "DeBio title 2".as_bytes().to_vec(),
@@ -134,7 +134,7 @@ mod tests {
 	fn delete_hospital_certification_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -149,7 +149,7 @@ mod tests {
 			));
 
 			assert_ok!(HospitalCertifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalCertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -163,7 +163,7 @@ mod tests {
 			let hospital = Hospitals::hospital_by_account_id(1).unwrap();
 
 			assert_ok!(HospitalCertifications::delete_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				hospital.certifications[0]
 			));
 
@@ -176,7 +176,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				HospitalCertifications::create_certification(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					HospitalCertificationInfo {
 						title: "DeBio title".as_bytes().to_vec(),
 						issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -195,7 +195,7 @@ mod tests {
 	fn update_hospital_certification_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -211,7 +211,7 @@ mod tests {
 
 			assert_noop!(
 				HospitalCertifications::update_certification(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					HospitalCertificationInfo {
 						title: "DeBio title 2".as_bytes().to_vec(),
@@ -231,7 +231,7 @@ mod tests {
 	fn update_hospital_certification_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -246,7 +246,7 @@ mod tests {
 			));
 
 			assert_ok!(HospitalCertifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalCertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -261,7 +261,7 @@ mod tests {
 
 			assert_noop!(
 				HospitalCertifications::update_certification(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					hospital.certifications[0],
 					HospitalCertificationInfo {
 						title: "DeBio title 2".as_bytes().to_vec(),
@@ -281,7 +281,7 @@ mod tests {
 	fn delete_hospital_certification_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -297,7 +297,7 @@ mod tests {
 
 			assert_noop!(
 				HospitalCertifications::delete_certification(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 				),
 				Error::<Test>::HospitalCertificationDoesNotExist
@@ -309,7 +309,7 @@ mod tests {
 	fn delete_hospital_certification_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -324,7 +324,7 @@ mod tests {
 			));
 
 			assert_ok!(HospitalCertifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalCertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -339,7 +339,7 @@ mod tests {
 
 			assert_noop!(
 				HospitalCertifications::delete_certification(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					hospital.certifications[0]
 				),
 				Error::<Test>::NotHospitalCertificationOwner

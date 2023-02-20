@@ -19,7 +19,7 @@ use primitives_area_code::{CityCode, CountryCode, RegionCode};
 benchmarks! {
 	create_certification {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -49,7 +49,7 @@ benchmarks! {
 
 	update_certification {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -91,7 +91,7 @@ benchmarks! {
 
 	delete_certification {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let lab = LabInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),

@@ -20,7 +20,7 @@ fn create_request_works() {
 		let customer = account_key("customer");
 
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -78,7 +78,7 @@ fn unstake_works() {
 		let customer = account_key("customer");
 
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -88,7 +88,7 @@ fn unstake_works() {
 
 		let request_id = ServiceRequest::request_by_account_id(customer)[0];
 
-		assert_ok!(ServiceRequest::unstake(Origin::signed(customer), request_id));
+		assert_ok!(ServiceRequest::unstake(RuntimeOrigin::signed(customer), request_id));
 
 		assert_eq!(
 			ServiceRequest::request_by_id(request_id),
@@ -118,7 +118,7 @@ fn retrieve_unstake_works() {
 		let customer = account_key("customer");
 
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -128,11 +128,14 @@ fn retrieve_unstake_works() {
 
 		let request_id = ServiceRequest::request_by_account_id(customer)[0];
 
-		assert_ok!(ServiceRequest::unstake(Origin::signed(customer), request_id));
+		assert_ok!(ServiceRequest::unstake(RuntimeOrigin::signed(customer), request_id));
 
 		Now::<Test>::put(10);
 
-		assert_ok!(ServiceRequest::retrieve_unstaked_amount(Origin::signed(customer), request_id));
+		assert_ok!(ServiceRequest::retrieve_unstaked_amount(
+			RuntimeOrigin::signed(customer),
+			request_id
+		));
 
 		assert_eq!(
 			ServiceRequest::request_by_id(request_id),
@@ -170,7 +173,7 @@ fn claim_request_works() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -182,7 +185,7 @@ fn claim_request_works() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -204,7 +207,7 @@ fn claim_request_works() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -217,7 +220,7 @@ fn claim_request_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -235,7 +238,11 @@ fn claim_request_works() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_eq!(
 			ServiceRequest::request_by_id(request_id),
@@ -268,7 +275,7 @@ fn process_request_works() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -280,7 +287,7 @@ fn process_request_works() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -300,7 +307,7 @@ fn process_request_works() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -313,7 +320,7 @@ fn process_request_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -331,10 +338,14 @@ fn process_request_works() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -344,9 +355,11 @@ fn process_request_works() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		assert_eq!(
 			ServiceRequest::request_by_id(request_id),
@@ -384,7 +397,7 @@ fn finalize_request_works() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -396,7 +409,7 @@ fn finalize_request_works() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -416,7 +429,7 @@ fn finalize_request_works() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -429,7 +442,7 @@ fn finalize_request_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -447,10 +460,14 @@ fn finalize_request_works() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -460,18 +477,20 @@ fn finalize_request_works() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_eq!(Balances::free_balance(customer), 180);
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -481,16 +500,16 @@ fn finalize_request_works() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), order_id));
 
-		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
+		assert_ok!(ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id));
 
 		assert_eq!(
 			ServiceRequest::request_by_id(request_id),
@@ -538,7 +557,7 @@ fn cant_create_request_when_stacking_amount_zero() {
 
 		assert_noop!(
 			ServiceRequest::create_request(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				String::from("Indonesia").into_bytes(),
 				String::from("West Java").into_bytes(),
 				String::from("Bogor").into_bytes(),
@@ -557,7 +576,7 @@ fn cant_create_request_when_balance_not_enough() {
 
 		assert_noop!(
 			ServiceRequest::create_request(
-				Origin::signed(other),
+				RuntimeOrigin::signed(other),
 				String::from("Indonesia").into_bytes(),
 				String::from("West Java").into_bytes(),
 				String::from("Bogor").into_bytes(),
@@ -578,7 +597,7 @@ fn cant_retrive_unstake_amount_unstake_claim_process_and_finalize_request_when_n
 
 		assert_noop!(
 			ServiceRequest::unstake(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				Keccak256::hash("request_id".as_bytes())
 			),
 			Error::<Test>::RequestNotFound
@@ -586,7 +605,7 @@ fn cant_retrive_unstake_amount_unstake_claim_process_and_finalize_request_when_n
 
 		assert_noop!(
 			ServiceRequest::claim_request(
-				Origin::signed(lab),
+				RuntimeOrigin::signed(lab),
 				Keccak256::hash("request_id".as_bytes()),
 				Keccak256::hash("service_id".as_bytes()),
 			),
@@ -595,7 +614,7 @@ fn cant_retrive_unstake_amount_unstake_claim_process_and_finalize_request_when_n
 
 		assert_noop!(
 			ServiceRequest::process_request(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				Keccak256::hash("request_id".as_bytes()),
 				Keccak256::hash("order_id".as_bytes()),
 			),
@@ -606,7 +625,7 @@ fn cant_retrive_unstake_amount_unstake_claim_process_and_finalize_request_when_n
 
 		assert_noop!(
 			ServiceRequest::retrieve_unstaked_amount(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				Keccak256::hash("request_id".as_bytes())
 			),
 			Error::<Test>::RequestNotFound,
@@ -614,7 +633,7 @@ fn cant_retrive_unstake_amount_unstake_claim_process_and_finalize_request_when_n
 
 		assert_noop!(
 			ServiceRequest::finalize_request(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				Keccak256::hash("request_id".as_bytes()),
 			),
 			Error::<Test>::RequestNotFound,
@@ -630,7 +649,7 @@ fn cant_claim_and_process_request_when_already_unstaked() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -640,11 +659,11 @@ fn cant_claim_and_process_request_when_already_unstaked() {
 
 		let request_id = ServiceRequest::request_by_account_id(customer)[0];
 
-		assert_ok!(ServiceRequest::unstake(Origin::signed(customer), request_id));
+		assert_ok!(ServiceRequest::unstake(RuntimeOrigin::signed(customer), request_id));
 
 		assert_noop!(
 			ServiceRequest::claim_request(
-				Origin::signed(lab),
+				RuntimeOrigin::signed(lab),
 				request_id,
 				Keccak256::hash("service_id".as_bytes()),
 			),
@@ -653,7 +672,7 @@ fn cant_claim_and_process_request_when_already_unstaked() {
 
 		assert_noop!(
 			ServiceRequest::process_request(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 			),
@@ -671,7 +690,7 @@ fn cant_claim_request_when_already_claimed() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -683,7 +702,7 @@ fn cant_claim_request_when_already_claimed() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -705,7 +724,7 @@ fn cant_claim_request_when_already_claimed() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -718,7 +737,7 @@ fn cant_claim_request_when_already_claimed() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -736,10 +755,14 @@ fn cant_claim_request_when_already_claimed() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_noop!(
-			ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,),
+			ServiceRequest::claim_request(RuntimeOrigin::signed(lab), request_id, service_id,),
 			Error::<Test>::RequestAlreadyClaimed
 		);
 	})
@@ -759,7 +782,7 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -771,7 +794,7 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -793,7 +816,7 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -806,7 +829,7 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -824,10 +847,14 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -837,21 +864,23 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		assert_noop!(
-			ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,),
+			ServiceRequest::claim_request(RuntimeOrigin::signed(lab), request_id, service_id,),
 			Error::<Test>::RequestUnableToClaimed
 		);
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -861,19 +890,19 @@ fn cant_claim_request_when_already_processed_or_finalized() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), order_id));
 
-		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
+		assert_ok!(ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id));
 
 		assert_noop!(
-			ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id),
+			ServiceRequest::claim_request(RuntimeOrigin::signed(lab), request_id, service_id),
 			Error::<Test>::RequestUnableToClaimed
 		);
 	})
@@ -889,7 +918,7 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -901,7 +930,7 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 
 		assert_noop!(
 			ServiceRequest::claim_request(
-				Origin::signed(lab),
+				RuntimeOrigin::signed(lab),
 				request_id,
 				Keccak256::hash("service_id".as_bytes()),
 			),
@@ -910,7 +939,7 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -930,7 +959,7 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -943,7 +972,7 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -961,10 +990,14 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -974,12 +1007,14 @@ fn cant_claim_and_finalize_request_when_lab_not_exists() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		assert_noop!(
-			ServiceRequest::finalize_request(Origin::signed(other_lab), request_id),
+			ServiceRequest::finalize_request(RuntimeOrigin::signed(other_lab), request_id),
 			Error::<Test>::LabNotFound,
 		);
 	})
@@ -994,7 +1029,7 @@ fn cant_claim_request_when_service_not_exists() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1006,7 +1041,7 @@ fn cant_claim_request_when_service_not_exists() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1028,14 +1063,14 @@ fn cant_claim_request_when_service_not_exists() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
 
 		assert_noop!(
 			ServiceRequest::claim_request(
-				Origin::signed(lab),
+				RuntimeOrigin::signed(lab),
 				request_id,
 				Keccak256::hash("service_id".as_bytes()),
 			),
@@ -1054,7 +1089,7 @@ fn cant_claim_request_when_not_service_owner() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1066,7 +1101,7 @@ fn cant_claim_request_when_not_service_owner() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1087,7 +1122,7 @@ fn cant_claim_request_when_not_service_owner() {
 
 		// Register other lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(other_lab),
+			RuntimeOrigin::signed(other_lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1109,7 +1144,7 @@ fn cant_claim_request_when_not_service_owner() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1122,7 +1157,7 @@ fn cant_claim_request_when_not_service_owner() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1141,7 +1176,7 @@ fn cant_claim_request_when_not_service_owner() {
 		let service_id = _lab.services[0];
 
 		assert_noop!(
-			ServiceRequest::claim_request(Origin::signed(other_lab), request_id, service_id),
+			ServiceRequest::claim_request(RuntimeOrigin::signed(other_lab), request_id, service_id),
 			Error::<Test>::Unauthorized,
 		);
 	})
@@ -1157,7 +1192,7 @@ fn cant_process_request_when_unathorized_customer() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1169,7 +1204,7 @@ fn cant_process_request_when_unathorized_customer() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1189,7 +1224,7 @@ fn cant_process_request_when_unathorized_customer() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1202,7 +1237,7 @@ fn cant_process_request_when_unathorized_customer() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1220,11 +1255,15 @@ fn cant_process_request_when_unathorized_customer() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_noop!(
 			ServiceRequest::process_request(
-				Origin::signed(other_customer),
+				RuntimeOrigin::signed(other_customer),
 				request_id,
 				Keccak256::hash("order_id".as_bytes()),
 			),
@@ -1242,7 +1281,7 @@ fn cant_process_request_when_order_not_found() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1254,7 +1293,7 @@ fn cant_process_request_when_order_not_found() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1274,7 +1313,7 @@ fn cant_process_request_when_order_not_found() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1287,7 +1326,7 @@ fn cant_process_request_when_order_not_found() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1305,11 +1344,15 @@ fn cant_process_request_when_order_not_found() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_noop!(
 			ServiceRequest::process_request(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				request_id,
 				Keccak256::hash("order_id".as_bytes())
 			),
@@ -1332,7 +1375,7 @@ fn cant_process_request_when_order_fullfilled() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1344,7 +1387,7 @@ fn cant_process_request_when_order_fullfilled() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1364,7 +1407,7 @@ fn cant_process_request_when_order_fullfilled() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1377,7 +1420,7 @@ fn cant_process_request_when_order_fullfilled() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1395,10 +1438,14 @@ fn cant_process_request_when_order_fullfilled() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1408,18 +1455,20 @@ fn cant_process_request_when_order_fullfilled() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_eq!(Balances::free_balance(customer), 180);
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -1429,19 +1478,19 @@ fn cant_process_request_when_order_fullfilled() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), order_id));
 
-		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
+		assert_ok!(ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id));
 
 		assert_noop!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id),
+			ServiceRequest::process_request(RuntimeOrigin::signed(customer), request_id, order_id),
 			Error::<Test>::RequestUnableToProccess,
 		);
 	})
@@ -1457,7 +1506,7 @@ fn cant_process_request_when_order_from_other_lab() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1469,7 +1518,7 @@ fn cant_process_request_when_order_from_other_lab() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1488,7 +1537,7 @@ fn cant_process_request_when_order_from_other_lab() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(other_lab),
+			RuntimeOrigin::signed(other_lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1508,7 +1557,7 @@ fn cant_process_request_when_order_from_other_lab() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1521,7 +1570,7 @@ fn cant_process_request_when_order_from_other_lab() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -1537,7 +1586,7 @@ fn cant_process_request_when_order_from_other_lab() {
 		));
 
 		assert_ok!(Services::create_service(
-			Origin::signed(other_lab),
+			RuntimeOrigin::signed(other_lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1558,10 +1607,14 @@ fn cant_process_request_when_order_from_other_lab() {
 		let _other_lab = Labs::lab_by_account_id(other_lab).unwrap();
 		let other_service_id = _other_lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			other_service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1572,7 +1625,7 @@ fn cant_process_request_when_order_from_other_lab() {
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
 		assert_noop!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id),
+			ServiceRequest::process_request(RuntimeOrigin::signed(customer), request_id, order_id),
 			Error::<Test>::RequestUnableToProccess
 		);
 	})
@@ -1588,7 +1641,7 @@ fn cant_process_request_when_order_not_customer() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1600,7 +1653,7 @@ fn cant_process_request_when_order_not_customer() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1620,7 +1673,7 @@ fn cant_process_request_when_order_not_customer() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1633,7 +1686,7 @@ fn cant_process_request_when_order_not_customer() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1651,10 +1704,14 @@ fn cant_process_request_when_order_not_customer() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(other_customer),
+			RuntimeOrigin::signed(other_customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1665,7 +1722,7 @@ fn cant_process_request_when_order_not_customer() {
 		let order_id = Orders::last_order_by_customer_id(other_customer).unwrap();
 
 		assert_noop!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id),
+			ServiceRequest::process_request(RuntimeOrigin::signed(customer), request_id, order_id),
 			Error::<Test>::RequestUnableToProccess
 		);
 	})
@@ -1680,7 +1737,7 @@ fn cant_process_request_when_order_from_wrong_service() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1692,7 +1749,7 @@ fn cant_process_request_when_order_from_wrong_service() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1712,7 +1769,7 @@ fn cant_process_request_when_order_from_wrong_service() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1725,7 +1782,7 @@ fn cant_process_request_when_order_from_wrong_service() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -1741,7 +1798,7 @@ fn cant_process_request_when_order_from_wrong_service() {
 		));
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1760,10 +1817,14 @@ fn cant_process_request_when_order_from_wrong_service() {
 		let service_id = _lab.services[0];
 		let other_service_id = _lab.services[1];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			other_service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1774,7 +1835,7 @@ fn cant_process_request_when_order_from_wrong_service() {
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
 		assert_noop!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id),
+			ServiceRequest::process_request(RuntimeOrigin::signed(customer), request_id, order_id),
 			Error::<Test>::RequestUnableToProccess
 		);
 	})
@@ -1794,7 +1855,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1806,7 +1867,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -1826,7 +1887,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -1839,7 +1900,7 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1857,10 +1918,14 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1870,23 +1935,25 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		assert_noop!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,),
+			ServiceRequest::process_request(RuntimeOrigin::signed(customer), request_id, order_id,),
 			Error::<Test>::RequestUnableToProccess
 		);
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_eq!(Balances::free_balance(customer), 180);
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -1896,19 +1963,19 @@ fn cant_process_request_when_request_is_on_processed_or_finalized() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), order_id));
 
-		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
+		assert_ok!(ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id));
 
 		assert_noop!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,),
+			ServiceRequest::process_request(RuntimeOrigin::signed(customer), request_id, order_id,),
 			Error::<Test>::RequestUnableToProccess
 		);
 	})
@@ -1923,7 +1990,7 @@ fn cant_retrieve_unstake_when_not_unauthorized() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1935,7 +2002,7 @@ fn cant_retrieve_unstake_when_not_unauthorized() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1955,7 +2022,7 @@ fn cant_retrieve_unstake_when_not_unauthorized() {
 		));
 
 		assert_noop!(
-			ServiceRequest::retrieve_unstaked_amount(Origin::signed(admin), request_id),
+			ServiceRequest::retrieve_unstaked_amount(RuntimeOrigin::signed(admin), request_id),
 			Error::<Test>::Unauthorized
 		);
 	})
@@ -1969,7 +2036,7 @@ fn cant_retrieve_unstake_when_not_unstaked() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -1981,7 +2048,7 @@ fn cant_retrieve_unstake_when_not_unstaked() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -2001,7 +2068,7 @@ fn cant_retrieve_unstake_when_not_unstaked() {
 		));
 
 		assert_noop!(
-			ServiceRequest::retrieve_unstaked_amount(Origin::signed(customer), request_id,),
+			ServiceRequest::retrieve_unstaked_amount(RuntimeOrigin::signed(customer), request_id,),
 			Error::<Test>::RequestUnableToRetrieveUnstake
 		);
 	})
@@ -2013,7 +2080,7 @@ fn cant_retrieve_unstake_when_unstaked_periode_not_fulfilled() {
 		let customer = account_key("customer");
 
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -2023,10 +2090,10 @@ fn cant_retrieve_unstake_when_unstaked_periode_not_fulfilled() {
 
 		let request_id = ServiceRequest::request_by_account_id(customer)[0];
 
-		assert_ok!(ServiceRequest::unstake(Origin::signed(customer), request_id));
+		assert_ok!(ServiceRequest::unstake(RuntimeOrigin::signed(customer), request_id));
 
 		assert_noop!(
-			ServiceRequest::retrieve_unstaked_amount(Origin::signed(customer), request_id),
+			ServiceRequest::retrieve_unstaked_amount(RuntimeOrigin::signed(customer), request_id),
 			Error::<Test>::RequestWaitingForUnstaked,
 		);
 	})
@@ -2046,7 +2113,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -2058,7 +2125,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -2078,7 +2145,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -2091,7 +2158,7 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -2109,10 +2176,14 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -2122,18 +2193,20 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_eq!(Balances::free_balance(customer), 180);
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -2143,19 +2216,19 @@ fn cant_finalize_requst_when_request_is_not_on_processed() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), order_id));
 
-		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
+		assert_ok!(ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id));
 
 		assert_noop!(
-			ServiceRequest::finalize_request(Origin::signed(lab), request_id),
+			ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id),
 			Error::<Test>::RequestUnableToFinalize
 		);
 	})
@@ -2173,7 +2246,7 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -2185,7 +2258,7 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -2205,7 +2278,7 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -2218,7 +2291,7 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -2236,10 +2309,14 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -2249,18 +2326,20 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_eq!(Balances::free_balance(customer), 180);
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -2270,7 +2349,7 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
@@ -2278,7 +2357,7 @@ fn cant_finalize_request_when_order_not_fullfilled() {
 		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
-			ServiceRequest::finalize_request(Origin::signed(lab), request_id),
+			ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id),
 			Error::<Test>::RequestUnableToFinalize,
 		);
 	})
@@ -2300,7 +2379,7 @@ fn call_event_should_work() {
 
 		// Customer create request
 		assert_ok!(ServiceRequest::create_request(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			String::from("Indonesia").into_bytes(),
 			String::from("West Java").into_bytes(),
 			String::from("Bogor").into_bytes(),
@@ -2310,29 +2389,31 @@ fn call_event_should_work() {
 
 		let request_id = ServiceRequest::request_by_account_id(customer)[0];
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestCreated(
-			customer,
-			Request {
-				hash: request_id,
-				requester_address: customer,
-				lab_address: None,
-				service_id: None,
-				order_id: None,
-				country: String::from("Indonesia").into_bytes(),
-				region: String::from("West Java").into_bytes(),
-				city: String::from("Bogor").into_bytes(),
-				service_category: String::from("Vaksin").into_bytes(),
-				staking_amount: 10,
-				status: RequestStatus::Open,
-				created_at: 0,
-				updated_at: None,
-				unstaked_at: None,
-			},
-		)));
+		System::assert_last_event(RuntimeEvent::ServiceRequest(
+			crate::Event::ServiceRequestCreated(
+				customer,
+				Request {
+					hash: request_id,
+					requester_address: customer,
+					lab_address: None,
+					service_id: None,
+					order_id: None,
+					country: String::from("Indonesia").into_bytes(),
+					region: String::from("West Java").into_bytes(),
+					city: String::from("Bogor").into_bytes(),
+					service_category: String::from("Vaksin").into_bytes(),
+					staking_amount: 10,
+					status: RequestStatus::Open,
+					created_at: 0,
+					updated_at: None,
+					unstaked_at: None,
+				},
+			),
+		));
 
 		// Register lab
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash("box_public_key".as_bytes()),
 				name: "DeBio Lab".as_bytes().to_vec(),
@@ -2352,7 +2433,7 @@ fn call_event_should_work() {
 		LabVerifierKey::<Test>::put(admin);
 
 		assert_ok!(Labs::update_lab_verification_status(
-			Origin::signed(admin),
+			RuntimeOrigin::signed(admin),
 			lab,
 			VerificationStatus::Verified
 		));
@@ -2365,7 +2446,7 @@ fn call_event_should_work() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio service name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -2383,18 +2464,20 @@ fn call_event_should_work() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 		let service_id = _lab.services[0];
 
-		assert_ok!(ServiceRequest::claim_request(Origin::signed(lab), request_id, service_id,));
+		assert_ok!(ServiceRequest::claim_request(
+			RuntimeOrigin::signed(lab),
+			request_id,
+			service_id,
+		));
 
 		let request = ServiceRequest::request_by_id(request_id);
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestUpdated(
-			request_id,
-			RequestStatus::Claimed,
-			request,
-		)));
+		System::assert_last_event(RuntimeEvent::ServiceRequest(
+			crate::Event::ServiceRequestUpdated(request_id, RequestStatus::Claimed, request),
+		));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			service_id,
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -2404,26 +2487,26 @@ fn call_event_should_work() {
 
 		let order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(
-			ServiceRequest::process_request(Origin::signed(customer), request_id, order_id,)
-		);
+		assert_ok!(ServiceRequest::process_request(
+			RuntimeOrigin::signed(customer),
+			request_id,
+			order_id,
+		));
 
 		let request = ServiceRequest::request_by_id(request_id);
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestUpdated(
-			request_id,
-			RequestStatus::Processed,
-			request,
-		)));
+		System::assert_last_event(RuntimeEvent::ServiceRequest(
+			crate::Event::ServiceRequestUpdated(request_id, RequestStatus::Processed, request),
+		));
 
 		let dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), order_id));
 
 		assert_eq!(Balances::free_balance(customer), 180);
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -2433,24 +2516,22 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), order_id));
 
-		assert_ok!(ServiceRequest::finalize_request(Origin::signed(lab), request_id));
+		assert_ok!(ServiceRequest::finalize_request(RuntimeOrigin::signed(lab), request_id));
 
 		let request = ServiceRequest::request_by_id(request_id);
 
-		System::assert_last_event(Event::ServiceRequest(crate::Event::ServiceRequestUpdated(
-			request_id,
-			RequestStatus::Finalized,
-			request,
-		)));
+		System::assert_last_event(RuntimeEvent::ServiceRequest(
+			crate::Event::ServiceRequestUpdated(request_id, RequestStatus::Finalized, request),
+		));
 	})
 }
 
@@ -2464,7 +2545,7 @@ fn update_admin_key_works() {
 
 		assert_eq!(ServiceRequest::admin_key(), Some(admin));
 
-		assert_ok!(ServiceRequest::update_admin_key(Origin::root(), other_admin));
+		assert_ok!(ServiceRequest::update_admin_key(RuntimeOrigin::root(), other_admin));
 
 		assert_eq!(ServiceRequest::admin_key(), Some(other_admin));
 	})

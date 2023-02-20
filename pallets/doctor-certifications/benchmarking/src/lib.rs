@@ -22,7 +22,7 @@ use primitives_area_code::{CityCode, CountryCode, RegionCode};
 benchmarks! {
 	create_certification {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let doctor = DoctorInfo {
 			name: "DeBio Doctor".as_bytes().to_vec(),
@@ -49,7 +49,7 @@ benchmarks! {
 
 	update_certification {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let doctor = DoctorInfo {
 			name: "DeBio Doctor".as_bytes().to_vec(),
@@ -88,7 +88,7 @@ benchmarks! {
 
 	delete_certification {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let doctor = DoctorInfo {
 			name: "DeBio Doctor".as_bytes().to_vec(),

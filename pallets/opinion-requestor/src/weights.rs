@@ -26,50 +26,50 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for opinion_requestor_benchmarking.
-pub trait WeightInfo { 
-	fn request_opinion() -> Weight; 
-	fn update_requestor_info() -> Weight; 
+pub trait WeightInfo {
+	fn request_opinion() -> Weight;
+	fn update_requestor_info() -> Weight;
 }
 
 /// Weights for opinion_requestor_benchmarking using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: OpinionRequestor OpinionRequestorCount (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: OpinionRequestor OpinionRequestorByOwner (r:1 w:1) 
-	// Storage: OpinionRequestor OpinionRequestorCountByOwner (r:1 w:1) 
-	// Storage: OpinionRequestor OpinionRequestors (r:0 w:1) 
-	fn request_opinion() -> Weight { 
-		75_300_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: OpinionRequestor OpinionRequestorCount (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: OpinionRequestor OpinionRequestorByOwner (r:1 w:1)
+	// Storage: OpinionRequestor OpinionRequestorCountByOwner (r:1 w:1)
+	// Storage: OpinionRequestor OpinionRequestors (r:0 w:1)
+	fn request_opinion() -> Weight {
+		Weight::from_ref_time(75_300_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1) 
-	fn update_requestor_info() -> Weight { 
-		95_400_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1)
+	fn update_requestor_info() -> Weight {
+		Weight::from_ref_time(95_400_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: OpinionRequestor OpinionRequestorCount (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: OpinionRequestor OpinionRequestorByOwner (r:1 w:1) 
-	// Storage: OpinionRequestor OpinionRequestorCountByOwner (r:1 w:1) 
-	// Storage: OpinionRequestor OpinionRequestors (r:0 w:1) 
-	fn request_opinion() -> Weight { 
-		75_300_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1) 
-	fn update_requestor_info() -> Weight { 
-		95_400_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: OpinionRequestor OpinionRequestorCount (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: OpinionRequestor OpinionRequestorByOwner (r:1 w:1)
+	// Storage: OpinionRequestor OpinionRequestorCountByOwner (r:1 w:1)
+	// Storage: OpinionRequestor OpinionRequestors (r:0 w:1)
+	fn request_opinion() -> Weight {
+		Weight::from_ref_time(75_300_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1)
+	fn update_requestor_info() -> Weight {
+		Weight::from_ref_time(95_400_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

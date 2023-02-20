@@ -28,7 +28,7 @@ benchmarks! {
 
 	update_hospital {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_hospital = HospitalInfo {
 			name: "DeBio Hospital".as_bytes().to_vec(),
@@ -61,7 +61,7 @@ benchmarks! {
 
 	deregister_hospital {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let hospital = HospitalInfo {
 			name: "DeBio Hospital".as_bytes().to_vec(),

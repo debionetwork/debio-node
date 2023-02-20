@@ -7,7 +7,7 @@ use frame_support::{
 use sp_std::vec::Vec;
 
 pub fn migrate<T: Config>() -> Weight {
-	let mut weight: Weight = 0;
+	let mut weight: Weight = Weight::zero();
 	let mut version = StorageVersion::get::<Pallet<T>>();
 
 	if version < 1 {

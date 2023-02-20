@@ -19,17 +19,17 @@ frame_support::construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
-		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
-		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
-		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
+		System: frame_system,
+		Balances: pallet_balances,
+		GeneticData: genetic_data,
+		GeneticAnalysts: genetic_analysts,
+		GeneticAnalystServices: genetic_analyst_services,
+		GeneticAnalysisOrders: genetic_analysis_orders,
+		GeneticAnalystQualifications: genetic_analyst_qualifications,
+		UserProfile: user_profile,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip,
+		GeneticAnalysis: genetic_analysis,
+		Assets: pallet_assets,
 	}
 );
 
@@ -43,15 +43,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = sp_core::H256;
 	type Hashing = ::sp_runtime::traits::BlakeTwo256;
 	type Header = sp_runtime::testing::Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -76,7 +76,7 @@ impl pallet_balances::Config for Test {
 	type MaxReserves = ();
 	type ReserveIdentifier = [u8; 8];
 	type Balance = Balance;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
@@ -95,7 +95,7 @@ parameter_types! {
 }
 
 impl pallet_assets::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Balance = AssetBalance;
 	type AssetId = AssetId;
 	type Currency = Balances;
@@ -132,19 +132,19 @@ impl pallet_timestamp::Config for Test {
 impl pallet_randomness_collective_flip::Config for Test {}
 
 impl genetic_data::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type GeneticDataWeightInfo = ();
 }
 
 impl genetic_analysis::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type RandomnessSource = RandomnessCollectiveFlip;
 	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalysisWeightInfo = ();
 }
 
 impl genetic_analysis_orders::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type Assets = Assets;
 	type GeneticData = GeneticData;
@@ -156,14 +156,14 @@ impl genetic_analysis_orders::Config for Test {
 }
 
 impl genetic_analyst_services::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type GeneticAnalystServiceOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
 impl genetic_analysts::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
 	type GeneticAnalysisOrders = GeneticAnalysisOrders;
@@ -176,14 +176,14 @@ impl genetic_analysts::Config for Test {
 }
 
 impl user_profile::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 
 impl genetic_analyst_qualifications::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }

@@ -27,7 +27,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -45,17 +45,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -70,7 +70,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -79,7 +79,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -92,7 +92,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -100,7 +100,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::reject_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				"Reject DNA Title".as_bytes().to_vec(),
 				"Reject DNA Description".as_bytes().to_vec()
@@ -125,7 +125,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticAnalysis::reject_genetic_analysis(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					TrackingId::from_vec("xxxxxxxxxxxxxxxxxxxxx".as_bytes().to_vec()),
 					"Reject DNA Title".as_bytes().to_vec(),
 					"Reject DNA Description".as_bytes().to_vec()
@@ -139,7 +139,7 @@ mod tests {
 	fn cannot_reject_genetic_analysis_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -157,17 +157,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -182,7 +182,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -191,7 +191,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -205,7 +205,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysis::reject_genetic_analysis(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					_genetic_analysis[0].clone(),
 					"Reject DNA Title".as_bytes().to_vec(),
 					"Reject DNA Description".as_bytes().to_vec()
@@ -221,7 +221,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -239,17 +239,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -264,7 +264,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -273,7 +273,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -286,7 +286,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -294,7 +294,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				"Genetic Analysis report_link".as_bytes().to_vec(),
 				Some("Genetic Analysis comments".as_bytes().to_vec())
@@ -322,7 +322,7 @@ mod tests {
 			);
 
 			assert_ok!(GeneticAnalysis::process_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				GeneticAnalysisStatus::ResultReady
 			));
@@ -347,7 +347,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -365,17 +365,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -390,7 +390,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -399,7 +399,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -412,7 +412,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -420,7 +420,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::process_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				GeneticAnalysisStatus::InProgress
 			));
@@ -444,7 +444,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticAnalysis::process_genetic_analysis(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					TrackingId::from_vec("xxxxxxxxxxxxxxxxxxxxx".as_bytes().to_vec()),
 					GeneticAnalysisStatus::ResultReady
 				),
@@ -459,7 +459,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -477,17 +477,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -502,7 +502,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -511,7 +511,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -524,7 +524,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -532,7 +532,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				"Genetic Analysis report_link".as_bytes().to_vec(),
 				Some("Genetic Analysis comments".as_bytes().to_vec())
@@ -561,7 +561,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysis::process_genetic_analysis(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					_genetic_analysis[0].clone(),
 					GeneticAnalysisStatus::ResultReady
 				),
@@ -576,7 +576,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -594,17 +594,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -619,7 +619,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -628,7 +628,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -641,7 +641,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -650,7 +650,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysis::process_genetic_analysis(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					_genetic_analysis[0].clone(),
 					GeneticAnalysisStatus::ResultReady
 				),
@@ -665,7 +665,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -683,17 +683,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -708,7 +708,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -717,7 +717,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -730,7 +730,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -738,7 +738,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				"Genetic Analysis report_link".as_bytes().to_vec(),
 				Some("Genetic Analysis comments".as_bytes().to_vec())
@@ -771,7 +771,7 @@ mod tests {
 	fn cannot_submit_genetic_analysis_not_found() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -789,17 +789,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -814,7 +814,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -823,7 +823,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -834,7 +834,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysis::submit_genetic_analysis(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					TrackingId::from_vec("xxxxxxxxxxxxxxxxxxxxx".as_bytes().to_vec()),
 					"Genetic Analysis report_link".as_bytes().to_vec(),
 					Some("Genetic Analysis comments".as_bytes().to_vec())
@@ -848,7 +848,7 @@ mod tests {
 	fn cannot_submit_genetic_analysis_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -866,17 +866,17 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -891,7 +891,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -900,7 +900,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -914,7 +914,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysis::submit_genetic_analysis(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					_genetic_analysis[0].clone(),
 					"Genetic Analysis report_link".as_bytes().to_vec(),
 					Some("Genetic Analysis comments".as_bytes().to_vec())

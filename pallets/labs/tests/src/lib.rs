@@ -33,7 +33,7 @@ mod tests {
 	fn register_lab_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -101,7 +101,7 @@ mod tests {
 	fn update_lab_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -121,7 +121,7 @@ mod tests {
 			));
 
 			assert_ok!(Labs::update_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -174,7 +174,7 @@ mod tests {
 			let old_city_code = CityCode::from_vec("CITY".as_bytes().to_vec());
 
 			assert_ok!(Labs::update_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -250,7 +250,7 @@ mod tests {
 	fn update_lab_verification_status_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -272,7 +272,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::update_lab_verification_status(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				1,
 				VerificationStatus::Verified,
 			));
@@ -313,7 +313,7 @@ mod tests {
 	fn deregister_lab_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -335,7 +335,7 @@ mod tests {
 			let country_region_code = CountryRegionCode::from_vec("DC-DB".as_bytes().to_vec());
 			let city_code = CityCode::from_vec("CITY".as_bytes().to_vec());
 
-			assert_ok!(Labs::deregister_lab(Origin::signed(1)));
+			assert_ok!(Labs::deregister_lab(RuntimeOrigin::signed(1)));
 
 			assert_eq!(Labs::lab_by_account_id(1), None);
 
@@ -357,7 +357,7 @@ mod tests {
 	fn cant_register_lab_when_already_registered() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -378,7 +378,7 @@ mod tests {
 
 			assert_noop!(
 				Labs::register_lab(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					LabInfo {
 						box_public_key: Keccak256::hash(
 							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -407,7 +407,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(1);
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -428,7 +428,7 @@ mod tests {
 
 			assert_noop!(
 				Labs::update_lab_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Verified,
 				),
@@ -444,7 +444,7 @@ mod tests {
 
 			assert_noop!(
 				Labs::update_lab_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Verified,
 				),
@@ -458,7 +458,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				Labs::update_lab(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					LabInfo {
 						box_public_key: Keccak256::hash(
 							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -483,14 +483,17 @@ mod tests {
 
 			assert_noop!(
 				Labs::update_lab_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Verified
 				),
 				Error::<Test>::LabDoesNotExist
 			);
 
-			assert_noop!(Labs::deregister_lab(Origin::signed(1)), Error::<Test>::LabDoesNotExist);
+			assert_noop!(
+				Labs::deregister_lab(RuntimeOrigin::signed(1)),
+				Error::<Test>::LabDoesNotExist
+			);
 		})
 	}
 
@@ -499,7 +502,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			System::set_block_number(1);
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -518,7 +521,7 @@ mod tests {
 				}
 			));
 
-			System::assert_last_event(Event::Labs(EventC::LabRegistered(
+			System::assert_last_event(RuntimeEvent::Labs(EventC::LabRegistered(
 				Lab {
 					account_id: 1,
 					services: Vec::new(),
@@ -549,7 +552,7 @@ mod tests {
 			)));
 
 			assert_ok!(Labs::update_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -568,7 +571,7 @@ mod tests {
 				}
 			));
 
-			System::assert_last_event(Event::Labs(EventC::LabUpdated(
+			System::assert_last_event(RuntimeEvent::Labs(EventC::LabUpdated(
 				Lab {
 					account_id: 1,
 					services: Vec::new(),
@@ -601,12 +604,12 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::update_lab_verification_status(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				1,
 				VerificationStatus::Verified
 			));
 
-			System::assert_last_event(Event::Labs(EventC::LabUpdateVerificationStatus(
+			System::assert_last_event(RuntimeEvent::Labs(EventC::LabUpdateVerificationStatus(
 				Lab {
 					account_id: 1,
 					services: Vec::new(),
@@ -636,8 +639,8 @@ mod tests {
 				2,
 			)));
 
-			assert_ok!(Labs::deregister_lab(Origin::signed(1)));
-			System::assert_last_event(Event::Labs(EventC::LabDeregistered(
+			assert_ok!(Labs::deregister_lab(RuntimeOrigin::signed(1)));
+			System::assert_last_event(RuntimeEvent::Labs(EventC::LabDeregistered(
 				Lab {
 					account_id: 1,
 					services: Vec::new(),
@@ -684,12 +687,12 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				60000000000000000000000u128.saturated_into(),
 			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -708,7 +711,7 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -745,7 +748,10 @@ mod tests {
 	#[test]
 	fn cant_stake_lab_when_not_exist() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			assert_noop!(Labs::stake_lab(Origin::signed(1),), Error::<Test>::LabDoesNotExist);
+			assert_noop!(
+				Labs::stake_lab(RuntimeOrigin::signed(1),),
+				Error::<Test>::LabDoesNotExist
+			);
 		})
 	}
 
@@ -762,7 +768,7 @@ mod tests {
 			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -781,7 +787,7 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -813,7 +819,10 @@ mod tests {
 				})
 			);
 
-			assert_noop!(Labs::stake_lab(Origin::signed(1),), Error::<Test>::LabAlreadyStaked);
+			assert_noop!(
+				Labs::stake_lab(RuntimeOrigin::signed(1),),
+				Error::<Test>::LabAlreadyStaked
+			);
 		})
 	}
 
@@ -831,7 +840,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -850,11 +859,11 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -892,7 +901,7 @@ mod tests {
 	fn cant_stake_lab_when_insufficient_funds() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -911,7 +920,10 @@ mod tests {
 				}
 			));
 
-			assert_noop!(Labs::stake_lab(Origin::signed(1),), Error::<Test>::InsufficientFunds);
+			assert_noop!(
+				Labs::stake_lab(RuntimeOrigin::signed(1),),
+				Error::<Test>::InsufficientFunds
+			);
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -951,7 +963,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				60000000000000000000000u128.saturated_into(),
 			));
 
@@ -969,7 +981,7 @@ mod tests {
 
 			assert_noop!(
 				Labs::update_minimum_stake_amount(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					60000000000000000000000u128.saturated_into(),
 				),
 				Error::<Test>::Unauthorized
@@ -982,7 +994,10 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			LabVerifierKey::<Test>::put(2);
 
-			assert_ok!(Labs::update_unstake_time(Origin::signed(2), 1000u64.saturated_into(),));
+			assert_ok!(Labs::update_unstake_time(
+				RuntimeOrigin::signed(2),
+				1000u64.saturated_into(),
+			));
 
 			assert_eq!(Labs::unstake_time(), Some(1000u64.saturated_into()));
 		})
@@ -994,7 +1009,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(3);
 
 			assert_noop!(
-				Labs::update_unstake_time(Origin::signed(2), 1000u64.saturated_into(),),
+				Labs::update_unstake_time(RuntimeOrigin::signed(2), 1000u64.saturated_into(),),
 				Error::<Test>::Unauthorized
 			);
 		})
@@ -1007,7 +1022,7 @@ mod tests {
 
 			assert_eq!(Labs::admin_key(), Some(2));
 
-			assert_ok!(Labs::update_admin_key(Origin::signed(2), 1,));
+			assert_ok!(Labs::update_admin_key(RuntimeOrigin::signed(2), 1,));
 
 			assert_eq!(Labs::admin_key(), Some(1));
 		})
@@ -1019,7 +1034,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(3);
 
 			assert_noop!(
-				Labs::update_admin_key(Origin::signed(2), 1,),
+				Labs::update_admin_key(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::Unauthorized
 			);
 		})
@@ -1028,7 +1043,7 @@ mod tests {
 	#[test]
 	fn sudo_update_admin_key_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			assert_ok!(Labs::sudo_update_admin_key(Origin::root(), 1));
+			assert_ok!(Labs::sudo_update_admin_key(RuntimeOrigin::root(), 1));
 
 			assert_eq!(Labs::admin_key(), Some(1));
 		})
@@ -1040,7 +1055,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(1);
 
 			assert_noop!(
-				Labs::update_admin_key(Origin::signed(2), 1,),
+				Labs::update_admin_key(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::Unauthorized
 			);
 		})
@@ -1060,12 +1075,12 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1084,9 +1099,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -1123,7 +1138,10 @@ mod tests {
 	#[test]
 	fn cant_unstake_lab_when_not_exist() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			assert_noop!(Labs::stake_lab(Origin::signed(1),), Error::<Test>::LabDoesNotExist);
+			assert_noop!(
+				Labs::stake_lab(RuntimeOrigin::signed(1),),
+				Error::<Test>::LabDoesNotExist
+			);
 		})
 	}
 
@@ -1131,7 +1149,7 @@ mod tests {
 	fn cant_unstake_lab_when_not_staked() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1150,7 +1168,10 @@ mod tests {
 				}
 			));
 
-			assert_noop!(Labs::unstake_lab(Origin::signed(1),), Error::<Test>::LabIsNotStaked);
+			assert_noop!(
+				Labs::unstake_lab(RuntimeOrigin::signed(1),),
+				Error::<Test>::LabIsNotStaked
+			);
 		})
 	}
 
@@ -1168,11 +1189,11 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1191,10 +1212,10 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1212,7 +1233,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1246,7 +1267,10 @@ mod tests {
 				})
 			);
 
-			assert_noop!(Labs::unstake_lab(Origin::signed(1),), Error::<Test>::LabHasPendingOrders);
+			assert_noop!(
+				Labs::unstake_lab(RuntimeOrigin::signed(1),),
+				Error::<Test>::LabHasPendingOrders
+			);
 		})
 	}
 
@@ -1265,12 +1289,12 @@ mod tests {
 			OrderPalletAccount::<Test>::put(5);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1289,10 +1313,10 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1312,7 +1336,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1323,9 +1347,9 @@ mod tests {
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::reject_dna_sample(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				"Reject DNA Title".as_bytes().to_vec(),
 				"Reject DNA Description".as_bytes().to_vec()
@@ -1337,7 +1361,7 @@ mod tests {
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
 			assert!(_dna_sample_info.is_rejected());
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 		})
 	}
 
@@ -1356,12 +1380,12 @@ mod tests {
 			OrderPalletAccount::<Test>::put(5);
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1380,15 +1404,15 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1408,7 +1432,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1419,9 +1443,9 @@ mod tests {
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::submit_test_result(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				DnaTestResultSubmission {
 					comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -1450,7 +1474,7 @@ mod tests {
 			);
 
 			assert_ok!(GeneticTesting::process_dna_sample(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				DnaSampleStatus::ResultReady
 			));
@@ -1461,7 +1485,7 @@ mod tests {
 			assert_eq!(_dna_sample_info.get_tracking_id(), &_dna_sample[0]);
 			assert!(_dna_sample_info.process_success());
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 		})
 	}
 
@@ -1479,7 +1503,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1498,9 +1522,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -1532,7 +1556,7 @@ mod tests {
 				})
 			);
 
-			assert_ok!(Labs::retrieve_unstake_amount(Origin::signed(2), 1,));
+			assert_ok!(Labs::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -1572,7 +1596,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_noop!(
-				Labs::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Labs::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::LabDoesNotExist
 			);
 		})
@@ -1584,7 +1608,7 @@ mod tests {
 			LabVerifierKey::<Test>::put(2);
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1604,7 +1628,7 @@ mod tests {
 			));
 
 			assert_noop!(
-				Labs::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Labs::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::LabIsNotWaitingForUnstake
 			);
 		})
@@ -1623,10 +1647,13 @@ mod tests {
 			PalletAccount::<Test>::put(4);
 			LabVerifierKey::<Test>::put(2);
 
-			assert_ok!(Labs::update_unstake_time(Origin::signed(2), 100000u64.saturated_into(),));
+			assert_ok!(Labs::update_unstake_time(
+				RuntimeOrigin::signed(2),
+				100000u64.saturated_into(),
+			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1645,9 +1672,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				Labs::lab_by_account_id(1),
@@ -1680,7 +1707,7 @@ mod tests {
 			);
 
 			assert_noop!(
-				Labs::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Labs::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::LabCannotUnstakeBeforeUnstakeTime
 			);
 		})
@@ -1700,12 +1727,12 @@ mod tests {
 			));
 
 			assert_ok!(Labs::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				60000000000000000000000u128.saturated_into(),
 			));
 
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1724,9 +1751,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(Labs::stake_lab(Origin::signed(1),));
+			assert_ok!(Labs::stake_lab(RuntimeOrigin::signed(1),));
 
-			assert_ok!(Labs::unstake_lab(Origin::signed(1),));
+			assert_ok!(Labs::unstake_lab(RuntimeOrigin::signed(1),));
 
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
@@ -1736,7 +1763,7 @@ mod tests {
 			));
 
 			assert_noop!(
-				Labs::retrieve_unstake_amount(Origin::signed(2), 1,),
+				Labs::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::InsufficientPalletFunds
 			);
 		})

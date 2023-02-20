@@ -29,7 +29,7 @@ benchmarks! {
 		let caller: T::AccountId = OpinionAdminKey::<T>::get().unwrap();
 		let doctor: T::AccountId = account("doctor", 0, SEED);
 		let customer: T::AccountId = whitelisted_caller();
-		let customer_origin = T::Origin::from(RawOrigin::Signed(customer.clone()));
+		let customer_origin = T::RuntimeOrigin::from(RawOrigin::Signed(customer.clone()));
 
 		let info = RequestorInfo::new(
 			b"category",
@@ -58,8 +58,8 @@ benchmarks! {
 		let doctor: T::AccountId = account("doctor", 0, SEED);
 		let customer: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		let customer_origin = T::Origin::from(RawOrigin::Signed(customer.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
+		let customer_origin = T::RuntimeOrigin::from(RawOrigin::Signed(customer.clone()));
 
 		let info = RequestorInfo::new(
 			b"category",
@@ -101,8 +101,8 @@ benchmarks! {
 		let doctor: T::AccountId = account("doctor", 0, SEED);
 		let customer: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		let customer_origin = T::Origin::from(RawOrigin::Signed(customer.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
+		let customer_origin = T::RuntimeOrigin::from(RawOrigin::Signed(customer.clone()));
 
 		let info = RequestorInfo::new(
 			b"category",
@@ -136,8 +136,8 @@ benchmarks! {
 		let doctor: T::AccountId = account("doctor", 0, SEED);
 		let customer: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
-		let customer_origin = T::Origin::from(RawOrigin::Signed(customer.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
+		let customer_origin = T::RuntimeOrigin::from(RawOrigin::Signed(customer.clone()));
 
 		let info = RequestorInfo::new(
 			b"category",

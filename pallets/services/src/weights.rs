@@ -27,65 +27,65 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for services.
-pub trait WeightInfo { 
-	fn create_service() -> Weight; 
-	fn update_service() -> Weight; 
-	fn delete_service() -> Weight; 
+pub trait WeightInfo {
+	fn create_service() -> Weight;
+	fn update_service() -> Weight;
+	fn delete_service() -> Weight;
 }
 
 /// Weights for services using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Services ServicesCountByOwner (r:1 w:1) 
-	// Storage: Services ServicesCount (r:1 w:1) 
-	// Storage: Services Services (r:0 w:1) 
-	fn create_service() -> Weight { 
-		137_705_000_u64 
-			.saturating_add(T::DbWeight::get().reads(3_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Services ServicesCountByOwner (r:1 w:1)
+	// Storage: Services ServicesCount (r:1 w:1)
+	// Storage: Services Services (r:0 w:1)
+	fn create_service() -> Weight {
+		Weight::from_ref_time(137_705_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: Services Services (r:1 w:1) 
-	fn update_service() -> Weight { 
-		81_646_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Services Services (r:1 w:1)
+	fn update_service() -> Weight {
+		Weight::from_ref_time(81_646_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Services Services (r:1 w:1) 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Services ServicesCount (r:1 w:1) 
-	// Storage: Services ServicesCountByOwner (r:1 w:1) 
-	fn delete_service() -> Weight { 
-		146_417_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: Services Services (r:1 w:1)
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Services ServicesCount (r:1 w:1)
+	// Storage: Services ServicesCountByOwner (r:1 w:1)
+	fn delete_service() -> Weight {
+		Weight::from_ref_time(146_417_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Services ServicesCountByOwner (r:1 w:1) 
-	// Storage: Services ServicesCount (r:1 w:1) 
-	// Storage: Services Services (r:0 w:1) 
-	fn create_service() -> Weight { 
-		137_705_000_u64
-			.saturating_add(RocksDbWeight::get().reads(3_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: Services Services (r:1 w:1) 
-	fn update_service() -> Weight { 
-		81_646_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Services Services (r:1 w:1) 
-	// Storage: Labs Labs (r:1 w:1) 
-	// Storage: Services ServicesCount (r:1 w:1) 
-	// Storage: Services ServicesCountByOwner (r:1 w:1) 
-	fn delete_service() -> Weight { 
-		146_417_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Services ServicesCountByOwner (r:1 w:1)
+	// Storage: Services ServicesCount (r:1 w:1)
+	// Storage: Services Services (r:0 w:1)
+	fn create_service() -> Weight {
+		Weight::from_ref_time(137_705_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: Services Services (r:1 w:1)
+	fn update_service() -> Weight {
+		Weight::from_ref_time(81_646_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Services Services (r:1 w:1)
+	// Storage: Labs Labs (r:1 w:1)
+	// Storage: Services ServicesCount (r:1 w:1)
+	// Storage: Services ServicesCountByOwner (r:1 w:1)
+	fn delete_service() -> Weight {
+		Weight::from_ref_time(146_417_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
 }

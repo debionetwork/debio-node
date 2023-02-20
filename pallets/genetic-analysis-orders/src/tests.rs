@@ -23,7 +23,7 @@ fn create_genetic_analysis_order() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -41,12 +41,12 @@ fn create_genetic_analysis_order() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -61,7 +61,7 @@ fn create_genetic_analysis_order() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -70,7 +70,7 @@ fn create_genetic_analysis_order() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -114,7 +114,7 @@ fn cancel_genetic_analysis_order_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -132,12 +132,12 @@ fn cancel_genetic_analysis_order_works() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -152,7 +152,7 @@ fn cancel_genetic_analysis_order_works() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -161,7 +161,7 @@ fn cancel_genetic_analysis_order_works() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -175,7 +175,7 @@ fn cancel_genetic_analysis_order_works() {
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::cancel_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -219,7 +219,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		PalletAccount::<Test>::put(0);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -237,7 +237,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
@@ -254,7 +254,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![_price_by_currency],
@@ -269,7 +269,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -278,7 +278,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -294,7 +294,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -335,7 +335,7 @@ fn cancel_genetic_analysis_order_with_refund_works() {
 		);
 
 		assert_ok!(GeneticAnalysisOrders::cancel_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -395,7 +395,7 @@ fn set_genetic_analysis_order_paid_works() {
 		PalletAccount::<Test>::put(0);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -413,7 +413,7 @@ fn set_genetic_analysis_order_paid_works() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
@@ -430,7 +430,7 @@ fn set_genetic_analysis_order_paid_works() {
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![_price_by_currency],
@@ -445,7 +445,7 @@ fn set_genetic_analysis_order_paid_works() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -454,7 +454,7 @@ fn set_genetic_analysis_order_paid_works() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -470,7 +470,7 @@ fn set_genetic_analysis_order_paid_works() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -523,7 +523,7 @@ fn fulfill_genetic_analysis_order_works() {
 		TreasuryKey::<Test>::put(2);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -541,7 +541,7 @@ fn fulfill_genetic_analysis_order_works() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
@@ -558,7 +558,7 @@ fn fulfill_genetic_analysis_order_works() {
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![_price_by_currency],
@@ -573,7 +573,7 @@ fn fulfill_genetic_analysis_order_works() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -582,7 +582,7 @@ fn fulfill_genetic_analysis_order_works() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -595,21 +595,21 @@ fn fulfill_genetic_analysis_order_works() {
 			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			"report_link".as_bytes().to_vec(),
 			Some("comment".as_bytes().to_vec()),
 		));
 
 		assert_ok!(GeneticAnalysis::process_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			GeneticAnalysisStatus::ResultReady,
 		));
@@ -617,7 +617,7 @@ fn fulfill_genetic_analysis_order_works() {
 		assert_eq!(Balances::free_balance(1), 9000);
 
 		assert_ok!(GeneticAnalysisOrders::fulfill_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
@@ -683,7 +683,7 @@ fn set_genetic_analysis_order_refunded_works() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -701,12 +701,12 @@ fn set_genetic_analysis_order_refunded_works() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -721,7 +721,7 @@ fn set_genetic_analysis_order_refunded_works() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -730,7 +730,7 @@ fn set_genetic_analysis_order_refunded_works() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -744,25 +744,25 @@ fn set_genetic_analysis_order_refunded_works() {
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
 		assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			"report_link".as_bytes().to_vec(),
 			Some("comment".as_bytes().to_vec()),
 		));
 
 		assert_ok!(GeneticAnalysis::process_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			GeneticAnalysisStatus::Rejected,
 		));
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_refunded(
-			Origin::signed(3),
+			RuntimeOrigin::signed(3),
 			_genetic_analysis_order_id
 		));
 
@@ -798,7 +798,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_service_not_exists() 
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -808,7 +808,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_service_not_exists() 
 
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				Keccak256::hash("genetic_analyst_serviceId".as_bytes()),
 				0,
@@ -826,7 +826,7 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -844,12 +844,12 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -864,7 +864,7 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -874,7 +874,7 @@ fn cant_create_genetic_analysis_order_when_price_index_not_found() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				10,
@@ -892,7 +892,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_unavailable() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -910,12 +910,12 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_unavailable() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Unavailable,
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -930,7 +930,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_unavailable() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -940,7 +940,7 @@ fn cant_create_genetic_analysis_order_when_genetic_analyst_unavailable() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				10,
@@ -958,7 +958,7 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -976,12 +976,12 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -996,7 +996,7 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1006,7 +1006,7 @@ fn cant_create_genetic_analysis_order_when_genetic_data_does_not_exist() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				Keccak256::hash("genetic_data_id".as_bytes()),
 				_genetic_analyst.services[0],
 				10,
@@ -1024,7 +1024,7 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1042,12 +1042,12 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1062,7 +1062,7 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1072,7 +1072,7 @@ fn cant_create_genetic_analysis_order_when_not_owner_of_genetic_data() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				10,
@@ -1092,7 +1092,7 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1110,12 +1110,12 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1130,7 +1130,7 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1139,7 +1139,7 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1153,19 +1153,19 @@ fn cant_cancel_genetic_analysis_order_when_order_ongoing() {
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
 		assert_ok!(GeneticAnalysis::process_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			GeneticAnalysisStatus::InProgress,
 		));
 
 		assert_noop!(
 			GeneticAnalysisOrders::cancel_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			),
 			Error::<Test>::OngoingGeneticAnalysisOrderCannotBeCancelled
@@ -1178,7 +1178,7 @@ fn cant_cancel_genetic_analysis_order_when_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_noop!(
 			GeneticAnalysisOrders::cancel_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				Keccak256::hash("genetic_analysis_order_id".as_bytes())
 			),
 			Error::<Test>::GeneticAnalysisOrderNotFound
@@ -1191,7 +1191,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1209,12 +1209,12 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1229,7 +1229,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1238,7 +1238,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1253,7 +1253,7 @@ fn cant_cancel_genetic_analysis_order_when_unathorized_user() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::cancel_genetic_analysis_order(
-				Origin::signed(3),
+				RuntimeOrigin::signed(3),
 				_genetic_analysis_order_id
 			),
 			Error::<Test>::UnauthorizedGeneticAnalysisOrderCancellation
@@ -1274,7 +1274,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 		EscrowKey::<Test>::put(0);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1292,7 +1292,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
@@ -1302,7 +1302,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency {
@@ -1322,7 +1322,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1331,7 +1331,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1345,7 +1345,7 @@ fn cant_set_genetic_analysis_order_paid_when_unauthorized() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(3),
+				RuntimeOrigin::signed(3),
 				_genetic_analysis_order_id
 			),
 			Error::<Test>::Unauthorized
@@ -1367,7 +1367,7 @@ fn cant_set_genetic_analysis_order_paid_when_not_exist() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(3),
+				RuntimeOrigin::signed(3),
 				Keccak256::hash("genetic_analysis_order_id".as_bytes())
 			),
 			Error::<Test>::GeneticAnalysisOrderNotFound
@@ -1382,7 +1382,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1400,7 +1400,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
@@ -1417,7 +1417,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 		};
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![_price_by_currency],
@@ -1432,7 +1432,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1441,7 +1441,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1455,7 +1455,7 @@ fn cant_set_genetic_analysis_order_paid_when_insufficient_funds() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id,
 			),
 			Error::<Test>::InsufficientFunds
@@ -1470,7 +1470,7 @@ fn cant_fulfill_genetic_analysis_order_when_not_exist() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::fulfill_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				Keccak256::hash("genetic_analysis_order_id".as_bytes())
 			),
 			Error::<Test>::GeneticAnalysisOrderNotFound
@@ -1485,7 +1485,7 @@ fn cant_fulfill_genetic_analysis_order_when_unauthorized() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::fulfill_genetic_analysis_order(
-				Origin::signed(4),
+				RuntimeOrigin::signed(4),
 				Keccak256::hash("genetic_analysis_order_id".as_bytes())
 			),
 			Error::<Test>::Unauthorized
@@ -1502,7 +1502,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 		EscrowKey::<Test>::put(1);
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1520,12 +1520,12 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1540,7 +1540,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1549,7 +1549,7 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1562,13 +1562,13 @@ fn cant_fulfill_genetic_analysis_order_when_genetic_analysis_not_process() {
 			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
 		assert_noop!(
 			GeneticAnalysisOrders::fulfill_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			),
 			Error::<Test>::GeneticAnalysisNotSuccessfullyProcessed
@@ -1583,7 +1583,7 @@ fn cant_set_genetic_analysis_order_refunded_when_unauthorized() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_refunded(
-				Origin::signed(4),
+				RuntimeOrigin::signed(4),
 				Keccak256::hash("genetic_analysis_order_id".as_bytes())
 			),
 			Error::<Test>::Unauthorized
@@ -1598,7 +1598,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_exist() {
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_refunded(
-				Origin::signed(3),
+				RuntimeOrigin::signed(3),
 				Keccak256::hash("genetic_analysis_order_id".as_bytes())
 			),
 			Error::<Test>::GeneticAnalysisOrderNotFound
@@ -1612,7 +1612,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1630,12 +1630,12 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1650,7 +1650,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1659,7 +1659,7 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1675,13 +1675,13 @@ fn cant_set_genetic_analysis_order_refunded_when_not_expired() {
 			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
 		assert_noop!(
 			GeneticAnalysisOrders::set_genetic_analysis_order_refunded(
-				Origin::signed(3),
+				RuntimeOrigin::signed(3),
 				_genetic_analysis_order_id
 			),
 			Error::<Test>::GeneticAnalysisOrderNotYetExpired
@@ -1698,7 +1698,7 @@ fn call_event_should_work() {
 
 		assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 1, 100, 0));
 		assert_ok!(GeneticAnalysts::register_genetic_analyst(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1716,12 +1716,12 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			AvailabilityStatus::Available
 		));
 
 		assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			GeneticAnalystServiceInfo {
 				name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1736,7 +1736,7 @@ fn call_event_should_work() {
 		let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1745,7 +1745,7 @@ fn call_event_should_work() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1758,7 +1758,7 @@ fn call_event_should_work() {
 			GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 		let _genetic_analysis = GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
-		System::assert_last_event(Event::GeneticAnalysisOrders(
+		System::assert_last_event(RuntimeEvent::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderCreated(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
 				genetic_data_id: _genetic_data_ids[0],
@@ -1782,11 +1782,11 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticAnalysisOrders::cancel_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
-		System::assert_last_event(Event::GeneticAnalysisOrders(
+		System::assert_last_event(RuntimeEvent::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderCancelled(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
 				genetic_data_id: _genetic_data_ids[0],
@@ -1810,7 +1810,7 @@ fn call_event_should_work() {
 		));
 
 		let _add_genetic_data = GeneticData::add_genetic_data(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio Genetic Data".as_bytes().to_vec(),
 			"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 			"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1819,7 +1819,7 @@ fn call_event_should_work() {
 		let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 		assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_data_ids[0],
 			_genetic_analyst.services[0],
 			0,
@@ -1835,11 +1835,11 @@ fn call_event_should_work() {
 		EscrowKey::<Test>::put(3);
 
 		assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis_order_id
 		));
 
-		System::assert_last_event(Event::GeneticAnalysisOrders(
+		System::assert_last_event(RuntimeEvent::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderPaid(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
 				genetic_data_id: _genetic_data_ids[0],
@@ -1863,24 +1863,24 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			"report_link".as_bytes().to_vec(),
 			Some("comment".as_bytes().to_vec()),
 		));
 
 		assert_ok!(GeneticAnalysis::process_genetic_analysis(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			_genetic_analysis[0].clone(),
 			GeneticAnalysisStatus::ResultReady,
 		));
 
 		assert_ok!(GeneticAnalysisOrders::fulfill_genetic_analysis_order(
-			Origin::signed(3),
+			RuntimeOrigin::signed(3),
 			_genetic_analysis_order_id
 		));
 
-		System::assert_last_event(Event::GeneticAnalysisOrders(
+		System::assert_last_event(RuntimeEvent::GeneticAnalysisOrders(
 			crate::Event::GeneticAnalysisOrderFulfilled(GeneticAnalysisOrder {
 				id: _genetic_analysis_order_id,
 				genetic_data_id: _genetic_data_ids[0],
@@ -1913,7 +1913,7 @@ fn update_escrow_key_works() {
 		assert_eq!(GeneticAnalysisOrders::admin_key(), Some(2));
 
 		assert_ok!(GeneticAnalysisOrders::update_key(
-			Origin::signed(2),
+			RuntimeOrigin::signed(2),
 			AccountKeyType::EscrowKey(1)
 		));
 
@@ -1925,7 +1925,7 @@ fn update_escrow_key_works() {
 fn sudo_update_treasury_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_ok!(GeneticAnalysisOrders::sudo_update_key(
-			Origin::root(),
+			RuntimeOrigin::root(),
 			AccountKeyType::TreasuryKey(1)
 		));
 

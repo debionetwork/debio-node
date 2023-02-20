@@ -37,7 +37,7 @@ pub mod pallet {
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		type EthereumAddress: Clone
 			+ Copy
 			+ PartialEq

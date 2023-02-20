@@ -18,7 +18,7 @@ mod test {
 	fn request_opinion_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"Electronic Medical Record Title".as_bytes().to_vec(),
 				"Electronic Medical Record Category".as_bytes().to_vec(),
 				Vec::new(),
@@ -38,7 +38,7 @@ mod test {
 				b"myriad_url",
 			);
 
-			assert_ok!(OpinionRequestor::request_opinion(Origin::signed(1), info));
+			assert_ok!(OpinionRequestor::request_opinion(RuntimeOrigin::signed(1), info));
 
 			let info = RequestorInfo::new(
 				b"category",
@@ -68,13 +68,13 @@ mod test {
 				b"myriad_url",
 			);
 
-			assert_ok!(OpinionRequestor::request_opinion(Origin::signed(1), info));
+			assert_ok!(OpinionRequestor::request_opinion(RuntimeOrigin::signed(1), info));
 
 			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(1);
 			let requestor_id = requestor_ids[0];
 
 			assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"Electronic Medical Record Title".as_bytes().to_vec(),
 				"Electronic Medical Record Category".as_bytes().to_vec(),
 				Vec::new(),
@@ -95,7 +95,7 @@ mod test {
 			let requestor = OpinionRequestorStruct::new(&requestor_id, &1, &updated_info, 0);
 
 			assert_ok!(OpinionRequestor::update_requestor_info(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				requestor_id,
 				updated_info
 			));
@@ -117,7 +117,11 @@ mod test {
 			);
 
 			assert_noop!(
-				OpinionRequestor::update_requestor_info(Origin::signed(1), requestor_id, info),
+				OpinionRequestor::update_requestor_info(
+					RuntimeOrigin::signed(1),
+					requestor_id,
+					info
+				),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -134,13 +138,13 @@ mod test {
 				b"myriad_url",
 			);
 
-			assert_ok!(OpinionRequestor::request_opinion(Origin::signed(1), info));
+			assert_ok!(OpinionRequestor::request_opinion(RuntimeOrigin::signed(1), info));
 
 			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(1);
 			let requestor_id = requestor_ids[0];
 
 			assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"Electronic Medical Record Title".as_bytes().to_vec(),
 				"Electronic Medical Record Category".as_bytes().to_vec(),
 				Vec::new(),
@@ -160,7 +164,7 @@ mod test {
 
 			assert_noop!(
 				OpinionRequestor::update_requestor_info(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					requestor_id,
 					updated_info
 				),
@@ -182,13 +186,13 @@ mod test {
 				b"myriad_url",
 			);
 
-			assert_ok!(OpinionRequestor::request_opinion(Origin::signed(1), info.clone()));
+			assert_ok!(OpinionRequestor::request_opinion(RuntimeOrigin::signed(1), info.clone()));
 
 			let requestor_ids = OpinionRequestor::opinion_requestor_by_owner(1);
 			let requestor_id = requestor_ids[0];
 			let opinion_requestor = OpinionRequestorStruct::new(&requestor_id, &1, &info, 0);
 
-			System::assert_last_event(Event::OpinionRequestor(
+			System::assert_last_event(RuntimeEvent::OpinionRequestor(
 				OpinionRequestorEvent::OpinionRequested(1, opinion_requestor),
 			));
 
@@ -201,12 +205,12 @@ mod test {
 			);
 
 			assert_ok!(OpinionRequestor::update_requestor_info(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				requestor_id,
 				updated_info.clone()
 			));
 
-			System::assert_last_event(Event::OpinionRequestor(
+			System::assert_last_event(RuntimeEvent::OpinionRequestor(
 				OpinionRequestorEvent::OpinionRequestorInfoUpdated(1, updated_info),
 			));
 		});

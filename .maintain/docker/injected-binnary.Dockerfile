@@ -1,6 +1,5 @@
-FROM ubuntu:20.04
-LABEL network.debio.image.authors="debio_dev@blocksphere.id"
-# Create user and set ownership and permissions as required
+FROM ubuntu:20.04@sha256:bffb6799d706144f263f4b91e1226745ffb5643ea0ea89c2f709208e8d70c999
+LABEL network.debio.image.authors="dev@debio.network"
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y \
 		libssl1.1 \

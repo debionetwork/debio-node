@@ -3,8 +3,8 @@ use crate::{
 	RequestByOrderId, RequestStatus,
 };
 use frame_support::{
-	generate_storage_alias,
 	pallet_prelude::{Decode, Encode},
+	storage_alias,
 	traits::Get,
 	weights::Weight,
 	Blake2_128Concat,
@@ -14,7 +14,7 @@ use sp_std::vec::Vec;
 pub fn migrate<T: Config>() -> Weight {
 	use frame_support::traits::StorageVersion;
 
-	let mut weight: Weight = 0;
+	let mut weight: Weight = Weight::zero();
 	let mut version = StorageVersion::get::<Pallet<T>>();
 
 	if version < 1 {
@@ -73,10 +73,9 @@ mod version {
 			pub type OldServiceOfferOf<T> =
 				OldServiceOffer<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 
-			generate_storage_alias!(
-				ServiceRequest,
-				ServiceOfferById<T: Config> => Map<(Blake2_128Concat, HashOf<T>), ServiceOfferOf<T>>
-			);
+			#[storage_alias]
+			type ServiceOfferById<T: Config> =
+				StorageMap<ServiceRequest, Blake2_128Concat, HashOf<T>, ServiceOfferOf<T>>;
 
 			ServiceOfferById::<T>::translate(|_key, old_service_offer: OldServiceOfferOf<T>| {
 				weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
@@ -121,15 +120,13 @@ mod version {
 			pub type OldServiceInvoiceOf<T> =
 				OldServiceInvoice<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 
-			generate_storage_alias!(
-				ServiceRequest,
-				ServiceInvoiceById<T: Config> => Map<(Blake2_128Concat, HashOf<T>), ServiceInvoiceOf<T>>
-			);
+			#[storage_alias]
+			type ServiceInvoiceById<T: Config> =
+				StorageMap<ServiceRequest, Blake2_128Concat, HashOf<T>, ServiceInvoiceOf<T>>;
 
-			generate_storage_alias!(
-				ServiceRequest,
-				ServiceInvoiceByOrderId<T: Config> => Map<(Blake2_128Concat, HashOf<T>), ServiceInvoiceOf<T>>
-			);
+			#[storage_alias]
+			type ServiceInvoiceByOrderId<T: Config> =
+				StorageMap<ServiceRequest, Blake2_128Concat, HashOf<T>, ServiceInvoiceOf<T>>;
 
 			ServiceInvoiceById::<T>::translate(
 				|_key, old_service_invoice: OldServiceInvoiceOf<T>| {
@@ -227,26 +224,23 @@ mod version {
 			pub type ServiceInvoiceOf<T> = ServiceInvoice<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 			pub type ServiceOfferOf<T> = ServiceOffer<AccountIdOf<T>, BalanceOf<T>, HashOf<T>>;
 
-			generate_storage_alias!(
-				ServiceRequest,
-				ServiceInvoiceById<T: Config> => Map<(Blake2_128Concat, HashOf<T>), ServiceInvoiceOf<T>>
-			);
+			#[storage_alias]
+			type ServiceInvoiceById<T: Config> =
+				StorageMap<ServiceRequest, Blake2_128Concat, HashOf<T>, ServiceInvoiceOf<T>>;
 
-			generate_storage_alias!(
-				ServiceRequest,
-				ServiceInvoiceByOrderId<T: Config> => Map<(Blake2_128Concat, HashOf<T>), ServiceInvoiceOf<T>>
-			);
+			#[storage_alias]
+			type ServiceInvoiceByOrderId<T: Config> =
+				StorageMap<ServiceRequest, Blake2_128Concat, HashOf<T>, ServiceInvoiceOf<T>>;
 
-			generate_storage_alias!(
-				ServiceRequest,
-				ServiceOfferById<T: Config> => Map<(Blake2_128Concat, HashOf<T>), ServiceOfferOf<T>>
-			);
+			#[storage_alias]
+			type ServiceOfferById<T: Config> =
+				StorageMap<ServiceRequest, Blake2_128Concat, HashOf<T>, ServiceOfferOf<T>>;
 
 			RequestById::<T>::translate(|request_id: HashOf<T>, request: OldRequestOf<T>| {
 				weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
 
-				let service_invoice_opt = ServiceInvoiceById::<T>::take(&request_id);
-				let service_offer_opt = ServiceOfferById::<T>::take(&request_id);
+				let service_invoice_opt = ServiceInvoiceById::<T>::take(request_id);
+				let service_offer_opt = ServiceOfferById::<T>::take(request_id);
 
 				let (mut service_id, order_id) = if let Some(service_invoice) = service_invoice_opt
 				{
@@ -256,7 +250,7 @@ mod version {
 				};
 
 				if let Some(order_id) = order_id {
-					RequestByOrderId::<T>::insert(&order_id, &request_id);
+					RequestByOrderId::<T>::insert(order_id, request_id);
 				}
 
 				if service_id.is_none() {

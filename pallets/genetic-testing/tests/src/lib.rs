@@ -29,7 +29,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -49,7 +49,7 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
@@ -61,7 +61,7 @@ mod tests {
 			};
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![prices_by_currency_dbio],
@@ -81,7 +81,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -92,10 +92,10 @@ mod tests {
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 
 			assert_ok!(GeneticTesting::reject_dna_sample(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				"Reject DNA Title".as_bytes().to_vec(),
 				"Reject DNA Description".as_bytes().to_vec()
@@ -114,7 +114,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticTesting::reject_dna_sample(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					DnaSampleTrackingId::from_vec("xxxxxxxxxxxxxxxxxxxxx".as_bytes().to_vec()),
 					"Reject DNA Title".as_bytes().to_vec(),
 					"Reject DNA Description".as_bytes().to_vec()
@@ -128,7 +128,7 @@ mod tests {
 	fn cannot_reject_dna_sample_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -148,12 +148,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -173,7 +173,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -185,7 +185,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticTesting::reject_dna_sample(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					_dna_sample[0].clone(),
 					"Reject DNA Title".as_bytes().to_vec(),
 					"Reject DNA Description".as_bytes().to_vec()
@@ -202,7 +202,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -222,7 +222,7 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
@@ -234,7 +234,7 @@ mod tests {
 			};
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![prices_by_currency_dbio],
@@ -254,7 +254,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -265,10 +265,10 @@ mod tests {
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 
 			assert_ok!(GeneticTesting::submit_test_result(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				DnaTestResultSubmission {
 					comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -297,7 +297,7 @@ mod tests {
 			);
 
 			assert_ok!(GeneticTesting::process_dna_sample(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				DnaSampleStatus::ResultReady
 			));
@@ -315,7 +315,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticTesting::process_dna_sample(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					DnaSampleTrackingId::from_vec("xxxxxxxxxxxxxxxxxxxxx".as_bytes().to_vec()),
 					DnaSampleStatus::ResultReady
 				),
@@ -331,7 +331,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -351,7 +351,7 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
@@ -363,7 +363,7 @@ mod tests {
 			};
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![prices_by_currency_dbio],
@@ -383,7 +383,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -394,10 +394,10 @@ mod tests {
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 
 			assert_ok!(GeneticTesting::submit_test_result(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				DnaTestResultSubmission {
 					comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -427,7 +427,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticTesting::process_dna_sample(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					_dna_sample[0].clone(),
 					DnaSampleStatus::ResultReady
 				),
@@ -443,7 +443,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -463,12 +463,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -488,7 +488,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -499,10 +499,10 @@ mod tests {
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 			assert_noop!(
 				GeneticTesting::process_dna_sample(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					_dna_sample[0].clone(),
 					DnaSampleStatus::ResultReady
 				),
@@ -518,7 +518,7 @@ mod tests {
 
 			assert_ok!(Balances::set_balance(RawOrigin::Root.into(), 2, 100, 0));
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -538,7 +538,7 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
@@ -550,7 +550,7 @@ mod tests {
 			};
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![prices_by_currency_dbio],
@@ -570,7 +570,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -581,9 +581,9 @@ mod tests {
 			let _dna_sample = GeneticTesting::dna_samples_by_lab_id(1).unwrap();
 			let _order_id = Orders::last_order_by_customer_id(2).unwrap();
 
-			assert_ok!(Orders::set_order_paid(Origin::signed(2), _order_id));
+			assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(2), _order_id));
 			assert_ok!(GeneticTesting::submit_test_result(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_dna_sample[0].clone(),
 				DnaTestResultSubmission {
 					comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -617,7 +617,7 @@ mod tests {
 	fn cannot_submit_test_result_not_found() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -637,12 +637,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -662,7 +662,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -672,7 +672,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticTesting::submit_test_result(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					DnaSampleTrackingId::from_vec("xxxxxxxxxxxxxxxxxxxxx".as_bytes().to_vec()),
 					DnaTestResultSubmission {
 						comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -689,7 +689,7 @@ mod tests {
 	fn cannot_submit_test_result_unauthorized() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -709,12 +709,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -734,7 +734,7 @@ mod tests {
 			let _lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Orders::create_order(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -746,7 +746,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticTesting::submit_test_result(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					_dna_sample[0].clone(),
 					DnaTestResultSubmission {
 						comments: Some("DNA Test Result comments".as_bytes().to_vec()),
@@ -763,7 +763,7 @@ mod tests {
 	fn submit_independent_test_result_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticTesting::submit_independent_test_result(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				DnaTestResultSubmission {
 					comments: Some("DNA Test Result comments".as_bytes().to_vec()),
 					result_link: Some("DNA Test Result result_link".as_bytes().to_vec()),
@@ -798,7 +798,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticTesting::submit_independent_test_result(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					DnaTestResultSubmission {
 						comments: Some("DNA Test Result comments".as_bytes().to_vec()),
 						result_link: None,
@@ -815,7 +815,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticTesting::submit_independent_test_result(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					DnaTestResultSubmission {
 						comments: Some("DNA Test Result comments".as_bytes().to_vec()),
 						result_link: Some("DNA Test Result result_link".as_bytes().to_vec()),
@@ -831,7 +831,7 @@ mod tests {
 	fn submit_data_bounty_details_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticTesting::submit_data_bounty_details(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 			));

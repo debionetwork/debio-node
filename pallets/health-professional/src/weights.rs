@@ -26,185 +26,185 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for health_professional_benchmarking.
-pub trait WeightInfo { 
-	fn register() -> Weight; 
-	fn update_info() -> Weight; 
-	fn update_availability_status() -> Weight; 
-	fn update_verification_status() -> Weight; 
-	fn deregister() -> Weight; 
-	fn stake() -> Weight; 
-	fn unstake() -> Weight; 
-	fn retrieve_unstaked_amount() -> Weight; 
-	fn update_stake_amount() -> Weight; 
-	fn update_unstake_time() -> Weight; 
-	fn update_verifier_key() -> Weight; 
+pub trait WeightInfo {
+	fn register() -> Weight;
+	fn update_info() -> Weight;
+	fn update_availability_status() -> Weight;
+	fn update_verification_status() -> Weight;
+	fn deregister() -> Weight;
+	fn stake() -> Weight;
+	fn unstake() -> Weight;
+	fn retrieve_unstaked_amount() -> Weight;
+	fn update_stake_amount() -> Weight;
+	fn update_unstake_time() -> Weight;
+	fn update_verifier_key() -> Weight;
 }
 
 /// Weights for health_professional_benchmarking using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1) 
-	fn register() -> Weight { 
-		54_100_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1)
+	fn register() -> Weight {
+		Weight::from_ref_time(54_100_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	fn update_info() -> Weight { 
-		52_600_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	fn update_info() -> Weight {
+		Weight::from_ref_time(52_600_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	fn update_availability_status() -> Weight { 
-		89_000_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	fn update_availability_status() -> Weight {
+		Weight::from_ref_time(89_000_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	fn update_verification_status() -> Weight { 
-		159_900_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	fn update_verification_status() -> Weight {
+		Weight::from_ref_time(159_900_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1) 
-	fn deregister() -> Weight { 
-		99_200_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1)
+	fn deregister() -> Weight {
+		Weight::from_ref_time(99_200_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: HealthProfessional MinimumStakeAmount (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1) 
-	fn stake() -> Weight { 
-		127_700_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(3_u64)) 
+	// Storage: HealthProfessional MinimumStakeAmount (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: System Account (r:1 w:1)
+	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1)
+	fn stake() -> Weight {
+		Weight::from_ref_time(127_700_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn unstake() -> Weight { 
-		51_200_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn unstake() -> Weight {
+		Weight::from_ref_time(51_200_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: HealthProfessional UnstakeTime (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1) 
-	fn retrieve_unstaked_amount() -> Weight { 
-		122_200_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(3_u64)) 
+	// Storage: HealthProfessional UnstakeTime (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1)
+	fn retrieve_unstaked_amount() -> Weight {
+		Weight::from_ref_time(122_200_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional MinimumStakeAmount (r:0 w:1) 
-	fn update_stake_amount() -> Weight { 
-		39_600_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional MinimumStakeAmount (r:0 w:1)
+	fn update_stake_amount() -> Weight {
+		Weight::from_ref_time(39_600_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional UnstakeTime (r:0 w:1) 
-	fn update_unstake_time() -> Weight { 
-		38_800_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional UnstakeTime (r:0 w:1)
+	fn update_unstake_time() -> Weight {
+		Weight::from_ref_time(38_800_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:1) 
-	fn update_verifier_key() -> Weight { 
-		39_200_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:1)
+	fn update_verifier_key() -> Weight {
+		Weight::from_ref_time(39_200_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1) 
-	fn register() -> Weight { 
-		54_100_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	fn update_info() -> Weight { 
-		52_600_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	fn update_availability_status() -> Weight { 
-		89_000_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	fn update_verification_status() -> Weight { 
-		159_900_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1) 
-	fn deregister() -> Weight { 
-		99_200_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: HealthProfessional MinimumStakeAmount (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1) 
-	fn stake() -> Weight { 
-		127_700_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(3_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn unstake() -> Weight { 
-		51_200_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: HealthProfessional UnstakeTime (r:1 w:0) 
-	// Storage: HealthProfessional HealthProfessionals (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:1 w:1) 
-	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1) 
-	fn retrieve_unstaked_amount() -> Weight { 
-		122_200_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(3_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional MinimumStakeAmount (r:0 w:1) 
-	fn update_stake_amount() -> Weight { 
-		39_600_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0) 
-	// Storage: HealthProfessional UnstakeTime (r:0 w:1) 
-	fn update_unstake_time() -> Weight { 
-		38_800_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:1) 
-	fn update_verifier_key() -> Weight { 
-		39_200_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1)
+	fn register() -> Weight {
+		Weight::from_ref_time(54_100_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	fn update_info() -> Weight {
+		Weight::from_ref_time(52_600_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	fn update_availability_status() -> Weight {
+		Weight::from_ref_time(89_000_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	fn update_verification_status() -> Weight {
+		Weight::from_ref_time(159_900_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: HealthProfessional HealthProfessionalCount (r:1 w:1)
+	fn deregister() -> Weight {
+		Weight::from_ref_time(99_200_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: HealthProfessional MinimumStakeAmount (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: System Account (r:1 w:1)
+	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1)
+	fn stake() -> Weight {
+		Weight::from_ref_time(127_700_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(3_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn unstake() -> Weight {
+		Weight::from_ref_time(51_200_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: HealthProfessional UnstakeTime (r:1 w:0)
+	// Storage: HealthProfessional HealthProfessionals (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: HealthProfessional TotalStakedAmount (r:1 w:1)
+	fn retrieve_unstaked_amount() -> Weight {
+		Weight::from_ref_time(122_200_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(3_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional MinimumStakeAmount (r:0 w:1)
+	fn update_stake_amount() -> Weight {
+		Weight::from_ref_time(39_600_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:0)
+	// Storage: HealthProfessional UnstakeTime (r:0 w:1)
+	fn update_unstake_time() -> Weight {
+		Weight::from_ref_time(38_800_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: HealthProfessional HealthProfessionalVerifierKey (r:1 w:1)
+	fn update_verifier_key() -> Weight {
+		Weight::from_ref_time(39_200_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

@@ -17,7 +17,7 @@ mod tests {
 	fn create_certification_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -37,7 +37,7 @@ mod tests {
 			));
 
 			assert_ok!(Certifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				CertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -74,7 +74,7 @@ mod tests {
 	fn update_certification_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -94,7 +94,7 @@ mod tests {
 			));
 
 			assert_ok!(Certifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				CertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -108,7 +108,7 @@ mod tests {
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Certifications::update_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				lab.certifications[0],
 				CertificationInfo {
 					title: "DeBio title 2".as_bytes().to_vec(),
@@ -144,7 +144,7 @@ mod tests {
 	fn delete_certification_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -164,7 +164,7 @@ mod tests {
 			));
 
 			assert_ok!(Certifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				CertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -178,7 +178,7 @@ mod tests {
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Certifications::delete_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				lab.certifications[0]
 			));
 
@@ -191,7 +191,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				Certifications::create_certification(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					CertificationInfo {
 						title: "DeBio title".as_bytes().to_vec(),
 						issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -210,7 +210,7 @@ mod tests {
 	fn update_certification_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -231,7 +231,7 @@ mod tests {
 
 			assert_noop!(
 				Certifications::update_certification(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					CertificationInfo {
 						title: "DeBio title 2".as_bytes().to_vec(),
@@ -251,7 +251,7 @@ mod tests {
 	fn update_certification_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -271,7 +271,7 @@ mod tests {
 			));
 
 			assert_ok!(Certifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				CertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -286,7 +286,7 @@ mod tests {
 
 			assert_noop!(
 				Certifications::update_certification(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					lab.certifications[0],
 					CertificationInfo {
 						title: "DeBio title 2".as_bytes().to_vec(),
@@ -306,7 +306,7 @@ mod tests {
 	fn delete_certification_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -327,7 +327,7 @@ mod tests {
 
 			assert_noop!(
 				Certifications::delete_certification(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 				),
 				Error::<Test>::CertificationDoesNotExist
@@ -339,7 +339,7 @@ mod tests {
 	fn delete_certification_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -359,7 +359,7 @@ mod tests {
 			));
 
 			assert_ok!(Certifications::create_certification(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				CertificationInfo {
 					title: "DeBio title".as_bytes().to_vec(),
 					issuer: "DeBio issuer".as_bytes().to_vec(),
@@ -373,7 +373,10 @@ mod tests {
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_noop!(
-				Certifications::delete_certification(Origin::signed(2), lab.certifications[0]),
+				Certifications::delete_certification(
+					RuntimeOrigin::signed(2),
+					lab.certifications[0]
+				),
 				Error::<Test>::NotCertificationOwner
 			);
 		})

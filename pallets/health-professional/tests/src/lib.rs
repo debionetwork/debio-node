@@ -45,7 +45,7 @@ mod tests {
 				HealthProfessionalStruct::new(&doctor, &health_professional_info);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
@@ -79,7 +79,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
@@ -103,7 +103,10 @@ mod tests {
 
 			let health_professional = HealthProfessionalStruct::new(&doctor, &updated_info);
 
-			assert_ok!(HealthProfessional::update_info(Origin::signed(doctor), updated_info));
+			assert_ok!(HealthProfessional::update_info(
+				RuntimeOrigin::signed(doctor),
+				updated_info
+			));
 
 			assert_eq!(
 				HealthProfessional::health_professional_by_account_id(doctor),
@@ -142,12 +145,12 @@ mod tests {
 				HealthProfessionalStruct::new(&doctor, &health_professional_info);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
 			assert_ok!(HealthProfessional::update_availability_status(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				AvailabilityStatus::Unavailable,
 			));
 
@@ -190,18 +193,18 @@ mod tests {
 				HealthProfessionalStruct::new(&doctor, &health_professional_info);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
 			assert_ok!(HealthProfessional::update_verification_status(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				doctor,
 				VerificationStatus::Verified,
 			));
 
 			assert_ok!(HealthProfessional::update_verification_status(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				doctor,
 				VerificationStatus::Verified,
 			));
@@ -239,11 +242,11 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
-			assert_ok!(HealthProfessional::deregister(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::deregister(RuntimeOrigin::signed(doctor)));
 
 			assert_eq!(HealthProfessional::health_professional_by_account_id(doctor), None,);
 		});
@@ -277,11 +280,11 @@ mod tests {
 			MinimumStakeAmount::<Test>::put(10);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor),));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor),));
 
 			health_professional.update_stake_status(StakeStatus::Staked, 10);
 
@@ -325,15 +328,15 @@ mod tests {
 			MinimumStakeAmount::<Test>::put(10);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
 			health_professional.update_stake_status(StakeStatus::Staked, 10);
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor),));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor),));
 
-			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::unstake(RuntimeOrigin::signed(doctor)));
 
 			health_professional.update_stake_status(StakeStatus::WaitingForUnstaked, 0);
 			health_professional.update_unstaked_at(Some(0));
@@ -374,17 +377,17 @@ mod tests {
 			UnstakeTime::<Test>::put(10);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor),));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor),));
 
-			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::unstake(RuntimeOrigin::signed(doctor)));
 
 			Now::<Test>::put(10);
 
-			assert_ok!(HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)));
 
 			health_professional.update_stake_status(StakeStatus::Unstaked, 0);
 
@@ -408,7 +411,7 @@ mod tests {
 			HealthProfessionalVerifierKey::<Test>::put(admin);
 
 			assert_ok!(HealthProfessional::update_stake_amount(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				100_000_000_000,
 			));
 
@@ -424,7 +427,7 @@ mod tests {
 			HealthProfessionalVerifierKey::<Test>::put(admin);
 
 			assert_ok!(HealthProfessional::update_unstake_time(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				100_000_000_000,
 			));
 
@@ -440,7 +443,10 @@ mod tests {
 
 			HealthProfessionalVerifierKey::<Test>::put(admin);
 
-			assert_ok!(HealthProfessional::update_verifier_key(Origin::signed(admin), new_admin,));
+			assert_ok!(HealthProfessional::update_verifier_key(
+				RuntimeOrigin::signed(admin),
+				new_admin,
+			));
 
 			assert_eq!(HealthProfessional::verifier_key(), Some(new_admin),);
 		});
@@ -451,7 +457,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			let admin = account_key("admin");
 
-			assert_ok!(HealthProfessional::sudo_update_verifier_key(Origin::root(), admin,));
+			assert_ok!(HealthProfessional::sudo_update_verifier_key(RuntimeOrigin::root(), admin,));
 
 			assert_eq!(HealthProfessional::verifier_key(), Some(admin),);
 		});
@@ -479,10 +485,10 @@ mod tests {
 				anonymous: false,
 			};
 
-			assert_ok!(HealthProfessional::register(Origin::signed(doctor), info.clone()));
+			assert_ok!(HealthProfessional::register(RuntimeOrigin::signed(doctor), info.clone()));
 
 			assert_noop!(
-				HealthProfessional::register(Origin::signed(doctor), info),
+				HealthProfessional::register(RuntimeOrigin::signed(doctor), info),
 				Error::<Test>::AlreadyRegistered,
 			);
 		});
@@ -511,7 +517,7 @@ mod tests {
 			};
 
 			assert_noop!(
-				HealthProfessional::update_info(Origin::signed(doctor), updated_info),
+				HealthProfessional::update_info(RuntimeOrigin::signed(doctor), updated_info),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -525,7 +531,7 @@ mod tests {
 
 			assert_noop!(
 				HealthProfessional::update_verification_status(
-					Origin::signed(admin),
+					RuntimeOrigin::signed(admin),
 					doctor,
 					VerificationStatus::Unverified,
 				),
@@ -544,7 +550,7 @@ mod tests {
 
 			assert_noop!(
 				HealthProfessional::update_verification_status(
-					Origin::signed(admin),
+					RuntimeOrigin::signed(admin),
 					doctor,
 					VerificationStatus::Unverified,
 				),
@@ -559,7 +565,7 @@ mod tests {
 			let doctor = account_key("doctor");
 
 			assert_noop!(
-				HealthProfessional::deregister(Origin::signed(doctor)),
+				HealthProfessional::deregister(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -571,14 +577,14 @@ mod tests {
 			let doctor = account_key("doctor");
 
 			assert_noop!(
-				HealthProfessional::stake(Origin::signed(doctor)),
+				HealthProfessional::stake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::InsufficientBalance,
 			);
 
 			MinimumStakeAmount::<Test>::put(500);
 
 			assert_noop!(
-				HealthProfessional::stake(Origin::signed(doctor)),
+				HealthProfessional::stake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::InsufficientBalance,
 			);
 		});
@@ -609,21 +615,21 @@ mod tests {
 			MinimumStakeAmount::<Test>::put(10);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor)));
 
 			assert_noop!(
-				HealthProfessional::stake(Origin::signed(doctor)),
+				HealthProfessional::stake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::AlreadyStaked,
 			);
 
-			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::unstake(RuntimeOrigin::signed(doctor)));
 
 			assert_noop!(
-				HealthProfessional::stake(Origin::signed(doctor)),
+				HealthProfessional::stake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::CannotStaked,
 			);
 		});
@@ -637,7 +643,7 @@ mod tests {
 			MinimumStakeAmount::<Test>::put(10);
 
 			assert_noop!(
-				HealthProfessional::stake(Origin::signed(doctor)),
+				HealthProfessional::stake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -668,20 +674,20 @@ mod tests {
 			MinimumStakeAmount::<Test>::put(10);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
 			assert_noop!(
-				HealthProfessional::unstake(Origin::signed(doctor)),
+				HealthProfessional::unstake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::CannotUnstaked
 			);
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor)));
-			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor)));
+			assert_ok!(HealthProfessional::unstake(RuntimeOrigin::signed(doctor)));
 
 			assert_noop!(
-				HealthProfessional::unstake(Origin::signed(doctor)),
+				HealthProfessional::unstake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::CannotUnstaked
 			);
 		});
@@ -695,7 +701,7 @@ mod tests {
 			MinimumStakeAmount::<Test>::put(10);
 
 			assert_noop!(
-				HealthProfessional::unstake(Origin::signed(doctor)),
+				HealthProfessional::unstake(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -707,7 +713,7 @@ mod tests {
 			let doctor = account_key("doctor");
 
 			assert_noop!(
-				HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)),
+				HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::CannotRetrieveUnstakedAmount,
 			);
 
@@ -733,28 +739,28 @@ mod tests {
 			UnstakeTime::<Test>::put(10);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
 			assert_noop!(
-				HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)),
+				HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::CannotRetrieveUnstakedAmount,
 			);
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor)));
 
 			assert_noop!(
-				HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)),
+				HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::CannotRetrieveUnstakedAmount,
 			);
 
-			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::unstake(RuntimeOrigin::signed(doctor)));
 
 			Now::<Test>::put(5);
 
 			assert_noop!(
-				HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)),
+				HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::NotReadyToUnstaked,
 			);
 		});
@@ -769,7 +775,7 @@ mod tests {
 			UnstakeTime::<Test>::put(10);
 
 			assert_noop!(
-				HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)),
+				HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)),
 				Error::<Test>::NotFound,
 			);
 		});
@@ -781,7 +787,10 @@ mod tests {
 			let admin = account_key("admin");
 
 			assert_noop!(
-				HealthProfessional::update_stake_amount(Origin::signed(admin), 100_000_000_000,),
+				HealthProfessional::update_stake_amount(
+					RuntimeOrigin::signed(admin),
+					100_000_000_000,
+				),
 				Error::<Test>::Unauthorized,
 			);
 		});
@@ -793,7 +802,10 @@ mod tests {
 			let admin = account_key("admin");
 
 			assert_noop!(
-				HealthProfessional::update_unstake_time(Origin::signed(admin), 100_000_000_000,),
+				HealthProfessional::update_unstake_time(
+					RuntimeOrigin::signed(admin),
+					100_000_000_000,
+				),
 				Error::<Test>::Unauthorized,
 			);
 		});
@@ -806,7 +818,7 @@ mod tests {
 			let new_admin = account_key("new_admin");
 
 			assert_noop!(
-				HealthProfessional::update_verifier_key(Origin::signed(admin), new_admin),
+				HealthProfessional::update_verifier_key(RuntimeOrigin::signed(admin), new_admin),
 				Error::<Test>::Unauthorized,
 			);
 		});
@@ -840,11 +852,11 @@ mod tests {
 				HealthProfessionalStruct::new(&doctor, &health_professional_info);
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				health_professional_info
 			));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalRegistered(doctor, health_professional),
 			));
 
@@ -867,11 +879,11 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessional::update_info(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				updated_info.clone()
 			));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalInfoUpdated(doctor, updated_info),
 			));
 
@@ -879,11 +891,11 @@ mod tests {
 			HealthProfessionalVerifierKey::<Test>::put(admin);
 
 			assert_ok!(HealthProfessional::update_availability_status(
-				Origin::signed(doctor),
+				RuntimeOrigin::signed(doctor),
 				AvailabilityStatus::Available
 			));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalAvailabilityStatusUpdated(
 					doctor,
 					AvailabilityStatus::Available,
@@ -891,12 +903,12 @@ mod tests {
 			));
 
 			assert_ok!(HealthProfessional::update_verification_status(
-				Origin::signed(admin),
+				RuntimeOrigin::signed(admin),
 				doctor,
 				VerificationStatus::Verified
 			));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalVerificationStatusUpdated(
 					doctor,
 					VerificationStatus::Verified,
@@ -905,15 +917,15 @@ mod tests {
 
 			MinimumStakeAmount::<Test>::put(10);
 
-			assert_ok!(HealthProfessional::stake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::stake(RuntimeOrigin::signed(doctor)));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalStaked(doctor, 10),
 			));
 
-			assert_ok!(HealthProfessional::unstake(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::unstake(RuntimeOrigin::signed(doctor)));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalWaitingForUnstaked(
 					doctor,
 					StakeStatus::WaitingForUnstaked,
@@ -924,9 +936,9 @@ mod tests {
 			UnstakeTime::<Test>::put(10);
 			Now::<Test>::put(10);
 
-			assert_ok!(HealthProfessional::retrieve_unstaked_amount(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::retrieve_unstaked_amount(RuntimeOrigin::signed(doctor)));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalUnstaked(
 					doctor,
 					10,
@@ -935,33 +947,36 @@ mod tests {
 				),
 			));
 
-			assert_ok!(HealthProfessional::deregister(Origin::signed(doctor)));
+			assert_ok!(HealthProfessional::deregister(RuntimeOrigin::signed(doctor)));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::HealthProfessionalUnregistered(doctor),
 			));
 
-			assert_ok!(HealthProfessional::update_stake_amount(Origin::signed(admin), 10));
+			assert_ok!(HealthProfessional::update_stake_amount(RuntimeOrigin::signed(admin), 10));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::MinimumStakeAmountUpdated(10),
 			));
 
-			assert_ok!(HealthProfessional::update_unstake_time(Origin::signed(admin), 10));
+			assert_ok!(HealthProfessional::update_unstake_time(RuntimeOrigin::signed(admin), 10));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::UnstakeTimeUpdated(10),
 			));
 
-			assert_ok!(HealthProfessional::update_verifier_key(Origin::signed(admin), admin));
+			assert_ok!(HealthProfessional::update_verifier_key(
+				RuntimeOrigin::signed(admin),
+				admin
+			));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::VerifierKeyUpdated(admin),
 			));
 
-			assert_ok!(HealthProfessional::sudo_update_verifier_key(Origin::root(), admin));
+			assert_ok!(HealthProfessional::sudo_update_verifier_key(RuntimeOrigin::root(), admin));
 
-			System::assert_last_event(Event::HealthProfessional(
+			System::assert_last_event(RuntimeEvent::HealthProfessional(
 				HealthProfessionalEvent::VerifierKeyUpdated(admin),
 			));
 		});

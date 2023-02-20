@@ -217,7 +217,7 @@ mod tests {
 	fn create_genetic_analyst_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -235,12 +235,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -281,7 +281,7 @@ mod tests {
 	fn bulk_create_genetic_analyst_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -299,12 +299,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::bulk_create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				create_twenty_services(),
 			));
 
@@ -340,7 +340,7 @@ mod tests {
 	fn update_genetic_analyst_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -358,12 +358,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -378,7 +378,7 @@ mod tests {
 			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			assert_ok!(GeneticAnalystServices::update_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				genetic_analyst.services[0],
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name 2".as_bytes().to_vec(),
@@ -418,7 +418,7 @@ mod tests {
 	fn delete_genetic_analyst_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -436,12 +436,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -456,7 +456,7 @@ mod tests {
 			let genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			assert_ok!(GeneticAnalystServices::delete_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				genetic_analyst.services[0]
 			));
 
@@ -469,7 +469,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				GeneticAnalystServices::create_genetic_analyst_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					GeneticAnalystServiceInfo {
 						name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 						prices_by_currency: vec![PriceByCurrency::default()],
@@ -492,7 +492,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				GeneticAnalystServices::bulk_create_genetic_analyst_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					create_twenty_services(),
 				),
 				Error::<Test>::NotAllowedToCreate
@@ -504,7 +504,7 @@ mod tests {
 	fn not_allowed_to_bulk_create_genetic_analyst_service_more_than_twenty() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -522,13 +522,13 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_noop!(
 				GeneticAnalystServices::bulk_create_genetic_analyst_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					create_twenty_one_services(),
 				),
 				Error::<Test>::CannotCreateMoreThanTwentyServicesAtOnce
@@ -540,7 +540,7 @@ mod tests {
 	fn update_genetic_analyst_service_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -559,7 +559,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalystServices::update_genetic_analyst_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					GeneticAnalystServiceInfo {
 						name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
@@ -582,7 +582,7 @@ mod tests {
 	fn update_genetic_analyst_service_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -600,12 +600,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -621,7 +621,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalystServices::update_genetic_analyst_service(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					genetic_analyst.services[0],
 					GeneticAnalystServiceInfo {
 						name: "DeBio Genetic Analyst Service name 2".as_bytes().to_vec(),
@@ -644,7 +644,7 @@ mod tests {
 	fn delete_genetic_analyst_service_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -663,7 +663,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalystServices::delete_genetic_analyst_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 				),
 				Error::<Test>::GeneticAnalystServiceDoesNotExist
@@ -675,7 +675,7 @@ mod tests {
 	fn delete_genetic_analyst_service_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -693,12 +693,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -714,7 +714,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalystServices::delete_genetic_analyst_service(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					genetic_analyst.services[0]
 				),
 				Error::<Test>::NotGeneticAnalystServiceOwner

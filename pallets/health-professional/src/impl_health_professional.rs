@@ -213,7 +213,7 @@ impl<T: Config> HealthProfessionalInterface<T> for Pallet<T> {
 	) -> Result<(), Self::Error> {
 		Self::can_verified(verifier_key)?;
 
-		HealthProfessionalVerifierKey::<T>::put(&account_id);
+		HealthProfessionalVerifierKey::<T>::put(account_id);
 
 		Ok(())
 	}
