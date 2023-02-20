@@ -27,84 +27,84 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for genetic_analyst_services.
-pub trait WeightInfo { 
-	fn create_genetic_analyst_service() -> Weight; 
-	fn bulk_create_genetic_analyst_service() -> Weight; 
-	fn update_genetic_analyst_service() -> Weight; 
-	fn delete_genetic_analyst_service() -> Weight; 
+pub trait WeightInfo {
+	fn create_genetic_analyst_service() -> Weight;
+	fn bulk_create_genetic_analyst_service() -> Weight;
+	fn update_genetic_analyst_service() -> Weight;
+	fn delete_genetic_analyst_service() -> Weight;
 }
 
 /// Weights for genetic_analyst_services using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:1) 
-	fn create_genetic_analyst_service() -> Weight { 
-		45_930_000_u64 
-			.saturating_add(T::DbWeight::get().reads(3_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:1)
+	fn create_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(45_930_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:20) 
-	fn bulk_create_genetic_analyst_service() -> Weight { 
-		1_118_764_000_u64 
-			.saturating_add(T::DbWeight::get().reads(3_u64)) 
-			.saturating_add(T::DbWeight::get().writes(23_u64)) 
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:20)
+	fn bulk_create_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(1_118_764_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(23_u64))
 	}
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1) 
-	fn update_genetic_analyst_service() -> Weight { 
-		38_176_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1)
+	fn update_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(38_176_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1) 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1) 
-	fn delete_genetic_analyst_service() -> Weight { 
-		49_748_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1)
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1)
+	fn delete_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(49_748_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:1) 
-	fn create_genetic_analyst_service() -> Weight { 
-		45_930_000_u64
-			.saturating_add(RocksDbWeight::get().reads(3_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:20) 
-	fn bulk_create_genetic_analyst_service() -> Weight { 
-		1_118_764_000_u64
-			.saturating_add(RocksDbWeight::get().reads(3_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(23_u64)) 
-	} 
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1) 
-	fn update_genetic_analyst_service() -> Weight { 
-		38_176_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1) 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1) 
-	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1) 
-	fn delete_genetic_analyst_service() -> Weight { 
-		49_748_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:1)
+	fn create_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(45_930_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:0 w:20)
+	fn bulk_create_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(1_118_764_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(23_u64))
+	}
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1)
+	fn update_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(38_176_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticAnalystServices GeneticAnalystServices (r:1 w:1)
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCount (r:1 w:1)
+	// Storage: GeneticAnalystServices GeneticAnalystServicesCountByOwner (r:1 w:1)
+	fn delete_genetic_analyst_service() -> Weight {
+		Weight::from_ref_time(49_748_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
 }

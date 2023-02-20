@@ -11,7 +11,7 @@ use primitives_stake_status::StakeStatus;
 use primitives_verification_status::VerificationStatus;
 
 pub fn migrate<T: Config>() -> Weight {
-	let mut weight: Weight = 0;
+	let mut weight: Weight = Weight::zero();
 	let mut version = StorageVersion::get::<Pallet<T>>();
 
 	if version < 1 {

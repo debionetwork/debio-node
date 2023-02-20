@@ -39,7 +39,7 @@ pub mod pallet {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + Sized {
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// Currency type for this pallet.
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 		#[pallet::constant]
@@ -184,7 +184,7 @@ pub mod pallet {
 impl<T: Config> Pallet<T> {
 	/// The injected pallet ID
 	pub fn get_pallet_id() -> AccountIdOf<T> {
-		T::PalletId::get().into_account()
+		T::PalletId::get().into_account_truncating()
 	}
 
 	/// The account ID that holds the funds

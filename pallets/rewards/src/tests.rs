@@ -15,9 +15,9 @@ fn reward_funds_works() {
 			100,
 			0
 		));
-		assert_ok!(Rewards::reward_funds(Origin::signed(1), 2, 10));
+		assert_ok!(Rewards::reward_funds(RuntimeOrigin::signed(1), 2, 10));
 
-		System::assert_last_event(Event::Rewards(crate::Event::RewardFunds(2, 10, 1)));
+		System::assert_last_event(RuntimeEvent::Rewards(crate::Event::RewardFunds(2, 10, 1)));
 
 		assert_eq!(Balances::free_balance(PalletAccount::<Test>::get().unwrap()), 90);
 	})
@@ -36,7 +36,10 @@ fn reward_funds_bad_signature() {
 			1,
 			0
 		));
-		assert_noop!(Rewards::reward_funds(Origin::signed(1), 2, 2), Error::<Test>::BadSignature);
+		assert_noop!(
+			Rewards::reward_funds(RuntimeOrigin::signed(1), 2, 2),
+			Error::<Test>::BadSignature
+		);
 	})
 }
 
@@ -47,7 +50,10 @@ fn cant_reward_funds_when_not_admin() {
 
 		RewarderKey::<Test>::put(1);
 
-		assert_noop!(Rewards::reward_funds(Origin::signed(2), 2, 1), Error::<Test>::Unauthorized);
+		assert_noop!(
+			Rewards::reward_funds(RuntimeOrigin::signed(2), 2, 1),
+			Error::<Test>::Unauthorized
+		);
 	})
 }
 
@@ -58,7 +64,7 @@ fn update_admin_key_works() {
 
 		assert_eq!(Rewards::admin_key(), Some(2));
 
-		assert_ok!(Rewards::update_admin_key(Origin::signed(2), 1,));
+		assert_ok!(Rewards::update_admin_key(RuntimeOrigin::signed(2), 1,));
 
 		assert_eq!(Rewards::admin_key(), Some(1));
 	})
@@ -67,7 +73,7 @@ fn update_admin_key_works() {
 #[test]
 fn sudo_update_admin_key_works() {
 	ExternalityBuilder::build().execute_with(|| {
-		assert_ok!(Rewards::sudo_update_admin_key(Origin::root(), 1));
+		assert_ok!(Rewards::sudo_update_admin_key(RuntimeOrigin::root(), 1));
 
 		assert_eq!(Rewards::admin_key(), Some(1));
 	})

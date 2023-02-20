@@ -11,7 +11,7 @@ use frame_support::{
 fn add_electronic_medical_record_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio EMR".as_bytes().to_vec(),
 			"DeBio EMR Category".as_bytes().to_vec(),
 			vec![ElectronicMedicalRecordFileSubmission {
@@ -58,7 +58,7 @@ fn add_electronic_medical_record_works() {
 fn remove_electronic_medical_record_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio EMR".as_bytes().to_vec(),
 			"DeBio EMR Category".as_bytes().to_vec(),
 			vec![ElectronicMedicalRecordFileSubmission {
@@ -100,7 +100,7 @@ fn remove_electronic_medical_record_works() {
 		assert_eq!(emr_file.record_link, "DeBio EMR Link".as_bytes().to_vec());
 
 		assert_ok!(ElectronicMedicalRecord::remove_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			emr_ids[0]
 		));
 
@@ -115,7 +115,7 @@ fn remove_electronic_medical_record_does_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
 			ElectronicMedicalRecord::remove_electronic_medical_record(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 			),
 			Error::<Test>::ElectronicMedicalRecordDoesNotExist
@@ -127,7 +127,7 @@ fn remove_electronic_medical_record_does_not_exist() {
 fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio EMR".as_bytes().to_vec(),
 			"DeBio EMR Category".as_bytes().to_vec(),
 			vec![ElectronicMedicalRecordFileSubmission {
@@ -170,7 +170,7 @@ fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 
 		assert_noop!(
 			ElectronicMedicalRecord::remove_electronic_medical_record(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				emr_ids[0]
 			),
 			Error::<Test>::NotElectronicMedicalRecordOwner
@@ -182,7 +182,7 @@ fn remove_electronic_medical_record_not_electronic_medical_record_owner() {
 fn update_electronic_medical_record_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio EMR".as_bytes().to_vec(),
 			"DeBio EMR Category".as_bytes().to_vec(),
 			vec![ElectronicMedicalRecordFileSubmission {
@@ -224,7 +224,7 @@ fn update_electronic_medical_record_works() {
 		assert_eq!(emr_file.record_link, "DeBio EMR Link".as_bytes().to_vec());
 
 		assert_ok!(ElectronicMedicalRecord::update_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			emr_ids[0],
 			"DeBio EMR 2".as_bytes().to_vec(),
 			"DeBio EMR Category 2".as_bytes().to_vec(),
@@ -273,7 +273,7 @@ fn update_electronic_medical_record_does_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
 			ElectronicMedicalRecord::update_electronic_medical_record(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 				"DeBio EMR".as_bytes().to_vec(),
 				"DeBio EMR Category".as_bytes().to_vec(),
@@ -292,7 +292,7 @@ fn update_electronic_medical_record_does_not_exist() {
 fn update_electronic_medical_record_not_electronic_medical_record_owner() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(ElectronicMedicalRecord::add_electronic_medical_record(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			"DeBio EMR".as_bytes().to_vec(),
 			"DeBio EMR Category".as_bytes().to_vec(),
 			vec![ElectronicMedicalRecordFileSubmission {
@@ -335,7 +335,7 @@ fn update_electronic_medical_record_not_electronic_medical_record_owner() {
 
 		assert_noop!(
 			ElectronicMedicalRecord::update_electronic_medical_record(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				emr_ids[0],
 				"DeBio EMR".as_bytes().to_vec(),
 				"DeBio EMR Category".as_bytes().to_vec(),

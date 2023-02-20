@@ -18,7 +18,7 @@ benchmarks! {
 	update_genetic_data {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _add_genetic_data = GeneticData::<T>::add_genetic_data(
 			caller_origin.clone(),
 			"DeBio Genetic Data".as_bytes().to_vec(),
@@ -40,7 +40,7 @@ benchmarks! {
 	remove_genetic_data {
 		let caller: T::AccountId = whitelisted_caller();
 
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _add_genetic_data = GeneticData::<T>::add_genetic_data(
 			caller_origin.clone(),
 			"DeBio Genetic Data".as_bytes().to_vec(),

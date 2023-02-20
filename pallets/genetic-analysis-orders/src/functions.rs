@@ -176,6 +176,7 @@ impl<T: Config> Pallet<T> {
 					DispatchError::Token(_) => Err(Error::<T>::Token),
 					DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
 					DispatchError::Module(_) => Err(Error::<T>::Other),
+					DispatchError::Transactional(_) => return Err(Error::<T>::Arithmetic),
 				}
 			}
 		} else {
@@ -199,6 +200,7 @@ impl<T: Config> Pallet<T> {
 					DispatchError::Token(_) => Err(Error::<T>::Token),
 					DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
 					DispatchError::Module(_) => Err(Error::<T>::Module),
+					DispatchError::Transactional(_) => return Err(Error::<T>::Arithmetic),
 				}
 			}
 		}
@@ -227,7 +229,7 @@ impl<T: Config> Pallet<T> {
 
 	/// The injected pallet ID
 	pub fn get_pallet_id() -> AccountIdOf<T> {
-		T::PalletId::get().into_account()
+		T::PalletId::get().into_account_truncating()
 	}
 
 	/// The account ID that holds the funds

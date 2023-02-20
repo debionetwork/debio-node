@@ -26,69 +26,69 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for genetic_data.
-pub trait WeightInfo { 
-	fn add_genetic_data() -> Weight; 
-	fn update_genetic_data() -> Weight; 
-	fn remove_genetic_data() -> Weight; 
+pub trait WeightInfo {
+	fn add_genetic_data() -> Weight;
+	fn update_genetic_data() -> Weight;
+	fn remove_genetic_data() -> Weight;
 }
 
 /// Weights for genetic_data using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticData GeneticDataByOwner (r:1 w:1) 
-	// Storage: GeneticData GeneticDataCount (r:1 w:1) 
-	// Storage: GeneticData GeneticDataById (r:0 w:1) 
-	fn add_genetic_data() -> Weight { 
-		106_823_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticData GeneticDataByOwner (r:1 w:1)
+	// Storage: GeneticData GeneticDataCount (r:1 w:1)
+	// Storage: GeneticData GeneticDataById (r:0 w:1)
+	fn add_genetic_data() -> Weight {
+		Weight::from_ref_time(106_823_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: GeneticData GeneticDataById (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn update_genetic_data() -> Weight { 
-		82_546_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: GeneticData GeneticDataById (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn update_genetic_data() -> Weight {
+		Weight::from_ref_time(82_546_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: GeneticData GeneticDataById (r:1 w:1) 
-	// Storage: GeneticData GeneticDataByOwner (r:1 w:1) 
-	// Storage: GeneticData GeneticDataCount (r:1 w:1) 
-	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1) 
-	fn remove_genetic_data() -> Weight { 
-		115_370_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: GeneticData GeneticDataById (r:1 w:1)
+	// Storage: GeneticData GeneticDataByOwner (r:1 w:1)
+	// Storage: GeneticData GeneticDataCount (r:1 w:1)
+	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
+	fn remove_genetic_data() -> Weight {
+		Weight::from_ref_time(115_370_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticData GeneticDataByOwner (r:1 w:1) 
-	// Storage: GeneticData GeneticDataCount (r:1 w:1) 
-	// Storage: GeneticData GeneticDataById (r:0 w:1) 
-	fn add_genetic_data() -> Weight { 
-		106_823_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: GeneticData GeneticDataById (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn update_genetic_data() -> Weight { 
-		82_546_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: GeneticData GeneticDataById (r:1 w:1) 
-	// Storage: GeneticData GeneticDataByOwner (r:1 w:1) 
-	// Storage: GeneticData GeneticDataCount (r:1 w:1) 
-	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1) 
-	fn remove_genetic_data() -> Weight { 
-		115_370_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticData GeneticDataByOwner (r:1 w:1)
+	// Storage: GeneticData GeneticDataCount (r:1 w:1)
+	// Storage: GeneticData GeneticDataById (r:0 w:1)
+	fn add_genetic_data() -> Weight {
+		Weight::from_ref_time(106_823_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: GeneticData GeneticDataById (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn update_genetic_data() -> Weight {
+		Weight::from_ref_time(82_546_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticData GeneticDataById (r:1 w:1)
+	// Storage: GeneticData GeneticDataByOwner (r:1 w:1)
+	// Storage: GeneticData GeneticDataCount (r:1 w:1)
+	// Storage: GeneticData GeneticDataCountByOwner (r:1 w:1)
+	fn remove_genetic_data() -> Weight {
+		Weight::from_ref_time(115_370_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
 }

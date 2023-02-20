@@ -1,6 +1,6 @@
 #![cfg(test)]
 
-use frame_support::{construct_runtime, parameter_types};
+use frame_support::{construct_runtime, parameter_types, weights::Weight};
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
 use sp_core::{Decode, Encode, RuntimeDebug, H256};
@@ -23,19 +23,18 @@ construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		HealthProfessional: health_professional::{Pallet, Call, Storage, Event<T>},
-		HealthProfessionalQualification: health_professional_qualification::{Pallet, Call, Storage, Event<T>},
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		System: frame_system,
+		Balances: pallet_balances,
+		HealthProfessional: health_professional,
+		HealthProfessionalQualification: health_professional_qualification,
+		Timestamp: pallet_timestamp,
 	}
 );
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
-	pub BlockWeights: frame_system::limits::BlockWeights =
-		frame_system::limits::BlockWeights::simple_max(1024);
+	pub BlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights::simple_max(Weight::from_ref_time(1024));
 }
 
 impl frame_system::Config for Test {
@@ -43,15 +42,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -94,7 +93,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
@@ -102,14 +101,14 @@ impl pallet_balances::Config for Test {
 }
 
 impl health_professional::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type HealthProfessionalQualifications = HealthProfessionalQualification;
 	type HealthProfessionalWeightInfo = ();
 }
 
 impl health_professional_qualification::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type HealthProfessionalQualificationOwner = HealthProfessional;
 	type WeightInfo = ();
 }

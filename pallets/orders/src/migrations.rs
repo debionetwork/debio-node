@@ -16,9 +16,7 @@ use traits_genetic_testing::DnaSampleTrackingId;
 use traits_services::types::ServiceFlow;
 
 pub fn migrate<T: Config>() -> Weight {
-	use frame_support::traits::StorageVersion;
-
-	let mut weight: Weight = 0;
+	let mut weight: Weight = Weight::zero();
 	let mut version = StorageVersion::get::<Pallet<T>>();
 
 	if version < 1 {
@@ -130,14 +128,14 @@ mod version {
 
 		pub fn migrate<T: Config>() -> Weight {
 			let mut weight = T::DbWeight::get().writes(1);
-			let receiver: T::AccountId = T::PalletId::get().into_account();
+			let receiver: T::AccountId = T::PalletId::get().into_account_truncating();
 
 			PalletAccount::<T>::put(&receiver);
 
 			Orders::<T>::translate(|order_id: HashOf<T>, order: OrderOf<T>| {
 				weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
 
-				let sender: T::AccountId = PALLET_ID.into_sub_account(order_id);
+				let sender: T::AccountId = PALLET_ID.into_sub_account_truncating(order_id);
 
 				if order.currency.can_transfer() {
 					if order.currency == CurrencyType::DBIO {

@@ -31,7 +31,7 @@ use sp_std::vec;
 benchmarks! {
 	create {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -64,7 +64,7 @@ benchmarks! {
 
 	update {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -112,7 +112,7 @@ benchmarks! {
 
 	delete {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),

@@ -21,7 +21,7 @@ fn create_order_works() {
 		let lab = account_key("lab");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -40,7 +40,10 @@ fn create_order_works() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -57,7 +60,7 @@ fn create_order_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone(), prices_by_currency_usdt],
@@ -76,7 +79,7 @@ fn create_order_works() {
 
 		// Order with DBIO
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -126,7 +129,7 @@ fn cancel_order_works_when_order_status_unpaid() {
 		let customer = account_key("customer");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -145,7 +148,10 @@ fn cancel_order_works_when_order_status_unpaid() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -155,7 +161,7 @@ fn cancel_order_works_when_order_status_unpaid() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -173,7 +179,7 @@ fn cancel_order_works_when_order_status_unpaid() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -184,7 +190,7 @@ fn cancel_order_works_when_order_status_unpaid() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::cancel_order(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::cancel_order(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -229,7 +235,7 @@ fn set_order_paid_with_dbio_works() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -248,7 +254,10 @@ fn set_order_paid_with_dbio_works() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -258,7 +267,7 @@ fn set_order_paid_with_dbio_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -276,7 +285,7 @@ fn set_order_paid_with_dbio_works() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -289,7 +298,7 @@ fn set_order_paid_with_dbio_works() {
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -330,7 +339,7 @@ fn set_order_paid_with_app_chain_token_works() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -349,7 +358,10 @@ fn set_order_paid_with_app_chain_token_works() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_usdt = PriceByCurrency {
 			currency: CurrencyType::USDT,
@@ -359,7 +371,7 @@ fn set_order_paid_with_app_chain_token_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_usdt.clone()],
@@ -378,7 +390,7 @@ fn set_order_paid_with_app_chain_token_works() {
 		let asset_id = 1;
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -391,7 +403,7 @@ fn set_order_paid_with_app_chain_token_works() {
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -431,7 +443,7 @@ fn cancel_order_works_when_order_status_paid() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -450,7 +462,10 @@ fn cancel_order_works_when_order_status_paid() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -460,7 +475,7 @@ fn cancel_order_works_when_order_status_paid() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -478,7 +493,7 @@ fn cancel_order_works_when_order_status_paid() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -489,12 +504,12 @@ fn cancel_order_works_when_order_status_paid() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_eq!(Balances::free_balance(customer), 190);
 		assert_eq!(Balances::free_balance(pallet_id), 11);
 
-		assert_ok!(Orders::cancel_order(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::cancel_order(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -544,7 +559,7 @@ fn fulfill_order_works() {
 		TreasuryKey::<Test>::put(treasury_key);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -563,7 +578,10 @@ fn fulfill_order_works() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -573,7 +591,7 @@ fn fulfill_order_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -591,7 +609,7 @@ fn fulfill_order_works() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -602,10 +620,10 @@ fn fulfill_order_works() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -615,14 +633,14 @@ fn fulfill_order_works() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), _order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -666,7 +684,7 @@ fn set_order_refunded_works() {
 		EscrowKey::<Test>::put(admin);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -685,7 +703,10 @@ fn set_order_refunded_works() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -695,7 +716,7 @@ fn set_order_refunded_works() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -713,7 +734,7 @@ fn set_order_refunded_works() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -724,10 +745,10 @@ fn set_order_refunded_works() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -737,12 +758,12 @@ fn set_order_refunded_works() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::Rejected,
 		));
 
-		assert_ok!(Orders::set_order_refunded(Origin::signed(admin), _order_id));
+		assert_ok!(Orders::set_order_refunded(RuntimeOrigin::signed(admin), _order_id));
 
 		assert_eq!(
 			Orders::order_by_id(&_order_id),
@@ -780,7 +801,7 @@ fn cant_create_order_when_service_not_exists() {
 
 		assert_noop!(
 			Orders::create_order(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				Keccak256::hash("serviceId".as_bytes()),
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -799,7 +820,7 @@ fn cant_create_order_when_price_index_not_found() {
 		let customer = account_key("customer");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -818,7 +839,10 @@ fn cant_create_order_when_price_index_not_found() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -828,7 +852,7 @@ fn cant_create_order_when_price_index_not_found() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -847,7 +871,7 @@ fn cant_create_order_when_price_index_not_found() {
 
 		assert_noop!(
 			Orders::create_order(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				_lab.services[0],
 				10,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -866,7 +890,7 @@ fn cant_create_order_when_asset_id_not_found() {
 		let customer = account_key("customer");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -885,7 +909,10 @@ fn cant_create_order_when_asset_id_not_found() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_usdt = PriceByCurrency {
 			currency: CurrencyType::USDT,
@@ -895,7 +922,7 @@ fn cant_create_order_when_asset_id_not_found() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_usdt],
@@ -914,7 +941,7 @@ fn cant_create_order_when_asset_id_not_found() {
 
 		assert_noop!(
 			Orders::create_order(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -926,7 +953,7 @@ fn cant_create_order_when_asset_id_not_found() {
 
 		assert_noop!(
 			Orders::create_order(
-				Origin::signed(customer),
+				RuntimeOrigin::signed(customer),
 				_lab.services[0],
 				0,
 				Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -948,7 +975,7 @@ fn cant_cancel_order_when_order_ongoing() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -967,7 +994,10 @@ fn cant_cancel_order_when_order_ongoing() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -977,7 +1007,7 @@ fn cant_cancel_order_when_order_ongoing() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -995,7 +1025,7 @@ fn cant_cancel_order_when_order_ongoing() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1006,15 +1036,15 @@ fn cant_cancel_order_when_order_ongoing() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::Arrived,
 		));
 
 		assert_noop!(
-			Orders::cancel_order(Origin::signed(customer), _order_id),
+			Orders::cancel_order(RuntimeOrigin::signed(customer), _order_id),
 			Error::<Test>::OngoingOrderCannotBeCancelled
 		);
 	})
@@ -1026,7 +1056,10 @@ fn cant_cancel_order_when_order_not_exist() {
 		let customer = account_key("customer");
 
 		assert_noop!(
-			Orders::cancel_order(Origin::signed(customer), Keccak256::hash("order_id".as_bytes())),
+			Orders::cancel_order(
+				RuntimeOrigin::signed(customer),
+				Keccak256::hash("order_id".as_bytes())
+			),
 			Error::<Test>::OrderNotFound
 		);
 	})
@@ -1040,7 +1073,7 @@ fn cant_cancel_order_when_unathorized_user() {
 		let other_customer = account_key("other_customer");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1059,7 +1092,10 @@ fn cant_cancel_order_when_unathorized_user() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1069,7 +1105,7 @@ fn cant_cancel_order_when_unathorized_user() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1087,7 +1123,7 @@ fn cant_cancel_order_when_unathorized_user() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1099,7 +1135,7 @@ fn cant_cancel_order_when_unathorized_user() {
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
 		assert_noop!(
-			Orders::cancel_order(Origin::signed(other_customer), _order_id),
+			Orders::cancel_order(RuntimeOrigin::signed(other_customer), _order_id),
 			Error::<Test>::UnauthorizedOrderCancellation
 		);
 	})
@@ -1112,7 +1148,7 @@ fn cant_cancel_order_when_order_already_finished() {
 		let customer = account_key("customer");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1131,7 +1167,10 @@ fn cant_cancel_order_when_order_already_finished() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1141,7 +1180,7 @@ fn cant_cancel_order_when_order_already_finished() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1159,7 +1198,7 @@ fn cant_cancel_order_when_order_already_finished() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1170,10 +1209,10 @@ fn cant_cancel_order_when_order_already_finished() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::cancel_order(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::cancel_order(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_noop!(
-			Orders::cancel_order(Origin::signed(customer), _order_id),
+			Orders::cancel_order(RuntimeOrigin::signed(customer), _order_id),
 			Error::<Test>::OrderCannotBeCancelled,
 		);
 	})
@@ -1187,7 +1226,7 @@ fn cant_set_order_paid_when_unauthorized() {
 		let other_customer = account_key("other_customer");
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1206,7 +1245,10 @@ fn cant_set_order_paid_when_unauthorized() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1216,7 +1258,7 @@ fn cant_set_order_paid_when_unauthorized() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1234,7 +1276,7 @@ fn cant_set_order_paid_when_unauthorized() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1245,7 +1287,7 @@ fn cant_set_order_paid_when_unauthorized() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
 		assert_noop!(
-			Orders::set_order_paid(Origin::signed(other_customer), _order_id),
+			Orders::set_order_paid(RuntimeOrigin::signed(other_customer), _order_id),
 			Error::<Test>::Unauthorized
 		);
 	})
@@ -1255,7 +1297,10 @@ fn cant_set_order_paid_when_unauthorized() {
 fn cant_set_order_paid_when_not_exist() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 		assert_noop!(
-			Orders::set_order_paid(Origin::signed(3), Keccak256::hash("order_id".as_bytes())),
+			Orders::set_order_paid(
+				RuntimeOrigin::signed(3),
+				Keccak256::hash("order_id".as_bytes())
+			),
 			Error::<Test>::OrderNotFound
 		);
 	})
@@ -1271,7 +1316,7 @@ fn cant_set_order_paid_when_already_finished() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1290,7 +1335,10 @@ fn cant_set_order_paid_when_already_finished() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1300,7 +1348,7 @@ fn cant_set_order_paid_when_already_finished() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1318,7 +1366,7 @@ fn cant_set_order_paid_when_already_finished() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1328,10 +1376,10 @@ fn cant_set_order_paid_when_already_finished() {
 
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_noop!(
-			Orders::set_order_paid(Origin::signed(customer), _order_id),
+			Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id),
 			Error::<Test>::OrderCannotBePaid
 		);
 	})
@@ -1345,7 +1393,10 @@ fn cant_fulfill_order_when_not_exist() {
 		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(admin), Keccak256::hash("order_id".as_bytes())),
+			Orders::fulfill_order(
+				RuntimeOrigin::signed(admin),
+				Keccak256::hash("order_id".as_bytes())
+			),
 			Error::<Test>::OrderNotFound
 		);
 	})
@@ -1363,7 +1414,7 @@ fn cant_fulfill_order_when_unauthorized() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1382,7 +1433,10 @@ fn cant_fulfill_order_when_unauthorized() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1392,7 +1446,7 @@ fn cant_fulfill_order_when_unauthorized() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1410,7 +1464,7 @@ fn cant_fulfill_order_when_unauthorized() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1421,10 +1475,10 @@ fn cant_fulfill_order_when_unauthorized() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -1434,7 +1488,7 @@ fn cant_fulfill_order_when_unauthorized() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
@@ -1442,7 +1496,7 @@ fn cant_fulfill_order_when_unauthorized() {
 		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(other_lab), _order_id),
+			Orders::fulfill_order(RuntimeOrigin::signed(other_lab), _order_id),
 			Error::<Test>::UnauthorizedOrderFulfillment
 		);
 	})
@@ -1459,7 +1513,7 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1478,10 +1532,13 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![PriceByCurrency::default()],
@@ -1499,7 +1556,7 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1509,12 +1566,12 @@ fn cant_fulfill_order_when_dna_sample_not_process() {
 
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		EscrowKey::<Test>::put(admin);
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(lab), _order_id),
+			Orders::fulfill_order(RuntimeOrigin::signed(lab), _order_id),
 			Error::<Test>::DnaSampleNotSuccessfullyProcessed
 		);
 	})
@@ -1533,7 +1590,7 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		TreasuryKey::<Test>::put(treasury_key);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1552,7 +1609,10 @@ fn cant_fulfill_order_when_already_fulfilled() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1562,7 +1622,7 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1580,7 +1640,7 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1591,9 +1651,9 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -1603,17 +1663,17 @@ fn cant_fulfill_order_when_already_fulfilled() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), _order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), _order_id));
 
 		assert_noop!(
-			Orders::fulfill_order(Origin::signed(lab), _order_id),
+			Orders::fulfill_order(RuntimeOrigin::signed(lab), _order_id),
 			Error::<Test>::OrderCannotBeFulfilled
 		);
 	})
@@ -1630,7 +1690,7 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1649,7 +1709,10 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1659,7 +1722,7 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1677,7 +1740,7 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1690,10 +1753,10 @@ fn cant_set_order_refunded_when_not_yet_expired() {
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_noop!(
-			Orders::set_order_refunded(Origin::signed(admin), _order_id),
+			Orders::set_order_refunded(RuntimeOrigin::signed(admin), _order_id),
 			Error::<Test>::OrderNotYetExpired
 		);
 	})
@@ -1710,7 +1773,7 @@ fn cant_set_order_refunded_when_already_refunded() {
 		PalletAccount::<Test>::put(pallet_id);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1729,7 +1792,10 @@ fn cant_set_order_refunded_when_already_refunded() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1739,7 +1805,7 @@ fn cant_set_order_refunded_when_already_refunded() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio],
@@ -1757,7 +1823,7 @@ fn cant_set_order_refunded_when_already_refunded() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1768,10 +1834,10 @@ fn cant_set_order_refunded_when_already_refunded() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -1781,17 +1847,17 @@ fn cant_set_order_refunded_when_already_refunded() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::Rejected,
 		));
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::set_order_refunded(Origin::signed(admin), _order_id));
+		assert_ok!(Orders::set_order_refunded(RuntimeOrigin::signed(admin), _order_id));
 
 		assert_noop!(
-			Orders::set_order_refunded(Origin::signed(admin), _order_id),
+			Orders::set_order_refunded(RuntimeOrigin::signed(admin), _order_id),
 			Error::<Test>::OrderCannotBeRefunded
 		);
 	})
@@ -1812,7 +1878,7 @@ fn call_event_should_work() {
 		TreasuryKey::<Test>::put(treasury_key);
 
 		assert_ok!(Labs::register_lab(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			LabInfo {
 				box_public_key: Keccak256::hash(
 					"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -1831,7 +1897,10 @@ fn call_event_should_work() {
 			}
 		));
 
-		assert_ok!(UserProfile::set_eth_address(Origin::signed(lab), EthereumAddress([b'X'; 20])));
+		assert_ok!(UserProfile::set_eth_address(
+			RuntimeOrigin::signed(lab),
+			EthereumAddress([b'X'; 20])
+		));
 
 		let prices_by_currency_dbio = PriceByCurrency {
 			currency: CurrencyType::DBIO,
@@ -1841,7 +1910,7 @@ fn call_event_should_work() {
 		};
 
 		assert_ok!(Services::create_service(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			ServiceInfo {
 				name: "DeBio name".as_bytes().to_vec(),
 				prices_by_currency: vec![prices_by_currency_dbio.clone()],
@@ -1859,7 +1928,7 @@ fn call_event_should_work() {
 		let _lab = Labs::lab_by_account_id(lab).unwrap();
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1870,7 +1939,7 @@ fn call_event_should_work() {
 		let _order_id = Orders::last_order_by_customer_id(customer).unwrap();
 		let _dna_sample = GeneticTesting::dna_samples_by_lab_id(lab).unwrap();
 
-		System::assert_last_event(Event::Orders(crate::Event::OrderCreated(Order {
+		System::assert_last_event(RuntimeEvent::Orders(crate::Event::OrderCreated(Order {
 			id: _order_id,
 			service_id: _lab.services[0],
 			customer_id: customer,
@@ -1890,9 +1959,9 @@ fn call_event_should_work() {
 			updated_at: 0,
 		})));
 
-		assert_ok!(Orders::cancel_order(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::cancel_order(RuntimeOrigin::signed(customer), _order_id));
 
-		System::assert_last_event(Event::Orders(crate::Event::OrderCancelled(Order {
+		System::assert_last_event(RuntimeEvent::Orders(crate::Event::OrderCancelled(Order {
 			id: _order_id,
 			service_id: _lab.services[0],
 			customer_id: customer,
@@ -1913,7 +1982,7 @@ fn call_event_should_work() {
 		})));
 
 		assert_ok!(Orders::create_order(
-			Origin::signed(customer),
+			RuntimeOrigin::signed(customer),
 			_lab.services[0],
 			0,
 			Keccak256::hash("0xhJ7TRe456FADD2726A132ABJK5RCc9E6fC5869F4".as_bytes()),
@@ -1926,9 +1995,9 @@ fn call_event_should_work() {
 
 		EscrowKey::<Test>::put(admin);
 
-		assert_ok!(Orders::set_order_paid(Origin::signed(customer), _order_id));
+		assert_ok!(Orders::set_order_paid(RuntimeOrigin::signed(customer), _order_id));
 
-		System::assert_last_event(Event::Orders(crate::Event::OrderPaid(Order {
+		System::assert_last_event(RuntimeEvent::Orders(crate::Event::OrderPaid(Order {
 			id: _order_id,
 			service_id: _lab.services[0],
 			customer_id: customer,
@@ -1949,7 +2018,7 @@ fn call_event_should_work() {
 		})));
 
 		assert_ok!(GeneticTesting::submit_test_result(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaTestResultSubmission {
 				comments: Some("comment".as_bytes().to_vec()),
@@ -1959,14 +2028,14 @@ fn call_event_should_work() {
 		));
 
 		assert_ok!(GeneticTesting::process_dna_sample(
-			Origin::signed(lab),
+			RuntimeOrigin::signed(lab),
 			_dna_sample[0].clone(),
 			DnaSampleStatus::ResultReady,
 		));
 
-		assert_ok!(Orders::fulfill_order(Origin::signed(lab), _order_id));
+		assert_ok!(Orders::fulfill_order(RuntimeOrigin::signed(lab), _order_id));
 
-		System::assert_last_event(Event::Orders(crate::Event::OrderFulfilled(Order {
+		System::assert_last_event(RuntimeEvent::Orders(crate::Event::OrderFulfilled(Order {
 			id: _order_id,
 			service_id: _lab.services[0],
 			customer_id: customer,
@@ -1995,7 +2064,7 @@ fn update_key_works() {
 
 		assert_eq!(Orders::admin_key(), Some(2));
 
-		assert_ok!(Orders::update_key(Origin::signed(2), AccountKeyType::EscrowKey(1)));
+		assert_ok!(Orders::update_key(RuntimeOrigin::signed(2), AccountKeyType::EscrowKey(1)));
 
 		assert_eq!(Orders::admin_key(), Some(1));
 	})
@@ -2004,7 +2073,7 @@ fn update_key_works() {
 #[test]
 fn sudo_update_key_works() {
 	<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-		assert_ok!(Orders::sudo_update_key(Origin::root(), AccountKeyType::TreasuryKey(1)));
+		assert_ok!(Orders::sudo_update_key(RuntimeOrigin::root(), AccountKeyType::TreasuryKey(1)));
 
 		assert_eq!(Orders::treasury_key(), Some(1));
 	})

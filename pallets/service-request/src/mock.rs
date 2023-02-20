@@ -1,6 +1,8 @@
 use crate as service_request;
 
-use frame_support::{construct_runtime, parameter_types, traits::ConstU64, PalletId};
+use frame_support::{
+	construct_runtime, parameter_types, traits::ConstU64, weights::Weight, PalletId,
+};
 use frame_system as system;
 use pallet_balances::AccountData;
 use scale_info::TypeInfo;
@@ -27,26 +29,25 @@ construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Orders: orders::{Pallet, Call, Storage, Event<T>},
-		Labs: labs::{Pallet, Call, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		ServiceRequest: service_request::{Pallet, Call, Storage, Event<T>},
-		Services: services::{Pallet, Call, Storage, Event<T>},
-		Certifications: certifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
-		GeneticTesting: genetic_testing::{Pallet, Call, Storage, Event<T>},
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
-		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
+		System: frame_system,
+		Orders: orders,
+		Labs: labs,
+		Balances: pallet_balances,
+		ServiceRequest: service_request,
+		Services: services,
+		Certifications: certifications,
+		UserProfile: user_profile,
+		GeneticTesting: genetic_testing,
+		Timestamp: pallet_timestamp,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip,
+		Assets: pallet_assets,
 	}
 );
 
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
-	pub BlockWeights: frame_system::limits::BlockWeights =
-		frame_system::limits::BlockWeights::simple_max(1024);
+	pub BlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights::simple_max(Weight::from_ref_time(1024));
 }
 
 impl pallet_randomness_collective_flip::Config for Test {}
@@ -56,15 +57,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -109,7 +110,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
@@ -128,7 +129,7 @@ parameter_types! {
 }
 
 impl pallet_assets::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Balance = AssetBalance;
 	type AssetId = AssetId;
 	type Currency = Balances;
@@ -149,7 +150,7 @@ parameter_types! {
 }
 
 impl service_request::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type TimeProvider = Timestamp;
 	type Currency = Balances;
 	type Labs = Labs;
@@ -160,7 +161,7 @@ impl service_request::Config for Test {
 }
 
 impl labs::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type Certifications = Certifications;
 	type EthereumAddress = EthereumAddress;
@@ -173,14 +174,14 @@ impl labs::Config for Test {
 }
 
 impl services::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type ServiceOwner = Labs;
 	type WeightInfo = ();
 }
 
 impl orders::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Services = Services;
 	type GeneticTesting = GeneticTesting;
 	type Currency = Balances;
@@ -190,20 +191,20 @@ impl orders::Config for Test {
 }
 
 impl genetic_testing::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Orders = Orders;
 	type RandomnessSource = RandomnessCollectiveFlip;
 	type GeneticTestingWeightInfo = ();
 }
 
 impl certifications::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type CertificationOwner = Labs;
 	type WeightInfo = ();
 }
 
 impl user_profile::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();

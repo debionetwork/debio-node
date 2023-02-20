@@ -17,14 +17,14 @@ benchmarks! {
 		let admin: T::AccountId = account("admin", 0, SEED);
 
 		// Set Admin Key
-		let root = <T as frame_system::Config>::Origin::from(RawOrigin::Root);
+		let root = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Root);
 		let _ = MenstrualSubscription::<T>::sudo_update_key(root, AccountKeyType::AdminKey(admin.clone()));
 
 		// Default balance
 		let subscription_price = 1_000_000_000_000_000_000u128.saturated_into();
 
 		// Set price
-		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin));
+		let admin_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(admin));
 		let _ = MenstrualSubscription::<T>::set_menstrual_subscription_price(
 			admin_origin,
 			MenstrualSubscriptionDuration::default(),
@@ -44,7 +44,7 @@ benchmarks! {
 		let admin: T::AccountId = account("admin", 0, SEED);
 
 		// Set Admin Key
-		let root = <T as frame_system::Config>::Origin::from(RawOrigin::Root);
+		let root = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Root);
 		let _ = MenstrualSubscription::<T>::sudo_update_key(root, AccountKeyType::AdminKey(admin.clone()));
 
 		// Default balance
@@ -58,7 +58,7 @@ benchmarks! {
 		);
 
 		// Set price
-		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin.clone()));
+		let admin_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(admin.clone()));
 		let _ = MenstrualSubscription::<T>::set_menstrual_subscription_price(
 			admin_origin,
 			MenstrualSubscriptionDuration::default(),
@@ -68,7 +68,7 @@ benchmarks! {
 		);
 
 		// Add subscription
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = MenstrualSubscription::<T>::add_menstrual_subscription(
 			caller_origin.clone(),
 			MenstrualSubscriptionDuration::default(),
@@ -94,7 +94,7 @@ benchmarks! {
 		let treasure: T::AccountId = account("treasure", 0, SEED);
 
 		// Set Key
-		let root = <T as frame_system::Config>::Origin::from(RawOrigin::Root);
+		let root = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Root);
 		let _ = MenstrualSubscription::<T>::sudo_update_key(root.clone(), AccountKeyType::AdminKey(admin.clone()));
 		let _ = MenstrualSubscription::<T>::sudo_update_key(root.clone(), AccountKeyType::TreasuryKey(treasure.clone()));
 
@@ -109,7 +109,7 @@ benchmarks! {
 		);
 
 		// Set price
-		let admin_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(admin));
+		let admin_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(admin));
 		let _ = MenstrualSubscription::<T>::set_menstrual_subscription_price(
 			admin_origin,
 			MenstrualSubscriptionDuration::default(),
@@ -119,7 +119,7 @@ benchmarks! {
 		);
 
 		// Add Subscription
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 		let _ = MenstrualSubscription::<T>::add_menstrual_subscription(
 			caller_origin,
 			MenstrualSubscriptionDuration::default(),
@@ -136,7 +136,7 @@ benchmarks! {
 		let caller: T::AccountId = whitelisted_caller();
 
 		// Set Admin Key
-		let root = <T as frame_system::Config>::Origin::from(RawOrigin::Root);
+		let root = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Root);
 		let _ = MenstrualSubscription::<T>::sudo_update_key(root.clone(), AccountKeyType::AdminKey(caller.clone()));
 	}: set_menstrual_subscription_price(
 		RawOrigin::Signed(caller),

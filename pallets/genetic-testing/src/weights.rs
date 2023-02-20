@@ -27,103 +27,103 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for genetic_testing.
-pub trait WeightInfo { 
-	fn reject_dna_sample() -> Weight; 
-	fn process_dna_sample() -> Weight; 
-	fn submit_test_result() -> Weight; 
-	fn submit_independent_test_result() -> Weight; 
-	fn submit_data_bounty_details() -> Weight; 
+pub trait WeightInfo {
+	fn reject_dna_sample() -> Weight;
+	fn process_dna_sample() -> Weight;
+	fn submit_test_result() -> Weight;
+	fn submit_independent_test_result() -> Weight;
+	fn submit_data_bounty_details() -> Weight;
 }
 
 /// Weights for genetic_testing using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: GeneticTesting DnaSamples (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: Orders Orders (r:1 w:1) 
-	// Storage: Orders PendingOrdersBySeller (r:1 w:1) 
-	fn reject_dna_sample() -> Weight { 
-		111_095_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(3_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: GeneticTesting DnaSamples (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Orders Orders (r:1 w:1)
+	// Storage: Orders PendingOrdersBySeller (r:1 w:1)
+	fn reject_dna_sample() -> Weight {
+		Weight::from_ref_time(111_095_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
-	// Storage: GeneticTesting DnaSamples (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn process_dna_sample() -> Weight { 
-		36_464_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: GeneticTesting DnaSamples (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn process_dna_sample() -> Weight {
+		Weight::from_ref_time(36_464_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: GeneticTesting DnaSamples (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticTesting DnaTestResultsByLab (r:1 w:1) 
-	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1) 
-	// Storage: GeneticTesting DnaTestResults (r:0 w:1) 
-	fn submit_test_result() -> Weight { 
-		46_355_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: GeneticTesting DnaSamples (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticTesting DnaTestResultsByLab (r:1 w:1)
+	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
+	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
+	fn submit_test_result() -> Weight {
+		Weight::from_ref_time(46_355_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: System Account (r:1 w:0) 
-	// Storage: RandomnessCollectiveFlip RandomMaterial (r:1 w:0) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticTesting DnaTestResults (r:1 w:1) 
-	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1) 
-	fn submit_independent_test_result() -> Weight { 
-		43_360_000_u64 
-			.saturating_add(T::DbWeight::get().reads(5_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: System Account (r:1 w:0)
+	// Storage: RandomnessCollectiveFlip RandomMaterial (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
+	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
+	fn submit_independent_test_result() -> Weight {
+		Weight::from_ref_time(43_360_000_u64)
+			.saturating_add(T::DbWeight::get().reads(5_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1) 
-	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1) 
-	fn submit_data_bounty_details() -> Weight { 
-		22_628_000_u64 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1)
+	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1)
+	fn submit_data_bounty_details() -> Weight {
+		Weight::from_ref_time(22_628_000_u64)
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: GeneticTesting DnaSamples (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: Orders Orders (r:1 w:1) 
-	// Storage: Orders PendingOrdersBySeller (r:1 w:1) 
-	fn reject_dna_sample() -> Weight { 
-		111_095_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(3_u64)) 
-	} 
-	// Storage: GeneticTesting DnaSamples (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn process_dna_sample() -> Weight { 
-		36_464_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: GeneticTesting DnaSamples (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticTesting DnaTestResultsByLab (r:1 w:1) 
-	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1) 
-	// Storage: GeneticTesting DnaTestResults (r:0 w:1) 
-	fn submit_test_result() -> Weight { 
-		46_355_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: System Account (r:1 w:0) 
-	// Storage: RandomnessCollectiveFlip RandomMaterial (r:1 w:0) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticTesting DnaTestResults (r:1 w:1) 
-	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1) 
-	fn submit_independent_test_result() -> Weight { 
-		43_360_000_u64
-			.saturating_add(RocksDbWeight::get().reads(5_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1) 
-	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1) 
-	fn submit_data_bounty_details() -> Weight { 
-		22_628_000_u64
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: GeneticTesting DnaSamples (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: Orders Orders (r:1 w:1)
+	// Storage: Orders PendingOrdersBySeller (r:1 w:1)
+	fn reject_dna_sample() -> Weight {
+		Weight::from_ref_time(111_095_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(3_u64))
+	}
+	// Storage: GeneticTesting DnaSamples (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn process_dna_sample() -> Weight {
+		Weight::from_ref_time(36_464_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticTesting DnaSamples (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticTesting DnaTestResultsByLab (r:1 w:1)
+	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
+	// Storage: GeneticTesting DnaTestResults (r:0 w:1)
+	fn submit_test_result() -> Weight {
+		Weight::from_ref_time(46_355_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: System Account (r:1 w:0)
+	// Storage: RandomnessCollectiveFlip RandomMaterial (r:1 w:0)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticTesting DnaTestResults (r:1 w:1)
+	// Storage: GeneticTesting DnaTestResultsByOwner (r:1 w:1)
+	fn submit_independent_test_result() -> Weight {
+		Weight::from_ref_time(43_360_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(5_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: GeneticTesting StakedDataByOrderId (r:0 w:1)
+	// Storage: GeneticTesting StakedDataByAccountId (r:0 w:1)
+	fn submit_data_bounty_details() -> Weight {
+		Weight::from_ref_time(22_628_000_u64)
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
 }

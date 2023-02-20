@@ -19,11 +19,11 @@ construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		OpinionRequestor: opinion_requestor::{Pallet, Call, Storage, Event<T>},
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-		ElectronicMedicalRecord: electronic_medical_record::{Pallet, Call, Storage, Event<T>},
+		System: frame_system,
+		Balances: pallet_balances,
+		OpinionRequestor: opinion_requestor,
+		Timestamp: pallet_timestamp,
+		ElectronicMedicalRecord: electronic_medical_record,
 	}
 );
 
@@ -37,15 +37,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -88,7 +88,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
@@ -96,13 +96,13 @@ impl pallet_balances::Config for Test {
 }
 
 impl electronic_medical_record::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 	type ElectronicMedicalRecordWeightInfo = ();
 }
 
 impl opinion_requestor::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ElectronicMedicalRecord = ElectronicMedicalRecord;
 	type OpinionRequestorWeightInfo = ();
 }

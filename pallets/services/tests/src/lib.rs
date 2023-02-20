@@ -21,7 +21,7 @@ mod tests {
 	fn create_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -41,12 +41,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -97,7 +97,7 @@ mod tests {
 	fn update_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -117,12 +117,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -142,7 +142,7 @@ mod tests {
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_ok!(Services::update_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				lab.services[0],
 				ServiceInfo {
 					name: "DeBio service name 2".as_bytes().to_vec(),
@@ -193,7 +193,7 @@ mod tests {
 	fn delete_service_works() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -213,12 +213,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -237,7 +237,7 @@ mod tests {
 
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
-			assert_ok!(Services::delete_service(Origin::signed(1), lab.services[0]));
+			assert_ok!(Services::delete_service(RuntimeOrigin::signed(1), lab.services[0]));
 
 			assert_eq!(Services::services_count_by_owner(1), Some(0));
 		})
@@ -248,7 +248,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				Services::create_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					ServiceInfo {
 						name: "DeBio service name".as_bytes().to_vec(),
 						prices_by_currency: vec![PriceByCurrency::default()],
@@ -275,7 +275,7 @@ mod tests {
 	fn update_service_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -296,7 +296,7 @@ mod tests {
 
 			assert_noop!(
 				Services::update_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
 					ServiceInfo {
 						name: "DeBio service name 2".as_bytes().to_vec(),
@@ -325,7 +325,7 @@ mod tests {
 	fn update_service_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -345,12 +345,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -371,7 +371,7 @@ mod tests {
 
 			assert_noop!(
 				Services::update_service(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					lab.services[0],
 					ServiceInfo {
 						name: "DeBio service name 2".as_bytes().to_vec(),
@@ -400,7 +400,7 @@ mod tests {
 	fn delete_service_does_not_exist() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -421,7 +421,7 @@ mod tests {
 
 			assert_noop!(
 				Services::delete_service(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes())
 				),
 				Error::<Test>::ServiceDoesNotExist
@@ -433,7 +433,7 @@ mod tests {
 	fn delete_service_not_owner() {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_ok!(Labs::register_lab(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				LabInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()
@@ -453,12 +453,12 @@ mod tests {
 			));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(Services::create_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				ServiceInfo {
 					name: "DeBio service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -478,7 +478,7 @@ mod tests {
 			let lab = Labs::lab_by_account_id(1).unwrap();
 
 			assert_noop!(
-				Services::delete_service(Origin::signed(2), lab.services[0]),
+				Services::delete_service(RuntimeOrigin::signed(2), lab.services[0]),
 				Error::<Test>::NotServiceOwner
 			);
 		})

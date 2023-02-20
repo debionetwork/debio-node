@@ -43,7 +43,7 @@ pub mod pallet {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + pallet_timestamp::Config {
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		type Services: ServicesProvider<Self, BalanceOf<Self>>;
 		type GeneticTesting: GeneticTestingProvider<Self>;
 		type Currency: Currency<<Self as frame_system::Config>::AccountId>;
@@ -124,7 +124,7 @@ pub mod pallet {
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
-			let account_id: T::AccountId = T::PalletId::get().into_account();
+			let account_id: T::AccountId = T::PalletId::get().into_account_truncating();
 			PalletAccount::<T>::put(account_id);
 
 			if let Some(ref escrow_key) = self.escrow_key {

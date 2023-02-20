@@ -10,7 +10,7 @@ pub const PALLET_ID: PalletId = PalletId(*b"reqsrvc!");
 impl<T: Config> Pallet<T> {
 	/// Pallet Methods
 	pub fn staking_account_id(request_id: T::Hash) -> AccountIdOf<T> {
-		PALLET_ID.into_sub_account(request_id)
+		PALLET_ID.into_sub_account_truncating(request_id)
 	}
 
 	pub fn generate_request_id(
@@ -51,6 +51,7 @@ impl<T: Config> Pallet<T> {
 				DispatchError::Token(_) => Err(Error::<T>::Token),
 				DispatchError::Arithmetic(_) => Err(Error::<T>::Arithmetic),
 				DispatchError::Module(_) => Err(Error::<T>::Arithmetic),
+				DispatchError::Transactional(_) => return Err(Error::<T>::Arithmetic),
 			}
 		}
 

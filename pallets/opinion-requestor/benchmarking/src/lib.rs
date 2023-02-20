@@ -33,7 +33,7 @@ benchmarks! {
 
 	update_requestor_info {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let info = RequestorInfo::new(
 			b"category",

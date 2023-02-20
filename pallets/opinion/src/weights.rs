@@ -26,107 +26,107 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for opinion_benchmarking.
-pub trait WeightInfo { 
-	fn create() -> Weight; 
-	fn update() -> Weight; 
-	fn update_status() -> Weight; 
-	fn delete() -> Weight; 
-	fn update_admin_key() -> Weight; 
+pub trait WeightInfo {
+	fn create() -> Weight;
+	fn update() -> Weight;
+	fn update_status() -> Weight;
+	fn delete() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for opinion_benchmarking using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1) 
-	// Storage: Opinion OpinionCount (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:1 w:0) 
-	// Storage: Opinion OpinionCountByOwner (r:1 w:1) 
-	// Storage: Opinion OpinionByOwner (r:1 w:1) 
-	// Storage: Opinion Opinions (r:0 w:1) 
-	fn create() -> Weight { 
-		282_200_000_u64 
-			.saturating_add(T::DbWeight::get().reads(7_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1)
+	// Storage: Opinion OpinionCount (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:1 w:0)
+	// Storage: Opinion OpinionCountByOwner (r:1 w:1)
+	// Storage: Opinion OpinionByOwner (r:1 w:1)
+	// Storage: Opinion Opinions (r:0 w:1)
+	fn create() -> Weight {
+		Weight::from_ref_time(282_200_000_u64)
+			.saturating_add(T::DbWeight::get().reads(7_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: Opinion Opinions (r:1 w:1) 
-	fn update() -> Weight { 
-		54_600_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: Opinion Opinions (r:1 w:1)
+	fn update() -> Weight {
+		Weight::from_ref_time(54_600_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: Opinion Opinions (r:1 w:1) 
-	fn update_status() -> Weight { 
-		41_700_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: Opinion Opinions (r:1 w:1)
+	fn update_status() -> Weight {
+		Weight::from_ref_time(41_700_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: Opinion Opinions (r:1 w:1) 
-	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1) 
-	// Storage: Opinion OpinionCount (r:1 w:1) 
-	// Storage: Opinion OpinionCountByOwner (r:1 w:1) 
-	// Storage: Opinion OpinionByOwner (r:1 w:1) 
-	fn delete() -> Weight { 
-		257_900_000_u64 
-			.saturating_add(T::DbWeight::get().reads(6_u64)) 
-			.saturating_add(T::DbWeight::get().writes(5_u64)) 
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: Opinion Opinions (r:1 w:1)
+	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1)
+	// Storage: Opinion OpinionCount (r:1 w:1)
+	// Storage: Opinion OpinionCountByOwner (r:1 w:1)
+	// Storage: Opinion OpinionByOwner (r:1 w:1)
+	fn delete() -> Weight {
+		Weight::from_ref_time(257_900_000_u64)
+			.saturating_add(T::DbWeight::get().reads(6_u64))
+			.saturating_add(T::DbWeight::get().writes(5_u64))
 	}
-	// Storage: Opinion OpinionAdminKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		53_100_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: Opinion OpinionAdminKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(53_100_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1) 
-	// Storage: Opinion OpinionCount (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: System Account (r:1 w:0) 
-	// Storage: Opinion OpinionCountByOwner (r:1 w:1) 
-	// Storage: Opinion OpinionByOwner (r:1 w:1) 
-	// Storage: Opinion Opinions (r:0 w:1) 
-	fn create() -> Weight { 
-		282_200_000_u64
-			.saturating_add(RocksDbWeight::get().reads(7_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: Opinion Opinions (r:1 w:1) 
-	fn update() -> Weight { 
-		54_600_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: Opinion Opinions (r:1 w:1) 
-	fn update_status() -> Weight { 
-		41_700_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: Opinion OpinionAdminKey (r:1 w:0) 
-	// Storage: Opinion Opinions (r:1 w:1) 
-	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1) 
-	// Storage: Opinion OpinionCount (r:1 w:1) 
-	// Storage: Opinion OpinionCountByOwner (r:1 w:1) 
-	// Storage: Opinion OpinionByOwner (r:1 w:1) 
-	fn delete() -> Weight { 
-		257_900_000_u64
-			.saturating_add(RocksDbWeight::get().reads(6_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(5_u64)) 
-	} 
-	// Storage: Opinion OpinionAdminKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		53_100_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1)
+	// Storage: Opinion OpinionCount (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: System Account (r:1 w:0)
+	// Storage: Opinion OpinionCountByOwner (r:1 w:1)
+	// Storage: Opinion OpinionByOwner (r:1 w:1)
+	// Storage: Opinion Opinions (r:0 w:1)
+	fn create() -> Weight {
+		Weight::from_ref_time(282_200_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(7_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: Opinion Opinions (r:1 w:1)
+	fn update() -> Weight {
+		Weight::from_ref_time(54_600_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: Opinion Opinions (r:1 w:1)
+	fn update_status() -> Weight {
+		Weight::from_ref_time(41_700_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: Opinion OpinionAdminKey (r:1 w:0)
+	// Storage: Opinion Opinions (r:1 w:1)
+	// Storage: OpinionRequestor OpinionRequestors (r:1 w:1)
+	// Storage: Opinion OpinionCount (r:1 w:1)
+	// Storage: Opinion OpinionCountByOwner (r:1 w:1)
+	// Storage: Opinion OpinionByOwner (r:1 w:1)
+	fn delete() -> Weight {
+		Weight::from_ref_time(257_900_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(6_u64))
+			.saturating_add(RocksDbWeight::get().writes(5_u64))
+	}
+	// Storage: Opinion OpinionAdminKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(53_100_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

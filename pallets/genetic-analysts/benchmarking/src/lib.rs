@@ -43,7 +43,7 @@ benchmarks! {
 
 	update_genetic_analyst {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -78,7 +78,7 @@ benchmarks! {
 
 	update_genetic_analyst_verification_status {
 		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get().unwrap();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -105,7 +105,7 @@ benchmarks! {
 
 	update_genetic_analyst_availability_status {
 		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get().unwrap();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let old_genetic_analyst = GeneticAnalystInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -127,7 +127,7 @@ benchmarks! {
 
 	deregister_genetic_analyst {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let genetic_analyst = GeneticAnalystInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -149,7 +149,7 @@ benchmarks! {
 
 	stake_genetic_analyst {
 		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get().unwrap();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let _ = <T as genetic_analysts::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
 
@@ -172,7 +172,7 @@ benchmarks! {
 
 	unstake_genetic_analyst {
 		let caller: T::AccountId = GeneticAnalystVerifierKey::<T>::get().unwrap();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let _ = <T as genetic_analysts::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
 
@@ -198,7 +198,7 @@ benchmarks! {
 	retrieve_unstake_amount {
 		let caller_admin: T::AccountId = GeneticAnalystVerifierKey::<T>::get().unwrap();
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = <T as frame_system::Config>::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = <T as frame_system::Config>::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let _ = <T as genetic_analysts::Config>::Currency::deposit_creating(&caller, 60000000000000000000000u128.saturated_into());
 

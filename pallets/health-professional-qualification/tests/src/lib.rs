@@ -37,10 +37,13 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				health_professional_info.clone()
 			));
-			assert_ok!(HealthProfessional::register(Origin::signed(2), health_professional_info));
+			assert_ok!(HealthProfessional::register(
+				RuntimeOrigin::signed(2),
+				health_professional_info
+			));
 
 			let experience = Experience { title: b"DeBio title".to_vec() };
 			let certification = Certification {
@@ -53,13 +56,13 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience.clone()],
 				vec![certification.clone()],
 			));
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				vec![experience.clone()],
 				vec![certification.clone()],
 			));
@@ -115,7 +118,10 @@ mod tests {
 				anonymous: false,
 			};
 
-			assert_ok!(HealthProfessional::register(Origin::signed(1), health_professional_info));
+			assert_ok!(HealthProfessional::register(
+				RuntimeOrigin::signed(1),
+				health_professional_info
+			));
 
 			let experience = Experience { title: b"DeBio title".to_vec() };
 			let certification = Certification {
@@ -128,7 +134,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience],
 				vec![certification],
 			));
@@ -148,7 +154,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::update(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				id,
 				Some(vec![experience.clone()]),
 				Some(vec![certification.clone()]),
@@ -197,10 +203,13 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessional::register(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				health_professional_info.clone()
 			));
-			assert_ok!(HealthProfessional::register(Origin::signed(2), health_professional_info));
+			assert_ok!(HealthProfessional::register(
+				RuntimeOrigin::signed(2),
+				health_professional_info
+			));
 
 			let experience = Experience { title: b"DeBio title".to_vec() };
 			let certification = Certification {
@@ -213,19 +222,19 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience.clone()],
 				vec![certification.clone()],
 			));
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				vec![experience.clone()],
 				vec![certification.clone()],
 			));
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience],
 				vec![certification],
 			));
@@ -234,7 +243,7 @@ mod tests {
 			let health_professional = result.unwrap();
 			let id = health_professional.qualifications()[0];
 
-			assert_ok!(HealthProfessionalQualification::delete(Origin::signed(1), id,));
+			assert_ok!(HealthProfessionalQualification::delete(RuntimeOrigin::signed(1), id,));
 
 			assert_eq!(
 				HealthProfessionalQualification::health_professional_qualification_by_id(id),
@@ -284,7 +293,7 @@ mod tests {
 
 			assert_noop!(
 				HealthProfessionalQualification::create(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					vec![experience],
 					vec![certification],
 				),
@@ -298,7 +307,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				HealthProfessionalQualification::update(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),),
 					None,
 					None,
@@ -313,7 +322,7 @@ mod tests {
 		ExternalityBuilder::build().execute_with(|| {
 			assert_noop!(
 				HealthProfessionalQualification::delete(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					Keccak256::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),),
 				),
 				Error::<Test>::NotFound,
@@ -342,7 +351,10 @@ mod tests {
 				anonymous: false,
 			};
 
-			assert_ok!(HealthProfessional::register(Origin::signed(1), health_professional_info));
+			assert_ok!(HealthProfessional::register(
+				RuntimeOrigin::signed(1),
+				health_professional_info
+			));
 
 			let experience = Experience { title: b"DeBio title".to_vec() };
 			let certification = Certification {
@@ -355,7 +367,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience],
 				vec![certification],
 			));
@@ -376,7 +388,7 @@ mod tests {
 
 			assert_noop!(
 				HealthProfessionalQualification::update(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					id,
 					Some(vec![experience]),
 					Some(vec![certification]),
@@ -407,7 +419,10 @@ mod tests {
 				anonymous: false,
 			};
 
-			assert_ok!(HealthProfessional::register(Origin::signed(1), health_professional_info));
+			assert_ok!(HealthProfessional::register(
+				RuntimeOrigin::signed(1),
+				health_professional_info
+			));
 
 			let experience = Experience { title: b"DeBio title".to_vec() };
 			let certification = Certification {
@@ -420,7 +435,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience],
 				vec![certification],
 			));
@@ -430,7 +445,7 @@ mod tests {
 			let id = health_professional.qualifications()[0];
 
 			assert_noop!(
-				HealthProfessionalQualification::delete(Origin::signed(2), id,),
+				HealthProfessionalQualification::delete(RuntimeOrigin::signed(2), id,),
 				Error::<Test>::Unauthorized,
 			);
 		});
@@ -459,7 +474,10 @@ mod tests {
 				anonymous: false,
 			};
 
-			assert_ok!(HealthProfessional::register(Origin::signed(1), health_professional_info));
+			assert_ok!(HealthProfessional::register(
+				RuntimeOrigin::signed(1),
+				health_professional_info
+			));
 
 			let experience = Experience { title: b"DeBio title".to_vec() };
 			let certification = Certification {
@@ -472,7 +490,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::create(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				vec![experience.clone()],
 				vec![certification.clone()],
 			));
@@ -483,7 +501,7 @@ mod tests {
 
 			let qualification = Qualification::new(id, &1, &[experience], &[certification]);
 
-			System::assert_last_event(Event::HealthProfessionalQualification(
+			System::assert_last_event(RuntimeEvent::HealthProfessionalQualification(
 				HealthProfessionalQualificationEvent::HealthProfessionalQualificationCreated(
 					1,
 					qualification,
@@ -501,7 +519,7 @@ mod tests {
 			};
 
 			assert_ok!(HealthProfessionalQualification::update(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				id,
 				Some(vec![experience.clone()]),
 				Some(vec![certification.clone()]),
@@ -509,16 +527,16 @@ mod tests {
 
 			let qualification = Qualification::new(id, &1, &[experience], &[certification]);
 
-			System::assert_last_event(Event::HealthProfessionalQualification(
+			System::assert_last_event(RuntimeEvent::HealthProfessionalQualification(
 				HealthProfessionalQualificationEvent::HealthProfessionalQualificationUpdated(
 					1u64,
 					qualification,
 				),
 			));
 
-			assert_ok!(HealthProfessionalQualification::delete(Origin::signed(1), id,));
+			assert_ok!(HealthProfessionalQualification::delete(RuntimeOrigin::signed(1), id,));
 
-			System::assert_last_event(Event::HealthProfessionalQualification(
+			System::assert_last_event(RuntimeEvent::HealthProfessionalQualification(
 				HealthProfessionalQualificationEvent::HealthProfessionalQualificationDeleted(1, id),
 			));
 		});

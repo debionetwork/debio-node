@@ -27,63 +27,63 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for genetic_analysis.
-pub trait WeightInfo { 
-	fn reject_genetic_analysis() -> Weight; 
-	fn process_genetic_analysis() -> Weight; 
-	fn submit_genetic_analysis() -> Weight; 
+pub trait WeightInfo {
+	fn reject_genetic_analysis() -> Weight;
+	fn process_genetic_analysis() -> Weight;
+	fn submit_genetic_analysis() -> Weight;
 }
 
 /// Weights for genetic_analysis using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:1 w:1) 
-	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:1) 
-	fn reject_genetic_analysis() -> Weight { 
-		114_752_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(3_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:1 w:1)
+	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:1)
+	fn reject_genetic_analysis() -> Weight {
+		Weight::from_ref_time(114_752_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
-	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn process_genetic_analysis() -> Weight { 
-		18_511_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn process_genetic_analysis() -> Weight {
+		Weight::from_ref_time(18_511_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn submit_genetic_analysis() -> Weight { 
-		31_029_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn submit_genetic_analysis() -> Weight {
+		Weight::from_ref_time(31_029_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:1 w:1) 
-	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:1) 
-	fn reject_genetic_analysis() -> Weight { 
-		114_752_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(3_u64)) 
-	} 
-	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn process_genetic_analysis() -> Weight { 
-		18_511_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1) 
-	// Storage: Timestamp Now (r:1 w:0) 
-	fn submit_genetic_analysis() -> Weight { 
-		31_029_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:1 w:1)
+	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:1)
+	fn reject_genetic_analysis() -> Weight {
+		Weight::from_ref_time(114_752_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(3_u64))
+	}
+	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn process_genetic_analysis() -> Weight {
+		Weight::from_ref_time(18_511_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticAnalysis GeneticAnalysisStorage (r:1 w:1)
+	// Storage: Timestamp Now (r:1 w:0)
+	fn submit_genetic_analysis() -> Weight {
+		Weight::from_ref_time(31_029_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

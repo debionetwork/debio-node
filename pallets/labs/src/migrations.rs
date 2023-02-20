@@ -10,7 +10,7 @@ pub fn migrate<T: Config>() -> Weight {
 	use frame_support::traits::StorageVersion;
 
 	let mut version = StorageVersion::get::<Pallet<T>>();
-	let mut weight: Weight = 0;
+	let mut weight: Weight = Weight::zero();
 
 	if version < 2 {
 		weight = weight.saturating_add(v2::migrate::<T>());

@@ -27,84 +27,84 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for genetic_analyst_qualifications.
-pub trait WeightInfo { 
-	fn create_qualification() -> Weight; 
-	fn bulk_create_qualification() -> Weight; 
-	fn update_qualification() -> Weight; 
-	fn delete_qualification() -> Weight; 
+pub trait WeightInfo {
+	fn create_qualification() -> Weight;
+	fn bulk_create_qualification() -> Weight;
+	fn update_qualification() -> Weight;
+	fn delete_qualification() -> Weight;
 }
 
 /// Weights for genetic_analyst_qualifications using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1) 
-	fn create_qualification() -> Weight { 
-		110_578_000_u64 
-			.saturating_add(T::DbWeight::get().reads(3_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
+	fn create_qualification() -> Weight {
+		Weight::from_ref_time(110_578_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:20) 
-	fn bulk_create_qualification() -> Weight { 
-		1_343_503_000_u64 
-			.saturating_add(T::DbWeight::get().reads(3_u64)) 
-			.saturating_add(T::DbWeight::get().writes(23_u64)) 
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:20)
+	fn bulk_create_qualification() -> Weight {
+		Weight::from_ref_time(1_343_503_000_u64)
+			.saturating_add(T::DbWeight::get().reads(3_u64))
+			.saturating_add(T::DbWeight::get().writes(23_u64))
 	}
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1) 
-	fn update_qualification() -> Weight { 
-		36_213_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
+	fn update_qualification() -> Weight {
+		Weight::from_ref_time(36_213_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1) 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1) 
-	fn delete_qualification() -> Weight { 
-		52_722_000_u64 
-			.saturating_add(T::DbWeight::get().reads(4_u64)) 
-			.saturating_add(T::DbWeight::get().writes(4_u64)) 
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
+	fn delete_qualification() -> Weight {
+		Weight::from_ref_time(52_722_000_u64)
+			.saturating_add(T::DbWeight::get().reads(4_u64))
+			.saturating_add(T::DbWeight::get().writes(4_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1) 
-	fn create_qualification() -> Weight { 
-		110_578_000_u64
-			.saturating_add(RocksDbWeight::get().reads(3_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:20) 
-	fn bulk_create_qualification() -> Weight { 
-		1_343_503_000_u64
-			.saturating_add(RocksDbWeight::get().reads(3_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(23_u64)) 
-	} 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1) 
-	fn update_qualification() -> Weight { 
-		36_213_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1) 
-	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1) 
-	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1) 
-	fn delete_qualification() -> Weight { 
-		52_722_000_u64
-			.saturating_add(RocksDbWeight::get().reads(4_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(4_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:1)
+	fn create_qualification() -> Weight {
+		Weight::from_ref_time(110_578_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:0 w:20)
+	fn bulk_create_qualification() -> Weight {
+		Weight::from_ref_time(1_343_503_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(3_u64))
+			.saturating_add(RocksDbWeight::get().writes(23_u64))
+	}
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
+	fn update_qualification() -> Weight {
+		Weight::from_ref_time(36_213_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualifications (r:1 w:1)
+	// Storage: GeneticAnalysts GeneticAnalysts (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCount (r:1 w:1)
+	// Storage: GeneticAnalystQualifications GeneticAnalystQualificationsCountByOwner (r:1 w:1)
+	fn delete_qualification() -> Weight {
+		Weight::from_ref_time(52_722_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(4_u64))
+			.saturating_add(RocksDbWeight::get().writes(4_u64))
+	}
 }

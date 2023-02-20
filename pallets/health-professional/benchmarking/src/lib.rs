@@ -59,7 +59,7 @@ benchmarks! {
 
 	update_info {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -98,7 +98,7 @@ benchmarks! {
 
 	update_availability_status {
 		let caller: T::AccountId = whitelisted_caller();
-		let doctor_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let doctor_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -122,7 +122,7 @@ benchmarks! {
 	update_verification_status {
 		let caller: T::AccountId = HealthProfessionalVerifierKey::<T>::get().unwrap();
 		let doctor: T::AccountId = whitelisted_caller();
-		let doctor_origin = T::Origin::from(RawOrigin::Signed(doctor.clone()));
+		let doctor_origin = T::RuntimeOrigin::from(RawOrigin::Signed(doctor.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -145,7 +145,7 @@ benchmarks! {
 
 	deregister {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let health_professional_info = HealthProfessionalInfo {
 			box_public_key: T::Hashing::hash("0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes()),
@@ -168,7 +168,7 @@ benchmarks! {
 
 	stake {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let init_balance = 2_000_000_000_000_000_000u128.saturated_into();
 		let min_stake_amount = 1_000_000_000_000_000_000u128.saturated_into::<BalanceOf<T>>
@@ -199,7 +199,7 @@ benchmarks! {
 
 	unstake {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let init_balance = 2_000_000_000_000_000_000u128.saturated_into();
 		let min_stake_amount = 1_000_000_000_000_000_000u128.saturated_into::<BalanceOf<T>>();
@@ -231,7 +231,7 @@ benchmarks! {
 
 	retrieve_unstaked_amount {
 		let caller: T::AccountId = whitelisted_caller();
-		let caller_origin = T::Origin::from(RawOrigin::Signed(caller.clone()));
+		let caller_origin = T::RuntimeOrigin::from(RawOrigin::Signed(caller.clone()));
 
 		let init_balance = 2_000_000_000_000_000_000u128.saturated_into();
 		let min_stake_amount = 1_000_000_000_000_000_000u128.saturated_into::<BalanceOf<T>>();

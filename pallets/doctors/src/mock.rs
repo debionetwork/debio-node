@@ -1,5 +1,5 @@
 use crate as doctors;
-use frame_support::parameter_types;
+use frame_support::{parameter_types, weights::Weight};
 use frame_system as system;
 use pallet_balances::AccountData;
 use sp_core::H256;
@@ -23,11 +23,11 @@ frame_support::construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Doctors: doctors::{Pallet, Call, Storage, Event<T>},
-		DoctorCertifications: doctor_certifications::{Pallet, Call, Storage, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>}
+		System: frame_system,
+		Balances: pallet_balances,
+		Doctors: doctors,
+		DoctorCertifications: doctor_certifications,
+		UserProfile: user_profile
 	}
 );
 
@@ -35,7 +35,7 @@ parameter_types! {
 	pub const BlockHashCount: u64 = 250;
 	pub const SS58Prefix: u8 = 42;
 	pub BlockWeights: frame_system::limits::BlockWeights =
-	frame_system::limits::BlockWeights::simple_max(1024);
+	frame_system::limits::BlockWeights::simple_max(Weight::from_ref_time(1024));
 }
 
 impl system::Config for Test {
@@ -43,15 +43,15 @@ impl system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type Header = Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -66,7 +66,7 @@ impl system::Config for Test {
 }
 
 impl doctors::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type DoctorCertifications = DoctorCertifications;
 	type EthereumAddress = EthereumAddress;
@@ -76,14 +76,14 @@ impl doctors::Config for Test {
 }
 
 impl user_profile::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
 }
 
 impl doctor_certifications::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DoctorCertificationOwner = Doctors;
 	type WeightInfo = ();
 }
@@ -101,7 +101,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;

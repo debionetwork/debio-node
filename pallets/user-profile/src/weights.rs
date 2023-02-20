@@ -26,78 +26,78 @@ use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for user_profile.
-pub trait WeightInfo { 
-	fn set_eth_address() -> Weight; 
-	fn register_account_id() -> Weight; 
-	fn admin_set_eth_address() -> Weight; 
-	fn update_admin_key() -> Weight; 
+pub trait WeightInfo {
+	fn set_eth_address() -> Weight;
+	fn register_account_id() -> Weight;
+	fn admin_set_eth_address() -> Weight;
+	fn update_admin_key() -> Weight;
 }
 
 /// Weights for user_profile using the Substrate node and recommended hardware.
-pub struct SubstrateWeight<T>(PhantomData<T>); 
-impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> { 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0) 
-	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1) 
-	// Storage: UserProfile EthAddressByAccountId (r:0 w:1) 
-	fn set_eth_address() -> Weight { 
-		61_548_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0)
+	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
+	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
+	fn set_eth_address() -> Weight {
+		Weight::from_ref_time(61_548_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1) 
-	// Storage: UserProfile RegisteredAccountId (r:0 w:1) 
-	fn register_account_id() -> Weight { 
-		58_906_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1)
+	// Storage: UserProfile RegisteredAccountId (r:0 w:1)
+	fn register_account_id() -> Weight {
+		Weight::from_ref_time(58_906_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: UserProfile AdminKey (r:1 w:0) 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0) 
-	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1) 
-	// Storage: UserProfile EthAddressByAccountId (r:0 w:1) 
-	fn admin_set_eth_address() -> Weight { 
-		68_686_000_u64 
-			.saturating_add(T::DbWeight::get().reads(2_u64)) 
-			.saturating_add(T::DbWeight::get().writes(2_u64)) 
+	// Storage: UserProfile AdminKey (r:1 w:0)
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0)
+	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
+	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
+	fn admin_set_eth_address() -> Weight {
+		Weight::from_ref_time(68_686_000_u64)
+			.saturating_add(T::DbWeight::get().reads(2_u64))
+			.saturating_add(T::DbWeight::get().writes(2_u64))
 	}
-	// Storage: UserProfile AdminKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		45_446_000_u64 
-			.saturating_add(T::DbWeight::get().reads(1_u64)) 
-			.saturating_add(T::DbWeight::get().writes(1_u64)) 
+	// Storage: UserProfile AdminKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(45_446_000_u64)
+			.saturating_add(T::DbWeight::get().reads(1_u64))
+			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 }
 
 // For backwards compatibility and tests
-impl WeightInfo for () { 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0) 
-	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1) 
-	// Storage: UserProfile EthAddressByAccountId (r:0 w:1) 
-	fn set_eth_address() -> Weight { 
-		61_548_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1) 
-	// Storage: UserProfile RegisteredAccountId (r:0 w:1) 
-	fn register_account_id() -> Weight { 
-		58_906_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: UserProfile AdminKey (r:1 w:0) 
-	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0) 
-	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1) 
-	// Storage: UserProfile EthAddressByAccountId (r:0 w:1) 
-	fn admin_set_eth_address() -> Weight { 
-		68_686_000_u64
-			.saturating_add(RocksDbWeight::get().reads(2_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(2_u64)) 
-	} 
-	// Storage: UserProfile AdminKey (r:1 w:1) 
-	fn update_admin_key() -> Weight { 
-		45_446_000_u64
-			.saturating_add(RocksDbWeight::get().reads(1_u64)) 
-			.saturating_add(RocksDbWeight::get().writes(1_u64)) 
-	} 
+impl WeightInfo for () {
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0)
+	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
+	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
+	fn set_eth_address() -> Weight {
+		Weight::from_ref_time(61_548_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:1)
+	// Storage: UserProfile RegisteredAccountId (r:0 w:1)
+	fn register_account_id() -> Weight {
+		Weight::from_ref_time(58_906_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: UserProfile AdminKey (r:1 w:0)
+	// Storage: UserProfile ProfileRolesByAccountId (r:1 w:0)
+	// Storage: UserProfile AccountIdByEthAddress (r:0 w:1)
+	// Storage: UserProfile EthAddressByAccountId (r:0 w:1)
+	fn admin_set_eth_address() -> Weight {
+		Weight::from_ref_time(68_686_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(2_u64))
+			.saturating_add(RocksDbWeight::get().writes(2_u64))
+	}
+	// Storage: UserProfile AdminKey (r:1 w:1)
+	fn update_admin_key() -> Weight {
+		Weight::from_ref_time(45_446_000_u64)
+			.saturating_add(RocksDbWeight::get().reads(1_u64))
+			.saturating_add(RocksDbWeight::get().writes(1_u64))
+	}
 }

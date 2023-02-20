@@ -34,7 +34,7 @@ mod tests {
 	fn register_genetic_analyst_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -83,7 +83,7 @@ mod tests {
 			);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -110,7 +110,7 @@ mod tests {
 	fn cant_register_genetic_analyst_when_already_exist() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -129,7 +129,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::register_genetic_analyst(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					GeneticAnalystInfo {
 						box_public_key: Keccak256::hash(
 							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -156,7 +156,7 @@ mod tests {
 	fn update_genetic_analyst_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -205,7 +205,7 @@ mod tests {
 			);
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -261,7 +261,7 @@ mod tests {
 	fn deregister_genetic_analyst_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -278,7 +278,7 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::deregister_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::deregister_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(GeneticAnalysts::genetic_analyst_by_account_id(1), None);
 
@@ -291,7 +291,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					GeneticAnalystInfo {
 						box_public_key: Keccak256::hash(
 							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -313,7 +313,7 @@ mod tests {
 			);
 
 			assert_noop!(
-				GeneticAnalysts::deregister_genetic_analyst(Origin::signed(1)),
+				GeneticAnalysts::deregister_genetic_analyst(RuntimeOrigin::signed(1)),
 				Error::<Test>::GeneticAnalystDoesNotExist
 			);
 		})
@@ -325,7 +325,7 @@ mod tests {
 			System::set_block_number(1);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -342,39 +342,41 @@ mod tests {
 				}
 			));
 
-			System::assert_last_event(Event::GeneticAnalysts(EventC::GeneticAnalystRegistered(
-				GeneticAnalyst {
-					unstake_at: 0u64.saturated_into(),
-					retrieve_unstake_at: 0u64.saturated_into(),
-					account_id: 1,
-					services: Vec::new(),
-					qualifications: Vec::new(),
-					stake_amount: 0u128.saturated_into(),
-					stake_status: StakeStatus::default(),
-					verification_status: VerificationStatus::default(),
-					availability_status: AvailabilityStatus::default(),
-					info: GeneticAnalystInfo {
-						box_public_key: Keccak256::hash(
-							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-						),
-						first_name: "First Name".as_bytes().to_vec(),
-						last_name: "Last Name".as_bytes().to_vec(),
-						gender: "Gender".as_bytes().to_vec(),
-						date_of_birth: 0,
-						email: "Email".as_bytes().to_vec(),
-						phone_number: "+6893026516".as_bytes().to_vec(),
-						specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
-						profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
-						profile_image: Some(
-							"DeBio Genetic Analyst profile_image".as_bytes().to_vec(),
-						),
+			System::assert_last_event(RuntimeEvent::GeneticAnalysts(
+				EventC::GeneticAnalystRegistered(
+					GeneticAnalyst {
+						unstake_at: 0u64.saturated_into(),
+						retrieve_unstake_at: 0u64.saturated_into(),
+						account_id: 1,
+						services: Vec::new(),
+						qualifications: Vec::new(),
+						stake_amount: 0u128.saturated_into(),
+						stake_status: StakeStatus::default(),
+						verification_status: VerificationStatus::default(),
+						availability_status: AvailabilityStatus::default(),
+						info: GeneticAnalystInfo {
+							box_public_key: Keccak256::hash(
+								"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+							),
+							first_name: "First Name".as_bytes().to_vec(),
+							last_name: "Last Name".as_bytes().to_vec(),
+							gender: "Gender".as_bytes().to_vec(),
+							date_of_birth: 0,
+							email: "Email".as_bytes().to_vec(),
+							phone_number: "+6893026516".as_bytes().to_vec(),
+							specialization: "DeBio Genetic Analyst".as_bytes().to_vec(),
+							profile_link: "DeBio Genetic Analyst profile_link".as_bytes().to_vec(),
+							profile_image: Some(
+								"DeBio Genetic Analyst profile_image".as_bytes().to_vec(),
+							),
+						},
 					},
-				},
-				1,
-			)));
+					1,
+				),
+			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -393,69 +395,77 @@ mod tests {
 				}
 			));
 
-			System::assert_last_event(Event::GeneticAnalysts(EventC::GeneticAnalystUpdated(
-				GeneticAnalyst {
-					unstake_at: 0u64.saturated_into(),
-					retrieve_unstake_at: 0u64.saturated_into(),
-					account_id: 1,
-					services: Vec::new(),
-					qualifications: Vec::new(),
-					stake_amount: 0u128.saturated_into(),
-					stake_status: StakeStatus::default(),
-					verification_status: VerificationStatus::default(),
-					availability_status: AvailabilityStatus::default(),
-					info: GeneticAnalystInfo {
-						box_public_key: Keccak256::hash(
-							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-						),
-						first_name: "First Name 2".as_bytes().to_vec(),
-						last_name: "Last Name 2".as_bytes().to_vec(),
-						gender: "Gender 2".as_bytes().to_vec(),
-						date_of_birth: 0,
-						email: "Email 2".as_bytes().to_vec(),
-						phone_number: "+6893026516".as_bytes().to_vec(),
-						specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
-						profile_link: "DeBio Genetic Analyst profile_link 2".as_bytes().to_vec(),
-						profile_image: Some(
-							"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec(),
-						),
+			System::assert_last_event(RuntimeEvent::GeneticAnalysts(
+				EventC::GeneticAnalystUpdated(
+					GeneticAnalyst {
+						unstake_at: 0u64.saturated_into(),
+						retrieve_unstake_at: 0u64.saturated_into(),
+						account_id: 1,
+						services: Vec::new(),
+						qualifications: Vec::new(),
+						stake_amount: 0u128.saturated_into(),
+						stake_status: StakeStatus::default(),
+						verification_status: VerificationStatus::default(),
+						availability_status: AvailabilityStatus::default(),
+						info: GeneticAnalystInfo {
+							box_public_key: Keccak256::hash(
+								"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+							),
+							first_name: "First Name 2".as_bytes().to_vec(),
+							last_name: "Last Name 2".as_bytes().to_vec(),
+							gender: "Gender 2".as_bytes().to_vec(),
+							date_of_birth: 0,
+							email: "Email 2".as_bytes().to_vec(),
+							phone_number: "+6893026516".as_bytes().to_vec(),
+							specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+							profile_link: "DeBio Genetic Analyst profile_link 2"
+								.as_bytes()
+								.to_vec(),
+							profile_image: Some(
+								"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec(),
+							),
+						},
 					},
-				},
-				1,
-			)));
+					1,
+				),
+			));
 
-			assert_ok!(GeneticAnalysts::deregister_genetic_analyst(Origin::signed(1)));
+			assert_ok!(GeneticAnalysts::deregister_genetic_analyst(RuntimeOrigin::signed(1)));
 
-			System::assert_last_event(Event::GeneticAnalysts(EventC::GeneticAnalystDeleted(
-				GeneticAnalyst {
-					unstake_at: 0u64.saturated_into(),
-					retrieve_unstake_at: 0u64.saturated_into(),
-					account_id: 1,
-					services: Vec::new(),
-					qualifications: Vec::new(),
-					stake_amount: 0u128.saturated_into(),
-					stake_status: StakeStatus::default(),
-					verification_status: VerificationStatus::default(),
-					availability_status: AvailabilityStatus::default(),
-					info: GeneticAnalystInfo {
-						box_public_key: Keccak256::hash(
-							"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
-						),
-						first_name: "First Name 2".as_bytes().to_vec(),
-						last_name: "Last Name 2".as_bytes().to_vec(),
-						gender: "Gender 2".as_bytes().to_vec(),
-						date_of_birth: 0,
-						email: "Email 2".as_bytes().to_vec(),
-						phone_number: "+6893026516".as_bytes().to_vec(),
-						specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
-						profile_link: "DeBio Genetic Analyst profile_link 2".as_bytes().to_vec(),
-						profile_image: Some(
-							"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec(),
-						),
+			System::assert_last_event(RuntimeEvent::GeneticAnalysts(
+				EventC::GeneticAnalystDeleted(
+					GeneticAnalyst {
+						unstake_at: 0u64.saturated_into(),
+						retrieve_unstake_at: 0u64.saturated_into(),
+						account_id: 1,
+						services: Vec::new(),
+						qualifications: Vec::new(),
+						stake_amount: 0u128.saturated_into(),
+						stake_status: StakeStatus::default(),
+						verification_status: VerificationStatus::default(),
+						availability_status: AvailabilityStatus::default(),
+						info: GeneticAnalystInfo {
+							box_public_key: Keccak256::hash(
+								"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
+							),
+							first_name: "First Name 2".as_bytes().to_vec(),
+							last_name: "Last Name 2".as_bytes().to_vec(),
+							gender: "Gender 2".as_bytes().to_vec(),
+							date_of_birth: 0,
+							email: "Email 2".as_bytes().to_vec(),
+							phone_number: "+6893026516".as_bytes().to_vec(),
+							specialization: "DeBio Genetic Analyst 2".as_bytes().to_vec(),
+							profile_link: "DeBio Genetic Analyst profile_link 2"
+								.as_bytes()
+								.to_vec(),
+							profile_image: Some(
+								"DeBio Genetic Analyst profile_image 2".as_bytes().to_vec(),
+							),
+						},
 					},
-				},
-				1,
-			)));
+					1,
+				),
+			));
 		})
 	}
 
@@ -470,7 +480,7 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -490,10 +500,10 @@ mod tests {
 			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				1,
 				VerificationStatus::Verified,
 			));
@@ -542,7 +552,7 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -562,10 +572,10 @@ mod tests {
 			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				1,
 				VerificationStatus::Rejected,
 			));
@@ -609,7 +619,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(4);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -628,7 +638,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Verified,
 				),
@@ -641,7 +651,7 @@ mod tests {
 	fn cant_update_genetic_analyst_verification_status_when_is_not_staked() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -662,7 +672,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Verified,
 				),
@@ -709,7 +719,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Verified,
 				),
@@ -731,7 +741,7 @@ mod tests {
 			PalletAccount::<Test>::put(0);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -750,7 +760,7 @@ mod tests {
 
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
@@ -761,7 +771,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Rejected,
 				),
@@ -784,12 +794,12 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				60000000000000000000000u128.saturated_into(),
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -806,7 +816,7 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -845,7 +855,7 @@ mod tests {
 	fn cant_stake_genetic_analyst_when_not_exist() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
-				GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
+				GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),),
 				Error::<Test>::GeneticAnalystDoesNotExist
 			);
 		})
@@ -865,7 +875,7 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -882,7 +892,7 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -916,7 +926,7 @@ mod tests {
 			);
 
 			assert_noop!(
-				GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
+				GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),),
 				Error::<Test>::GeneticAnalystAlreadyStaked
 			);
 		})
@@ -936,7 +946,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -953,11 +963,11 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -996,7 +1006,7 @@ mod tests {
 	fn cant_stake_genetic_analyst_when_insufficient_funds() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1014,7 +1024,7 @@ mod tests {
 			));
 
 			assert_noop!(
-				GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
+				GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),),
 				Error::<Test>::InsufficientFunds
 			);
 
@@ -1057,7 +1067,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				60000000000000000000000u128.saturated_into(),
 			));
 
@@ -1075,7 +1085,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_minimum_stake_amount(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					60000000000000000000000u128.saturated_into(),
 				),
 				Error::<Test>::Unauthorized
@@ -1089,7 +1099,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_unstake_time(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				1000u64.saturated_into(),
 			));
 
@@ -1103,7 +1113,10 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(3);
 
 			assert_noop!(
-				GeneticAnalysts::update_unstake_time(Origin::signed(2), 1000u64.saturated_into(),),
+				GeneticAnalysts::update_unstake_time(
+					RuntimeOrigin::signed(2),
+					1000u64.saturated_into(),
+				),
 				Error::<Test>::Unauthorized
 			);
 		})
@@ -1116,7 +1129,7 @@ mod tests {
 
 			assert_eq!(GeneticAnalysts::admin_key(), Some(2));
 
-			assert_ok!(GeneticAnalysts::update_admin_key(Origin::signed(2), 1,));
+			assert_ok!(GeneticAnalysts::update_admin_key(RuntimeOrigin::signed(2), 1,));
 
 			assert_eq!(GeneticAnalysts::admin_key(), Some(1));
 		})
@@ -1128,7 +1141,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(3);
 
 			assert_noop!(
-				GeneticAnalysts::update_admin_key(Origin::signed(2), 1,),
+				GeneticAnalysts::update_admin_key(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::Unauthorized
 			);
 		})
@@ -1137,7 +1150,7 @@ mod tests {
 	#[test]
 	fn sudo_update_admin_key_works() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
-			assert_ok!(GeneticAnalysts::sudo_update_admin_key(Origin::root(), 1));
+			assert_ok!(GeneticAnalysts::sudo_update_admin_key(RuntimeOrigin::root(), 1));
 
 			assert_eq!(GeneticAnalysts::admin_key(), Some(1));
 		})
@@ -1148,7 +1161,7 @@ mod tests {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			GeneticAnalystVerifierKey::<Test>::put(4);
 			assert_noop!(
-				GeneticAnalysts::update_admin_key(Origin::signed(2), 1,),
+				GeneticAnalysts::update_admin_key(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::Unauthorized
 			);
 		})
@@ -1165,7 +1178,7 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1185,16 +1198,16 @@ mod tests {
 			PalletAccount::<Test>::put(4);
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_verification_status(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				1,
 				VerificationStatus::Verified,
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available,
 			));
 
@@ -1242,7 +1255,7 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1263,19 +1276,19 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available,
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Unavailable,
 			));
 
@@ -1319,7 +1332,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_availability_status(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					AvailabilityStatus::Available,
 				),
 				Error::<Test>::GeneticAnalystDoesNotExist
@@ -1341,12 +1354,12 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1363,9 +1376,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -1404,7 +1417,7 @@ mod tests {
 	fn cant_unstake_genetic_analyst_when_not_exist() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_noop!(
-				GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),),
+				GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),),
 				Error::<Test>::GeneticAnalystDoesNotExist
 			);
 		})
@@ -1414,7 +1427,7 @@ mod tests {
 	fn cant_unstake_genetic_analyst_when_not_staked() {
 		<ExternalityBuilder>::default().existential_deposit(1).build().execute_with(|| {
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1432,7 +1445,7 @@ mod tests {
 			));
 
 			assert_noop!(
-				GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),),
+				GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),),
 				Error::<Test>::GeneticAnalystIsNotStaked
 			);
 		})
@@ -1452,11 +1465,11 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1474,14 +1487,14 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1496,7 +1509,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1505,7 +1518,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -1544,7 +1557,7 @@ mod tests {
 			);
 
 			assert_noop!(
-				GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),),
+				GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),),
 				Error::<Test>::GeneticAnalystHasPendingOrders
 			);
 		})
@@ -1564,11 +1577,11 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1586,14 +1599,14 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1608,7 +1621,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1617,7 +1630,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -1657,7 +1670,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_availability_status(
-					Origin::signed(1),
+					RuntimeOrigin::signed(1),
 					AvailabilityStatus::Unavailable,
 				),
 				Error::<Test>::GeneticAnalystHasPendingOrders
@@ -1679,11 +1692,11 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1701,14 +1714,14 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1723,7 +1736,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1732,7 +1745,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -1772,7 +1785,7 @@ mod tests {
 
 			assert_noop!(
 				GeneticAnalysts::update_genetic_analyst_verification_status(
-					Origin::signed(2),
+					RuntimeOrigin::signed(2),
 					1,
 					VerificationStatus::Rejected,
 				),
@@ -1797,12 +1810,12 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1820,14 +1833,14 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1842,7 +1855,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1851,7 +1864,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -1864,7 +1877,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -1872,7 +1885,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::reject_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				"Reject DNA Title".as_bytes().to_vec(),
 				"Reject DNA Description".as_bytes().to_vec()
@@ -1890,7 +1903,7 @@ mod tests {
 			);
 			assert!(_genetic_analysis_info.is_rejected());
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 		})
 	}
 
@@ -1910,12 +1923,12 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				0u128.saturated_into(),
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -1933,19 +1946,19 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_genetic_analyst_availability_status(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				AvailabilityStatus::Available
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(UserProfile::set_eth_address(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				EthereumAddress([b'X'; 20])
 			));
 
 			assert_ok!(GeneticAnalystServices::create_genetic_analyst_service(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystServiceInfo {
 					name: "DeBio Genetic Analyst Service name".as_bytes().to_vec(),
 					prices_by_currency: vec![PriceByCurrency::default()],
@@ -1960,7 +1973,7 @@ mod tests {
 			let _genetic_analyst = GeneticAnalysts::genetic_analyst_by_account_id(1).unwrap();
 
 			let _add_genetic_data = GeneticData::add_genetic_data(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				"DeBio Genetic Data".as_bytes().to_vec(),
 				"DeBio Genetic Data Document Description".as_bytes().to_vec(),
 				"DeBio Genetic Data Link".as_bytes().to_vec(),
@@ -1969,7 +1982,7 @@ mod tests {
 			let _genetic_data_ids = GeneticData::genetic_data_by_owner_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::create_genetic_analysis_order(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_data_ids[0],
 				_genetic_analyst.services[0],
 				0,
@@ -1982,7 +1995,7 @@ mod tests {
 				GeneticAnalysisOrders::last_genetic_analysis_order_by_customer_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysisOrders::set_genetic_analysis_order_paid(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis_order_id
 			));
 
@@ -1990,7 +2003,7 @@ mod tests {
 				GeneticAnalysis::genetic_analysis_by_genetic_analyst_id(1).unwrap();
 
 			assert_ok!(GeneticAnalysis::submit_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				"Genetic Analysis report_link".as_bytes().to_vec(),
 				Some("Genetic Analysis comments".as_bytes().to_vec())
@@ -2018,7 +2031,7 @@ mod tests {
 			);
 
 			assert_ok!(GeneticAnalysis::process_genetic_analysis(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				_genetic_analysis[0].clone(),
 				GeneticAnalysisStatus::ResultReady
 			));
@@ -2035,7 +2048,7 @@ mod tests {
 			);
 			assert!(_genetic_analysis_info.process_success());
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 		})
 	}
 
@@ -2053,7 +2066,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -2070,9 +2083,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -2105,7 +2118,7 @@ mod tests {
 				})
 			);
 
-			assert_ok!(GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,));
+			assert_ok!(GeneticAnalysts::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -2146,7 +2159,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_noop!(
-				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				GeneticAnalysts::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::GeneticAnalystDoesNotExist
 			);
 		})
@@ -2158,7 +2171,7 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -2176,7 +2189,7 @@ mod tests {
 			));
 
 			assert_noop!(
-				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				GeneticAnalysts::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::GeneticAnalystIsNotWaitingForUnstake
 			);
 		})
@@ -2196,12 +2209,12 @@ mod tests {
 			GeneticAnalystVerifierKey::<Test>::put(2);
 
 			assert_ok!(GeneticAnalysts::update_unstake_time(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				100000u64.saturated_into(),
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -2218,9 +2231,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_eq!(
 				GeneticAnalysts::genetic_analyst_by_account_id(1),
@@ -2254,7 +2267,7 @@ mod tests {
 			);
 
 			assert_noop!(
-				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				GeneticAnalysts::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::GeneticAnalystCannotUnstakeBeforeUnstakeTime
 			);
 		})
@@ -2274,12 +2287,12 @@ mod tests {
 			));
 
 			assert_ok!(GeneticAnalysts::update_minimum_stake_amount(
-				Origin::signed(2),
+				RuntimeOrigin::signed(2),
 				60000000000000000000000u128.saturated_into(),
 			));
 
 			assert_ok!(GeneticAnalysts::register_genetic_analyst(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				GeneticAnalystInfo {
 					box_public_key: Keccak256::hash(
 						"0xDb9Af2d1f3ADD2726A132AA7A65Cc9E6fC5761C3".as_bytes(),
@@ -2296,9 +2309,9 @@ mod tests {
 				}
 			));
 
-			assert_ok!(GeneticAnalysts::stake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::stake_genetic_analyst(RuntimeOrigin::signed(1),));
 
-			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(Origin::signed(1),));
+			assert_ok!(GeneticAnalysts::unstake_genetic_analyst(RuntimeOrigin::signed(1),));
 
 			assert_ok!(Balances::set_balance(
 				RawOrigin::Root.into(),
@@ -2308,7 +2321,7 @@ mod tests {
 			));
 
 			assert_noop!(
-				GeneticAnalysts::retrieve_unstake_amount(Origin::signed(2), 1,),
+				GeneticAnalysts::retrieve_unstake_amount(RuntimeOrigin::signed(2), 1,),
 				Error::<Test>::InsufficientPalletFunds
 			);
 		})

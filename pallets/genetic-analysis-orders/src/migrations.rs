@@ -12,9 +12,7 @@ use scale_info::prelude::string::String;
 use sp_std::vec::Vec;
 
 pub fn migrate<T: Config>() -> Weight {
-	use frame_support::traits::StorageVersion;
-
-	let mut weight: Weight = 0;
+	let mut weight: Weight = Weight::zero();
 	let mut version = StorageVersion::get::<Pallet<T>>();
 
 	if version == 1 {

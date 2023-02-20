@@ -54,7 +54,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:0 w:1)
 	// Storage: GeneticAnalysisOrders LastGeneticAnalysisOrderByCustomer (r:0 w:1)
 	fn create_genetic_analysis_order() -> Weight {
-		114_130_000_u64
+		Weight::from_ref_time(114_130_000_u64)
 			.saturating_add(T::DbWeight::get().reads(12_u64))
 			.saturating_add(T::DbWeight::get().writes(8_u64))
 	}
@@ -63,7 +63,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn cancel_genetic_analysis_order() -> Weight {
-		112_036_000_u64
+		Weight::from_ref_time(112_036_000_u64)
 			.saturating_add(T::DbWeight::get().reads(4_u64))
 			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
@@ -73,7 +73,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysisOrders PalletAccount (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_genetic_analysis_order_paid() -> Weight {
-		100_327_000_u64
+		Weight::from_ref_time(100_327_000_u64)
 			.saturating_add(T::DbWeight::get().reads(5_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -85,7 +85,7 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: GeneticAnalysisOrders TreasuryKey (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn fulfill_genetic_analysis_order() -> Weight {
-		131_303_000_u64
+		Weight::from_ref_time(131_303_000_u64)
 			.saturating_add(T::DbWeight::get().reads(7_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -96,13 +96,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: System Account (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_genetic_analysis_order_refunded() -> Weight {
-		80_147_000_u64
+		Weight::from_ref_time(80_147_000_u64)
 			.saturating_add(T::DbWeight::get().reads(6_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysisOrders EscrowKey (r:1 w:1)
 	fn update_key() -> Weight {
-		29_906_000_u64
+		Weight::from_ref_time(29_906_000_u64)
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -125,7 +125,7 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysisOrders GeneticAnalysisOrders (r:0 w:1)
 	// Storage: GeneticAnalysisOrders LastGeneticAnalysisOrderByCustomer (r:0 w:1)
 	fn create_genetic_analysis_order() -> Weight {
-		114_130_000_u64
+		Weight::from_ref_time(114_130_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(12_u64))
 			.saturating_add(RocksDbWeight::get().writes(8_u64))
 	}
@@ -134,7 +134,7 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysisOrders PendingGeneticAnalysisOrdersBySeller (r:1 w:1)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn cancel_genetic_analysis_order() -> Weight {
-		112_036_000_u64
+		Weight::from_ref_time(112_036_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(4_u64))
 			.saturating_add(RocksDbWeight::get().writes(3_u64))
 	}
@@ -144,7 +144,7 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysisOrders PalletAccount (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_genetic_analysis_order_paid() -> Weight {
-		100_327_000_u64
+		Weight::from_ref_time(100_327_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(5_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -156,7 +156,7 @@ impl WeightInfo for () {
 	// Storage: GeneticAnalysisOrders TreasuryKey (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn fulfill_genetic_analysis_order() -> Weight {
-		131_303_000_u64
+		Weight::from_ref_time(131_303_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(7_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
@@ -167,13 +167,13 @@ impl WeightInfo for () {
 	// Storage: System Account (r:1 w:0)
 	// Storage: Timestamp Now (r:1 w:0)
 	fn set_genetic_analysis_order_refunded() -> Weight {
-		80_147_000_u64
+		Weight::from_ref_time(80_147_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(6_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: GeneticAnalysisOrders EscrowKey (r:1 w:1)
 	fn update_key() -> Weight {
-		29_906_000_u64
+		Weight::from_ref_time(29_906_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}

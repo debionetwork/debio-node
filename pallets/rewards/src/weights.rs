@@ -41,13 +41,13 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: System Account (r:1 w:0)
 	// Storage: Rewards TotalRewardAmount (r:0 w:1)
 	fn reward_funds() -> Weight {
-		35_358_000_u64
+		Weight::from_ref_time(35_358_000_u64)
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
 	// Storage: Rewards RewarderKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		23_276_000_u64
+		Weight::from_ref_time(23_276_000_u64)
 			.saturating_add(T::DbWeight::get().reads(1_u64))
 			.saturating_add(T::DbWeight::get().writes(1_u64))
 	}
@@ -60,13 +60,13 @@ impl WeightInfo for () {
 	// Storage: System Account (r:1 w:0)
 	// Storage: Rewards TotalRewardAmount (r:0 w:1)
 	fn reward_funds() -> Weight {
-		35_358_000_u64
+		Weight::from_ref_time(35_358_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 	// Storage: Rewards RewarderKey (r:1 w:1)
 	fn update_admin_key() -> Weight {
-		23_276_000_u64
+		Weight::from_ref_time(23_276_000_u64)
 			.saturating_add(RocksDbWeight::get().reads(1_u64))
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}

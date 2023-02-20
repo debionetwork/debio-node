@@ -23,18 +23,18 @@ frame_support::construct_runtime!(
 		NodeBlock = Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		GeneticData: genetic_data::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalysts: genetic_analysts::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalystServices: genetic_analyst_services::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalystQualifications: genetic_analyst_qualifications::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalysis: genetic_analysis::{Pallet, Call, Storage, Event<T>},
-		GeneticAnalysisOrders: genetic_analysis_orders::{Pallet, Call, Storage, Config<T>, Event<T>},
-		UserProfile: user_profile::{Pallet, Call, Storage, Event<T>},
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
-		OctopusAssets: pallet_assets::<Instance1>::{Call, Config<T>, Event<T>, Pallet, Storage},
+		System: frame_system,
+		Balances: pallet_balances,
+		GeneticData: genetic_data,
+		GeneticAnalysts: genetic_analysts,
+		GeneticAnalystServices: genetic_analyst_services,
+		GeneticAnalystQualifications: genetic_analyst_qualifications,
+		GeneticAnalysis: genetic_analysis,
+		GeneticAnalysisOrders: genetic_analysis_orders,
+		UserProfile: user_profile,
+		Timestamp: pallet_timestamp,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip,
+		OctopusAssets: pallet_assets::<Instance1>,
 	}
 );
 
@@ -48,15 +48,15 @@ impl frame_system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type AccountId = AccountId;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = sp_core::H256;
 	type Hashing = ::sp_runtime::traits::BlakeTwo256;
 	type Header = sp_runtime::testing::Header;
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
 	type Version = ();
@@ -90,7 +90,7 @@ parameter_types! {
 }
 
 impl pallet_assets::Config<pallet_assets::Instance1> for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Balance = OctopusAssetBalance;
 	type AssetId = OctopusAssetId;
 	type Currency = Balances;
@@ -127,14 +127,14 @@ impl pallet_timestamp::Config for Test {
 impl pallet_randomness_collective_flip::Config for Test {}
 
 impl genetic_analysis::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type RandomnessSource = RandomnessCollectiveFlip;
 	type GeneticAnalysisOrders = GeneticAnalysisOrders;
 	type GeneticAnalysisWeightInfo = ();
 }
 
 impl genetic_analysts::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type PalletId = GeneticAnalystPalletId;
 	type GeneticAnalysisOrders = GeneticAnalysisOrders;
@@ -147,25 +147,25 @@ impl genetic_analysts::Config for Test {
 }
 
 impl genetic_data::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type GeneticDataWeightInfo = ();
 }
 
 impl genetic_analyst_services::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type GeneticAnalystServiceOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
 impl genetic_analyst_qualifications::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type GeneticAnalystQualificationOwner = GeneticAnalysts;
 	type WeightInfo = ();
 }
 
 impl genetic_analysis_orders::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type Assets = OctopusAssets;
 	type GeneticData = GeneticData;
@@ -177,7 +177,7 @@ impl genetic_analysis_orders::Config for Test {
 }
 
 impl user_profile::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type EthereumAddress = EthereumAddress;
 	type ProfileRoles = ProfileRoles;
 	type WeightInfo = ();
@@ -196,7 +196,7 @@ impl pallet_balances::Config for Test {
 	/// The type for recording an account's balance.
 	type Balance = Balance;
 	/// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;

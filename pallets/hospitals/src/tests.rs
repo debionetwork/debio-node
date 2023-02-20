@@ -6,7 +6,7 @@ use primitives_area_code::{CityCode, CountryCode, CountryRegionCode, RegionCode}
 fn register_hospital_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Hospitals::register_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "DeBio Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -60,7 +60,7 @@ fn register_hospital_works() {
 fn update_hospital_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Hospitals::register_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "DeBio Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -75,7 +75,7 @@ fn update_hospital_works() {
 		));
 
 		assert_ok!(Hospitals::update_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "My Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -109,7 +109,7 @@ fn update_hospital_works() {
 		);
 
 		assert_ok!(Hospitals::update_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "My Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -180,7 +180,7 @@ fn update_hospital_works() {
 fn deregister_hospital_works() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Hospitals::register_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "DeBio Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -197,7 +197,7 @@ fn deregister_hospital_works() {
 		let country_region_code = CountryRegionCode::from_vec("DC-DB".as_bytes().to_vec());
 		let city_code = CityCode::from_vec("CITY".as_bytes().to_vec());
 
-		assert_ok!(Hospitals::deregister_hospital(Origin::signed(1)));
+		assert_ok!(Hospitals::deregister_hospital(RuntimeOrigin::signed(1)));
 
 		assert_eq!(Hospitals::hospital_by_account_id(1), None);
 
@@ -218,7 +218,7 @@ fn cant_update_and_unregister_hospital_when_not_exist() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_noop!(
 			Hospitals::update_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -235,7 +235,7 @@ fn cant_update_and_unregister_hospital_when_not_exist() {
 		);
 
 		assert_noop!(
-			Hospitals::deregister_hospital(Origin::signed(1)),
+			Hospitals::deregister_hospital(RuntimeOrigin::signed(1)),
 			Error::<Test>::HospitalDoesNotExist
 		);
 	})
@@ -245,7 +245,7 @@ fn cant_update_and_unregister_hospital_when_not_exist() {
 fn cant_register_hospital_when_already_registered() {
 	ExternalityBuilder::build().execute_with(|| {
 		assert_ok!(Hospitals::register_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "DeBio Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -261,7 +261,7 @@ fn cant_register_hospital_when_already_registered() {
 
 		assert_noop!(
 			Hospitals::register_hospital(
-				Origin::signed(1),
+				RuntimeOrigin::signed(1),
 				HospitalInfo {
 					name: "DeBio Hospital".as_bytes().to_vec(),
 					email: "DeBio Email".as_bytes().to_vec(),
@@ -284,7 +284,7 @@ fn call_event_should_work() {
 	ExternalityBuilder::build().execute_with(|| {
 		System::set_block_number(1);
 		assert_ok!(Hospitals::register_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "DeBio Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -298,7 +298,7 @@ fn call_event_should_work() {
 			}
 		));
 
-		System::assert_last_event(Event::Hospitals(crate::Event::HospitalRegistered(
+		System::assert_last_event(RuntimeEvent::Hospitals(crate::Event::HospitalRegistered(
 			Hospital {
 				account_id: 1,
 				certifications: Vec::new(),
@@ -318,7 +318,7 @@ fn call_event_should_work() {
 		)));
 
 		assert_ok!(Hospitals::update_hospital(
-			Origin::signed(1),
+			RuntimeOrigin::signed(1),
 			HospitalInfo {
 				name: "DeBio Hospital".as_bytes().to_vec(),
 				email: "DeBio Email".as_bytes().to_vec(),
@@ -332,7 +332,7 @@ fn call_event_should_work() {
 			}
 		));
 
-		System::assert_last_event(Event::Hospitals(crate::Event::HospitalUpdated(
+		System::assert_last_event(RuntimeEvent::Hospitals(crate::Event::HospitalUpdated(
 			Hospital {
 				account_id: 1,
 				certifications: Vec::new(),
@@ -351,9 +351,9 @@ fn call_event_should_work() {
 			1,
 		)));
 
-		assert_ok!(Hospitals::deregister_hospital(Origin::signed(1)));
+		assert_ok!(Hospitals::deregister_hospital(RuntimeOrigin::signed(1)));
 
-		System::assert_last_event(Event::Hospitals(crate::Event::HospitalDeleted(
+		System::assert_last_event(RuntimeEvent::Hospitals(crate::Event::HospitalDeleted(
 			Hospital {
 				account_id: 1,
 				certifications: Vec::new(),
