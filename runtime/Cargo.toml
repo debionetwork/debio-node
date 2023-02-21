@@ -125,6 +125,10 @@ opinion-requestor-benchmarking = { path = '../pallets/opinion-requestor/benchmar
 opinion = { path = '../pallets/opinion', default-features = false }
 opinion-benchmarking = { path = '../pallets/opinion/benchmarking', default-features = false, optional = true }
 
+# Myriad Dependencies
+## Myriad Pallet Dependencies
+pallet-tipping = { git = 'https://github.com/myriadsocial/myriad-node.git', tag = '2.3.4', default-features = false }
+
 # Local Primitives
 primitives-profile-roles = { path = '../primitives/profile-roles', default-features = false }
 primitives-ethereum-address = { path = '../primitives/ethereum-address', default-features = false }
@@ -192,6 +196,9 @@ runtime-benchmarks = [
 	'health-professional-qualification-benchmarking',
 	'opinion-requestor-benchmarking',
 	'opinion-benchmarking',
+
+	# Myriad Pallet
+	'pallet-tipping/runtime-benchmarks',
 ]
 std = [
 	# External Dependencies
@@ -287,6 +294,9 @@ std = [
     # Local Primitives
     'primitives-profile-roles/std',
     'primitives-ethereum-address/std',
+
+	# Myriad Pallet
+	'pallet-tipping/std',
 ]
 try-runtime = [
 	# Substrate Dependencies

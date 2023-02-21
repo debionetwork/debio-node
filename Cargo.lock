@@ -1616,6 +1616,7 @@ dependencies = [
  "pallet-session-benchmarking",
  "pallet-sudo",
  "pallet-timestamp",
+ "pallet-tipping",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-uniques",
@@ -6205,6 +6206,28 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "sp-timestamp",
+]
+
+[[package]]
+name = "pallet-tipping"
+version = "2.3.4"
+source = "git+https://github.com/myriadsocial/myriad-node.git?tag=2.3.4#e75626126a266a0c344ec0d143362ea273693101"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex",
+ "log",
+ "pallet-assets",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "serde_json",
+ "sp-core",
+ "sp-io",
+ "sp-std",
 ]
 
 [[package]]

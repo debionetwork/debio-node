@@ -933,6 +933,26 @@ impl opinion::Config for Runtime {
 	type OpinionWeightInfo = ();
 }
 
+// ------------------------------
+// Myriad Pallets
+// ------------------------------
+parameter_types! {
+	// In percentage
+	pub const AdminFee: u8 = 10;
+	pub const TransactionFee: u8 = 5;
+}
+
+impl pallet_tipping::Config for Runtime {
+	type Assets = OctopusAssets;
+	type Currency = Balances;
+	type RuntimeCall = RuntimeCall;
+	type RuntimeEvent = RuntimeEvent;
+	type TimeProvider = Timestamp;
+	type AdminFee = AdminFee;
+	type TransactionFee = TransactionFee;
+	type WeightInfo = ();
+}
+
 type Migrations = (
 	// This migration is used to set the interval value in the upward-messages. It should be
 	// deleted after the upgrade.
@@ -1004,6 +1024,9 @@ construct_runtime!(
 		HealthProfessionalQualification: health_professional_qualification,
 		OpinionRequestor: opinion_requestor,
 		Opinion: opinion,
+
+		// Myriad pallets
+		Tipping: pallet_tipping,
 	}
 );
 
