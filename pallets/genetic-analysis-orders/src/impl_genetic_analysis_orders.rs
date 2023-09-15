@@ -236,7 +236,16 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			return Err(Error::<T>::GeneticAnalysisOrderNotYetExpired)
 		}
 
-		let total_price = genetic_analysis_order.total_price;
+		let mut testing_price = Zero::zero();
+		let mut qc_price = Zero::zero();
+
+		for price in genetic_analysis_order.prices.iter() {
+			testing_price += price.value;
+		}
+
+		for price in genetic_analysis_order.additional_prices.iter() {
+			qc_price += price.value;
+		}
 		let asset_id = genetic_analysis_order.asset_id;
 		let account_id = Self::account_id();
 
@@ -245,7 +254,15 @@ impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 			&genetic_analysis_order.currency,
 			&account_id,
 			&genetic_analysis_order.customer_id,
-			total_price,
+			testing_price,
+			asset_id,
+		)?;
+
+		Self::do_transfer(
+			&genetic_analysis_order.currency,
+			&account_id,
+			&genetic_analysis_order.seller_id,
+			qc_price,
 			asset_id,
 		)?;
 
