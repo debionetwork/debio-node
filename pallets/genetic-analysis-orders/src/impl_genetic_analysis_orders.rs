@@ -2,7 +2,7 @@ use crate::*;
 use traits_genetic_analysis_orders::{
 	GeneticAnalysisOrderEventEmitter, GeneticAnalysisOrderStatusUpdater,
 };
-use frame_support::sp_runtime::traits::Zero
+use frame_support::sp_runtime::traits::Zero;
 
 impl<T: Config> GeneticAnalysisOrderInterface<T> for Pallet<T> {
 	type GeneticAnalysisOrder = GeneticAnalysisOrderOf<T>;
