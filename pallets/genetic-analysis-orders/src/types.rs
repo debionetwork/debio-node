@@ -126,8 +126,8 @@ where
 	}
 
 	pub fn can_refunded(self) -> Option<Self> {
-		if (self.status == GeneticAnalysisOrderStatus::Paid ||
-			self.status == GeneticAnalysisOrderStatus::Failed)
+		if self.status == GeneticAnalysisOrderStatus::Paid ||
+			self.status == GeneticAnalysisOrderStatus::Failed
 		{
 			Some(self)
 		} else {
